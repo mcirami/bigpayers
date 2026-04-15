@@ -1,0 +1,120 @@
+header {
+    background-color: $lightPink;
+    padding: 20px 0;
+
+    .row_wrap {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        -webkit-justify-content: space-between;
+
+        @media screen and (max-width: 992px) {
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+        }
+
+        .navbar-nav {
+            margin: auto;
+        }
+    }
+
+    .logo {
+        img {
+            max-width: 200px;
+        }
+    }
+
+    .navbar-brand {
+        max-width: 150px;
+    }
+    .nav_wrap {
+        width: 100%;
+
+        .navbar-toggler {
+            .navbar-toggler-icon {
+                width: 2.5em;
+                height: 2.5em;
+            }
+        }
+
+        #navbarNav {
+            justify-content: flex-end;
+            -webkit-justify-content: flex-end;
+            column-gap: 20px;
+            -moz-column-gap: 20px;
+            -webkit-column-gap: 20px;
+        }
+
+        a {
+            color: $black;
+
+            &:hover {
+                color: $blue;
+            }
+        }
+
+        ul {
+            column-gap: 20px;
+            -moz-column-gap: 20px;
+            -webkit-column-gap: 20px;
+
+            @media screen and (max-width: 991px) {
+                margin-bottom: 20px;
+                text-align: center;
+            }
+
+            li {
+                @media screen and (max-width: 992px) {
+                    border-bottom: 1px solid;
+                    border-color: rgba(15, 117, 188, 0.3);
+                    padding: 10px 0;
+                }
+            }
+
+            a {
+                font-size: 1.2em;
+            }
+        }
+    }
+
+    .buttons_wrap {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -ms-flex-wrap: nowrap;
+        flex-wrap: nowrap;
+        justify-content: flex-end;
+        -webkit-justify-content: flex-end;
+        align-items: center;
+        -webkit-align-items: center;
+        column-gap: 20px;
+        gap: 20px;
+
+        @media screen and (max-width: 992px) {
+            justify-content: center;
+            -webkit-justify-content: center;
+            margin-top: 20px;
+        }
+
+        .button {
+            @media screen and (max-width: 992px) {
+                width: 150px;
+            }
+
+            @media screen and (max-width: 550px) {
+                width: 100px;
+            }
+        }
+    }
+}

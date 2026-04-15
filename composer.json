@@ -1,0 +1,70 @@
+{
+    "name": "laravel/laravel",
+    "description": "The Laravel Framework.",
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
+    "license": "MIT",
+    "type": "project",
+    "require": {
+        "php": "^8.4",
+        "ext-curl": "*",
+        "ext-pdo": "*",
+        "barryvdh/laravel-snappy": "v1.0.2",
+        "doctrine/dbal": "^3.0",
+        "geoip2/geoip2": "^3.1",
+        "guzzlehttp/guzzle": "^7.0.1",
+        "h4cc/wkhtmltoimage-amd64": "0.12.x",
+        "h4cc/wkhtmltopdf-amd64": "0.12.x",
+        "laravel/framework": "^10.0",
+        "laravel/helpers": "^1.7",
+        "laravel/tinker": "^2.0",
+        "maatwebsite/excel": "^3.1",
+        "mobiledetect/mobiledetectlib": "^3.74",
+        "nesbot/carbon": "^2.72",
+        "predis/predis": "^2.3"
+    },
+    "require-dev": {
+        "barryvdh/laravel-ide-helper": "^2.4",
+        "fakerphp/faker": "^1.23",
+        "phpunit/phpunit": "^10.0",
+        "spatie/laravel-ignition": "^2.4"
+    },
+    "autoload": {
+        "classmap": [
+            "database"
+        ],
+        "psr-4": {
+            "LeadMax\\TrackYourStats\\": "src/",
+            "App\\": "app/",
+            "Tests\\": "tests/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeds/"
+        },
+        "files": [
+            "src/System/Functions.php",
+            "src/System/Log.php"
+        ]
+    },
+    "scripts": {
+        "post-root-package-install": [
+            "php -r \"file_exists('.env') || copy('.env.example', '.env');\""
+        ],
+        "post-create-project-cmd": [
+            "php artisan key:generate"
+        ],
+        "post-autoload-dump": [
+            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+            "@php artisan package:discover"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "kylekatarnls/update-helper": false
+        }
+    }
+}

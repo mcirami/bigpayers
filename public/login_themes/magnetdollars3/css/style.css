@@ -1,0 +1,136 @@
+@charset "utf-8";
+/* CSS Document */
+
+* {
+	position: relative;
+}
+
+html {
+	height: 100%;
+	min-height: 100%;
+}
+
+body {
+	margin:0;
+	padding:0;
+	font-family: 'lato_regular', sans-serif;
+	height: 100%;
+}
+
+@font-face {
+	font-family: 'lato_regular';
+	src: url('../fonts/lato-reg-webfont.eot');
+	src: url('../fonts/lato-reg-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/lato-reg-webfont.woff2') format('woff2'), url('../fonts/lato-reg-webfont.woff') format('woff'), url('../fonts/lato-reg-webfont.ttf') format('truetype'), url('../fonts/lato-reg-webfont.svg#open_sansregular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'proximanova_regular';
+	src: url('../fonts/proximanova-regular-webfont.eot');
+	src: url('../fonts/proximanova-regular-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/proximanova-regular-webfont.woff2') format('woff2'), url('../fonts/proximanova-regular-webfont.woff') format('woff'), url('../fonts/proximanova-regular-webfont.ttf') format('truetype'), url('../fonts/proximanova-regular-webfont.svg#proximanova_regular') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+ul, li {
+	list-style:none;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin:0;
+	padding:0;
+	font-weight:normal;
+}
+p {
+	margin:0;
+	padding:0;
+}
+a {
+	text-decoration:none;
+}
+a:hover {
+	text-decoration: none;
+}
+img {
+	width: 100%;
+	height: auto;
+}
+
+.left_column {
+	background: url('../images/left-bg.jpg') no-repeat;
+	background-size: cover;
+	padding: 0 50px;
+}
+
+.left_column .logo {
+	max-width: 400px;
+}
+
+.left_column p {
+	color: #5c5a5a;
+}
+
+.right_column {
+	background: #c6251c;
+	padding-top: 80px;
+}
+
+.login_box {
+	font-family: 'lato_regular', sans-serif;
+	color: #c6251c;
+}
+
+.login_box form {
+	background: #fff;
+	padding: 40px;
+	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+}
+
+.login_box h3 {
+	font-family: 'proximanova_regular', sans-serif;
+	font-size: 24px;
+	color: #fff;
+}
+
+.login_box label {
+	color: #9a9a9a;
+}
+
+.login_box button {
+	font-family: 'proximanova_regular', sans-serif;
+	background: #c7261c;
+	font-size: 22px;
+	border: none;
+	padding: 7px 40px;
+}
+.login_box button:hover {
+	background: #931c15;
+}
+
+.login_box a {
+	color: #4a4848;
+	font-size: 14px;
+}
+
+@media screen and (max-width: 991px) {
+	.left_column {
+		padding: 0 30px;
+	}
+
+	.left_column p {
+		color: #5c5a5a;
+		font-size: 14px;
+	}
+
+	.left_column ul p {
+		font-size: 16px;
+	}
+}
+
+@media screen and (max-width: 767px) {
+	.login_box button {
+		font-size: 18px;
+		width: 100%;
+	}
+}

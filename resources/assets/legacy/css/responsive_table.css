@@ -1,0 +1,984 @@
+/* 
+	Generic Styling, for Desktops/Laptops 
+	*/
+
+.header-fixed {
+    width: 100%
+}
+
+.header-fixed > thead,
+.header-fixed > tbody,
+.header-fixed > thead > tr,
+.header-fixed > tbody > tr,
+.header-fixed > thead > tr > th,
+.header-fixed > tbody > tr > td {
+    display: block;
+}
+
+.header-fixed > tbody > tr:after,
+.header-fixed > thead > tr:after {
+    content: ' ';
+    display: block;
+    visibility: hidden;
+    clear: both;
+}
+
+.header-fixed > tbody {
+    overflow-y: auto;
+    height: 350px;
+}
+
+.header-fixed > tbody > tr > td,
+.header-fixed > thead > tr > th {
+    width: 20%;
+    float: left;
+}
+
+
+
+div.tableBottom {
+    background-color:#d9e2e7;
+    padding:10px;
+}
+div.tableBottom a:link {
+    color: #4d555e;
+}
+div.tableBottom a:hover {
+    color: #45474a;
+}
+div.tableBottom a:visited {
+    color:#4d555e;
+}
+
+
+table.table_01 {
+    margin-bottom: 0; !important;
+	width: 100%;
+	border-collapse: collapse;
+    font-size: 13px; !important;
+}
+	/* Zebra striping */
+table.table_01 tr:nth-of-type(odd) {
+ background: #fff;
+}
+table.table_01 th {
+	color: #778697;
+	font-size:12px;
+
+}
+table.table_01 td, table.table_01 th {
+	padding:15px 30px;
+	border-bottom: 1px solid #ebeaea;
+	text-align: left;
+	font-weight:normal;
+}
+table.table_01.large td, table.table_01.large th {
+	padding:15px 10px;
+	border-bottom: 1px solid #ebeaea;
+	text-align: left;
+	font-weight:normal;
+}
+table.table_01.large td.blue_txt {
+	color:#2a58ad;
+}
+table.table_01.large td img {
+	width:100%;
+}
+table.table_01 th {
+	border:0;
+}
+table.table_01 td {
+	color:#6b6b6b;
+}
+
+table.table_01 td.link01 a{ 
+	/*color:#2a58ad;*/
+	text-decoration:underline;
+}
+table.table_01 td.link01 a:hover{ text-decoration:none;}
+table.table_01 td.bold_txt {
+	font-family: 'Lato-Bold';
+}
+table.table_01 td.blue_txt {
+	color:#2a58ad;
+}
+table.table_01 td.blue_txt .align_txt {
+	text-align:right;
+}
+ /*@media all and (min-width:769px) and (max-width: 1200px) {*/
+/*table.table_01, table.table_01 thead, table.table_01 tbody, table.table_01 th, table.table_01 td, table.table_01 tr {*/
+ /*display: block;*/
+/*}*/
+
+
+     /*table.table_01.rep_offer_table td:nth-of-type(1):before {*/
+         /*content: "ID"; !important;*/
+     /*}*/
+     /*table.table_01.rep_offer_table td:nth-of-type(2):before {*/
+         /*content: "First Name";!important;*/
+     /*}*/
+     /*table.table_01.rep_offer_table td:nth-of-type(3):before {*/
+         /*content: "Offer ID";!important;*/
+     /*}*/
+     /*table.table_01.rep_offer_table td:nth-of-type(4):before {*/
+         /*content: "Offer Name";!important;*/
+     /*}*/
+     /*table.table_01.rep_offer_table td:nth-of-type(5):before {*/
+         /*content: "Clicks";!important;*/
+     /*}*/
+     /*table.table_01.rep_offer_table td:nth-of-type(6):before {*/
+         /*content: "Conversions";!important;*/
+     /*}*/
+
+
+     /*table.table_01.repview td:nth-of-type(1):before {*/
+         /*content: "Rep ID";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(2):before {*/
+         /*content: "First Name";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(3):before {*/
+         /*content: "Last Name";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(4):before {*/
+         /*content: "Cell Phone";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(5):before {*/
+         /*content: "Username";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(6):before {*/
+         /*content: "Status";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(7):before {*/
+         /*content: "Referrer Rep ID";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(8):before {*/
+         /*content: "Rep Timestamp";*/
+     /*}*/
+     /*table.table_01.repview td:nth-of-type(9):before {*/
+         /*content: "Actions";*/
+     /*}*/
+		/*!* Hide table headers (but not display: none;, for accessibility) *!*/
+		/*table.table_01 thead tr {*/
+ /*!*position: absolute;*!*/
+ /*!*top: -9999px;*!*/
+ /*!*left: -9999px;*!*/
+/*}*/
+ /*table.table_01 tr {*/
+/*border: 1px solid #ccc;*/
+/*}*/
+ /*table.table_01 td {*/
+     /*!*padding:8px; !important;*!*/
+
+     /*!*!* Behave  like a "row" *!*!*/
+			/*!*border: none;*!*/
+ /*!*border-bottom: 1px solid #eee;*!*/
+ /*!*position: relative;*!*/
+ /*!*padding-left: 50%;*!*/
+/*}*/
+ /*table.table_01 td:before {*/
+			/*!* Now like a table header *!*/
+			/*!*position: absolute;*!*/
+			/*!* Top/left values mimic padding *!*/
+			/*top: 14px;*/
+ /*!*left: 6px;*!*/
+ /*!*width: 45%;*!*/
+ /*!*padding-right: 10px;*!*/
+ /*!*white-space: nowrap;*!*/
+     /*!*padding:8px; !important;*!*/
+
+ /*}*/
+
+		/*!**/
+		/*Label the data*/
+		/*!**!*!*/
+/*table.table_01 td:nth-of-type(1):before {*/
+/*content: "ID";*/
+/*}*/
+ /*table.table_01 td:nth-of-type(2):before {*/
+/*content: "Affiliate";*/
+/*}*/
+ /*table.table_01 td:nth-of-type(3):before {*/
+/*content: "Status";*/
+/*}*/
+
+
+
+     /*!*table.table_01.rep_offer_table td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(2):before {*!*/
+         /*!*content: "First Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(3):before {*!*/
+         /*!*content: "Offer ID";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(4):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(5):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(6):before {*!*/
+         /*!*content: "Conversions";!important;*!*/
+     /*!*}*!*/
+
+
+     /*!*table.table_01.rep_report td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+
+
+
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(1):before {*!*/
+         /*!*content: "Offer ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(3):before {*!*/
+         /*!*content: "Payout";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(4):before {*!*/
+         /*!*content: "Rep Payout";!important;*!*/
+     /*!*}*!*/
+
+
+
+     /*!*table.table_01.offer_report td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";!important;*!*/
+     /*!*}*!*/
+
+     /*!*table.table_01.aff_report td:nth-of-type(1):before {*!*/
+         /*!*content: "Rep ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Rep";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";!important;*!*/
+     /*!*}*!*/
+
+     /*.btn_active, .btn_blue {*/
+/*float:none;*/
+/*}*/
+/*.btn_blue a {*/
+/*margin:10px 0 0 0;*/
+/*}*/
+ /*table.table_01 tr, table.table_01.large tr {*/
+/*border: 1px solid #ebeaea;*/
+/*}*/
+ /*table.table_01 td, table.table_01.large td {*/
+			/*!* Behave  like a "row" *!*/
+			/*border: none;*/
+ /*border-bottom: 1px solid #eee;*/
+ /*position: relative;*/
+ /*padding-left: 50%;*/
+/*}*/
+
+/*!*offer list admin*!*/
+
+
+
+/*!*table.table_01 td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(2):before {*!*/
+/*!*content: "Thumbnail";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(3):before {*!*/
+/*!*content: "Offer";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(4):before {*!*/
+/*!*content: "Postback url";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(5):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(6):before {*!*/
+/*!*content: "Payout";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(7):before {*!*/
+/*!*content: "EPC";*!*/
+/*!*}*!*/
+
+/*!*offer list admin*!*/
+/*table.table_01.manager td:nth-of-type(1):before {*/
+/*content: "ID";*/
+/*}*/
+ /*table.table_01.manager td:nth-of-type(2):before {*/
+/*content: "Username";*/
+/*}*/
+ /*table.table_01.manager td:nth-of-type(3):before {*/
+/*content: "E-mail";*/
+/*}*/
+ /*table.table_01.manager td:nth-of-type(4):before {*/
+/*content: "Status";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(1):before {*/
+/*content: "Date";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(2):before {*/
+/*content: "Affiliate ID";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(3):before {*/
+/*content: "Affiliate";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(4):before {*/
+/*content: "Clicks ";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(5):before {*/
+/*content: "Conversions";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(6):before {*/
+/*content: "payout ";*/
+/*}*/
+ /*table.table_01.statistics td:nth-of-type(7):before {*/
+/*content: "EPC ";*/
+/*}*/
+
+
+/*table.table_01.aff td:nth-of-type(1):before {*/
+/*content: "ID";*/
+/*}*/
+ /*table.table_01.aff td:nth-of-type(2):before {*/
+/*content: "Affiliate";*/
+/*}*/
+
+ /*table.table_01.aff td:nth-of-type(3):before {*/
+/*content: "Login as Affiliate";*/
+/*}*/
+
+ /*table.table_01.aff td:nth-of-type(4):before {*/
+/*content: "Status";*/
+/*}*/
+
+
+ /*.btn_active, .btn_blue {*/
+/*float:none;*/
+/*}*/
+/*.btn_blue a {*/
+/*margin:10px 0 0 0;*/
+/*}*/
+
+
+/*}*/
+ /*@media all and (min-width: 481px) and (max-width: 768px) {*/
+/*table.table_01, table.table_01 thead, table.table_01 tbody, table.table_01 th, table.table_01 td, table.table_01 tr {*/
+ /*display: block;*/
+/*}*/
+
+
+     /*!*table.table_01.rep_offer_table td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(2):before {*!*/
+         /*!*content: "First Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(3):before {*!*/
+         /*!*content: "Offer ID";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(4):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(5):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(6):before {*!*/
+         /*!*content: "Conversions";!important;*!*/
+     /*!*}*!*/
+
+     /*!*table.table_01.repview td:nth-of-type(1):before {*!*/
+         /*!*content: "Rep ID";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(2):before {*!*/
+         /*!*content: "First Name";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(3):before {*!*/
+         /*!*content: "Last Name";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(4):before {*!*/
+         /*!*content: "Cell Phone";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(5):before {*!*/
+         /*!*content: "Username";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(6):before {*!*/
+         /*!*content: "Status";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(7):before {*!*/
+         /*!*content: "Referrer Rep ID";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(8):before {*!*/
+         /*!*content: "Rep Timestamp";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(9):before {*!*/
+         /*!*content: "Actions";*!*/
+     /*!*}*!*/
+
+
+
+     /*!*table.table_01.rep_report td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+
+
+
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(1):before {*!*/
+         /*!*content: "Offer ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(3):before {*!*/
+         /*!*content: "Payout";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(4):before {*!*/
+         /*!*content: "Rep Payout";!important;*!*/
+     /*!*}*!*/
+
+
+
+
+
+
+     /*!*table.table_01.rep_offer_table td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(2):before {*!*/
+         /*!*content: "First Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(3):before {*!*/
+         /*!*content: "Offer ID";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(4):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(5):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_table td:nth-of-type(6):before {*!*/
+         /*!*content: "Conversions";!important;*!*/
+     /*!*}*!*/
+
+
+
+
+     /*!*table.table_01.offer_report td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";!important;*!*/
+     /*!*}*!*/
+
+     /*!*table.table_01.aff_report td:nth-of-type(1):before {*!*/
+         /*!*content: "Rep ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Rep";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";!important;*!*/
+     /*!*}*!*/
+
+
+     /*!*.offer_report td:nth-of-type(1):before {*!*/
+         /*!*content: "Offer ID";*!*/
+     /*!*}*!*/
+     /*!*.offer_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";*!*/
+     /*!*}*!*/
+     /*!*.offer_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";*!*/
+     /*!*}*!*/
+     /*!*.offer_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";*!*/
+     /*!*}*!*/
+     /*!*.offer_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";*!*/
+     /*!*}*!*/
+     /*!*.offer_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";*!*/
+     /*!*}*!*/
+
+
+
+
+
+     /*!*.aff_report td:nth-of-type(1):before {*!*/
+         /*!*content: "Rep ID";*!*/
+     /*!*}*!*/
+     /*!*.aff_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Rep";*!*/
+     /*!*}*!*/
+     /*!*.aff_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";*!*/
+     /*!*}*!*/
+     /*!*.aff_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";*!*/
+     /*!*}*!*/
+     /*!*.aff_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";*!*/
+     /*!*}*!*/
+     /*!*.aff_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";*!*/
+     /*!*}*!*/
+
+		/*!* Hide table headers (but not display: none;, for accessibility) *!*/
+		/*table.table_01 thead tr {*/
+ /*position: absolute;*/
+ /*top: -9999px;*/
+ /*left: -9999px;*/
+/*}*/
+ /*table.table_01 tr {*/
+/*border: 1px solid #ccc;*/
+/*}*/
+ /*table.table_01 td {*/
+			/*!* Behave  like a "row" *!*/
+			/*border: none;*/
+ /*border-bottom: 1px solid #eee;*/
+ /*position: relative;*/
+ /*padding-left: 50%;*/
+/*}*/
+ /*table.table_01 td:before {*/
+			/*!* Now like a table header *!*/
+			/*!*position: absolute;*!*/
+			/*!* Top/left values mimic padding *!*/
+			/*top: 14px;*/
+ /*left: 6px;*/
+ /*width: 45%;*/
+ /*padding-right: 10px;*/
+ /*white-space: nowrap;*/
+/*}*/
+
+		/*!**/
+		/*Label the data*/
+		/**!*/
+/*!*table.table_01 td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(2):before {*!*/
+/*!*content: "Affiliate";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(3):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+ /*.btn_active, .btn_blue {*/
+/*float:none;*/
+/*}*/
+/*.btn_blue a {*/
+/*margin:10px 0 0 0;*/
+/*}*/
+ /*table.table_01 tr, table.table_01.large tr {*/
+/*border: 1px solid #ebeaea;*/
+/*}*/
+ /*table.table_01 td, table.table_01.large td {*/
+			/*!* Behave  like a "row" *!*/
+			/*border: none;*/
+ /*border-bottom: 1px solid #eee;*/
+ /*position: relative;*/
+ /*padding-left: 50%;*/
+/*}*/
+
+/*!*offer list admin*!*/
+
+/*!*table.table_01 td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(2):before {*!*/
+/*!*content: "Offer Name";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(3):before {*!*/
+/*!*content: "Description";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(4):before {*!*/
+/*!*content: "Url";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(5):before {*!*/
+/*!*content: "Payout";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(6):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+ /*!*table.table_01 td:nth-of-type(7):before {*!*/
+     /*!*content: "Timestamp";*!*/
+ /*!*}*!*/
+/*!*table.table_01 td:nth-of-type(8):before {*!*/
+    /*!*content: "Actions";*!*/
+/*!*}*!*/
+
+
+/*!*table.table_01.aff td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01.aff td:nth-of-type(2):before {*!*/
+/*!*content: "Affiliate";*!*/
+/*!*}*!*/
+
+ /*!*table.table_01.aff td:nth-of-type(3):before {*!*/
+/*!*content: "Login as Affiliate";*!*/
+/*!*}*!*/
+
+ /*!*table.table_01.aff td:nth-of-type(4):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+
+
+/*!*!*offer list admin*!*!*/
+/*!*table.table_01.manager td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01.manager td:nth-of-type(2):before {*!*/
+/*!*content: "Username";*!*/
+/*!*}*!*/
+ /*!*table.table_01.manager td:nth-of-type(3):before {*!*/
+/*!*content: "E-mail";*!*/
+/*!*}*!*/
+ /*!*table.table_01.manager td:nth-of-type(4):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(1):before {*!*/
+/*!*content: "Date";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(2):before {*!*/
+/*!*content: "Affiliate ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(3):before {*!*/
+/*!*content: "Affiliate";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(4):before {*!*/
+/*!*content: "Clicks ";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(5):before {*!*/
+/*!*content: "Conversions";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(6):before {*!*/
+/*!*content: "payout ";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(7):before {*!*/
+/*!*content: "EPC ";*!*/
+/*!*}*!*/
+
+
+ /*.btn_active, .btn_blue {*/
+/*float:none;*/
+/*}*/
+/*.btn_blue a {*/
+/*margin:10px 0 0 0;*/
+/*}*/
+/*}*/
+ /*@media all and (min-width: 320px) and (max-width: 480px) {*/
+ /*table.table_01, table.table_01 thead, table.table_01 tbody, table.table_01 th, table.table_01 td, table.table_01 tr {*/
+ /*display: block;*/
+/*}*/
+
+
+
+
+		/*!* Hide table headers (but not display: none;, for accessibility) *!*/
+		/*table.table_01 thead tr, table.table_01.large thead tr {*/
+ /*position: absolute;*/
+ /*top: -9999px;*/
+ /*left: -9999px;*/
+/*}*/
+ /*table.table_01 tr, table.table_01.large tr {*/
+/*border: 1px solid #ebeaea;*/
+/*}*/
+ /*table.table_01 td, table.table_01.large td {*/
+			/*!* Behave  like a "row" *!*/
+			/*border: none;*/
+ /*border-bottom: 1px solid #eee;*/
+ /*position: relative;*/
+ /*padding-left: 50%;*/
+/*}*/
+ /*table.table_01 td:before, table.table_01.large td:before {*/
+			/*!* Now like a table header *!*/
+			/*position: absolute;*/
+			/*!* Top/left values mimic padding *!*/
+			/*top: 14px;*/
+ /*left: 6px;*/
+ /*width: 45%;*/
+ /*padding-right: 10px;*/
+ /*white-space: nowrap;*/
+/*}*/
+
+		/*!**/
+		/*Label the data*/
+		/*!**!*!*/
+/*!*table.table_aff td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_aff td:nth-of-type(2):before {*!*/
+/*!*content: "Affiliate";*!*/
+/*!*}*!*/
+
+ /*!*table.table_aff td:nth-of-type(3):before {*!*/
+/*!*content: "Login as Affiliate";*!*/
+/*!*}*!*/
+
+ /*!*table.table_aff td:nth-of-type(4):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+
+
+
+
+     /*!*table.table_01 td:nth-of-type(1):before {*!*/
+         /*!*content: "ID";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(3):before {*!*/
+         /*!*content: "Description";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(4):before {*!*/
+         /*!*content: "Url";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(5):before {*!*/
+         /*!*content: "Payout";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(6):before {*!*/
+         /*!*content: "Status";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(7):before {*!*/
+         /*!*content: "Timestamp";*!*/
+     /*!*}*!*/
+     /*!*table.table_01 td:nth-of-type(8):before {*!*/
+         /*!*content: "Actions";*!*/
+     /*!*}*!*/
+
+
+     /*!*table.table_01.rep_report td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+
+
+
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(1):before {*!*/
+         /*!*content: "Offer ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(3):before {*!*/
+         /*!*content: "Payout";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.rep_offer_edit td:nth-of-type(4):before {*!*/
+         /*!*content: "Rep Payout";!important;*!*/
+     /*!*}*!*/
+
+
+
+     /*!*table.table_01.offer_report td:nth-of-type(1):before {*!*/
+         /*!*content: "ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Offer Name";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.offer_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";!important;*!*/
+     /*!*}*!*/
+
+     /*!*table.table_01.aff_report td:nth-of-type(1):before {*!*/
+         /*!*content: "Rep ID"; !important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(2):before {*!*/
+         /*!*content: "Rep";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(3):before {*!*/
+         /*!*content: "Clicks";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(4):before {*!*/
+         /*!*content: "Conversion";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(5):before {*!*/
+         /*!*content: "Revenue";!important;*!*/
+     /*!*}*!*/
+     /*!*table.table_01.aff_report td:nth-of-type(6):before {*!*/
+         /*!*content: "EPC";!important;*!*/
+     /*!*}*!*/
+
+     /*!*!*offer list admin*!*!*/
+
+     /*!*table.table_01.repview td:nth-of-type(1):before {*!*/
+         /*!*content: "Rep ID";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(2):before {*!*/
+         /*!*content: "First Name";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(3):before {*!*/
+         /*!*content: "Last Name";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(4):before {*!*/
+         /*!*content: "Cell Phone";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(5):before {*!*/
+         /*!*content: "Username";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(6):before {*!*/
+         /*!*content: "Status";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(7):before {*!*/
+         /*!*content: "Referrer Rep ID";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(8):before {*!*/
+         /*!*content: "Rep Timestamp";*!*/
+     /*!*}*!*/
+     /*!*table.table_01.repview td:nth-of-type(9):before {*!*/
+         /*!*content: "Actions";*!*/
+     /*!*}*!*/
+
+/*!*!*offer list admin*!*!*/
+
+
+/*!*table.table_01.manager td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01.manager td:nth-of-type(2):before {*!*/
+/*!*content: "Username";*!*/
+/*!*}*!*/
+ /*!*table.table_01.manager td:nth-of-type(3):before {*!*/
+/*!*content: "E-mail";*!*/
+/*!*}*!*/
+ /*!*table.table_01.manager td:nth-of-type(4):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(1):before {*!*/
+/*!*content: "Date";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(2):before {*!*/
+/*!*content: "Affiliate ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(3):before {*!*/
+/*!*content: "Affiliate";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(4):before {*!*/
+/*!*content: "Clicks ";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(5):before {*!*/
+/*!*content: "Conversions";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(6):before {*!*/
+/*!*content: "payout ";*!*/
+/*!*}*!*/
+ /*!*table.table_01.statistics td:nth-of-type(7):before {*!*/
+/*!*content: "EPC ";*!*/
+/*!*}*!*/
+ /*!*table.table_01.popup td:nth-of-type(1):before {*!*/
+/*!*content: "Time Stamp";*!*/
+/*!*}*!*/
+ /*!*table.table_01.popup td:nth-of-type(2):before {*!*/
+/*!*content: "Offer";*!*/
+/*!*}*!*/
+ /*!*table.table_01.popup td:nth-of-type(3):before {*!*/
+/*!*content: "Sub ID ";*!*/
+/*!*}*!*/
+ /*!*table.table_01.popup td:nth-of-type(4):before {*!*/
+/*!*content: "Payout";*!*/
+/*!*}*!*/
+
+
+/*!*table.table_01.aff td:nth-of-type(1):before {*!*/
+/*!*content: "ID";*!*/
+/*!*}*!*/
+ /*!*table.table_01.aff td:nth-of-type(2):before {*!*/
+/*!*content: "Affiliate";*!*/
+/*!*}*!*/
+
+ /*!*table.table_01.aff td:nth-of-type(3):before {*!*/
+/*!*content: "Login as Affiliate";*!*/
+/*!*}*!*/
+
+ /*!*table.table_01.aff td:nth-of-type(4):before {*!*/
+/*!*content: "Status";*!*/
+/*!*}*!*/
+ /*.btn_active, .btn_blue {*/
+/*float:none;*/
+/*}*/
+/*.btn_blue a {*/
+/*margin:10px 0 0 0;*/
+/*}*/
+
+/*}*/

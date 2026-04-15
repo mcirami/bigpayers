@@ -1,0 +1,231 @@
+@charset "utf-8";
+/* CSS Document */
+html {
+    height: 100%;
+    min-height: 100%;
+}
+
+div {
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: "sarabun-bold";
+    src: url("../fonts/sarabun-bold-webfont.eot");
+    src: url("../fonts/sarabun-bold-webfont.eot?#iefix")
+            format("embedded-opentype"),
+        url("../fonts/sarabun-bold-webfont.woff2") format("woff2"),
+        url("../fonts/sarabun-bold-webfont.woff") format("woff"),
+        url("../fonts/sarabun-bold-webfont.ttf") format("truetype"),
+        url("../fonts/sarabun-bold-webfont.svg#sarabun_bold") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "sarabun-regular";
+    src: url("../fonts/sarabun-regular-webfont.eot");
+    src: url("../fonts/sarabun-regular-webfont.eot?#iefix")
+            format("embedded-opentype"),
+        url("../fonts/sarabun-regular-webfont.woff2") format("woff2"),
+        url("../fonts/sarabun-regular-webfont.woff") format("woff"),
+        url("../fonts/sarabun-regular-webfont.ttf") format("truetype"),
+        url("../fonts/sarabun-regular-webfont.svg#sarabun_regular")
+            format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: "sarabun-medium";
+    src: url("../fonts/sarabun-medium-webfont.eot");
+    src: url("../fonts/sarabun-medium-webfont.eot?#iefix")
+            format("embedded-opentype"),
+        url("../fonts/sarabun-medium-webfont.woff2") format("woff2"),
+        url("../fonts/sarabun-medium-webfont.woff") format("woff"),
+        url("../fonts/sarabun-medium-webfont.ttf") format("truetype"),
+        url("../fonts/sarabun-medium-webfont.svg#sarabun_medium") format("svg");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "sarabun-regular", sans-serif;
+    height: 100%;
+}
+
+ul,
+li {
+    list-style: none;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin: 0;
+    padding: 0;
+    font-weight: normal;
+}
+
+h2,
+h3,
+h4,
+h5 {
+    font-family: "sarabun-bold", sans-serif;
+}
+p {
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: none;
+}
+img {
+    width: 100%;
+    height: auto;
+}
+
+.left_column {
+    background: url(../images/m-icon.png) no-repeat center center #fff2fa;
+    background-size: 75%;
+}
+
+.left_column .white_box {
+    background: #ffffff;
+    width: 65%;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 4px;
+    -webkit-box-shadow: 0 1px 22px -8px rgba(141,139,139,1);
+    -moz-box-shadow: 0 1px 22px -8px rgba(141,139,139,1);
+    box-shadow: 0 1px 22px -8px rgba(141,139,139,1);
+}
+
+.left_column h3 {
+    font-size: 2rem;
+}
+
+.left_column h4,
+.left_column h5 {
+    font-size: 1.2rem;
+}
+
+.left_column h5 {
+    color: #ec297b;
+}
+
+.left_column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.left_column ul li {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 5px;
+}
+
+.left_column ul li::before {
+    content: "";
+    background: url(../images/check-mark.png) no-repeat;
+    background-size: 100%;
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    left: 5px;
+    top: 8px;
+}
+.left_column ul li p {
+    font-size: 0.9rem;
+}
+.right_column .logo_wrap {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+.right_column h3 {
+    color: #000000;
+}
+
+.right_column .form_wrap {
+    width: 100%;
+    margin: 0 auto;
+    max-width: 50%;
+}
+
+.right_column .form_wrap label {
+    font-family: "sarabun-bold", sans-serif;
+}
+
+.right_column .form_wrap form button {
+    background: #ec297b;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px !important;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-family: "sarabun-bold", sans-serif;
+    cursor: pointer;
+}
+
+.right_column .form_wrap form button:hover {
+    background: #a40f4e;
+}
+
+.right_column .form_wrap a.signup_link {
+    font-family: "sarabun-bold";
+    color: #ec297b;
+    text-decoration: underline;
+}
+
+.right_column .form_wrap form a {
+    color: #000000;
+    margin-bottom: 20px;
+    display: inline-block;
+}
+
+@media screen and (max-width: 1199px) {
+    .left_column {
+        background-size: contain;
+        padding: 50px 0;
+    }
+    .left_column .white_box {
+        width: 90%;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .white_box {
+        width: 100%;
+        margin: 40px 0;
+    }
+
+    .right_column {
+        padding: 3rem;
+    }
+
+    .right_column .form_wrap {
+        max-width: unset;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .left_column h3 {
+        font-size: 1.5rem;
+    }
+
+    .left_column h4,
+    .left_column h5 {
+        font-size: 1rem;
+    }
+
+    .left_column p {
+        font-size: 0.8rem;
+    }
+}

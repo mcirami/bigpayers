@@ -1,0 +1,27 @@
+// Fonts
+//@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+
+// Bootstrap
+@import "~bootstrap/scss/bootstrap";
+
+@import "libs/bourbon/bourbon";
+@import "libs/neat/neat";
+//@import "libs/normalize";
+
+// Variables
+@import "variables";
+// partials
+// @import "libs/animate"; // big lib add if needed
+@import "partials/grid";
+@import "partials/colors";
+@import "partials/extends";
+@import "partials/mixins";
+@import "partials/base";
+@import "partials/typography";
+@import "partials/layouts";
+//@import "partials/construction";
+
+// site elements add more as site grows in complexity
+@import "elements/header";
+@import "elements/home";
+@import "elements/footer";

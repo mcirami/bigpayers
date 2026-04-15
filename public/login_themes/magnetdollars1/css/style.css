@@ -1,0 +1,99 @@
+@charset "utf-8";
+/* CSS Document */
+html {
+	height: 100%;
+	min-height: 100%;
+}
+
+body {
+	margin:0;
+	padding:0;
+	font-family: 'open_sansregular', sans-serif;
+	height: 100%;
+}
+
+ @font-face {
+ font-family: 'open_sansregular';
+ src: url('../fonts/opensans-regular-webfont.eot');
+ src: url('../fonts/opensans-regular-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/opensans-regular-webfont.woff2') format('woff2'), url('../fonts/opensans-regular-webfont.woff') format('woff'), url('../fonts/opensans-regular-webfont.ttf') format('truetype'), url('../fonts/opensans-regular-webfont.svg#open_sansregular') format('svg');
+ font-weight: normal;
+ font-style: normal;
+}
+ @font-face {
+ font-family: 'roboto_regular';
+ src: url('../fonts/roboto-regular-webfont.eot');
+ src: url('../fonts/roboto-regular-webfont.eot?#iefix') format('embedded-opentype'), url('../fonts/roboto-regular-webfont.woff2') format('woff2'), url('../fonts/roboto-regular-webfont.woff') format('woff'), url('../fonts/roboto-regular-webfont.ttf') format('truetype'), url('../fonts/roboto-regular-webfont.svg#roboto_regular') format('svg');
+ font-weight: normal;
+ font-style: normal;
+}
+
+ul, li {
+	list-style:none;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin:0;
+	padding:0;
+	font-weight:normal;
+}
+p {
+	margin:0;
+	padding:0;
+}
+a {
+	text-decoration:none;
+}
+a:hover {
+	text-decoration:none;
+}
+img {
+	width: 100%;
+	height: auto;
+}
+
+.page_wrapper {
+	background: url('../images/main-bg.jpg') no-repeat;
+	background-size: cover;
+}
+
+.login_box {
+	font-family: 'roboto_regular', sans-serif;
+	background: #000;
+	color: #fff;
+}
+
+.login_box h3 {
+	font-size: 22px;
+}
+
+.login_box label {
+	color: #9a9a9a;
+}
+
+.login_box button {
+	background: #c7261c;
+	font-size: 22px;
+	border: none;
+}
+.login_box button:hover {
+	background: #931c15;
+}
+
+.login_box a {
+	color: #4a4848;
+	font-size: 14px;
+	text-decoration: underline;
+}
+
+.contact_info {
+	margin-top: 40px;
+	text-align: center;
+}
+
+.contact_info p {
+	font-size: 18px;
+}
+
+.contact_info a {
+	font-size: 18px;
+	color: #ffffff;
+}
