@@ -1,111 +1,229 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@push('head')
+    @include('layouts.partials.report-head-assets')
+@endpush
+
+@push('scripts')
+    @include('layouts.partials.report-script-assets')
+@endpush
+
+@section('page-title', 'Users')
 
 @section('content')
-    <!--right_panel-->
-    <div class="right_panel">
-        <div class="white_box_outer large_table ">
-            <div class="heading_holder">
-                <span class="lft value_span9">View User Accounts</span>
+    @php
+        $role = (int) request('role', 3);
+        $showInactive = (int) request('showInactive', 0) === 1;
+        $roleLabels = [
+            \App\Privilege::ROLE_GOD => 'God',
+            \App\Privilege::ROLE_ADMIN => 'Admins',
+            \App\Privilege::ROLE_MANAGER => env('ACCOUNT_TYPE_TEXT') . 's',
+            \App\Privilege::ROLE_AFFILIATE => 'Agents',
+        ];
+        $selectedRoleLabel = $roleLabels[$role] ?? 'Users';
+        $totalUsers = count($users);
+        $usersWithManagers = $users->filter(fn ($user) => !empty(optional($user->referrer)->user_name))->count();
+        $recentUsers = $users->take(3);
+    @endphp
 
+    <div class="space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Users Workspace</p>
+                    <h2 class="bp-section-title value_span9">User account directory</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                        Review account access, jump into edits, and log into downstream users without leaving the new shell.
+                    </p>
+                </div>
+
+                <div class="rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-slate-500 shadow-sm">
+                    {{ $selectedRoleLabel }} • {{ $showInactive ? 'Inactive only' : 'Active only' }}
+                </div>
             </div>
 
-            <div class='form-group '>
-                @include('report.options.user-type')
-                @include('report.options.active')
+            <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+                <div class="bp-report-toolbar">
+                    @include('report.options.user-type')
+                    @include('report.options.active')
+                </div>
+
+                <div class="bp-offer-search">
+                    <label class="bp-detail-label" for="searchBox">Search users</label>
+                    <input
+                        id="searchBox"
+                        class="bp-search-input"
+                        type="text"
+                        placeholder="Search by username, email, or ID"
+                    >
+                </div>
             </div>
+        </section>
 
-            <div class="form-group searchDiv">
-                <input id="searchBox"
-                       class="form-control"
-                       type="text"
-                       placeholder="Search By Username, Email or ID" />
-            </div>
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Visible Accounts</p>
+                <p class="bp-stat-value">{{ $totalUsers }}</p>
+                <p class="bp-stat-note">Current {{ strtolower($selectedRoleLabel) }} loaded into the searchable directory.</p>
+            </article>
 
-            <div class="clear"></div>
-            <div class="white_box_x_scroll white_box manage_aff large_table value_span8 ">
-                <table class="table table-striped  table_01 manage_user_table " id="mainTable">
-                    <thead>
-                    <tr>
-                        <th class="value_span8">User ID</th>
-                        <th class="value_span8">Username</th>
-                        <th class="value_span8">Actions</th>
-                        <th class="value_span8">Manager</th>
-                        <th class="value_span8">Timestamp</th>
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Relationship Map</p>
+                <p class="bp-stat-value">{{ $usersWithManagers }}</p>
+                <p class="bp-stat-note">Users in this list that already resolve to a parent manager or admin.</p>
+            </article>
 
-                        @if (request('role',3) == 2)
-                            <th></th>
-                        @endif
-                    </tr>
-                    </thead>
-                    <tbody id="users_container">
-                    </tbody>
-                </table>
-            </div>
-        </div>
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Listing Scope</p>
+                <p class="bp-stat-value">{{ $showInactive ? 'Inactive' : 'Active' }}</p>
+                <p class="bp-stat-note">Toggle between active and inactive accounts without leaving the page.</p>
+            </article>
 
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Role Filter</p>
+                <p class="bp-stat-value">{{ $selectedRoleLabel }}</p>
+                <p class="bp-stat-note">The current role view controls which account actions appear below.</p>
+            </article>
+        </section>
 
+        <section class="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)]">
+            <section class="bp-card value_span8">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="bp-section-kicker">Directory</p>
+                        <h3 class="bp-section-title value_span9">Searchable user table</h3>
+                    </div>
+                    <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the layout is upgraded.</p>
+                </div>
+
+                <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+                    <table class="table table-striped table_01 manage_user_table" id="mainTable">
+                        <thead>
+                        <tr>
+                            <th class="value_span9">User ID</th>
+                            <th class="value_span9">Username</th>
+                            <th class="value_span9">Email</th>
+                            <th class="value_span9">Manager</th>
+                            <th class="value_span9">Timestamp</th>
+                            <th class="value_span9">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody id="users_container"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <aside class="bp-card value_span8">
+                <p class="bp-section-kicker">Recent Entries</p>
+                <h3 class="bp-section-title value_span9">Newest users in this result</h3>
+
+                <div class="mt-6 bp-mini-list">
+                    @forelse($recentUsers as $user)
+                        <article class="bp-mini-list-item">
+                            <div>
+                                <h4 class="bp-mini-title">{{ $user->user_name }}</h4>
+                                <p class="bp-mini-copy">{{ $user->email }}</p>
+                                <p class="bp-mini-copy">
+                                    {{ optional($user->referrer)->user_name ?: 'No manager assigned' }} • {{ $user->rep_timestamp ?: 'Timestamp unavailable' }}
+                                </p>
+                            </div>
+                            <span class="bp-mini-badge">{{ $user->idrep }}</span>
+                        </article>
+                    @empty
+                        <p class="text-sm leading-7 text-slate-500">No users match the current filter yet.</p>
+                    @endforelse
+                </div>
+            </aside>
+        </section>
     </div>
-    <!--right_panel-->
-
 @endsection
 
 @section('footer')
     <script type="text/javascript">
         $(document).ready(function () {
-	        const EDIT_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES); ?>';
-	        const CREATE_AFFILIATES = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES); ?>';
-	        const CREATE_MANAGERS = '<?php echo \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS); ?>';
-	        const role = '<?php echo request('role',3); ?>';
+            const canEditAffiliates = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES));
+            const canCreateAffiliates = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES));
+            const canCreateManagers = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS));
+            const role = @json($role);
+            const users = @json($users);
+            const itemsContainer = document.querySelector("#users_container");
+            const searchBox = document.getElementById("searchBox");
+            const table = $("#mainTable");
 
-			let userCollection = '<?php echo $users; ?>';
-            let users = JSON.parse(userCollection);
+            const escapeHtml = (value) => {
+                return String(value ?? '')
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;')
+                    .replace(/'/g, '&#39;');
+            };
 
-	        const itemsContainer = document.querySelector("#users_container");
+            const renderActions = (user) => {
+                const actions = [];
 
-	        document.getElementById('searchBox').addEventListener('input', (e) => {
-		        const userInput = e.target.value.trim().toLowerCase();
-		        let filteredUsers = users.filter((user) => {
-			        return user.email.toLowerCase().includes(userInput) || user.user_name.toLowerCase().includes(userInput) || user.idrep.toString().includes(userInput);
-		        })
-		        showUsers(filteredUsers);
-	        });
+                if (canEditAffiliates) {
+                    actions.push(
+                        `<a class="bp-action-link value_span6-1 value_span4" href="/aff_update.php?idrep=${user.idrep}">Edit</a>`
+                    );
+                }
 
-	        showUsers(users);
-			function showUsers(users) {
-				let html = "";
+                if (canCreateAffiliates) {
+                    actions.push(
+                        `<a class="bp-action-link value_span5-1" href="#" onclick="adminLogin(${user.idrep}); return false;">Login</a>`
+                    );
+                }
 
-				users.forEach((user) => {
-					html += "<tr> " +
-						"<td>" + user['idrep'] + "</td>" +
-						"<td>" + user['user_name'] + "</td>" +
-                        "<td class='actions'>";
-                            if (EDIT_AFFILIATES){
-								html += "<a class='btn btn-default btn-sm value_span6-1 value_span4 ' data-toggle='tooltip' title='Edit User'" +
-                                    " href='/aff_update.php?idrep=" + user['idrep'] + "'>Edit</a>";
-                            }
-							if(CREATE_AFFILIATES) {
-								html += "<a class='btn btn-default btn-sm value_span5-1 ' data-toggle='tooltip' title='Login into this user'" +
-									" href='#' onclick='adminLogin(" + user['idrep'] +")'>Login</a>";
-                            }
-							if(CREATE_MANAGERS && role == 2) {
-								html += "<a class='btn btn-sm btn-default value_span5-1 ' data-toggle='tooltip' title='View Agents'" +
-									" href='/user/" + user['idrep'] + "/affiliates'>View Agents</a>";
-                            }
-                    html +=    "</td>" +
-                        "<td>" + user['referrer']['user_name'] +
-						"<td>" + user['rep_timestamp'] + "</td>" +
-                        "</tr>";
-				})
+                if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
+                    actions.push(
+                        `<a class="bp-action-link bp-action-link-muted" href="/user/${user.idrep}/affiliates">View Agents</a>`
+                    );
+                }
+
+                if (!actions.length) {
+                    actions.push('<span class="bp-table-empty">No actions</span>');
+                }
+
+                return `<div class="bp-table-actions">${actions.join('')}</div>`;
+            };
+
+            const showUsers = (userRows) => {
+                const html = userRows.map((user) => {
+                    const managerName = user.referrer && user.referrer.user_name ? user.referrer.user_name : 'No manager assigned';
+
+                    return `
+                        <tr>
+                            <td>${escapeHtml(user.idrep)}</td>
+                            <td class="username">${escapeHtml(user.user_name)}</td>
+                            <td>${escapeHtml(user.email || 'No email')}</td>
+                            <td>${escapeHtml(managerName)}</td>
+                            <td>${escapeHtml(user.rep_timestamp || 'Timestamp unavailable')}</td>
+                            <td class="actions">${renderActions(user)}</td>
+                        </tr>
+                    `;
+                }).join('');
 
                 itemsContainer.innerHTML = html;
-            }
+                table.trigger("update");
+            };
 
-	        $("#mainTable").tablesorter(
-		        {
-			        sortList: [[0, 0]],
-			        widgets: ['staticRow']
-		        });
+            searchBox.addEventListener("input", (event) => {
+                const userInput = event.target.value.trim().toLowerCase();
+                const filteredUsers = users.filter((user) => {
+                    return (user.email || '').toLowerCase().includes(userInput)
+                        || (user.user_name || '').toLowerCase().includes(userInput)
+                        || String(user.idrep).includes(userInput);
+                });
+
+                showUsers(filteredUsers);
+            });
+
+            table.tablesorter({
+                sortList: [[0, 0]],
+                widgets: ['staticRow']
+            });
+
+            showUsers(users);
         });
     </script>
 @endsection
-

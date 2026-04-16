@@ -1,74 +1,204 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@push('head')
+    @include('layouts.partials.report-head-assets')
+@endpush
+
+@push('scripts')
+    @include('layouts.partials.report-script-assets')
+@endpush
+
+@section('page-title', 'User Offers')
 
 @section('content')
-    <div id="error_message">
-        <svg  style="color: red" width="34" height="34" viewBox="0 0 24 24" fill="red" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12z" fill="red"/>
-            <path d="M12 14a1 1 0 0 1-1-1V7a1 1 0 1 1 2 0v6a1 1 0 0 1-1 1zm-1.5 2.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z" fill="red"/>
+    @php
+        $canEditAffiliatePayout = \LeadMax\TrackYourStats\System\Session::permissions()->can('edit_aff_payout');
+        $accessibleOffers = collect($offers)->where('has_offer', true)->count();
+        $customPayoutOffers = collect($offers)->filter(fn ($offer) => (float) $offer->reppayout !== (float) $offer->payout)->count();
+    @endphp
+
+    <div id="error_message" class="bp-error-banner">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M12 4a8 8 0 1 0 0 16 8 8 0 0 0 0-16zM2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10S2 17.523 2 12z" fill="currentColor"/>
+            <path d="M12 14a1 1 0 0 1-1-1V7a1 1 0 1 1 2 0v6a1 1 0 0 1-1 1zm-1.5 2.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z" fill="currentColor"/>
         </svg>
         <p></p>
     </div>
-    <div id="user_info" class = "right_panel edit_user_offers">
-        <div class = "heading_holder value_span9">
-            <span class = "lft">{{$name}}'s Offer's</span>
-        </div>
-        <div class = "white_box_outer">
-            <div class="rounded mx-auto mt-10 columns-1">
-                <div class="white_box manage_aff value_span8">
-                    <table class="table_01   large_table" id="mainTable">
-                        <thead>
-                        <tr>
-                            <th class=\"value_span9\">Offer ID</th>
-                            <th class=\"value_span9\">Offer Name</th>
-                            <th class=\"value_span9\">Offer Payout</th>
 
-                            @if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout"))
-                                <th class=\"value_span9\">Change Aff Payout</th>
-                            @endif
+    <div id="user_info" class="edit_user_offers space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Users Workspace</p>
+                    <h2 class="bp-section-title value_span9">{{ $name }}'s offer access</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                        Review assigned inventory, update affiliate-specific payouts, and toggle access from one place without leaving the redesigned shell.
+                    </p>
+                </div>
 
-                            @if (\LeadMax\TrackYourStats\System\Session::permissions()->can("edit_aff_payout"))
-                                <th class=\"value_span9\">Offer Access</th>
-                            @endif
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach($offers as $offer)
-                            <tr>
-                                <td>{{$offer->idoffer}}</td>
-                                <td>{{$offer->offer_name}}</td>
-                                <td>{{$offer->payout}}</td>
-                                <td>
-                                    <input
-                                            class="update_aff_payout"
-                                            style="width:100px;"
-                                            type="number"
-                                            step="0.25"
-                                            id="offer_{{$offer->idoffer}}"
-                                            data-offer="{{$offer->idoffer}}"
-                                            data-rep="{{$offer->idrep}}"
-                                            value="{{$offer->reppayout}}"
-                                    />
-                                </td>
-
-                                @php $hasAccess = $offer->has_offer ? "checked" : ""; @endphp
-                                <td class="offer_access">
-                                    <input
-                                            class="offer_access_check"
-                                            type="checkbox"
-                                            id="offer_access"
-                                            data-rep="{{$offer->idrep}}"
-                                            data-offer="{{$offer->idoffer}}"
-                                            name="offer_access"
-                                            {{$hasAccess}}>
-                                    <label for="offer_access">Allow Access</label>
-                                </td>
-                            </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                <div class="flex flex-wrap items-center gap-3">
+                    <a href="/user/manage" class="bp-button-secondary">Back to users</a>
                 </div>
             </div>
-        </div>
-    </div>
 
+            <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+                <div class="rounded-3xl border border-slate-200/70 bg-white/70 p-4 shadow-sm">
+                    <p class="bp-detail-label">Workflow</p>
+                    <p class="mt-2 text-sm leading-7 text-slate-500">
+                        Payout and access updates still use the existing account-management endpoints, so this page remains fully compatible with the legacy admin logic.
+                    </p>
+                </div>
+
+                <div class="bp-offer-search">
+                    <label class="bp-detail-label" for="offerSearch">Search offers</label>
+                    <input
+                        id="offerSearch"
+                        class="bp-search-input"
+                        type="text"
+                        placeholder="Search by offer name or ID"
+                    >
+                </div>
+            </div>
+        </section>
+
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Visible Offers</p>
+                <p class="bp-stat-value">{{ count($offers) }}</p>
+                <p class="bp-stat-note">All active offers currently available to review for this affiliate.</p>
+            </article>
+
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Assigned Access</p>
+                <p class="bp-stat-value">{{ $accessibleOffers }}</p>
+                <p class="bp-stat-note">Offers that already have access enabled for this user.</p>
+            </article>
+
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Custom Payouts</p>
+                <p class="bp-stat-value">{{ $customPayoutOffers }}</p>
+                <p class="bp-stat-note">Rows where the affiliate payout differs from the base offer payout.</p>
+            </article>
+
+            <article class="bp-stat-card">
+                <p class="bp-stat-label">Editing</p>
+                <p class="bp-stat-value">{{ $canEditAffiliatePayout ? 'Enabled' : 'Read only' }}</p>
+                <p class="bp-stat-note">Your permission set determines whether payout and access controls stay interactive.</p>
+            </article>
+        </section>
+
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Offer Controls</p>
+                    <h3 class="bp-section-title value_span9">User offer matrix</h3>
+                </div>
+                <p class="bp-table-meta">Payout changes save on enter or blur, and access toggles continue using the existing AJAX handlers.</p>
+            </div>
+
+            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+                <table class="table table-striped table_01 large_table" id="mainTable">
+                    <thead>
+                    <tr>
+                        <th class="value_span9">Offer ID</th>
+                        <th class="value_span9">Offer Name</th>
+                        <th class="value_span9">Base Payout</th>
+
+                        @if ($canEditAffiliatePayout)
+                            <th class="value_span9">Affiliate Payout</th>
+                            <th class="value_span9">Offer Access</th>
+                        @else
+                            <th class="value_span9">Assigned Payout</th>
+                            <th class="value_span9">Access Status</th>
+                        @endif
+                    </tr>
+                    </thead>
+                    <tbody id="userOfferRows">
+                    @foreach($offers as $offer)
+                        @php
+                            $hasAccess = $offer->has_offer ? 'checked' : '';
+                        @endphp
+                        <tr data-search="{{ strtolower($offer->offer_name . ' ' . $offer->idoffer) }}">
+                            <td>{{ $offer->idoffer }}</td>
+                            <td>{{ $offer->offer_name }}</td>
+                            <td>${{ number_format((float) $offer->payout, 2) }}</td>
+
+                            @if ($canEditAffiliatePayout)
+                                <td>
+                                    <input
+                                        class="update_aff_payout bp-input-compact"
+                                        type="number"
+                                        step="0.25"
+                                        id="offer_{{ $offer->idoffer }}"
+                                        data-offer="{{ $offer->idoffer }}"
+                                        data-rep="{{ $offer->idrep }}"
+                                        value="{{ $offer->reppayout }}"
+                                    />
+                                </td>
+                                <td>
+                                    <label class="offer_access bp-toggle-inline" for="offer_access_{{ $offer->idoffer }}">
+                                        <input
+                                            class="offer_access_check"
+                                            type="checkbox"
+                                            id="offer_access_{{ $offer->idoffer }}"
+                                            data-rep="{{ $offer->idrep }}"
+                                            data-offer="{{ $offer->idoffer }}"
+                                            name="offer_access"
+                                            {{ $hasAccess }}
+                                        >
+                                        <span>{{ $offer->has_offer ? 'Enabled' : 'Disabled' }}</span>
+                                    </label>
+                                </td>
+                            @else
+                                <td>${{ number_format((float) $offer->reppayout, 2) }}</td>
+                                <td>
+                                    <span class="bp-status-pill {{ $offer->has_offer ? 'bp-status-pill-active' : '' }}">
+                                        {{ $offer->has_offer ? 'Enabled' : 'Disabled' }}
+                                    </span>
+                                </td>
+                            @endif
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+@endsection
+
+@section('footer')
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script type="text/javascript">
+        (() => {
+            const searchInput = document.getElementById('offerSearch');
+            const rows = Array.from(document.querySelectorAll('#userOfferRows tr'));
+
+            if (searchInput && rows.length) {
+                searchInput.addEventListener('input', (event) => {
+                    const query = event.target.value.trim().toLowerCase();
+
+                    rows.forEach((row) => {
+                        const haystack = row.getAttribute('data-search') || '';
+                        row.style.display = haystack.includes(query) ? '' : 'none';
+                    });
+                });
+            }
+
+            $('#mainTable').tablesorter({
+                sortList: [[0, 0]],
+                widgets: ['staticRow']
+            });
+
+            document.querySelectorAll('.offer_access_check').forEach((checkbox) => {
+                checkbox.addEventListener('change', (event) => {
+                    const label = event.target.closest('.offer_access');
+                    const text = label ? label.querySelector('span') : null;
+
+                    if (text) {
+                        text.textContent = event.target.checked ? 'Enabled' : 'Disabled';
+                    }
+                });
+            });
+        })();
+    </script>
 @endsection

@@ -1,45 +1,51 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@push('head')
+    @include('layouts.partials.report-head-assets')
+@endpush
+
+@push('scripts')
+    @include('layouts.partials.report-script-assets')
+@endpush
+
+@section('page-title', $title)
+
 @section('content')
-    <!--right_panel-->
-    <div class = "right_panel">
-        <div class = "white_box_outer large_table ">
-            <div class = "heading_holder">
-                <span class = "lft value_span9">{{$title}}</span>
-
+    <div class="space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div>
+                <p class="bp-section-kicker">Reporting Workspace</p>
+                <h2 class="bp-section-title value_span9">{{ $title }}</h2>
             </div>
+        </section>
 
-
-            <div class = "clear"></div>
-            <div class = "white_box_x_scroll white_box manage_aff large_table value_span8  ">
-                <table class = "table table-bordered table_01 tablesorter" id = "mainTable">
+        <section class="bp-card value_span8">
+            <div class="bp-report-table-wrap">
+                <table class="table table-bordered table_01 tablesorter" id="mainTable">
                     <thead>
-
                     <tr>
                         @foreach($tableHeaders as $header)
-                            <th class = "value_span9">{{$header}}</th>
+                            <th class="value_span9">{{ $header }}</th>
                         @endforeach
-
-
                     </tr>
                     </thead>
                     <tbody>
                     @foreach($report as $row)
                         <tr>
                             @foreach($row as $column)
-                                <td>{{$column}}</td>
+                                <td>{{ $column }}</td>
                             @endforeach
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
-
             </div>
-        </div>
+        </section>
     </div>
+@endsection
 
-    <script type = "text/javascript">
-
-
+@section('footer')
+    <script type="text/javascript">
 		$(document).ready(function () {
 			$("#mainTable").tablesorter(
 				{
@@ -48,7 +54,4 @@
 				});
 		});
     </script>
-
-
 @endsection
-

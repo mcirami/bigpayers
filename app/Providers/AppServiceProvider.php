@@ -22,7 +22,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::share('webroot', getWebRoot());
-        view()->composer('layouts.master', function (\Illuminate\View\View $view) {
+        view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
             $navBar = new NavBar(Session::userType(), Session::permissions());
             $notifications = new Notifications(Session::userID());
             $notifications->fetchUsersNotifications();

@@ -203,6 +203,47 @@ class NavBar
 
     }
 
+    public function getVisibleMenu()
+    {
+        $sections = [];
+
+        foreach ($this->menu as $menuName => $menuItems) {
+            if (!$this->checkUserType($menuItems) || !$this->checkPermissions($menuItems) || !$this->checkPossiblePermissions($menuItems)) {
+                continue;
+            }
+
+            $section = [
+                'name' => $menuName,
+                'icon' => $menuItems['css'] ?? '',
+                'items' => [],
+            ];
+
+            foreach ($menuItems as $key => $vals) {
+                if (!$this->isMenuItem($key) || !$this->checkPermissions($vals) || !$this->checkUserType($vals) || !$this->checkPossiblePermissions($vals)) {
+                    continue;
+                }
+
+                $url = $vals['url'];
+
+                if ($this->hasDateOptions($vals)) {
+                    $url .= "?d_from={$this->dateFrom}&d_to={$this->dateTo}";
+                }
+
+                $section['items'][] = [
+                    'name' => $key,
+                    'url' => $this->webRoot . $url,
+                    'active' => $vals['url'] == $this->currentPage,
+                ];
+            }
+
+            if (!empty($section['items'])) {
+                $sections[] = $section;
+            }
+        }
+
+        return $sections;
+    }
+
 
     public function printNav($mobile = false)
     {
