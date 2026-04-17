@@ -62,7 +62,7 @@ class NavBar
             ],
 
             'Create Offers' => [
-                'url' => '/offer_add.php',
+                'url' => '/offer/create',
                 'required_permissions' => ['create_offers'],
             ],
 
@@ -149,9 +149,9 @@ class NavBar
 
             "css" => "fas fa-bullhorn",
 
-            "Manage Advertisers" => ['url' => "/campaign_manage.php"],
+            "Manage Advertisers" => ['url' => "/advertisers"],
 
-            "Create Advertisers" => ['url' => "/campaign_create.php"],
+            "Create Advertisers" => ['url' => "/advertisers/create"],
 
         ],
 
@@ -170,7 +170,7 @@ class NavBar
 
             "Add Sale" => ['url' => '/sales/add', 'required_permissions' => [Permissions::ADJUST_SALES]],
 
-            "Offer URLs" => ['url' => '/offer_urls.php', 'required_permissions' => ['edit_offer_urls']],
+            "Offer URLs" => ['url' => '/offer/urls', 'required_permissions' => ['edit_offer_urls']],
 
             "IP Blacklist" => ['url' => '/ip_black_list.php', "required_user_types" => [\App\Privilege::ROLE_GOD]],
 

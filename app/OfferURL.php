@@ -25,5 +25,12 @@ class OfferURL extends Model
 {
     protected $table = 'offer_urls';
     protected $connection = 'master';
+    public $timestamps = false;
+    protected $fillable = [
+        'url',
+        'status',
+        'company_id',
+        'timestamp',
+    ];
 
 }

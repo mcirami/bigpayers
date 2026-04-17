@@ -49,7 +49,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/font-awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260416h">
+    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260417a">
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
     @stack('head')
     <title>{{ $companyName }}</title>

@@ -33,6 +33,7 @@ use App\Http\Controllers\Report\EmployeeReportController;
 use App\Http\Controllers\Report\SubReportController;
 use App\Http\Controllers\Report\PayoutReportController;
 use App\Http\Controllers\OfferController;
+use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\EmailPoolController;
 use App\Http\Controllers\AdjustmentsController;
 use App\Http\Controllers\Sms\SmsApiController;
@@ -150,6 +151,18 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             Route::get('assignableUsers', [OfferController::class, 'getAssignableUsers']);
             Route::get("assignedUsers/{id}", [OfferController::class, 'getAssignedUsers']);
         });
+        Route::get('urls', [OfferController::class, 'showOfferURLs'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+        Route::get('urls/create', [OfferController::class, 'showCreateOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+        Route::post('urls/create', [OfferController::class, 'createOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+        Route::get('urls/{id}/edit', [OfferController::class, 'showEditOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+        Route::post('urls/{id}/edit', [OfferController::class, 'updateOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+    });
+    Route::group(['prefix' => 'advertisers', 'middleware' => 'role:' . Privilege::ROLE_GOD], function () {
+        Route::get('', [CampaignController::class, 'index']);
+        Route::get('create', [CampaignController::class, 'create']);
+        Route::post('create', [CampaignController::class, 'store']);
+        Route::get('{id}/edit', [CampaignController::class, 'edit']);
+        Route::post('{id}/edit', [CampaignController::class, 'update']);
     });
     Route::group(['prefix' => 'email/pools', 'middleware' => "permissions:" . Permissions::EMAIL_POOLS], function () {
         Route::get('', [EmailPoolController::class, 'showAffiliateEmailPools']);

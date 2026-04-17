@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Campaign;
 use App\Offer;
 use App\OfferURL;
 use App\Privilege;
@@ -92,8 +93,12 @@ class OfferController extends Controller
 	public function showCreate()
 	{
 		$offer = Session::get('offer') ?: new Offer();
+		$campaigns = Campaign::query()->orderBy('name')->get();
 
-		return view('offer.create')->with(['offer' => $offer]);
+		return view('offer.create')->with([
+			'offer' => $offer,
+			'campaigns' => $campaigns,
+		]);
 	}
 
 	public function getAssignableUsers()
@@ -126,6 +131,7 @@ class OfferController extends Controller
 			'payout' => 'required|numeric',
 			'status' => 'required|numeric',
 			'is_public' => 'required|numeric',
+			'users' => 'required|array|min:1',
 		]);
 	}
 
@@ -141,9 +147,9 @@ class OfferController extends Controller
 		$offer->created_by = \LeadMax\TrackYourStats\System\Session::user()->idrep;
 		$offer->save();
 
-		$users = User::all()->whereIn('idrep', $request->users);
-		if ($users->first()->role != \App\Privilege::ROLE_AFFILIATE) {
-			$users = User::withRole(\App\Privilege::ROLE_AFFILIATE)->whereIn('referrer_repid', $users->pluck('idrep'));
+		$users = User::query()->whereIn('idrep', $request->users)->get();
+		if ($users->first() && $users->first()->role != \App\Privilege::ROLE_AFFILIATE) {
+			$users = User::withRole(\App\Privilege::ROLE_AFFILIATE)->whereIn('referrer_repid', $users->pluck('idrep'))->get();
 		}
 
 		foreach ($users as $user) {
@@ -154,17 +160,87 @@ class OfferController extends Controller
 			$userOffer->save();
 		}
 		DB::commit();
+
+		return redirect('/offer/manage')->with('message', 'Offer created successfully.');
 	}
 
 
 	public function showOfferURLs()
 	{
-
 		$offerURLs = new URLs(Company::loadFromSession());
-
 		$urls = $offerURLs->getOfferUrls()->fetchAll(\PDO::FETCH_ASSOC);
-
 		return view('offer.urls', compact('urls'));
+	}
+
+	public function showCreateOfferUrl()
+	{
+		$activeUrls = OfferURL::query()
+		                     ->where('company_id', Company::loadFromSession()->getID())
+		                     ->where('status', 1)
+		                     ->count();
+
+		return view('offer.url-form', [
+			'mode' => 'create',
+			'pageTitle' => 'Create Offer URL',
+			'formAction' => '/offer/urls/create',
+			'offerUrl' => new OfferURL(),
+			'activeUrls' => $activeUrls,
+		]);
+	}
+
+	public function createOfferUrl(Request $request)
+	{
+		$this->validate($request, [
+			'url' => 'required|string|max:255',
+			'status' => 'required|in:0,1',
+		]);
+
+		OfferURL::query()->create([
+			'url' => $request->input('url'),
+			'status' => (int) $request->input('status'),
+			'company_id' => Company::loadFromSession()->getID(),
+			'timestamp' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
+		]);
+
+		return redirect('/offer/urls')->with('message', 'Offer URL created successfully.');
+	}
+
+	public function showEditOfferUrl($id)
+	{
+		$offerUrl = OfferURL::query()
+		                   ->where('company_id', Company::loadFromSession()->getID())
+		                   ->findOrFail($id);
+
+		$activeUrls = OfferURL::query()
+		                     ->where('company_id', Company::loadFromSession()->getID())
+		                     ->where('status', 1)
+		                     ->count();
+
+		return view('offer.url-form', [
+			'mode' => 'edit',
+			'pageTitle' => 'Edit Offer URL',
+			'formAction' => "/offer/urls/{$offerUrl->id}/edit",
+			'offerUrl' => $offerUrl,
+			'activeUrls' => $activeUrls,
+		]);
+	}
+
+	public function updateOfferUrl(Request $request, $id)
+	{
+		$this->validate($request, [
+			'url' => 'required|string|max:255',
+			'status' => 'required|in:0,1',
+		]);
+
+		$offerUrl = OfferURL::query()
+		                   ->where('company_id', Company::loadFromSession()->getID())
+		                   ->findOrFail($id);
+
+		$offerUrl->url = $request->input('url');
+		$offerUrl->status = (int) $request->input('status');
+		$offerUrl->save();
+
+		return redirect('/offer/urls')->with('message', 'Offer URL updated successfully.');
 	}
 
 	public function massAssign(Request $request)

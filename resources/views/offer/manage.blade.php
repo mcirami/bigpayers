@@ -34,7 +34,7 @@
 
                 <div class="flex flex-wrap items-center gap-3">
                     @if ($canCreateOffers)
-                        <a href="/offer_add.php" class="bp-button-primary">Create new offer</a>
+                        <a href="/offer/create" class="bp-button-primary">Create new offer</a>
                         <a href="/offer/mass-assign" class="bp-button-secondary">Mass assign offers</a>
                     @endif
                 </div>
