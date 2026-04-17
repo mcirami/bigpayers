@@ -9,17 +9,20 @@
     $affiliateLabel = $affiliateLabel ?? ($affiliateTypeLabelPlural ?? config('branding.affiliate.plural'));
 @endphp
 
-<select onchange="handleSelect(this);" class="selectBox " id="role" name="role">
+<label class="bp-form-field">
+    <span class="bp-form-label">Role</span>
+    <select onchange="handleSelect(this);" class="selectBox bp-form-input" id="role" name="role">
 
 
-    @if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD)
-        <option @if(request('role',3) == 1) selected @endif value='1'>Admins
-        </option>
-    @endif
+        @if(\LeadMax\TrackYourStats\System\Session::userType() == \App\Privilege::ROLE_GOD)
+            <option @if(request('role',3) == 1) selected @endif value='1'>Admins
+            </option>
+        @endif
 
 
-    @if(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers"))
-        <option @if(request('role',3) == 2) selected @endif value='2'>{{ $accountLabelPlural }}</option>
-    @endif
-    <option @if(request('role',3 ) == 3) selected @endif value='3'>{{ $affiliateLabel }}</option>
-</select>
+        @if(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers"))
+            <option @if(request('role',3) == 2) selected @endif value='2'>{{ $accountLabelPlural }}</option>
+        @endif
+        <option @if(request('role',3 ) == 3) selected @endif value='3'>{{ $affiliateLabel }}</option>
+    </select>
+</label>

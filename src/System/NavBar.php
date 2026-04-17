@@ -33,7 +33,7 @@ class NavBar
 
 
             "Create Users" => [
-                'url' => '/aff_add.php',
+                'url' => '/user/create',
                 'required_permissions' => ['create_affiliates'],
             ],
 
@@ -43,12 +43,12 @@ class NavBar
             //			],
 
             "Pending Users" => [
-                'url' => '/view_pending_affiliates.php',
+                'url' => '/user/pending',
                 'required_permissions' => ['approve_affiliate_sign_ups'],
             ],
 
             "Banned Users" => [
-                'url' => '/banned_users.php',
+                'url' => '/user/banned',
                 'required_permissions' => [Permissions::BAN_USERS],
             ],
 

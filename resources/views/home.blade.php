@@ -36,7 +36,7 @@
                 </div>
 
                 <div class="relative z-10 grid gap-3 sm:grid-cols-2">
-                    <a href="{{ $webroot }}aff_update.php?idrep={{ $userId }}" class="bp-button-secondary">Update profile</a>
+                    <a href="/user/{{ $userId }}/edit" class="bp-button-secondary">Update profile</a>
                     <a href="/report/daily" class="bp-button-primary">Open daily report</a>
                 </div>
             </div>
@@ -103,7 +103,7 @@
                         <div class="bp-detail-row">
                             <p class="bp-detail-label">Security</p>
                             <p class="bp-detail-value">
-                                <a href="{{ $webroot }}aff_update.php?idrep={{ $userId }}">Change password</a>
+                                <a href="/user/{{ $userId }}/edit">Change password</a>
                             </p>
                         </div>
                     </div>
@@ -155,7 +155,7 @@
                             <span>Daily report</span>
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
-                        <a href="{{ $webroot }}aff_update.php?idrep={{ $userId }}" class="bp-button-primary w-full justify-between">
+                        <a href="/user/{{ $userId }}/edit" class="bp-button-primary w-full justify-between">
                             <span>Edit my account</span>
                             <i class="fas fa-pen" aria-hidden="true"></i>
                         </a>

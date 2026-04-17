@@ -49,7 +49,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/font-awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260417a">
+    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260417c">
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
     @stack('head')
     <title>{{ $companyName }}</title>
@@ -117,13 +117,17 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="{{ $webroot }}aff_update.php?idrep={{ $user->idrep }}" class="bp-button-secondary">Edit account</a>
+                    <a href="/user/{{ $user->idrep }}/edit" class="bp-button-secondary">Edit account</a>
                     <a href="/logout" class="bp-button-primary">Logout</a>
                 </div>
             </header>
 
             <main class="bp-shell-content">
-                @if ($errors->any() || isset($notify) || isset($message))
+                @php
+                    $flashMessage = session('message');
+                @endphp
+
+                @if ($errors->any() || isset($notify) || isset($message) || $flashMessage)
                     <div class="mb-6 space-y-3">
                         @if ($errors->any())
                             <div class="bp-toast bp-toast-danger">
@@ -142,9 +146,9 @@
                             </div>
                         @endif
 
-                        @if (isset($message))
+                        @if (isset($message) || $flashMessage)
                             <div class="bp-toast bp-toast-info">
-                                <p class="bp-toast-title">{{ $message }}</p>
+                                <p class="bp-toast-title">{{ $message ?? $flashMessage }}</p>
                             </div>
                         @endif
                     </div>

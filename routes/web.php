@@ -58,7 +58,41 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 		'permissions:' . Permissions::SMS_CHAT
 	);
     Route::group(['prefix' => 'user'], function () {
+        Route::get('create', [UserController::class, 'showCreateUser'])->middleware(['role:0,1,2']);
+        Route::post('create', [UserController::class, 'storeUser'])->middleware(['role:0,1,2']);
         Route::get('manage', [UserController::class, 'viewManageUsers'])->middleware(['role:0,1,2']);
+        Route::get('{id}/edit', [UserController::class, 'showEditUser'])->middleware(['role:0,1,2,3']);
+        Route::post('{id}/edit', [UserController::class, 'updateUser'])->middleware(['role:0,1,2,3']);
+        Route::get('{id}/sub-ids', [UserController::class, 'getUserSubIds'])->middleware(['role:0']);
+        Route::get('{id}/referrals', [UserController::class, 'showUserReferrals'])->middleware(['role:0,1,2']);
+        Route::post('{id}/referrals', [UserController::class, 'updateUserReferral'])->middleware(['role:0,1,2']);
+        Route::get('{id}/referrals/create', [UserController::class, 'showCreateUserReferral'])->middleware(['role:0,1,2']);
+        Route::post('{id}/referrals/create', [UserController::class, 'storeUserReferral'])->middleware(['role:0,1,2']);
+        Route::post('{id}/referrals/{affiliateId}/delete', [UserController::class, 'deleteUserReferral'])->middleware(['role:0,1,2']);
+        Route::get('pending', [UserController::class, 'viewPendingUsers'])->middleware([
+            'permissions:' . Permissions::APPROVE_AFFILIATE_SIGN_UPS
+        ]);
+        Route::get('pending/{id}/activate', [UserController::class, 'showActivatePendingUser'])->middleware([
+            'permissions:' . Permissions::APPROVE_AFFILIATE_SIGN_UPS
+        ]);
+        Route::post('pending/{id}/activate', [UserController::class, 'activatePendingUser'])->middleware([
+            'permissions:' . Permissions::APPROVE_AFFILIATE_SIGN_UPS
+        ]);
+        Route::get('banned', [UserController::class, 'viewBannedUsers'])->middleware([
+            'permissions:' . Permissions::BAN_USERS
+        ]);
+        Route::get('{id}/ban', [UserController::class, 'showCreateBan'])->middleware([
+            'permissions:' . Permissions::BAN_USERS
+        ]);
+        Route::post('{id}/ban', [UserController::class, 'storeBan'])->middleware([
+            'permissions:' . Permissions::BAN_USERS
+        ]);
+        Route::get('{id}/ban/edit', [UserController::class, 'showEditBan'])->middleware([
+            'permissions:' . Permissions::BAN_USERS
+        ]);
+        Route::post('{id}/ban/edit', [UserController::class, 'updateBan'])->middleware([
+            'permissions:' . Permissions::BAN_USERS
+        ]);
         Route::get('{id}/affiliates', [UserController::class, 'viewManagersAffiliates'])->middleware([
             'role:0,1,2',
             'permissions:' . Permissions::CREATE_MANAGERS

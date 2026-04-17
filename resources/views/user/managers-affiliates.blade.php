@@ -107,7 +107,7 @@
                             <td>{{ $affiliate->rep_timestamp }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">
-                                    <a class="bp-action-link value_span6-1 value_span4" href="/aff_update.php?idrep={{ $affiliate->idrep }}">Edit</a>
+                                    <a class="bp-action-link value_span6-1 value_span4" href="/user/{{ $affiliate->idrep }}/edit">Edit</a>
                                     <a class="bp-action-link value_span5-1" href="#" onclick="adminLogin({{ $affiliate->idrep }}); return false;">Login</a>
                                 </div>
                             </td>

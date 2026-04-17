@@ -124,6 +124,7 @@
             const canEditAffiliates = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES));
             const canCreateAffiliates = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES));
             const canCreateManagers = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS));
+            const canBanUsers = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::BAN_USERS));
             const role = @json($role);
             const users = @json($users);
             const itemsContainer = document.querySelector("#users_container");
@@ -144,7 +145,7 @@
 
                 if (canEditAffiliates) {
                     actions.push(
-                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/aff_update.php?idrep=${user.idrep}">Edit</a>`
+                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/edit">Edit</a>`
                     );
                 }
 
@@ -157,6 +158,12 @@
                 if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
                     actions.push(
                         `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/affiliates">View {{ $affiliateTypeLabelPlural }}</a>`
+                    );
+                }
+
+                if (canBanUsers) {
+                    actions.push(
+                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/ban">Ban</a>`
                     );
                 }
 

@@ -601,6 +601,44 @@
     font-weight: 700;
   }
 
+  .bp-toolbar-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    align-items: flex-end;
+  }
+
+  .bp-toolbar-cluster .bp-form-field {
+    min-width: 11rem;
+  }
+
+  .bp-toolbar-actions {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .bp-permission-grid {
+    display: grid;
+    gap: 0.9rem;
+  }
+
+  .bp-permission-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.95rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.82);
+    color: #0f172a;
+    font-weight: 600;
+    line-height: 1.55;
+  }
+
+  .bp-permission-item input {
+    margin-top: 0.18rem;
+  }
+
   .bp-report-table-wrap {
     overflow-x: auto;
     border: 1px solid rgba(226, 232, 240, 0.9);
