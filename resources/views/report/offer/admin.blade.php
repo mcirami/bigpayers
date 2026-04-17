@@ -33,13 +33,13 @@
         <thead>
 
         <tr>
-            <th class="value_span9">Offer ID</th>
-            <th class="value_span9">Offer Name</th>
+            <th class="value_span9">ID</th>
+            <th class="value_span9">Name</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Free Sign Ups</th>
-            <th class="value_span9">Pending Conversion</th>
-            <th class="value_span9">Conversion</th>
+            <th class="value_span9">Signups</th>
+            <th class="value_span9">Pending</th>
+            <th class="value_span9">Convs</th>
             @if (Session::userType() == Privilege::ROLE_GOD ||
                 (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
                 <th class="value_span9">Revenue</th>

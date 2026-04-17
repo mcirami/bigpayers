@@ -83,14 +83,14 @@
                 <table class="table table-bordered table-striped table_01" id="managerAffiliatesTable">
                     <thead>
                     <tr>
-                        <th class="value_span9">Aff ID</th>
-                        <th class="value_span9">First Name</th>
-                        <th class="value_span9">Last Name</th>
-                        <th class="value_span9">Cell Phone</th>
-                        <th class="value_span9">Username</th>
+                        <th class="value_span9">ID</th>
+                        <th class="value_span9">First</th>
+                        <th class="value_span9">Last</th>
+                        <th class="value_span9">Phone</th>
+                        <th class="value_span9">User</th>
                         <th class="value_span9">Status</th>
                         <th class="value_span9">Referrer</th>
-                        <th class="value_span9">Aff Timestamp</th>
+                        <th class="value_span9">Added</th>
                         <th class="value_span9">Actions</th>
                     </tr>
                     </thead>

@@ -32,18 +32,11 @@
 
 </style>
 @section('table-options')
-    @include('report.options.user-type')
+    @include('report.options.user-type', ['affiliateLabel' => 'Affiliates'])
     @include('report.options.dates')
     @if ($userType == 0 || $userType == 1)
         <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
-            <a style="
-			width: 170px;
-			border:none;
-			padding: 10px;
-			font-size: 18px;
-			border-radius: 6px;
-			color: #676767;"
-               class="btn btn-default btn-sm" href="/report/aff-data/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
+            <a class="bp-button-primary" href="/report/aff-data/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
                 Export Data
             </a>
         </div>
@@ -54,28 +47,21 @@
     <table class="table table-bordered table-striped table_01 tablesorter" id="mainTable">
         <thead>
         <tr>
-            <th class="value_span9">Rep ID</th>
-            <th class="value_span9">Rep</th>
+            <th class="value_span9">ID</th>
+            <th class="value_span9">User</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Free Sign Ups</th>
-            <th class="value_span9">Pending Conversions</th>
             <th class="value_span9">Conversions</th>
             @if(Session::userType() == Privilege::ROLE_GOD ||
                 (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
-                <th class="value_span9  headers ">Sales Revenue</th>
+                <th class="value_span9  headers ">Revenue</th>
             @endif
             @if(Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") && !Session::permissions()->can("view_sms_stats") )
                 <th class="value_span9  ">Deductions</th>
             @endif
-            @if(Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats'))
-                <th class="value_span9  ">Codes</th>
-            @endif
             @if(Session::userType() == Privilege::ROLE_GOD ||
               (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
                 <th class="value_span9">EPC</th>
-                <th class="value_span9">Bonus Revenue</th>
-                <th class="value_span9">Referral Revenue</th>
                 <th class="value_span9">TOTAL</th>
             @endif
         </tr>
@@ -89,14 +75,10 @@
                         'user_name',
                         'Clicks',
                         'UniqueClicks',
-                        'FreeSignUps',
-                        'PendingConversions',
                         'Conversions',
                         'Revenue',
-                        Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats') ? 'Codes' : 'Deductions',
+                        Session::userType() == Privilege::ROLE_ADMIN && !Session::permissions()->can('view_sms_stats') ? 'Deductions' : null,
                         'EPC',
-                        'BonusRevenue',
-                        'ReferralRevenue',
                         'TOTAL'
                     ];
                 } else {
@@ -105,15 +87,11 @@
                         'user_name',
                         'Clicks',
                         'UniqueClicks',
-                        'FreeSignUps',
-                        'PendingConversions',
                         'Conversions',
                     ];
-
-					if (Session::userType() == Privilege::ROLE_GOD || Session::permissions()->can('view_sms_stats') ) {
-					    $array[] = 'Codes';
-					}
                 }
+
+                $array = array_values(array_filter($array));
 
                 $reporter->between($dates['startDate'], $dates['endDate'],
                 new HTML(true, $array));
@@ -157,7 +135,7 @@
 			}
 			$("#mainTable").tablesorter(
 				{
-					sortList: [[7, 1]],
+					sortList: [[Math.max($("#mainTable thead th").length - 1, 0), 1]],
 					widgets: ['staticRow']
 				});
 		});

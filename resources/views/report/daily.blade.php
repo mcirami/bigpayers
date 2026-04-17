@@ -16,9 +16,9 @@
             <th class="value_span9">Date</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Free Sign Ups</th>
-            <th class="value_span9">Pending Conversions</th>
-            <th class="value_span9">Conversions</th>
+            <th class="value_span9">Signups</th>
+            <th class="value_span9">Pending</th>
+            <th class="value_span9">Convs</th>
             <th class="value_span9">Revenue</th>
             <th class="value_span9">Deductions</th>
         </tr>
@@ -40,3 +40,14 @@
     </table>
 @endsection
 
+@section('footer')
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#mainTable").tablesorter(
+                {
+                    sortList: [[0, 1]],
+                    widgets: ['staticRow']
+                });
+        });
+    </script>
+@endsection

@@ -11,6 +11,31 @@
 @section('page-title', $title)
 
 @section('content')
+    @php
+        $shortHeaderMap = [
+            'Offer ID' => 'ID',
+            'Offer Name' => 'Name',
+            'Offer Type' => 'Type',
+            'Offer Timestamp' => 'Added',
+            'User ID' => 'ID',
+            'Affiliate ID' => 'ID',
+            'Username' => 'User',
+            'User Name' => 'User',
+            'Unique Clicks' => 'Unique',
+            'Pending Conversion' => 'Pending',
+            'Pending Conversions' => 'Pending',
+            'Free Sign Ups' => 'Signups',
+            'Conversion Timestamp' => 'Conv Time',
+            'Timestamp (UTC)' => 'Time (UTC)',
+            'Creator User Name' => 'Creator',
+            'Payout Type' => 'Type',
+            'Sales Revenue' => 'Sales',
+            'Bonus Revenue' => 'Bonus',
+            'Referral Revenue' => 'Referral',
+            'Offer Access' => 'Access',
+            'Affiliate Access' => 'Access',
+        ];
+    @endphp
     <div class="space-y-6 lg:space-y-8">
         <section class="bp-card value_span8">
             <div>
@@ -25,7 +50,7 @@
                     <thead>
                     <tr>
                         @foreach($tableHeaders as $header)
-                            <th class="value_span9">{{ $header }}</th>
+                            <th class="value_span9">{{ $shortHeaderMap[$header] ?? $header }}</th>
                         @endforeach
                     </tr>
                     </thead>

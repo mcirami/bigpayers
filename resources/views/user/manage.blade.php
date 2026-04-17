@@ -23,7 +23,6 @@
         $selectedRoleLabel = $roleLabels[$role] ?? 'Users';
         $totalUsers = count($users);
         $usersWithManagers = $users->filter(fn ($user) => !empty(optional($user->referrer)->user_name))->count();
-        $recentUsers = $users->take(3);
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
@@ -86,54 +85,30 @@
             </article>
         </section>
 
-        <section class="grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.95fr)]">
-            <section class="bp-card value_span8">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p class="bp-section-kicker">Directory</p>
-                        <h3 class="bp-section-title value_span9">Searchable user table</h3>
-                    </div>
-                    <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the layout is upgraded.</p>
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Directory</p>
+                    <h3 class="bp-section-title value_span9">Searchable user table</h3>
                 </div>
+                <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the layout is upgraded.</p>
+            </div>
 
-                <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
-                    <table class="table table-striped table_01 manage_user_table" id="mainTable">
-                        <thead>
-                        <tr>
-                            <th class="value_span9">User ID</th>
-                            <th class="value_span9">Username</th>
-                            <th class="value_span9">Email</th>
-                            <th class="value_span9">Manager</th>
-                            <th class="value_span9">Timestamp</th>
-                            <th class="value_span9">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody id="users_container"></tbody>
-                    </table>
-                </div>
-            </section>
-
-            <aside class="bp-card value_span8">
-                <p class="bp-section-kicker">Recent Entries</p>
-                <h3 class="bp-section-title value_span9">Newest users in this result</h3>
-
-                <div class="mt-6 bp-mini-list">
-                    @forelse($recentUsers as $user)
-                        <article class="bp-mini-list-item">
-                            <div>
-                                <h4 class="bp-mini-title">{{ $user->user_name }}</h4>
-                                <p class="bp-mini-copy">{{ $user->email }}</p>
-                                <p class="bp-mini-copy">
-                                    {{ optional($user->referrer)->user_name ?: 'No manager assigned' }} • {{ $user->rep_timestamp ?: 'Timestamp unavailable' }}
-                                </p>
-                            </div>
-                            <span class="bp-mini-badge">{{ $user->idrep }}</span>
-                        </article>
-                    @empty
-                        <p class="text-sm leading-7 text-slate-500">No users match the current filter yet.</p>
-                    @endforelse
-                </div>
-            </aside>
+            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+                <table class="table table-striped table_01 manage_user_table" id="mainTable">
+                    <thead>
+                    <tr>
+                        <th class="value_span9">ID</th>
+                        <th class="value_span9">User</th>
+                        <th class="value_span9">Email</th>
+                        <th class="value_span9">Manager</th>
+                        <th class="value_span9">Added</th>
+                        <th class="value_span9">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="users_container"></tbody>
+                </table>
+            </div>
         </section>
     </div>
 @endsection
@@ -164,19 +139,19 @@
 
                 if (canEditAffiliates) {
                     actions.push(
-                        `<a class="bp-action-link value_span6-1 value_span4" href="/aff_update.php?idrep=${user.idrep}">Edit</a>`
+                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/aff_update.php?idrep=${user.idrep}">Edit</a>`
                     );
                 }
 
                 if (canCreateAffiliates) {
                     actions.push(
-                        `<a class="bp-action-link value_span5-1" href="#" onclick="adminLogin(${user.idrep}); return false;">Login</a>`
+                        `<a class="btn btn-default btn-sm value_span5-1" href="#" onclick="adminLogin(${user.idrep}); return false;">Login</a>`
                     );
                 }
 
                 if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
                     actions.push(
-                        `<a class="bp-action-link bp-action-link-muted" href="/user/${user.idrep}/affiliates">View Agents</a>`
+                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/affiliates">View Agents</a>`
                     );
                 }
 

@@ -72,7 +72,7 @@
             </div>
         </section>
 
-        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-2">
             <article class="bp-stat-card">
                 <p class="bp-stat-label">Visible Offers</p>
                 <p class="bp-stat-value">{{ count($offers) }}</p>
@@ -80,21 +80,9 @@
             </article>
 
             <article class="bp-stat-card">
-                <p class="bp-stat-label">Requestable Offers</p>
-                <p class="bp-stat-value">{{ isset($requestableOffers) ? count($requestableOffers) : 0 }}</p>
-                <p class="bp-stat-note">Extra offers affiliates can request without admin intervention.</p>
-            </article>
-
-            <article class="bp-stat-card">
                 <p class="bp-stat-label">Offer URLs</p>
                 <p class="bp-stat-value">{{ count($urls) }}</p>
                 <p class="bp-stat-note">Available branded URL domains for outbound tracking links.</p>
-            </article>
-
-            <article class="bp-stat-card">
-                <p class="bp-stat-label">Workflow</p>
-                <p class="bp-stat-value">{{ $isAffiliate ? 'Affiliate' : 'Admin' }}</p>
-                <p class="bp-stat-note">{{ $isAffiliate ? 'Copy links and request access.' : 'Edit, assign, duplicate, and review offer details.' }}</p>
             </article>
         </section>
 
@@ -111,14 +99,12 @@
                 <table class="table table-condensed table-bordered table_01" id="mainTable">
                     <thead>
                     <tr>
-                        <th class="value_span9">Offer ID</th>
-                        <th class="value_span9">Offer Name</th>
-                        <th class="value_span9">Offer Type</th>
-
+                        <th class="value_span9">ID</th>
+                        <th class="value_span9">Name</th>
                         @if ($isAffiliate)
-                            <th class="value_span9">Offer Link</th>
+                            <th class="value_span9">Link</th>
                         @elseif($canEditAffiliates && !$isAffiliate && !$isManager)
-                            <th class="value_span9">Affiliate Access</th>
+                            <th class="value_span9">Access</th>
                         @endif
 
                         @if (!$isManager)
@@ -128,11 +114,11 @@
                         <th class="value_span9">Adv</th>
 
                         @if ($isAffiliate)
-                            <th class="value_span9">Postback Options</th>
+                            <th class="value_span9">Postback</th>
                         @endif
 
                         @if (!$isAffiliate)
-                            <th class="value_span9">Offer Timestamp</th>
+                            <th class="value_span9">Added</th>
                             <th class="value_span9">Actions</th>
                         @endif
                     </tr>
@@ -143,7 +129,6 @@
                             <tr>
                                 <td>{{ $offer->idoffer }}</td>
                                 <td>{{ $offer->offer_name }}</td>
-                                <td>Requires Offer</td>
                                 <td>${{ $offer->payout }}</td>
                                 <td>{{ $offer->campaign_name }}</td>
                                 <td>Requires Offer</td>
@@ -264,7 +249,7 @@
                                 "&offerid=" + offer.idoffer + "&sub1=</span>";
                         }
 
-                        html += "</td><td>CPA</td>";
+                        html += "</td>";
 
                         if (userType === 3) {
                             html += "<td class='value_span10'>" +

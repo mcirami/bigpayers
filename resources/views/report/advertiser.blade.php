@@ -16,11 +16,8 @@
             <th class="value_span9">Name</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Pending Conversions</th>
-            <th class="value_span9">Free Sign Ups</th>
-            <th class="value_span9">Conversion</th>
+            <th class="value_span9">Convs</th>
             <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
             <th class="value_span9">EPC</th>
             <th class="value_span9">TOTAL</th>
         </tr>
@@ -28,7 +25,7 @@
         <tbody>
         @php
             $reporter->between($dates['startDate'],$dates['endDate'], new \LeadMax\TrackYourStats\Report\Formats\HTML(true,[
-            'id','name','Clicks','UniqueClicks','PendingConversions','FreeSignUps','Conversions','Revenue','Deductions','EPC','TOTAL'
+            'id','name','Clicks','UniqueClicks','Conversions','Revenue','EPC','TOTAL'
             ]));
         @endphp
         </tbody>

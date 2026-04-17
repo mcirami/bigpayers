@@ -12,13 +12,13 @@
     <table class="table table-bordered table-striped table_01 tablesorter" id="mainTable">
         <thead>
         <tr>
-            <th class="value_span9">Offer ID</th>
-            <th class="value_span9">Offer Name</th>
+            <th class="value_span9">ID</th>
+            <th class="value_span9">Name</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Free Sign Ups</th>
-            <th class="value_span9">Pending Conversions</th>
-            <th class="value_span9">Conversions</th>
+            <th class="value_span9">Signups</th>
+            <th class="value_span9">Pending</th>
+            <th class="value_span9">Convs</th>
             <th class="value_span9">Revenue</th>
             <th class="value_span9">Deductions</th>
             <th class="value_span9">EPC</th>

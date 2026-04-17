@@ -22,11 +22,11 @@
 		<thead>
 
 		<tr>
-			<th class="value_span9">Affiliate ID</th>
-			<th class="value_span9">Username</th>
+			<th class="value_span9">ID</th>
+			<th class="value_span9">User</th>
 			<th class="value_span9">Clicks</th>
-			<th class="value_span9">Unique Clicks</th>
-			<th class="value_span9">Conversions</th>
+			<th class="value_span9">Unique</th>
+			<th class="value_span9">Convs</th>
 		</tr>
 		</thead>
 		<tbody>

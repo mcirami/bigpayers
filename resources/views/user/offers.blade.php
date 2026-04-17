@@ -100,16 +100,16 @@
                 <table class="table table-striped table_01 large_table" id="mainTable">
                     <thead>
                     <tr>
-                        <th class="value_span9">Offer ID</th>
-                        <th class="value_span9">Offer Name</th>
-                        <th class="value_span9">Base Payout</th>
+                        <th class="value_span9">ID</th>
+                        <th class="value_span9">Name</th>
+                        <th class="value_span9">Payout</th>
 
                         @if ($canEditAffiliatePayout)
-                            <th class="value_span9">Affiliate Payout</th>
-                            <th class="value_span9">Offer Access</th>
+                            <th class="value_span9">Custom</th>
+                            <th class="value_span9">Access</th>
                         @else
-                            <th class="value_span9">Assigned Payout</th>
-                            <th class="value_span9">Access Status</th>
+                            <th class="value_span9">Custom</th>
+                            <th class="value_span9">Access</th>
                         @endif
                     </tr>
                     </thead>
