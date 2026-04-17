@@ -935,6 +935,90 @@
     box-shadow: 0 12px 26px -24px rgba(15, 23, 42, 0.32);
   }
 
+  .bp-input-prefix-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .bp-input-prefix {
+    position: absolute;
+    left: 0.95rem;
+    z-index: 1;
+    color: #475569;
+    font-size: 0.92rem;
+    font-weight: 700;
+    pointer-events: none;
+  }
+
+  .bp-input-compact-prefixed {
+    width: 8rem;
+    padding-left: 2.05rem;
+  }
+
+  .bp-offer-action-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .bp-offer-action-button {
+    white-space: nowrap;
+  }
+
+  .bp-user-offers-table {
+    table-layout: auto;
+  }
+
+  .bp-user-offers-table th {
+    white-space: nowrap;
+  }
+
+  .bp-user-offers-table th:nth-child(1),
+  .bp-user-offers-table td:nth-child(1) {
+    min-width: 4.75rem;
+  }
+
+  .bp-user-offers-table th:nth-child(2),
+  .bp-user-offers-table td:nth-child(2) {
+    min-width: 22rem;
+  }
+
+  .bp-user-offers-table td:nth-child(2) {
+    white-space: normal;
+    line-height: 1.45;
+  }
+
+  .bp-user-offers-table th:nth-child(3),
+  .bp-user-offers-table td:nth-child(3) {
+    min-width: 7.5rem;
+    white-space: nowrap;
+  }
+
+  .bp-user-offers-table th:nth-child(4),
+  .bp-user-offers-table td:nth-child(4) {
+    min-width: 9.5rem;
+  }
+
+  .bp-user-offers-table th:nth-child(5),
+  .bp-user-offers-table td:nth-child(5) {
+    min-width: 8.5rem;
+    white-space: nowrap;
+  }
+
+  .bp-user-offers-table th:nth-child(6),
+  .bp-user-offers-table td:nth-child(6) {
+    min-width: 7.25rem;
+    white-space: nowrap;
+  }
+
+  .bp-user-offers-table th:nth-child(7),
+  .bp-user-offers-table td:nth-child(7) {
+    min-width: 8.5rem;
+    white-space: nowrap;
+  }
+
   .bp-toggle-inline {
     display: inline-flex;
     align-items: center;
@@ -970,6 +1054,14 @@
 
   .bp-error-banner {
     color: #b91c1c;
+  }
+
+  .bp-subid-success {
+    color: #166534;
+  }
+
+  .bp-subid-actions {
+    flex-wrap: wrap;
   }
 
   .bp-legacy-pagination {
@@ -1289,5 +1381,17 @@
 
   .bp-transfer-controls {
     flex-direction: column;
+  }
+
+  .bp-offer-action-row {
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    gap: 0.55rem;
+  }
+
+  .bp-offer-action-button {
+    min-height: 2.75rem;
+    padding: 0.7rem 0.95rem;
+    font-size: 0.88rem;
   }
 }

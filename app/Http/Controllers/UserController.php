@@ -718,22 +718,41 @@ class UserController extends Controller
 		$userFName = $user->first_name;
 
 		$offers = DB::table('offer')->where('status', '=', 1)->select('idoffer', 'offer_name', 'payout')->get()->toArray();
+        $assignedOffers = DB::table('rep_has_offer')
+            ->where('rep_idrep', '=', $userID)
+            ->get()
+            ->keyBy('offer_idoffer');
+        $userOfferCaps = DB::table('user_offer_caps')
+            ->where('rep_idrep', '=', $userID)
+            ->get()
+            ->keyBy('offer_idoffer');
 
 		foreach($offers as $index => $offer ) {
-			$affHasOffer = DB::table('rep_has_offer')->where('rep_idrep', '=', $userID)->where('offer_idoffer', '=', $offer->idoffer)->get()->toArray();
+			$affHasOffer = $assignedOffers->get($offer->idoffer);
+            $offerCap = $userOfferCaps->get($offer->idoffer);
 
-			if (count($affHasOffer) > 0) {
+			if ($affHasOffer) {
 				$offers[$index]->has_offer = true;
-				$offers[$index]->reppayout = $affHasOffer[0]->payout;
+				$offers[$index]->reppayout = $affHasOffer->payout;
 			} else {
 				$offers[$index]->has_offer = false;
 				$offers[$index]->reppayout = 1.00;
 			}
+
+            $offers[$index]->cap_enabled = $offerCap ? (bool) $offerCap->status : false;
+            $offers[$index]->cap = $offerCap ? (int) $offerCap->cap : 0;
 			$offers[$index]->idrep = $userID;
 		}
 
 
-		return view('user.offers')->with(['offers' => $offers, 'name' => $userFName]);
+		return view('user.offers')->with([
+            'offers' => $offers,
+            'name' => $userFName,
+            'managedUser' => $user,
+            'canManageOffers' => Session::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canManageSubIds' => Session::userType() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canLoginAsUser' => Session::userType() !== Privilege::ROLE_AFFILIATE && $user->idrep !== Session::userID(),
+        ]);
 	}
 
 	public function enableUserOfferCap(Request $request) {
@@ -873,6 +892,7 @@ class UserController extends Controller
             'canEditOwner' => !$isEdit || (Session::userType() === Privilege::ROLE_GOD || Session::userType() === Privilege::ROLE_ADMIN),
             'canLoginAsUser' => $isEdit && Session::userType() !== Privilege::ROLE_AFFILIATE && $user->idrep !== Session::userID(),
             'canManageOffers' => $isEdit && Session::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canManageSubIds' => $isEdit && Session::userType() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
             'canEditReferrals' => $isEdit && Session::permissions()->can(Permissions::EDIT_REFERRALS) && $user->getRole() === Privilege::ROLE_AFFILIATE,
             'referralOptions' => Session::permissions()->can(Permissions::EDIT_REFERRALS)
                 ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('rep.user_name')->get(['rep.idrep', 'rep.user_name'])

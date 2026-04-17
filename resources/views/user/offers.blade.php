@@ -13,6 +13,7 @@
 @section('content')
     @php
         $canEditAffiliatePayout = \LeadMax\TrackYourStats\System\Session::permissions()->can('edit_aff_payout');
+        $canManageOfferCaps = \LeadMax\TrackYourStats\System\Session::userType() === \App\Privilege::ROLE_GOD;
         $accessibleOffers = collect($offers)->where('has_offer', true)->count();
         $customPayoutOffers = collect($offers)->filter(fn ($offer) => (float) $offer->reppayout !== (float) $offer->payout)->count();
     @endphp
@@ -27,7 +28,7 @@
 
     <div id="user_info" class="edit_user_offers space-y-6 lg:space-y-8">
         <section class="bp-card value_span8">
-            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
                     <h2 class="bp-section-title value_span9">{{ $name }}'s offer access</h2>
@@ -36,9 +37,13 @@
                     </p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3">
-                    <a href="/user/manage" class="bp-button-secondary">Back to users</a>
-                </div>
+                @include('user.partials.account-actions', [
+                    'managedUser' => $managedUser,
+                    'canManageOffers' => $canManageOffers,
+                    'canManageSubIds' => $canManageSubIds,
+                    'canLoginAsUser' => $canLoginAsUser,
+                    'currentWorkspace' => 'offers',
+                ])
             </div>
 
             <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -97,19 +102,17 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
-                <table class="table table-striped table_01 large_table" id="mainTable">
+                <table class="table table-striped table_01 large_table bp-user-offers-table" id="mainTable">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
                         <th class="value_span9">Name</th>
                         <th class="value_span9">Payout</th>
-
-                        @if ($canEditAffiliatePayout)
-                            <th class="value_span9">Custom</th>
-                            <th class="value_span9">Access</th>
-                        @else
-                            <th class="value_span9">Custom</th>
-                            <th class="value_span9">Access</th>
+                        <th class="value_span9">Custom $</th>
+                        <th class="value_span9">Access</th>
+                        @if ($canManageOfferCaps)
+                            <th class="value_span9">Cap</th>
+                            <th class="value_span9">Daily Max</th>
                         @endif
                     </tr>
                     </thead>
@@ -117,6 +120,7 @@
                     @foreach($offers as $offer)
                         @php
                             $hasAccess = $offer->has_offer ? 'checked' : '';
+                            $capEnabled = !empty($offer->cap_enabled) ? 'checked' : '';
                         @endphp
                         <tr data-search="{{ strtolower($offer->offer_name . ' ' . $offer->idoffer) }}">
                             <td>{{ $offer->idoffer }}</td>
@@ -125,15 +129,17 @@
 
                             @if ($canEditAffiliatePayout)
                                 <td>
-                                    <input
-                                        class="update_aff_payout bp-input-compact"
-                                        type="number"
-                                        step="0.25"
-                                        id="offer_{{ $offer->idoffer }}"
-                                        data-offer="{{ $offer->idoffer }}"
-                                        data-rep="{{ $offer->idrep }}"
-                                        value="{{ $offer->reppayout }}"
-                                    />
+                                    <div class="bp-input-prefix-wrap">
+                                        <input
+                                            class="update_aff_payout bp-input-compact bp-input-compact-prefixed"
+                                            type="number"
+                                            step="0.25"
+                                            id="offer_{{ $offer->idoffer }}"
+                                            data-offer="{{ $offer->idoffer }}"
+                                            data-rep="{{ $offer->idrep }}"
+                                            value="{{ $offer->reppayout }}"
+                                        />
+                                    </div>
                                 </td>
                                 <td>
                                     <label class="offer_access bp-toggle-inline" for="offer_access_{{ $offer->idoffer }}">
@@ -155,6 +161,35 @@
                                     <span class="bp-status-pill {{ $offer->has_offer ? 'bp-status-pill-active' : '' }}">
                                         {{ $offer->has_offer ? 'Enabled' : 'Disabled' }}
                                     </span>
+                                </td>
+                            @endif
+
+                            @if ($canManageOfferCaps)
+                                <td>
+                                    <label class="bp-toggle-inline" for="offer_cap_{{ $offer->idoffer }}">
+                                        <input
+                                            class="enable_offer_cap"
+                                            type="checkbox"
+                                            id="offer_cap_{{ $offer->idoffer }}"
+                                            data-rep="{{ $offer->idrep }}"
+                                            data-offer="{{ $offer->idoffer }}"
+                                            name="enable_offer_cap"
+                                            {{ $capEnabled }}
+                                        >
+                                        <span>Enable</span>
+                                    </label>
+                                </td>
+                                <td>
+                                    <input
+                                        class="user_offer_cap bp-input-compact"
+                                        type="number"
+                                        step="1"
+                                        min="0"
+                                        data-rep="{{ $offer->idrep }}"
+                                        data-offer="{{ $offer->idoffer }}"
+                                        value="{{ (int) $offer->cap }}"
+                                        name="user_offer_cap"
+                                    >
                                 </td>
                             @endif
                         </tr>

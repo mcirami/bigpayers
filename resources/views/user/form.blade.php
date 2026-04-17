@@ -37,15 +37,13 @@
                     </p>
                 </div>
 
-                <div class="flex flex-wrap items-center gap-3">
-                    <a href="/user/manage" class="bp-button-secondary">Back to users</a>
-                    @if($isEdit && $canManageOffers)
-                        <a href="/user/offers/{{ $targetUser->idrep }}" class="bp-button-secondary">Manage offers</a>
-                    @endif
-                    @if($isEdit && $canLoginAsUser)
-                        <a href="#" class="bp-button-primary" onclick="adminLogin({{ $targetUser->idrep }}); return false;">Login as user</a>
-                    @endif
-                </div>
+                @include('user.partials.account-actions', [
+                    'managedUser' => $targetUser,
+                    'canManageOffers' => $isEdit && $canManageOffers,
+                    'canManageSubIds' => $isEdit && $canManageSubIds,
+                    'canLoginAsUser' => $isEdit && $canLoginAsUser,
+                    'currentWorkspace' => 'edit',
+                ])
             </div>
         </section>
 
@@ -309,6 +307,60 @@
                 </section>
             @endif
 
+            @if($isEdit && $canManageSubIds)
+                <section class="bp-card value_span8" id="sub-id-tools">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="bp-section-kicker">Sub ID Controls</p>
+                            <h3 class="bp-section-title value_span9">Blocked sub IDs</h3>
+                        </div>
+                        <p class="bp-table-meta">Search existing sub IDs, block new ones, and unblock entries without leaving the account editor.</p>
+                    </div>
+
+                    <div id="subid_status" class="bp-error-banner hidden mt-4">
+                        <p></p>
+                    </div>
+
+                    <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+                        <div class="rounded-3xl border border-slate-200/70 bg-white/70 p-4 shadow-sm">
+                            <p class="bp-detail-label">Workflow</p>
+                            <p class="mt-2 text-sm leading-7 text-slate-500">
+                                The buttons below use the existing block and unblock endpoints, so this panel stays aligned with the legacy moderation logic while living in the new shell.
+                            </p>
+                        </div>
+
+                        <div class="bp-offer-search">
+                            <label class="bp-detail-label" for="subIdSearch">Search sub IDs</label>
+                            <input
+                                id="subIdSearch"
+                                class="bp-search-input"
+                                type="text"
+                                placeholder="Search by sub ID value"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+                        <table class="table table-striped table_01 large_table" id="subIdTable">
+                            <thead>
+                            <tr>
+                                <th class="value_span9">Sub ID</th>
+                                <th class="value_span9">Status</th>
+                                <th class="value_span9">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="subid_content">
+                            <tr>
+                                <td colspan="3">
+                                    <span class="bp-table-empty">Loading sub IDs...</span>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            @endif
+
             <div class="flex flex-wrap items-center gap-3">
                 <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">
                     {{ $isEdit ? 'Save user' : 'Create user' }}
@@ -330,6 +382,12 @@
             const referralToggle = document.getElementById('enable_referral');
             const referralFields = document.getElementById('referral_fields');
             const selectedOwner = @json((int) old('referrer_repid', $managedUser->referrer_repid ?? 0));
+            const subIdSearch = document.getElementById('subIdSearch');
+            const subIdContainer = document.getElementById('subid_content');
+            const subIdStatus = document.getElementById('subid_status');
+            const subIdTable = $('#subIdTable');
+            const managedUserId = @json((int) ($managedUser->idrep ?? 0));
+            let subIds = [];
 
             const refreshOwners = () => {
                 if (!roleSelect || !ownerSelect) {
@@ -399,6 +457,175 @@
             }
 
             $("#start_date, #end_date").datepicker({dateFormat: 'yy-mm-dd'});
+
+            const setSubIdMessage = (message = '', isError = true) => {
+                if (!subIdStatus) {
+                    return;
+                }
+
+                subIdStatus.classList.toggle('hidden', !message);
+                subIdStatus.classList.toggle('bp-subid-success', !isError && !!message);
+                const textNode = subIdStatus.querySelector('p');
+                if (textNode) {
+                    textNode.textContent = message;
+                }
+            };
+
+            const renderSubIds = (rows) => {
+                if (!subIdContainer) {
+                    return;
+                }
+
+                if (!rows.length) {
+                    subIdContainer.innerHTML = `
+                        <tr>
+                            <td colspan="3"><span class="bp-table-empty">No sub IDs matched this search.</span></td>
+                        </tr>
+                    `;
+                    if (subIdTable.length) {
+                        subIdTable.trigger('update');
+                    }
+                    return;
+                }
+
+                subIdContainer.innerHTML = rows.map((subId) => {
+                    const isBlocked = Boolean(subId.blocked);
+                    return `
+                        <tr data-search="${String(subId.subId || '').toLowerCase()}">
+                            <td>${subId.subId}</td>
+                            <td>
+                                <span class="bp-status-pill ${isBlocked ? 'bp-status-pill-active' : ''}">
+                                    ${isBlocked ? 'Blocked' : 'Open'}
+                                </span>
+                            </td>
+                            <td class="actions">
+                                <div class="bp-table-actions bp-subid-actions">
+                                    <button
+                                        type="button"
+                                        class="btn btn-default btn-sm ${isBlocked ? '' : 'value_span6-2 value_span2 value_span1-2'} js-block-subid"
+                                        data-subid="${subId.subId}"
+                                        ${isBlocked ? 'disabled' : ''}>
+                                        ${isBlocked ? 'Blocked' : 'Block ID'}
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="btn btn-default btn-sm value_span6-1 value_span4 js-unblock-subid"
+                                        data-subid="${subId.subId}"
+                                        ${isBlocked ? '' : 'disabled'}>
+                                        Unblock
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+
+                if (subIdTable.length) {
+                    subIdTable.trigger('update');
+                }
+            };
+
+            const filterSubIds = () => {
+                if (!subIdSearch) {
+                    renderSubIds(subIds);
+                    return;
+                }
+
+                const query = subIdSearch.value.trim().toLowerCase();
+                const filtered = subIds.filter((subId) => String(subId.subId || '').toLowerCase().includes(query));
+                renderSubIds(filtered);
+            };
+
+            const updateSubId = async (endpoint, subId, blocked) => {
+                setSubIdMessage('');
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': @json(csrf_token()),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({
+                        user_id: managedUserId,
+                        sub_id: subId
+                    }),
+                    credentials: 'same-origin'
+                });
+
+                const payload = await response.json();
+                if (!response.ok || !payload.success) {
+                    throw new Error(payload.message || 'Unable to update this sub ID right now.');
+                }
+
+                subIds = subIds.map((row) => {
+                    if (String(row.subId) !== String(subId)) {
+                        return row;
+                    }
+
+                    return {
+                        ...row,
+                        blocked
+                    };
+                });
+
+                filterSubIds();
+                setSubIdMessage(blocked ? 'Sub ID blocked successfully.' : 'Sub ID unblocked successfully.', false);
+            };
+
+            if (subIdContainer) {
+                subIdContainer.addEventListener('click', async (event) => {
+                    const blockButton = event.target.closest('.js-block-subid');
+                    const unblockButton = event.target.closest('.js-unblock-subid');
+
+                    try {
+                        if (blockButton) {
+                            await updateSubId('/user/block-sub-id', blockButton.dataset.subid, true);
+                        }
+
+                        if (unblockButton) {
+                            await updateSubId('/user/unblock-sub-id', unblockButton.dataset.subid, false);
+                        }
+                    } catch (error) {
+                        setSubIdMessage(error.message || 'Unable to update this sub ID right now.');
+                    }
+                });
+            }
+
+            if (subIdSearch) {
+                subIdSearch.addEventListener('input', filterSubIds);
+            }
+
+            if (subIdContainer) {
+                fetch(`/user/${managedUserId}/sub-ids`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'same-origin'
+                })
+                    .then((response) => response.json())
+                    .then((payload) => {
+                        subIds = Array.isArray(payload) ? payload : [];
+                        filterSubIds();
+
+                        if (subIdTable.length) {
+                            subIdTable.tablesorter({
+                                sortList: [[0, 0]],
+                                widgets: ['staticRow']
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        subIdContainer.innerHTML = `
+                            <tr>
+                                <td colspan="3"><span class="bp-table-empty">Unable to load sub IDs right now.</span></td>
+                            </tr>
+                        `;
+                        setSubIdMessage('Unable to load sub IDs right now.');
+                    });
+            }
 
             refreshOwners();
             refreshPermissions();
