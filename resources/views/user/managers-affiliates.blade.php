@@ -8,7 +8,7 @@
     @include('layouts.partials.report-script-assets')
 @endpush
 
-@section('page-title', 'Manager Team')
+@section('page-title', $accountTypeLabel . ' Team')
 
 @section('content')
     @php
@@ -22,23 +22,23 @@
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $manager->user_name }}'s affiliates</h2>
+                    <h2 class="bp-section-title value_span9">{{ $manager->user_name }}'s {{ strtolower($affiliateTypeLabelPlural) }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Review the agents assigned to this manager, jump into edits, and use the existing pagination controls without leaving the new shell.
+                        Review the {{ strtolower($affiliateTypeLabelPlural) }} assigned to this {{ strtolower($accountTypeLabel) }}, jump into edits, and use the existing pagination controls without leaving the new shell.
                     </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
-                    <a href="/user/manage?role={{ \App\Privilege::ROLE_MANAGER }}" class="bp-button-secondary">Back to managers</a>
+                    <a href="/user/manage?role={{ \App\Privilege::ROLE_MANAGER }}" class="bp-button-secondary">Back to {{ strtolower($accountTypeLabelPlural) }}</a>
                 </div>
             </div>
         </section>
 
         <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             <article class="bp-stat-card">
-                <p class="bp-stat-label">Visible Affiliates</p>
+                <p class="bp-stat-label">Visible {{ $affiliateTypeLabelPlural }}</p>
                 <p class="bp-stat-value">{{ $visibleAffiliates }}</p>
-                <p class="bp-stat-note">Affiliates currently shown on this page of the manager drilldown.</p>
+                <p class="bp-stat-note">{{ $affiliateTypeLabelPlural }} currently shown on this page of the {{ strtolower($accountTypeLabel) }} drilldown.</p>
             </article>
 
             <article class="bp-stat-card">
@@ -64,13 +64,13 @@
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Team Directory</p>
-                    <h3 class="bp-section-title value_span9">Manager affiliate roster</h3>
+                    <h3 class="bp-section-title value_span9">{{ $accountTypeLabel }} {{ strtolower($affiliateTypeLabel) }} roster</h3>
                 </div>
                 <p class="bp-table-meta">The table remains compatible with the existing pagination partial and account action shortcuts.</p>
             </div>
 
             <div class="mt-6 bp-offer-search">
-                <label class="bp-detail-label" for="affiliateSearch">Search affiliates</label>
+                <label class="bp-detail-label" for="affiliateSearch">Search {{ strtolower($affiliateTypeLabelPlural) }}</label>
                 <input
                     id="affiliateSearch"
                     class="bp-search-input"
@@ -87,7 +87,7 @@
                         <th class="value_span9">First</th>
                         <th class="value_span9">Last</th>
                         <th class="value_span9">Phone</th>
-                        <th class="value_span9">User</th>
+                        <th class="value_span9">{{ $affiliateTypeLabel }}</th>
                         <th class="value_span9">Status</th>
                         <th class="value_span9">Referrer</th>
                         <th class="value_span9">Added</th>
@@ -103,7 +103,7 @@
                             <td>{{ $affiliate->cell_phone }}</td>
                             <td>{{ $affiliate->user_name }}</td>
                             <td>{{ $affiliate->status }}</td>
-                            <td>{{ optional($affiliate->referrer)->user_name ?: 'No manager assigned' }}</td>
+                            <td>{{ optional($affiliate->referrer)->user_name ?: 'No ' . strtolower($accountTypeLabel) . ' assigned' }}</td>
                             <td>{{ $affiliate->rep_timestamp }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">

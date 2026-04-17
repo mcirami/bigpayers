@@ -152,7 +152,7 @@ class Update
         }
 
         echo "  <p>
-                    <label class=\"value_span9\">Manager</label>
+                    <label class=\"value_span9\">" . config('branding.account.singular') . "</label>
   
                 <select class=\"form-control input-sm \" id=\"referrer_repid\" name=\"referrer_repid\">";
         $new_replist = new \LeadMax\TrackYourStats\User\User();
@@ -404,10 +404,10 @@ class Update
 
             case \App\Privilege::ROLE_ADMIN:
                 if ($this->per->can("create_affiliates")) {
-                    echo "<input {$cannotDownGrade}  onclick=\"manager();appendPermissions();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\"  id=\"affRadio\" value=\"".Privilege::ROLE_AFFILIATE."\">Agent";
+                    echo "<input {$cannotDownGrade}  onclick=\"manager();appendPermissions();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\"  id=\"affRadio\" value=\"".Privilege::ROLE_AFFILIATE."\">" . config('branding.affiliate.singular');
                 }
                 if ($this->per->can("create_managers")) {
-                    echo "<input {$cannotDownGrade}  onclick=\"admin();appendPermissions();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_MANAGER."\">Manager";
+                    echo "<input {$cannotDownGrade}  onclick=\"admin();appendPermissions();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_MANAGER."\">" . config('branding.account.singular');
                 }
                 if ($this->per->can("create_admins")) {
                     echo "<input  checked onclick=\"god();appendPermissions();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
@@ -416,10 +416,10 @@ class Update
 
             case Privilege::ROLE_MANAGER:
                 if ($this->per->can("create_affiliates")) {
-                    echo "<input {$cannotDownGrade}  onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\"  id=\"affRadio\" value=\"".Privilege::ROLE_AFFILIATE."\">Agent";
+                    echo "<input {$cannotDownGrade}  onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\"  id=\"affRadio\" value=\"".Privilege::ROLE_AFFILIATE."\">" . config('branding.affiliate.singular');
                 }
                 if ($this->per->can("create_managers")) {
-                    echo "<input  checked onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_MANAGER."\">Manager";
+                    echo "<input  checked onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_MANAGER."\">" . config('branding.account.singular');
                 }
                 if ($this->per->can("create_admins")) {
                     echo "<input   onclick=\"god();appendAdmin();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
@@ -428,10 +428,10 @@ class Update
 
             case Privilege::ROLE_AFFILIATE:
                 if ($this->per->can("create_affiliates")) {
-                    echo "<input  checked onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\"  id=\"affRadio\" value=\"".Privilege::ROLE_AFFILIATE."\">Agent";
+                    echo "<input  checked onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\"  id=\"affRadio\" value=\"".Privilege::ROLE_AFFILIATE."\">" . config('branding.affiliate.singular');
                 }
                 if ($this->per->can("create_managers")) {
-                    echo "<input  {$cannotUpgrade} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_MANAGER."\">Manager";
+                    echo "<input  {$cannotUpgrade} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_MANAGER."\">" . config('branding.account.singular');
                 }
                 if ($this->per->can("create_admins")) {
                     echo "<input  {$cannotUpgrade}   onclick=\"god();appendAdmin();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";

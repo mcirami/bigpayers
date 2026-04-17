@@ -8,7 +8,7 @@
 @extends('report.template')
 
 @section('report-title')
-    Affiliate Reports
+    {{ $affiliateTypeLabelPlural }} Reports
 @endsection
 <style>
     #loading_spinner {
@@ -32,7 +32,7 @@
 
 </style>
 @section('table-options')
-    @include('report.options.user-type', ['affiliateLabel' => 'Affiliates'])
+    @include('report.options.user-type')
     @include('report.options.dates')
     @if ($userType == 0 || $userType == 1)
         <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
@@ -48,7 +48,7 @@
         <thead>
         <tr>
             <th class="value_span9">ID</th>
-            <th class="value_span9">User</th>
+            <th class="value_span9">{{ $affiliateTypeLabel }}</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
             <th class="value_span9">Conversions</th>

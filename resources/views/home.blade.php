@@ -8,8 +8,8 @@
         $roleLabels = [
             0 => 'God',
             1 => 'Admin',
-            2 => 'Manager',
-            3 => 'Affiliate',
+            2 => $accountTypeLabel,
+            3 => $affiliateTypeLabel,
         ];
         $roleLabel = $roleLabels[$userType] ?? 'Team Member';
         $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];
@@ -180,7 +180,7 @@
                         @if ($signupLink)
                             <div class="bp-link-card">
                                 <div>
-                                    <p class="bp-link-label">Manager Signup Link</p>
+                                    <p class="bp-link-label">{{ $accountTypeLabel }} Signup Link</p>
                                     <p class="bp-link-value" data-copy-source="signup">{{ $signupLink }}</p>
                                 </div>
                                 <button type="button" class="bp-copy-button" data-copy-button="signup">Copy link</button>

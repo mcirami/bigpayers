@@ -13,7 +13,8 @@ use App\Privilege;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
-define('ACCOUNT_TYPE', env('ACCOUNT_TYPE_TEXT'));
+define('ACCOUNT_TYPE', config('branding.account.singular'));
+define('AFFILIATE_TYPE', config('branding.affiliate.singular'));
 // permissions class to get permissions for entered user id
 
 class Permissions
@@ -53,6 +54,7 @@ class Permissions
     const BAN_USERS = "ban_users";
     const EMAIL_POOLS = 'email_pools';
     const ACCOUNT_TYPE = ACCOUNT_TYPE;
+    const AFFILIATE_TYPE = AFFILIATE_TYPE;
 
     public static $permissionsArray = [
 
@@ -64,12 +66,12 @@ class Permissions
         ],
 
         self::CREATE_AFFILIATES => [
-            "description" => "Can Create Agent Accounts",
+            "description" => "Can Create " . self::AFFILIATE_TYPE . " Accounts",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
         ],
 
         self::EDIT_AFFILIATES => [
-            "description" => "Can Edit Agent Accounts",
+            "description" => "Can Edit " . self::AFFILIATE_TYPE . " Accounts",
             /*"required_permissions" => [self::CREATE_AFFILIATES],*/
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
         ],

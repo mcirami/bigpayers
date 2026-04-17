@@ -197,6 +197,10 @@ class NavBar
 
         $this->userType = $userType;
         $this->permissions = $permissions;;
+        if (isset($this->menu['Reports']['Agent Report'])) {
+            $this->menu['Reports'][config('branding.affiliate.singular') . ' Report'] = $this->menu['Reports']['Agent Report'];
+            unset($this->menu['Reports']['Agent Report']);
+        }
 
         $this->currentPage = parse_url($_SERVER["REQUEST_URI"])["path"];
 

@@ -17,10 +17,15 @@
         $roleLabels = [
             \App\Privilege::ROLE_GOD => 'God',
             \App\Privilege::ROLE_ADMIN => 'Admins',
-            \App\Privilege::ROLE_MANAGER => env('ACCOUNT_TYPE_TEXT') . 's',
-            \App\Privilege::ROLE_AFFILIATE => 'Agents',
+            \App\Privilege::ROLE_MANAGER => $accountTypeLabelPlural,
+            \App\Privilege::ROLE_AFFILIATE => $affiliateTypeLabelPlural,
         ];
         $selectedRoleLabel = $roleLabels[$role] ?? 'Users';
+        $tableIdentityLabel = match ($role) {
+            \App\Privilege::ROLE_MANAGER => $accountTypeLabel,
+            \App\Privilege::ROLE_AFFILIATE => $affiliateTypeLabel,
+            default => 'User',
+        };
         $totalUsers = count($users);
         $usersWithManagers = $users->filter(fn ($user) => !empty(optional($user->referrer)->user_name))->count();
     @endphp
@@ -99,9 +104,9 @@
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
-                        <th class="value_span9">User</th>
+                        <th class="value_span9">{{ $tableIdentityLabel }}</th>
                         <th class="value_span9">Email</th>
-                        <th class="value_span9">Manager</th>
+                        <th class="value_span9">{{ $accountTypeLabel }}</th>
                         <th class="value_span9">Added</th>
                         <th class="value_span9">Actions</th>
                     </tr>
@@ -151,7 +156,7 @@
 
                 if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
                     actions.push(
-                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/affiliates">View Agents</a>`
+                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/affiliates">View {{ $affiliateTypeLabelPlural }}</a>`
                     );
                 }
 
@@ -164,7 +169,7 @@
 
             const showUsers = (userRows) => {
                 const html = userRows.map((user) => {
-                    const managerName = user.referrer && user.referrer.user_name ? user.referrer.user_name : 'No manager assigned';
+                    const managerName = user.referrer && user.referrer.user_name ? user.referrer.user_name : 'No {{ strtolower($accountTypeLabel) }} assigned';
 
                     return `
                         <tr>

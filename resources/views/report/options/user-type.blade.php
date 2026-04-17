@@ -5,7 +5,8 @@
 </script>
 
 @php
-    $affiliateLabel = $affiliateLabel ?? 'Agents';
+    $accountLabelPlural = $accountLabelPlural ?? ($accountTypeLabelPlural ?? config('branding.account.plural'));
+    $affiliateLabel = $affiliateLabel ?? ($affiliateTypeLabelPlural ?? config('branding.affiliate.plural'));
 @endphp
 
 <select onchange="handleSelect(this);" class="selectBox " id="role" name="role">
@@ -18,7 +19,7 @@
 
 
     @if(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers"))
-        <option @if(request('role',3) == 2) selected @endif value='2'>@php echo env('ACCOUNT_TYPE_TEXT')."s" @endphp</option>
+        <option @if(request('role',3) == 2) selected @endif value='2'>{{ $accountLabelPlural }}</option>
     @endif
     <option @if(request('role',3 ) == 3) selected @endif value='3'>{{ $affiliateLabel }}</option>
 </select>

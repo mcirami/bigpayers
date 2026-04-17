@@ -22,6 +22,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::share('webroot', getWebRoot());
+        View::share([
+            'accountTypeLabel' => config('branding.account.singular'),
+            'accountTypeLabelPlural' => config('branding.account.plural'),
+            'affiliateTypeLabel' => config('branding.affiliate.singular'),
+            'affiliateTypeLabelPlural' => config('branding.affiliate.plural'),
+        ]);
         view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
             $navBar = new NavBar(Session::userType(), Session::permissions());
             $notifications = new Notifications(Session::userID());

@@ -197,7 +197,7 @@ $webroot = getWebRoot();
                         </div>
                         <div class="mb-3">
                             <select class="form-control form-select" name="agents" id="agents" required>
-                                <option value="">Number of Agents?</option>
+                                <option value="">Number of {{ $affiliateTypeLabelPlural }}?</option>
                                 <option value="1-5" @if(old('agents') == '1-5') selected @endif>1-5</option>
                                 <option value="6-10" @if(old('agents') == '6-10') selected @endif>6-10</option>
                                 <option value="11-20" @if(old('agents') == '11-20') selected @endif>11-20</option>
@@ -315,4 +315,3 @@ $webroot = getWebRoot();
 
 </body>
 </html>
-

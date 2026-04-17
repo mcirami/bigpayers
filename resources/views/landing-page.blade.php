@@ -54,14 +54,14 @@
     <div class="holder">
         <h2>Our Features</h2>
         <h3>Here are a few features that make us stand out!</h3>
-        <p>Join one of the most comprehensive tracking platforms on earth. Designed with you in mind, we offer real time postbacks, tracking for unlimited agents/affiliates/employees, tiered and unlimited Manager and Admin accounts, Add your own custom offers or allow us to provide offers for you. Track accurately in real time, every time with Chat Track Pro! </p>
+        <p>Join one of the most comprehensive tracking platforms on earth. Designed with you in mind, we offer real time postbacks, tracking for unlimited {{ strtolower($affiliateTypeLabelPlural) }}, tiered and unlimited {{ $accountTypeLabel }} and Admin accounts, add your own custom offers or allow us to provide offers for you. Track accurately in real time, every time with Chat Track Pro!</p>
         <div class="three_col_section">
             <div class="sub">
-                <h2>Unlimited Agents</h2>
+                <h2>Unlimited {{ $affiliateTypeLabelPlural }}</h2>
             </div>
 
             <div class="sub">
-                <h2>Unlimited Managers</h2>
+                <h2>Unlimited {{ $accountTypeLabelPlural }}</h2>
             </div>
 
             <div class="sub">
@@ -124,19 +124,19 @@
                 <div class="column">
                     <img src="images/img_networkowner.png" alt="">
                     <h4>Admins</h4>
-                    <p>A Admin is a User who has full access to all other Users in their network, whether those Users are Managers or Agents. Admins can track all traffic generated inside their network as well by any Agent of any Manager. Track it all in one place!</p>
+                    <p>An Admin is a User who has full access to all other Users in their network, whether those Users are {{ $accountTypeLabelPlural }} or {{ $affiliateTypeLabelPlural }}. Admins can track all traffic generated inside their network as well by any {{ strtolower($affiliateTypeLabel) }} of any {{ strtolower($accountTypeLabel) }}. Track it all in one place!</p>
                 </div>
 
                 <div class="column">
                     <img src="images/img_merchant.png" alt="">
-                    <h4>Managers</h4>
-                    <p>Managers can create an unlimited amount of Agent accounts for anyone they want to send traffic. Every Manager can see all traffic and monies earned from their agents but not any information of any other Manager or their Agents under an Admin.</p>
+                    <h4>{{ $accountTypeLabelPlural }}</h4>
+                    <p>{{ $accountTypeLabelPlural }} can create an unlimited amount of {{ strtolower($affiliateTypeLabel) }} accounts for anyone they want to send traffic. Every {{ $accountTypeLabel }} can see all traffic and monies earned from their {{ strtolower($affiliateTypeLabelPlural) }} but not any information of any other {{ strtolower($accountTypeLabel) }} or their {{ strtolower($affiliateTypeLabelPlural) }} under an Admin.</p>
                 </div>
 
                 <div class="column">
                     <img src="images/img_affiliate.png" alt="">
-                    <h4>Agents</h4>
-                    <p>An Agent is the only type of User that will have an offer link to promote and generate sales using their unique marketing methods. Each agent will be able to track all clicks and sales to any offers they promote real time inside their account.</p>
+                    <h4>{{ $affiliateTypeLabelPlural }}</h4>
+                    <p>A {{ $affiliateTypeLabel }} is the only type of User that will have an offer link to promote and generate sales using their unique marketing methods. Each {{ strtolower($affiliateTypeLabel) }} will be able to track all clicks and sales to any offers they promote in real time inside their account.</p>
                 </div>
             </div>
         </div>

@@ -1,8 +1,8 @@
 <table>
     <thead>
     <tr>
-        <th>Agent ID</th>
-        <th>Agent Username</th>
+        <th>{{ $affiliateTypeLabel }} ID</th>
+        <th>{{ $affiliateTypeLabel }} Username</th>
         <th>Raw</th>
         <th>Unique</th>
         <th>Conversion</th>
