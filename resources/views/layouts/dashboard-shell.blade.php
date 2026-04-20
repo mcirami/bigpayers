@@ -50,7 +50,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/font-awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260417g">
+    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260420a">
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
     @stack('head')
     <title>{{ $companyName }}</title>
@@ -61,7 +61,7 @@
     <div class="bp-shell-layout">
         <aside class="bp-sidebar bp-sidebar-desktop">
             <div class="space-y-8">
-                <a href="{{ $webroot }}{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-brand">
+                <a href="{{ $webroot }}{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-brand bp-brand-desktop">
                     <span class="bp-brand-mark">
                         <img src="{{ $logoPath }}" alt="{{ $companyName }} logo"/>
                     </span>
@@ -85,7 +85,7 @@
         <aside class="bp-mobile-drawer" data-dashboard-nav>
             <div class="space-y-8">
                 <div class="flex items-center justify-between gap-4">
-                    <a href="{{ $webroot }}{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-brand">
+                    <a href="{{ $webroot }}{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-brand bp-brand-mobile">
                         <span class="bp-brand-mark">
                             <img src="{{ $logoPath }}" alt="{{ $companyName }} logo"/>
                         </span>
@@ -106,18 +106,20 @@
 
         <div class="bp-shell-main">
             <header class="bp-topbar">
-                <div class="flex items-center gap-4">
+                <div class="bp-topbar-main">
+                    <div class="flex items-start gap-4">
                     <button type="button" class="bp-icon-button lg:hidden" data-dashboard-open aria-label="Open navigation">
                         <i class="fas fa-bars" aria-hidden="true"></i>
                     </button>
 
-                    <div>
+                    <div class="min-w-0">
                         <p class="bp-topbar-kicker">{{ $topbarDate }}</p>
                         <h1 class="bp-topbar-title">@yield('page-title', 'Dashboard')</h1>
                     </div>
                 </div>
+                </div>
 
-                <div class="flex items-center gap-3">
+                <div class="bp-topbar-actions">
                     <a href="/user/{{ $user->idrep }}/edit{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-button-secondary">Edit account</a>
                     <a href="/logout{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-button-primary">Logout</a>
                 </div>

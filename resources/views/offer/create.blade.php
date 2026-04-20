@@ -8,10 +8,11 @@
     @include('layouts.partials.report-script-assets')
 @endpush
 
-@section('page-title', 'Create Offer')
+@section('page-title', $pageTitle ?? 'Create Offer')
 
 @section('content')
     @php
+        $isEdit = ($mode ?? 'create') === 'edit';
         $offerTypeOptions = [
             \App\Offer::TYPE_CPA => 'CPA',
             \App\Offer::TYPE_CPC => 'CPC',
@@ -35,15 +36,15 @@
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Create a new offer</h2>
+                    <h2 class="bp-section-title value_span9">{{ $pageHeading ?? 'Create a new offer' }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Launch a new offer, choose how it appears in the directory, and assign it to the right {{ strtolower($affiliateTypeLabelPlural) }} from the same screen.
+                        {{ $pageCopy ?? ('Launch a new offer, choose how it appears in the directory, and assign it to the right ' . strtolower($affiliateTypeLabelPlural) . ' from the same screen.') }}
                     </p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
                     <a href="/offer/manage" class="bp-button-secondary">Back to offers</a>
-                    <span class="bp-status-pill bp-status-pill-active">New workflow</span>
+                    <span class="bp-status-pill bp-status-pill-active">{{ $isEdit ? 'Editing live offer' : 'New workflow' }}</span>
                 </div>
             </div>
         </section>
@@ -63,12 +64,12 @@
 
             <article class="bp-stat-card">
                 <p class="bp-stat-label">Assignment Scope</p>
-                <p class="bp-stat-value">{{ $affiliateTypeLabelPlural }}</p>
-                <p class="bp-stat-note">Offers are assigned directly to {{ strtolower($affiliateTypeLabelPlural) }} from this workflow.</p>
+                <p class="bp-stat-value">{{ $isEdit ? 'Existing users' : $affiliateTypeLabelPlural }}</p>
+                <p class="bp-stat-note">{{ $isEdit ? 'Use manage offers or mass-assign to change who currently has access to this offer.' : 'Offers are assigned directly to ' . strtolower($affiliateTypeLabelPlural) . ' from this workflow.' }}</p>
             </article>
         </section>
 
-        <form action="/offer/create" method="post" class="space-y-6 lg:space-y-8" data-offer-create>
+        <form action="{{ $formAction ?? '/offer/create' }}" method="post" class="space-y-6 lg:space-y-8" data-offer-create>
             {{ csrf_field() }}
 
             <section class="bp-card value_span8">
@@ -161,48 +162,57 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
-                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p class="bp-section-kicker">Assignment</p>
-                        <h3 class="bp-section-title value_span9">Choose {{ strtolower($affiliateTypeLabelPlural) }} for this offer</h3>
-                    </div>
-                    <p class="bp-table-meta">The selected list is what gets submitted with the offer when you create it.</p>
-                </div>
-
-                <div class="mt-6 bp-selection-grid bp-selection-grid-wide">
-                    <article class="bp-selection-card">
-                        <p class="bp-section-kicker">Available</p>
-                        <h4 class="bp-selection-title" data-available-title>Unassigned {{ strtolower($affiliateTypeLabelPlural) }}</h4>
-                        <div class="mt-4 bp-offer-search">
-                            <label class="bp-detail-label" for="availableUsersSearch">Search available</label>
-                            <input id="availableUsersSearch" class="bp-search-input" type="text" placeholder="Filter available records">
+            @unless($isEdit)
+                <section class="bp-card value_span8">
+                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="bp-section-kicker">Assignment</p>
+                            <h3 class="bp-section-title value_span9">Choose {{ strtolower($affiliateTypeLabelPlural) }} for this offer</h3>
                         </div>
-                        <select id="availableUsers" class="bp-dual-select mt-4" multiple size="14" aria-label="Available users"></select>
-                    </article>
-
-                    <div class="bp-transfer-controls" aria-hidden="true">
-                        <button type="button" class="bp-button-secondary" data-transfer="add">Add selected</button>
-                        <button type="button" class="bp-button-secondary" data-transfer="add-all">Add all</button>
-                        <button type="button" class="bp-button-secondary" data-transfer="remove">Remove selected</button>
-                        <button type="button" class="bp-button-secondary" data-transfer="remove-all">Remove all</button>
+                        <p class="bp-table-meta">The selected list is what gets submitted with the offer when you create it.</p>
                     </div>
 
-                    <article class="bp-selection-card">
-                        <p class="bp-section-kicker">Assigned</p>
-                        <h4 class="bp-selection-title" data-assigned-title>Assigned {{ strtolower($affiliateTypeLabelPlural) }}</h4>
-                        <div class="mt-4 bp-offer-search">
-                            <label class="bp-detail-label" for="assignedUsersSearch">Search assigned</label>
-                            <input id="assignedUsersSearch" class="bp-search-input" type="text" placeholder="Filter assigned records">
+                    <div class="mt-6 bp-selection-grid bp-selection-grid-wide">
+                        <article class="bp-selection-card">
+                            <p class="bp-section-kicker">Available</p>
+                            <h4 class="bp-selection-title" data-available-title>Unassigned {{ strtolower($affiliateTypeLabelPlural) }}</h4>
+                            <div class="mt-4 bp-offer-search">
+                                <label class="bp-detail-label" for="availableUsersSearch">Search available</label>
+                                <input id="availableUsersSearch" class="bp-search-input" type="text" placeholder="Filter available records">
+                            </div>
+                            <select id="availableUsers" class="bp-dual-select mt-4" multiple size="14" aria-label="Available users"></select>
+                        </article>
+
+                        <div class="bp-transfer-controls" aria-hidden="true">
+                            <button type="button" class="bp-button-secondary" data-transfer="add">Add selected</button>
+                            <button type="button" class="bp-button-secondary" data-transfer="add-all">Add all</button>
+                            <button type="button" class="bp-button-secondary" data-transfer="remove">Remove selected</button>
+                            <button type="button" class="bp-button-secondary" data-transfer="remove-all">Remove all</button>
                         </div>
-                        <select id="assignedUsers" class="bp-dual-select mt-4" name="users[]" multiple size="14" aria-label="Assigned users"></select>
-                        <p class="mt-4 bp-table-meta" data-assignment-count>0 selected</p>
-                    </article>
-                </div>
-            </section>
+
+                        <article class="bp-selection-card">
+                            <p class="bp-section-kicker">Assigned</p>
+                            <h4 class="bp-selection-title" data-assigned-title>Assigned {{ strtolower($affiliateTypeLabelPlural) }}</h4>
+                            <div class="mt-4 bp-offer-search">
+                                <label class="bp-detail-label" for="assignedUsersSearch">Search assigned</label>
+                                <input id="assignedUsersSearch" class="bp-search-input" type="text" placeholder="Filter assigned records">
+                            </div>
+                            <select id="assignedUsers" class="bp-dual-select mt-4" name="users[]" multiple size="14" aria-label="Assigned users"></select>
+                            <p class="mt-4 bp-table-meta" data-assignment-count>0 selected</p>
+                        </article>
+                    </div>
+                </section>
+            @else
+                <section class="bp-card value_span8">
+                    <div class="bp-inline-note">
+                        <strong>Assignment management</strong>
+                        <span>Use Manage Offers or Multi-Assign Offers to change which {{ strtolower($affiliateTypeLabelPlural) }} currently have access to this offer.</span>
+                    </div>
+                </section>
+            @endunless
 
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">Create offer</button>
+                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">{{ $submitLabel ?? 'Create offer' }}</button>
                 <a href="/offer/manage" class="bp-button-secondary">Cancel</a>
             </div>
         </form>
@@ -226,6 +236,10 @@
             const assignedTitle = document.querySelector('[data-assigned-title]');
             const transferButtons = Array.from(form.querySelectorAll('[data-transfer]'));
             const initialAssignedIds = new Set(@json(array_map('intval', old('users', []))));
+
+            if (!availableSelect || !assignedSelect || !availableSearch || !assignedSearch || !assignmentCount || !availableTitle || !assignedTitle) {
+                return;
+            }
 
             let availableUsers = [];
             let assignedUsers = [];

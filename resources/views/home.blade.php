@@ -5,6 +5,7 @@
 @section('content')
     @php
         $user = \LeadMax\TrackYourStats\System\Session::userData();
+        $company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
         $roleLabels = [
             0 => 'God',
             1 => 'Admin',
@@ -12,10 +13,11 @@
             3 => $affiliateTypeLabel,
         ];
         $roleLabel = $roleLabels[$userType] ?? 'Team Member';
-        $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];
-        $visibleLinkCount = collect($menuSections)->sum(function ($section) {
-            return count($section['items']);
-        });
+        $dashboardNavBar = isset($navBar) && method_exists($navBar, 'getVisibleMenu')
+            ? $navBar
+            : new \LeadMax\TrackYourStats\System\NavBar($userType, \LeadMax\TrackYourStats\System\Session::permissions());
+        $menuSections = $dashboardNavBar->getVisibleMenu();
+        $workspaceSectionCount = count($menuSections);
         $signupLink = $userType == 2 ? $domain . $userId : null;
     @endphp
 
@@ -25,40 +27,34 @@
                 <div class="max-w-3xl">
                     <span class="bp-pill">
                         <i class="fas fa-compass" aria-hidden="true"></i>
-                        Redesigned workspace
+                        {{ $company->getShortHand() }} workspace
                     </span>
                     <p class="bp-hero-kicker mt-6">Main dashboard</p>
                     <h2 class="bp-hero-title">Welcome back, {{ $firstName }}.</h2>
                     <p class="bp-hero-copy">
-                        This is the new dashboard foundation for the site: a cleaner shell, sharper hierarchy,
-                        and a Tailwind-first layout that we can keep extending across reports, offers, and account tools.
+                        Start from your highest-traffic tools, review account details, and jump into reporting,
+                        offers, or account management from one clean command center.
                     </p>
                 </div>
 
                 <div class="relative z-10 grid gap-3 sm:grid-cols-2">
                     <a href="/user/{{ $userId }}/edit" class="bp-button-secondary">Update profile</a>
-                    <a href="/report/daily" class="bp-button-primary">Open daily report</a>
+                    <a href="/report/affiliate" class="bp-button-primary">Open {{ strtolower($affiliateTypeLabel) }} report</a>
                 </div>
             </div>
         </section>
 
-        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <section class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             <article class="bp-stat-card">
                 <p class="bp-stat-label">Role</p>
                 <p class="bp-stat-value">{{ $roleLabel }}</p>
-                <p class="bp-stat-note">Your dashboard now foregrounds access, shortcuts, and account context instead of burying everything in legacy panels.</p>
+                <p class="bp-stat-note">Your current access level determines which reports, tools, and account actions appear across the workspace.</p>
             </article>
 
             <article class="bp-stat-card">
-                <p class="bp-stat-label">Workspace Sections</p>
-                <p class="bp-stat-value">{{ count($menuSections) }}</p>
-                <p class="bp-stat-note">The left rail is generated from your real navigation permissions, so this shell is ready for the wider migration.</p>
-            </article>
-
-            <article class="bp-stat-card">
-                <p class="bp-stat-label">Quick Links</p>
-                <p class="bp-stat-value">{{ $visibleLinkCount }}</p>
-                <p class="bp-stat-note">Visible destinations are grouped for faster scanning on desktop and mobile instead of relying on nested dropdowns.</p>
+                <p class="bp-stat-label">Main Work Areas</p>
+                <p class="bp-stat-value">{{ $workspaceSectionCount }}</p>
+                <p class="bp-stat-note">This matches the main navigation groups currently available in your left menu.</p>
             </article>
 
             <article class="bp-stat-card">
@@ -119,7 +115,7 @@
                     </div>
 
                     <div class="mt-6 bp-mini-list">
-                        @foreach($menuSections as $section)
+                        @forelse($menuSections as $section)
                             <div class="bp-mini-list-item">
                                 <div>
                                     <p class="bp-mini-title">{{ $section['name'] }}</p>
@@ -132,7 +128,12 @@
                                 </div>
                                 <span class="bp-mini-badge">{{ count($section['items']) }}</span>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="bp-link-card">
+                                <p class="bp-link-label">Availability</p>
+                                <p class="bp-link-value">Navigation sections will appear here once access is available for this account.</p>
+                            </div>
+                        @endforelse
                     </div>
                 </article>
             </div>
@@ -151,8 +152,8 @@
                             <span>Offer report</span>
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
-                        <a href="/report/daily" class="bp-button-secondary w-full justify-between">
-                            <span>Daily report</span>
+                        <a href="/report/affiliate" class="bp-button-secondary w-full justify-between">
+                            <span>{{ $affiliateTypeLabel }} report</span>
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
                         <a href="/user/{{ $userId }}/edit" class="bp-button-primary w-full justify-between">

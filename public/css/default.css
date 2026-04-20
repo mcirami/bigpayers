@@ -163,10 +163,8 @@ html, body {
 }
 
 input {
-	width: 150px;
 	display: inline-block;
 	border: 1px solid #dadada;
-
 	-webkit-border-radius: 2px;
 	-moz-border-radius: 2px;
 	border-radius: 2px;
@@ -933,10 +931,6 @@ input[type="radio"], input[type="checkbox"] {
 	float: left;
 	/*background:#2a58ad;*/
 	padding: 10px 4%;
-}
-
-.table {
-	min-width: 1275px;
 }
 
 .tr_bottom_space {
@@ -2735,7 +2729,6 @@ table.offer_clicks th:first-child {
 #toAdd .caps {
 	display: flex;
 	justify-content: flex-start;
-    border: none;
 }
 
 

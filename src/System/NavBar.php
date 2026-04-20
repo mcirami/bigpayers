@@ -21,6 +21,60 @@ class NavBar
 
     public $menu = array(
 
+        "Account" => [
+            "css" => "fas fa-building",
+
+            "My Account" => ['url' => '/dashboard'],
+
+            "Offer URLs" => ['url' => '/offer/urls', 'required_permissions' => ['edit_offer_urls']],
+
+            "Add Sale" => ['url' => '/sales/add', 'required_permissions' => [Permissions::ADJUST_SALES]],
+
+            "Verification" => ['url' => '/verification', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
+
+            "Notifications" => ['url' => '/notifications'],
+
+            "IP Blacklist" => ['url' => '/ip-blacklist', "required_user_types" => [\App\Privilege::ROLE_GOD]],
+
+            "Settings" => ["url" => "/settings", "required_user_types" => [\App\Privilege::ROLE_GOD]],
+        ],
+
+        "Reports" => [
+            "css" => "far fa-file-alt",
+
+            "Agent Report" => [
+                'url' => '/report/affiliate',
+                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, \App\Privilege::ROLE_MANAGER],
+            ],
+
+            "Offer Report" => [
+                'url' => '/report/offer',
+            ],
+
+            "GEO Report" => [
+	            'url' => '/report/geo',
+	            "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+            ],
+
+            "Advertiser Report" => [
+                'url' => '/report/advertiser',
+                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+                "required_permissions" => ["view_adv_reports"],
+            ],
+
+            "Blacklist Report" => ["url" => "/report/blacklist", "required_user_types" => [\App\Privilege::ROLE_GOD]],
+
+            "Adjustments Log" => [
+                'url' => '/report/adjustments',
+                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
+                "required_permissions" => [Permissions::ADJUST_SALES],
+            ],
+
+            "Sub Report" => ['url' => '/report/sub', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
+
+            "Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
+        ],
+
         "Users" => [
 
             "css" => "fas fa-users",
@@ -31,16 +85,10 @@ class NavBar
                 'url' => '/user/manage',
             ],
 
-
             "Create Users" => [
                 'url' => '/user/create',
                 'required_permissions' => ['create_affiliates'],
             ],
-
-            //			"Report Permissions" => [
-            //				'url'                  => 'aff_permissions.php',
-            //				"required_permissions" => [Permissions::EDIT_REPORT_PERMISSIONS]
-            //			],
 
             "Pending Users" => [
                 'url' => '/user/pending',
@@ -66,80 +114,20 @@ class NavBar
                 'required_permissions' => ['create_offers'],
             ],
 
-
-            "Global PostBack" => [
-                'url' => '/global-postback',
-                'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
-            ],
-
             'Multi-Assign Offers' => [
                 'url' => '/offer/mass-assign',
                 'required_permissions' => ['create_offers'],
             ],
-
-    //        'Mass Assign PostBack' => [
-    //            'url' => '/mass_assign_pb.php',
-    //            'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
-    //        ],
 
             "Click Search" => [
                 'url' => "/click-search",
                 "required_user_types" => [\App\Privilege::ROLE_GOD],
             ],
 
-        ],
-
-        "Reports" => [
-            "css" => "far fa-file-alt",
-
-            "Advertiser Report" => [
-                'url' => '/report/advertiser',
-                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
-                "required_permissions" => ["view_adv_reports"],
+            "Global PostBack" => [
+                'url' => '/global-postback',
+                'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
             ],
-
-
-            "Offer Report" => [
-                'url' => '/report/offer',
-            ],
-
-
-            "Sub Report" => ['url' => '/report/sub', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
-
-            "Agent Report" => [
-                'url' => '/report/affiliate',
-                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, \App\Privilege::ROLE_MANAGER],
-            ],
-
-            "GEO Report" => [
-	            'url' => '/report/geo',
-	            "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
-            ],
-
-            "Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
-
-            "Blacklist Report" => ["url" => "/report/blacklist", "required_user_types" => [\App\Privilege::ROLE_GOD]],
-
-            "Adjustments Log" => [
-                'url' => '/report/adjustments',
-                "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
-                "required_permissions" => [Permissions::ADJUST_SALES],
-            ],
-
-     //       "Chat Log Report" => [
-     //           'url' => '/report/chat-log',
-     //           "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, \App\Privilege::ROLE_MANAGER],
-     //       ]
-     //       ,
-     //
-     //       "Sale Log" => [
-     //           'url' => '/report/sale-log',
-     //           'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
-     //       ],
-
-            "Daily Report" => [
-                'url' => '/report/daily',
-            ]
 
         ],
 
@@ -155,36 +143,6 @@ class NavBar
 
         ],
 
-        "Account" => [
-            "css" => "fas fa-building",
-
-            "My Account" => ['url' => '/dashboard'],
-
-//            "SMS Chat" => ['url' => '/sms', 'required_user_types' => [\App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
-
-            "Verification" => ['url' => '/verification', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
-
-//            "Email Pools" => ['url' => '/email/pools', 'required_permissions' => [Permissions::EMAIL_POOLS]],
-
-//            "Assign SMS" => ['url' => '/sms/client/add', 'required_user_types' => [\App\Privilege::ROLE_GOD]],
-
-            "Add Sale" => ['url' => '/sales/add', 'required_permissions' => [Permissions::ADJUST_SALES]],
-
-            "Offer URLs" => ['url' => '/offer/urls', 'required_permissions' => ['edit_offer_urls']],
-
-            "IP Blacklist" => ['url' => '/ip-blacklist', "required_user_types" => [\App\Privilege::ROLE_GOD]],
-
-            "Notifications" => ['url' => '/notifications'],
-
-//            "Salaries" => ["url" => "/salaries.php", "possible_permissions" => ["pay_salaries"]],
-
-//            "Bonuses" => ["url" => "/bonus.php", "possible_permissions" => ["create_bonuses", "assign_bonuses"]],
-
-            "Settings" => ["url" => "/settings", "required_user_types" => [\App\Privilege::ROLE_GOD]],
-
-        ],
-
-
     );
 
 
@@ -198,8 +156,19 @@ class NavBar
         $this->userType = $userType;
         $this->permissions = $permissions;;
         if (isset($this->menu['Reports']['Agent Report'])) {
-            $this->menu['Reports'][config('branding.affiliate.singular') . ' Report'] = $this->menu['Reports']['Agent Report'];
-            unset($this->menu['Reports']['Agent Report']);
+            $affiliateReportLabel = config('branding.affiliate.singular') . ' Report';
+            $reports = [];
+
+            foreach ($this->menu['Reports'] as $key => $value) {
+                if ($key === 'Agent Report') {
+                    $reports[$affiliateReportLabel] = $value;
+                    continue;
+                }
+
+                $reports[$key] = $value;
+            }
+
+            $this->menu['Reports'] = $reports;
         }
 
         $this->currentPage = parse_url($_SERVER["REQUEST_URI"])["path"];

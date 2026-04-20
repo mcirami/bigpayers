@@ -7,7 +7,7 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$user->user_name}}'s Sub Id '{{$subId}}' Clicks For Offer '{{$offer->offer_name}}' in {{$country}}
+    {{$user->user_name}}'s Sub Id '{{$subId}}' Clicks For Offer '{{ \Illuminate\Support\Str::limit($offer->offer_name, 32) }}' in {{$country}}
 @endsection
 @section('table-options')
     @include('report.options.dates')

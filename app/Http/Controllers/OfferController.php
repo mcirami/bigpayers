@@ -96,6 +96,12 @@ class OfferController extends Controller
 		$campaigns = Campaign::query()->orderBy('name')->get();
 
 		return view('offer.create')->with([
+			'mode' => 'create',
+			'pageTitle' => 'Create Offer',
+			'pageHeading' => 'Create a new offer',
+			'pageCopy' => 'Launch a new offer, choose how it appears in the directory, and assign it to the right ' . strtolower(config('branding.affiliate.plural')) . ' from the same screen.',
+			'formAction' => '/offer/create',
+			'submitLabel' => 'Create offer',
 			'offer' => $offer,
 			'campaigns' => $campaigns,
 		]);
@@ -116,23 +122,159 @@ class OfferController extends Controller
 
 	public function showEdit($id)
 	{
-		$offer = Offer::where('idoffer', '=', $id)->first();
+		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
+		$campaigns = Campaign::query()->orderBy('name')->get();
 
-
-		return vieW('offer.edit');
+		return view('offer.create')->with([
+			'mode' => 'edit',
+			'pageTitle' => 'Edit Offer',
+			'pageHeading' => 'Edit offer',
+			'pageCopy' => 'Update the main offer details, payout, visibility, and advertiser assignment without dropping back into the legacy editor.',
+			'formAction' => "/offer/edit/{$offer->idoffer}",
+			'submitLabel' => 'Save changes',
+			'offer' => $offer,
+			'campaigns' => $campaigns,
+		]);
 	}
 
-	private function validateOfferRequest(Request $request)
+	public function showView($id)
 	{
-		$this->validate($request, [
+		$offer = Offer::query()
+			->with(['campaign', 'affiliates' => function ($query) {
+				$query->orderBy('user_name');
+			}])
+			->where('idoffer', '=', $id)
+			->firstOrFail();
+
+		return view('offer.show', [
+			'offer' => $offer,
+			'assignedUsers' => $offer->affiliates,
+		]);
+	}
+
+	public function showRules($id)
+	{
+		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
+		$rules = new \LeadMax\TrackYourStats\Offer\Rules($offer->idoffer);
+		$offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
+		$activeCap = false;
+		$capAmount = 0;
+		$geoRules = [];
+		$deviceRules = [];
+
+		foreach ($rules->rules as $rule) {
+			if (($rule['type'] ?? null) === 'device') {
+				$activeCap = (bool) ($rule['cap_status'] ?? false);
+				$capAmount = $rule['cap'] ?? 0;
+			}
+
+			$ruleId = (int) ($rule['idrule'] ?? 0);
+
+			if (($rule['type'] ?? null) === 'geo' && $ruleId > 0) {
+				if (!isset($geoRules[$ruleId])) {
+					$geoRules[$ruleId] = [
+						'name' => $rule['name'] ?? '',
+						'redirectOffer' => (int) ($rule['redirect_offer'] ?? 0),
+						'is_active' => (int) ($rule['is_active'] ?? 0),
+						'deny' => (int) ($rule['deny'] ?? 0),
+						'countries' => [],
+					];
+				}
+
+				if (!empty($rule['country_code'])) {
+					$geoRules[$ruleId]['countries'][$rule['country_code']] = [
+						'country_code' => $rule['country_code'],
+						'cap_status' => (int) ($rule['cap_status'] ?? 0),
+						'cap' => (int) ($rule['cap'] ?? 0),
+					];
+				}
+			}
+
+			if (($rule['type'] ?? null) === 'device' && $ruleId > 0) {
+				if (!isset($deviceRules[$ruleId])) {
+					$deviceRules[$ruleId] = [
+						'name' => $rule['name'] ?? '',
+						'redirectOffer' => (int) ($rule['redirect_offer'] ?? 0),
+						'is_active' => (int) ($rule['is_active'] ?? 0),
+						'deny' => (int) ($rule['deny'] ?? 0),
+						'capAmount' => (int) ($rule['cap'] ?? 0),
+						'capStatus' => (int) ($rule['cap_status'] ?? 0),
+						'devices' => [],
+					];
+				}
+
+				if (!empty($rule['device_type']) && !in_array($rule['device_type'], $deviceRules[$ruleId]['devices'], true)) {
+					$deviceRules[$ruleId]['devices'][] = $rule['device_type'];
+				}
+			}
+		}
+
+		foreach ($geoRules as $ruleId => $data) {
+			$geoRules[$ruleId]['countries'] = array_values($data['countries']);
+		}
+
+		$redirectOfferIds = collect($geoRules)
+			->pluck('redirectOffer')
+			->merge(collect($deviceRules)->pluck('redirectOffer'))
+			->filter(fn ($value) => (int) $value > 0)
+			->map(fn ($value) => (int) $value)
+			->unique()
+			->values();
+
+		$redirectOfferMap = $redirectOfferIds->isEmpty()
+			? []
+			: Offer::query()
+				->whereIn('idoffer', $redirectOfferIds->all())
+				->pluck('offer_name', 'idoffer')
+				->toArray();
+
+		ob_start();
+		$rules->printTable();
+		$rulesTableHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
+
+		ob_start();
+		\LeadMax\TrackYourStats\Offer\Rules\Geo::printCountriesAsTable();
+		$countryRowsHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
+
+		ob_start();
+		$offerView->printToSelectBox('geoRedirectOffer');
+		$geoRedirectOfferSelect = ob_get_clean();
+
+		ob_start();
+		$offerView->printToSelectBox('deviceRedirectOffer');
+		$deviceRedirectOfferSelect = ob_get_clean();
+
+		return view('offer.rules', [
+			'offer' => $offer,
+			'rulesTableHtml' => $rulesTableHtml,
+			'countryRowsHtml' => $countryRowsHtml,
+			'countryMap' => \LeadMax\TrackYourStats\Offer\Rules\Geo::$countries,
+			'geoRules' => $geoRules,
+			'deviceRules' => $deviceRules,
+			'geoRedirectOfferSelect' => $geoRedirectOfferSelect,
+			'deviceRedirectOfferSelect' => $deviceRedirectOfferSelect,
+			'redirectOfferMap' => $redirectOfferMap,
+			'activeCap' => $activeCap,
+			'capAmount' => $capAmount,
+		]);
+	}
+
+	private function validateOfferRequest(Request $request, bool $requireUsers = true)
+	{
+		$rules = [
 			'offer_name' => 'required|min:3',
 			'url' => 'required',
 			'offer_type' => 'required',
 			'payout' => 'required|numeric',
 			'status' => 'required|numeric',
 			'is_public' => 'required|numeric',
-			'users' => 'required|array|min:1',
-		]);
+		];
+
+		if ($requireUsers) {
+			$rules['users'] = 'required|array|min:1';
+		}
+
+		$this->validate($request, $rules);
 	}
 
 	public function create(Request $request)
@@ -162,6 +304,31 @@ class OfferController extends Controller
 		DB::commit();
 
 		return redirect('/offer/manage')->with('message', 'Offer created successfully.');
+	}
+
+	public function update(Request $request, $id)
+	{
+		$this->validateOfferRequest($request, false);
+
+		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
+		$offer->fill($request->only([
+			'offer_name',
+			'description',
+			'url',
+			'offer_type',
+			'payout',
+			'status',
+			'is_public',
+			'campaign_id',
+		]));
+
+		if (!$request->has('campaign_id')) {
+			$offer->campaign_id = Campaigns::getDefaultCampaignId();
+		}
+
+		$offer->save();
+
+		return redirect('/offer/manage')->with('message', 'Offer updated successfully.');
 	}
 
 

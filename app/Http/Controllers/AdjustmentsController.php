@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Clicks\Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Offer\AdjustmentsLog;
-use LeadMax\TrackYourStats\Offer\Offer;
 use LeadMax\TrackYourStats\System\Session;
-use LeadMax\TrackYourStats\User\Permissions;
-use LeadMax\TrackYourStats\User\User;
 
 class AdjustmentsController extends Controller
 {
@@ -18,7 +16,11 @@ class AdjustmentsController extends Controller
 
     public function showAddSaleLog()
     {
-        return view('salelog.add');
+        return view('salelog.add', [
+            'defaultTimestamp' => Carbon::now('UTC')->format('Y-m-d\TH:i'),
+            'affiliateLabel' => config('branding.affiliate.singular'),
+            'affiliatePluralLabel' => config('branding.affiliate.plural'),
+        ]);
     }
 
     public function getAffiliates()

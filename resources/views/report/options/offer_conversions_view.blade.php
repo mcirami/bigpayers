@@ -4,10 +4,13 @@
 
 @endphp
 
-<select name="filter" id="filter" class="selectBox" onchange="getConversionsView(this);" style="width: 170px; margin-bottom: 20px;">
-    <option value="affiliate" @php if($filterValue == "affiliate") { echo "selected"; } @endphp>Affiliate View</option>
-    <option value="country" @php if($filterValue == "country") { echo "selected"; } @endphp>Country View</option>
-</select>
+<label class="bp-form-field">
+    <span class="bp-form-label">View</span>
+    <select name="filter" id="filter" class="selectBox bp-form-input" onchange="getConversionsView(this);">
+        <option value="affiliate" @php if($filterValue == "affiliate") { echo "selected"; } @endphp>Affiliate</option>
+        <option value="country" @php if($filterValue == "country") { echo "selected"; } @endphp>Country</option>
+    </select>
+</label>
 
 <style>
     #loading_spinner {

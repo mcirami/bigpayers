@@ -70,7 +70,11 @@ class HTML implements Format
 
                     if (isset($row[$toPrint])) {
 						if($toPrint == "offer_name") {
-							echo "<td><a class='bp-report-link' href='/offer_update.php?idoffer=" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
+                            if (isset($row['idoffer']) && Session::permissions()->can('create_offers')) {
+								echo "<td><a class='bp-report-link' href='/offer/edit/" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
+                            } else {
+								echo "<td>$row[$toPrint]</td>";
+                            }
 						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idoffer', $row) && $row["idoffer"] != "TOTAL") ) {
                             if(Session::userType() == Privilege::ROLE_AFFILIATE) {
                                 $userId = Session::userID();

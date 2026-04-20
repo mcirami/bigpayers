@@ -6,7 +6,7 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$offer->offer_name}}'s Clicks
+    {{ \Illuminate\Support\Str::limit($offer->offer_name, 32) }}'s Clicks
 @endsection
 
 @section('table-options')

@@ -335,9 +335,9 @@ class Rules
 
 
             if ($val["type"] == "none_unique") {
-                echo "<td><a href='/edit_none_unique.php?id={$val["idrule"]}'><img src='images/icons/pencil.png' alt='Edit'></a></td>";
+                echo "<td><a class='btn btn-default btn-sm value_span6-1 value_span4' href='/edit_none_unique.php?id={$val["idrule"]}'>Edit</a></td>";
             } else {
-                echo "<td><a onclick=\"editRule({$val["idrule"]},'{$val["type"]}')\" href='javascript:void(0);'><img src='images/icons/pencil.png' alt='Edit'></a></td>";
+                echo "<td><a class='btn btn-default btn-sm value_span6-1 value_span4' onclick=\"editRule({$val["idrule"]},'{$val["type"]}')\" href='javascript:void(0);'>Edit</a></td>";
             }
 
             echo "</tr>";

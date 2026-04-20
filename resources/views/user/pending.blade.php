@@ -87,7 +87,7 @@
                             <td>{{ $user->rep_timestamp ?: 'Unknown' }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">
-                                    <a class="btn btn-default btn-sm value_span5-1 value_span2 value_span4" href="/user/pending/{{ $user->idrep }}/activate">Activate</a>
+                                    <a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/pending/{{ $user->idrep }}/activate">Activate</a>
                                 </div>
                             </td>
                         </tr>

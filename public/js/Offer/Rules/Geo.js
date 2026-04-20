@@ -4,6 +4,7 @@ class geoEdit {
     }
 
     loadGeoRule() {
+        const ruleID = this.ruleID;
         this.loadRuleCountries();
 
         this.getGeoRuleInfo();
@@ -14,8 +15,8 @@ class geoEdit {
         $("#geoCreateButton").hide();
         $("#geoUpdateButton").show();
 
-        $("#geoUpdateButton").click(function () {
-            var geo = new geoEdit(this.ruleID);
+        $("#geoUpdateButton").off("click").on("click", function () {
+            var geo = new geoEdit(ruleID);
             geo.updateRule();
         });
     }

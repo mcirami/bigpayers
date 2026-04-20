@@ -4,6 +4,7 @@ class deviceEdit {
     }
 
     loadRule() {
+        const ruleID = this.ruleID;
         this.loadDevices();
 
         this.getDeviceRuleInfo();
@@ -14,9 +15,9 @@ class deviceEdit {
         $("#deviceCreateButton").hide();
         $("#deviceUpdateButton").show();
 
-        $("#deviceUpdateButton").click(function () {
-            var geo = new deviceEdit(this.ruleID);
-            geo.updateRule();
+        $("#deviceUpdateButton").off("click").on("click", function () {
+            var device = new deviceEdit(ruleID);
+            device.updateRule();
         });
     }
 

@@ -286,15 +286,15 @@
                         }
 
                         if (userType !== 3 && canCreateOffers) {
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' href='/offer_update.php?idoffer=" + offer.idoffer + "'>Edit</a>";
+                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
                         }
 
                         if (canEditOfferRules && userType !== 3) {
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' href='/offer_edit_rules.php?offid=" + offer.idoffer + "'>Rules</a>";
+                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
                         }
 
                         if (userType !== 3) {
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' href='/offer_details.php?idoffer=" + offer.idoffer + "'>View</a>";
+                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
                         }
 
                         if (userType === 0) {

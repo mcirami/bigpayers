@@ -181,12 +181,14 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             });
         });
     });
-    Route::group(['prefix' => 'offer'], function () {
-        Route::get('manage', [OfferController::class, 'showManage']);
-        Route::get('{id}/request', [OfferController::class, 'requestOffer'])->middleware('role:3');
-        Route::group(['middleware' => 'role:0'], function () {
-            Route::get('{id}/dupe', [OfferController::class, 'dupe']);
-            Route::get('{id}/delete', [OfferController::class, 'delete']);
+	    Route::group(['prefix' => 'offer'], function () {
+	        Route::get('manage', [OfferController::class, 'showManage']);
+	        Route::get('{id}/request', [OfferController::class, 'requestOffer'])->middleware('role:3');
+	        Route::get('view/{id}', [OfferController::class, 'showView'])->middleware('role:0,1,2');
+	        Route::get('rules/{id}', [OfferController::class, 'showRules'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::group(['middleware' => 'role:0'], function () {
+	            Route::get('{id}/dupe', [OfferController::class, 'dupe']);
+	            Route::get('{id}/delete', [OfferController::class, 'delete']);
         });
         Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('offer.clicks.search');
@@ -194,6 +196,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
             Route::get('create', [OfferController::class, 'showCreate']);
             Route::post('create', [OfferController::class, 'create']);
             Route::get("edit/{id}", [OfferController::class, 'showEdit']);
+            Route::post("edit/{id}", [OfferController::class, 'update']);
             Route::get('mass-assign', [OfferController::class, 'showMassAssign']);
             Route::post('mass-assign', [OfferController::class, 'massAssign']);
             Route::get('assignableUsers', [OfferController::class, 'getAssignableUsers']);

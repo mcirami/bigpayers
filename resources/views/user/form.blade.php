@@ -16,11 +16,12 @@
         $targetUser = $managedUser;
         $currentRole = $isEdit ? $targetUser->getRole() : null;
         $roleLabels = [
+            \App\Privilege::ROLE_GOD => 'God',
             \App\Privilege::ROLE_ADMIN => 'Admin',
             \App\Privilege::ROLE_MANAGER => $accountTypeLabel,
             \App\Privilege::ROLE_AFFILIATE => $affiliateTypeLabel,
         ];
-        $selectedRoleLabel = $roleLabels[$selectedRole] ?? 'User';
+        $selectedRoleLabel = $roleLabels[$isEdit ? $currentRole : $selectedRole] ?? 'User';
         $statusLabel = $isEdit ? ((int) $targetUser->status === 1 ? 'Active' : 'Disabled') : 'Ready';
     @endphp
 

@@ -1,7 +1,7 @@
 @extends('report.template')
 
 @section('report-title')
-    {{$offer->offer_name}}'s Conversions By Country
+    {{ \Illuminate\Support\Str::limit($offer->offer_name, 32) }}'s Conversions By Country
 @endsection
 
 @section('table-options')

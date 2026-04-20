@@ -429,7 +429,7 @@ class Geo implements Rule
         foreach (static::$countries as $key => $val) {
             echo "<tr id='{$key}'>";
             echo "<td>{$val}</td>";
-            echo "<td><a id='_{$key}' onclick='addCountry(\"{$key}\");' href='javascript:void(0);'><img id='{$key}_img' src='images/icons/add.png'></a></td>";
+            echo "<td><button type='button' id='_{$key}' class='bp-rule-action-button' onclick='addCountry(\"{$key}\");'><span class='bp-rule-action-button-text'>Add</span></button></td>";
             echo "</tr>";
 
         }
