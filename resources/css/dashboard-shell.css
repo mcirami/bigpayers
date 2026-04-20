@@ -1019,6 +1019,161 @@
     white-space: nowrap;
   }
 
+  .bp-settings-color-grid {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .bp-settings-main-grid {
+    display: grid;
+    gap: 1.5rem;
+    align-items: start;
+  }
+
+  .bp-settings-details-grid {
+    display: grid;
+    gap: 1.1rem;
+    align-items: start;
+  }
+
+  .bp-settings-details-grid .bp-form-field {
+    align-content: start;
+  }
+
+  .bp-settings-color-card {
+    display: grid;
+    gap: 1rem;
+    padding: 1.2rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, 0.74);
+  }
+
+  .bp-settings-color-head {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.95rem;
+    align-items: start;
+  }
+
+  .bp-settings-color-swatch {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+
+  .bp-settings-color-controls {
+    display: grid;
+    grid-template-columns: 4.25rem minmax(0, 1fr);
+    gap: 0.85rem;
+    align-items: center;
+  }
+
+  .bp-settings-color-picker {
+    width: 100%;
+    height: 3rem;
+    padding: 0.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.3);
+  }
+
+  .bp-settings-color-input {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .bp-settings-asset-card {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1.1rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, 0.76);
+  }
+
+  .bp-settings-logo-preview {
+    max-width: 13rem;
+    max-height: 4rem;
+    object-fit: contain;
+    border-radius: 0.9rem;
+    background: rgba(248, 250, 252, 0.9);
+    padding: 0.75rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+  }
+
+  .bp-settings-favicon-row {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+  }
+
+  .bp-settings-favicon-preview,
+  .bp-settings-favicon-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 0.85rem;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(248, 250, 252, 0.92);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #475569;
+  }
+
+  .bp-notification-row-unread td {
+    background: rgba(34, 197, 94, 0.08);
+  }
+
+  .bp-notification-body {
+    color: #334155;
+    font-size: 1rem;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  .bp-table-actions form {
+    display: inline-flex;
+    margin: 0;
+  }
+
+  .bp-notification-recipient {
+    align-items: flex-start;
+  }
+
+  .bp-notification-recipient .bp-form-note {
+    display: block;
+    margin-top: 0.2rem;
+  }
+
+  .bp-token-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    margin-top: 0.85rem;
+  }
+
+  .bp-token-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.2rem;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.06);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    color: #0f172a;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.84rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
   .bp-toggle-inline {
     display: inline-flex;
     align-items: center;
@@ -1345,6 +1500,14 @@
   .bp-form-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .bp-settings-color-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bp-settings-details-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1024px) {
@@ -1393,5 +1556,15 @@
     min-height: 2.75rem;
     padding: 0.7rem 0.95rem;
     font-size: 0.88rem;
+  }
+
+  .bp-settings-color-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1199px) {
+  .bp-settings-main-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   }
 }

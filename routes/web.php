@@ -16,6 +16,7 @@ use App\Privilege;
 use Illuminate\Support\Facades\Route;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\LanderController;
 use App\Http\Controllers\LegacyLoginController;
 use App\Http\Controllers\RelevanceReactorController;
@@ -34,6 +35,10 @@ use App\Http\Controllers\Report\SubReportController;
 use App\Http\Controllers\Report\PayoutReportController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CampaignController;
+use App\Http\Controllers\ClickSearchController;
+use App\Http\Controllers\GlobalPostbackController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\EmailPoolController;
 use App\Http\Controllers\AdjustmentsController;
 use App\Http\Controllers\Sms\SmsApiController;
@@ -53,6 +58,15 @@ Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
+    Route::get('click-search', [ClickSearchController::class, 'show'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('ip-blacklist', [IPBlacklistController::class, 'index'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('ip-blacklist/create', [IPBlacklistController::class, 'create'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('ip-blacklist/create', [IPBlacklistController::class, 'store'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('ip-blacklist/{id}/edit', [IPBlacklistController::class, 'edit'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('ip-blacklist/{id}/edit', [IPBlacklistController::class, 'update'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('ip-blacklist/{id}/delete', [IPBlacklistController::class, 'destroy'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('global-postback', [GlobalPostbackController::class, 'show']);
+    Route::post('global-postback', [GlobalPostbackController::class, 'update']);
 	Route::get('verification', [SmsOrderController::class, 'show'])->middleware(
 		'role:0,3',
 		'permissions:' . Permissions::SMS_CHAT
@@ -198,6 +212,16 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::get('{id}/edit', [CampaignController::class, 'edit']);
         Route::post('{id}/edit', [CampaignController::class, 'update']);
     });
+    Route::group(['prefix' => 'notifications'], function () {
+        Route::get('', [NotificationController::class, 'index']);
+        Route::get('create', [NotificationController::class, 'create'])->middleware('permissions:' . Permissions::CREATE_NOTIFICATIONS);
+        Route::post('create', [NotificationController::class, 'store'])->middleware('permissions:' . Permissions::CREATE_NOTIFICATIONS);
+        Route::get('{id}', [NotificationController::class, 'show']);
+        Route::post('{id}/mark-read', [NotificationController::class, 'markRead']);
+        Route::post('{id}/delete', [NotificationController::class, 'destroy']);
+    });
+    Route::get('settings', [SettingsController::class, 'show'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('settings', [SettingsController::class, 'update'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::group(['prefix' => 'email/pools', 'middleware' => "permissions:" . Permissions::EMAIL_POOLS], function () {
         Route::get('', [EmailPoolController::class, 'showAffiliateEmailPools']);
         Route::get('{id}/download', [EmailPoolController::class, 'downloadEmailPool']);

@@ -1,6 +1,7 @@
 @php
     $company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
     $user = \LeadMax\TrackYourStats\System\Session::userData();
+    $isAdminLogin = request()->has('adminLogin');
     $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];
     $logoPath = $webroot . $company->getImgDir() . '/logo.png';
     $faviconPath = $webroot . $company->getImgDir() . '/favicon.ico';
@@ -49,7 +50,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/font-awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260417d">
+    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260417g">
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
     @stack('head')
     <title>{{ $companyName }}</title>
@@ -60,7 +61,7 @@
     <div class="bp-shell-layout">
         <aside class="bp-sidebar bp-sidebar-desktop">
             <div class="space-y-8">
-                <a href="{{ $webroot }}" class="bp-brand">
+                <a href="{{ $webroot }}{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-brand">
                     <span class="bp-brand-mark">
                         <img src="{{ $logoPath }}" alt="{{ $companyName }} logo"/>
                     </span>
@@ -77,14 +78,14 @@
                 <p class="bp-profile-kicker">Signed in</p>
                 <p class="bp-profile-name">{{ trim($user->first_name . ' ' . $user->last_name) }}</p>
                 <p class="bp-profile-email">{{ $user->email }}</p>
-                <a href="/logout" class="bp-sidebar-logout">Logout</a>
+                <a href="/logout{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-sidebar-logout">Logout</a>
             </div>
         </aside>
 
         <aside class="bp-mobile-drawer" data-dashboard-nav>
             <div class="space-y-8">
                 <div class="flex items-center justify-between gap-4">
-                    <a href="{{ $webroot }}" class="bp-brand">
+                    <a href="{{ $webroot }}{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-brand">
                         <span class="bp-brand-mark">
                             <img src="{{ $logoPath }}" alt="{{ $companyName }} logo"/>
                         </span>
@@ -117,8 +118,8 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="/user/{{ $user->idrep }}/edit" class="bp-button-secondary">Edit account</a>
-                    <a href="/logout" class="bp-button-primary">Logout</a>
+                    <a href="/user/{{ $user->idrep }}/edit{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-button-secondary">Edit account</a>
+                    <a href="/logout{{ $isAdminLogin ? '?adminLogin=1' : '' }}" class="bp-button-primary">Logout</a>
                 </div>
             </header>
 
@@ -161,6 +162,52 @@
 
     <script>
         (() => {
+            const persistAdminLogin = {{ $isAdminLogin ? 'true' : 'false' }};
+
+            if (persistAdminLogin) {
+                document.querySelectorAll('a[href]').forEach((link) => {
+                    const href = link.getAttribute('href');
+
+                    if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) {
+                        return;
+                    }
+
+                    try {
+                        const url = new URL(href, window.location.origin);
+
+                        if (url.origin !== window.location.origin) {
+                            return;
+                        }
+
+                        url.searchParams.set('adminLogin', '1');
+                        link.setAttribute('href', url.pathname + url.search + url.hash);
+                    } catch (error) {
+                        // Leave malformed links untouched.
+                    }
+                });
+
+                document.querySelectorAll('form[action]').forEach((form) => {
+                    const action = form.getAttribute('action');
+
+                    if (!action || action.startsWith('javascript:')) {
+                        return;
+                    }
+
+                    try {
+                        const url = new URL(action, window.location.origin);
+
+                        if (url.origin !== window.location.origin) {
+                            return;
+                        }
+
+                        url.searchParams.set('adminLogin', '1');
+                        form.setAttribute('action', url.pathname + url.search + url.hash);
+                    } catch (error) {
+                        // Leave malformed actions untouched.
+                    }
+                });
+            }
+
             const nav = document.querySelector('[data-dashboard-nav]');
             const overlay = document.querySelector('[data-dashboard-overlay]');
             const openers = document.querySelectorAll('[data-dashboard-open]');

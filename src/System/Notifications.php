@@ -56,8 +56,8 @@ class Notifications
         echo "<p>{$selected["author_user_name"]}</p>";
         echo "<br/>";
         echo "
-    <a class='btn btn-default btn-sm' href='notifications.php'><img src='/images/icons/arrow_turn_left.png' alt=''> &nbsp;Back</a>
- <a class='btn btn-default btn-sm' href='notifications.php?action=mark&id={$id}'><img src='/images/icons/folder_table.png' alt='Mark as Read'> &nbsp;Mark as Read</a>
+    <a class='btn btn-default btn-sm' href='/notifications'><img src='/images/icons/arrow_turn_left.png' alt=''> &nbsp;Back</a>
+ <a class='btn btn-default btn-sm' href='/notifications/{$id}'><img src='/images/icons/folder_table.png' alt='Open'> &nbsp;Open</a>
                         <a class='btn btn-default btn-sm' onclick='confirmPlease({$id});' href='javascript:void(0);'><img src='/images/icons/bin.png' alt='Delete'>&nbsp; Delete</a>";
 
 
@@ -289,7 +289,7 @@ class Notifications
                     $body = charLimit($notification["body"], 15);
 
                     echo " <li>
-                        <img src=\"{$webroot}/images/icon-mail.png\" alt=\"\"><p><a href='/notifications.php?action=view&id={$notification["id"]}'>{$title}</a></p><p class=\"time\">{$carboon}</p>
+                        <img src=\"{$webroot}/images/icon-mail.png\" alt=\"\"><p><a href='/notifications/{$notification["id"]}'>{$title}</a></p><p class=\"time\">{$carboon}</p>
                     </li>";
                 } else {
                     break;
@@ -318,7 +318,7 @@ class Notifications
             echo "<td>{$notification["author_user_name"]}</td>";
             echo "<td>
                      
-                                <a class='btn btn-default btn-sm' href='notifications.php?action=view&id={$notification["id"]}'>View</a>
+                                <a class='btn btn-default btn-sm' href='/notifications/{$notification["id"]}'>View</a>
 
                         <a class='btn btn-default btn-sm' href='notifications.php?action=mark&id={$notification["id"]}'>Mark as Read</a>
                         <a class='btn btn-default btn-sm' onclick='confirmPlease({$notification["id"]});' href='javascript:void(0);'>Delete</a>

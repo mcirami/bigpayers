@@ -68,7 +68,7 @@ class NavBar
 
 
             "Global PostBack" => [
-                'url' => '/global_postback.php',
+                'url' => '/global-postback',
                 'required_user_types' => [\App\Privilege::ROLE_AFFILIATE],
             ],
 
@@ -83,7 +83,7 @@ class NavBar
     //        ],
 
             "Click Search" => [
-                'url' => "/clicksearch.php",
+                'url' => "/click-search",
                 "required_user_types" => [\App\Privilege::ROLE_GOD],
             ],
 
@@ -172,15 +172,15 @@ class NavBar
 
             "Offer URLs" => ['url' => '/offer/urls', 'required_permissions' => ['edit_offer_urls']],
 
-            "IP Blacklist" => ['url' => '/ip_black_list.php', "required_user_types" => [\App\Privilege::ROLE_GOD]],
+            "IP Blacklist" => ['url' => '/ip-blacklist', "required_user_types" => [\App\Privilege::ROLE_GOD]],
 
-            "Notifications" => ['url' => '/notifications.php'],
+            "Notifications" => ['url' => '/notifications'],
 
 //            "Salaries" => ["url" => "/salaries.php", "possible_permissions" => ["pay_salaries"]],
 
 //            "Bonuses" => ["url" => "/bonus.php", "possible_permissions" => ["create_bonuses", "assign_bonuses"]],
 
-            "Settings" => ["url" => "/settings.php", "required_user_types" => [\App\Privilege::ROLE_GOD]],
+            "Settings" => ["url" => "/settings", "required_user_types" => [\App\Privilege::ROLE_GOD]],
 
         ],
 
