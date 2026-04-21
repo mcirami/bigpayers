@@ -124,7 +124,14 @@ class UserController extends Controller
 
         $selectedPermissions = $this->filterSelectedPermissions($validated['permissions'] ?? [], $targetRole);
 
-        $newUserId = DB::transaction(function () use ($validated, $targetRole, $selectedPermissions, $request) {
+        $shouldRebuildTree = (int) $validated['status'] === 1;
+
+        $permissionList = Permissions::defaultUserPermissions([], $targetRole);
+        foreach ($selectedPermissions as $permissionKey) {
+            $permissionList[$permissionKey] = 1;
+        }
+
+        $newUserId = DB::transaction(function () use ($validated, $targetRole, $permissionList) {
             $userId = DB::table('rep')->insertGetId([
                 'first_name' => $validated['first_name'] ?? '',
                 'last_name' => $validated['last_name'] ?? '',
@@ -139,43 +146,48 @@ class UserController extends Controller
                 'company_name' => $validated['company_name'] ?? '',
             ]);
 
-            Privileges::create($userId, $targetRole);
+            DB::table('privileges')->insert([
+                'rep_idrep' => $userId,
+                'is_god' => $targetRole === Privilege::ROLE_GOD ? 1 : 0,
+                'is_admin' => $targetRole === Privilege::ROLE_ADMIN ? 1 : 0,
+                'is_manager' => $targetRole === Privilege::ROLE_MANAGER ? 1 : 0,
+                'is_rep' => $targetRole === Privilege::ROLE_AFFILIATE ? 1 : 0,
+            ]);
 
-            $permissionService = new Permissions();
-            $permissionList = Permissions::defaultUserPermissions([], $targetRole);
-            foreach ($selectedPermissions as $permissionKey) {
-                $permissionList[$permissionKey] = 1;
-            }
-            $permissionList['aff_id'] = $userId;
-            $permissionService->createPermissions($permissionList);
-
-            $this->rebuildUserTree();
+            DB::table('permissions')->insert($permissionList + ['aff_id' => $userId]);
 
             if ($targetRole === Privilege::ROLE_AFFILIATE) {
-                RepHasOffer::assignAffiliateToPublicOffers($userId);
-                ReportPermissions::createPermissions($userId);
+                DB::table('report_permissions')->insert(['user_id' => $userId]);
             }
-
-            if (
-                Session::permissions()->can(Permissions::EDIT_REFERRALS) &&
-                $request->boolean('enable_referral') &&
-                !empty($validated['referral_user_id']) &&
-                !empty($validated['start_date']) &&
-                !empty($validated['referral_type']) &&
-                array_key_exists('amount', $validated)
-            ) {
-                Referrals::addReferral($validated['referral_user_id'], $userId, [
-                    'start_date' => $validated['start_date'],
-                    'end_date' => $validated['end_date'] ?? '',
-                    'referral_type' => $validated['referral_type'],
-                    'payout' => $validated['amount'] ?? 0,
-                ]);
-            }
-
-            Bonus::assignUsersInheritableBonuses([$userId], (int) $validated['referrer_repid']);
 
             return $userId;
         });
+
+        if ($targetRole === Privilege::ROLE_AFFILIATE) {
+            RepHasOffer::assignAffiliateToPublicOffers($newUserId);
+        }
+
+        if (
+            Session::permissions()->can(Permissions::EDIT_REFERRALS) &&
+            $request->boolean('enable_referral') &&
+            !empty($validated['referral_user_id']) &&
+            !empty($validated['start_date']) &&
+            !empty($validated['referral_type']) &&
+            array_key_exists('amount', $validated)
+        ) {
+            Referrals::addReferral($validated['referral_user_id'], $newUserId, [
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'] ?? '',
+                'referral_type' => $validated['referral_type'],
+                'payout' => $validated['amount'] ?? 0,
+            ]);
+        }
+
+        Bonus::assignUsersInheritableBonuses([$newUserId], (int) $validated['referrer_repid']);
+
+        if ($shouldRebuildTree) {
+            $this->rebuildUserTree();
+        }
 
         return redirect("/user/{$newUserId}/edit")->with('message', 'User created successfully.');
     }
@@ -479,7 +491,7 @@ class UserController extends Controller
             abort(403);
         }
 
-        DB::transaction(function () use ($user, $validated, $request) {
+        DB::transaction(function () use ($user, $validated) {
             DB::table('rep')
                 ->where('idrep', $user->idrep)
                 ->update([
@@ -487,32 +499,39 @@ class UserController extends Controller
                     'referrer_repid' => $validated['referrer_repid'],
                 ]);
 
-            Tree::rebuild_tree(1, 1);
-            Privileges::create($user->idrep, Privilege::ROLE_AFFILIATE);
+            DB::table('privileges')->insert([
+                'rep_idrep' => $user->idrep,
+                'is_god' => 0,
+                'is_admin' => 0,
+                'is_manager' => 0,
+                'is_rep' => 1,
+            ]);
 
-            $permission = new Permissions();
-            $permission->createPermissions(['aff_id' => $user->idrep]);
+            DB::table('permissions')->insert(['aff_id' => $user->idrep]);
 
-            RepHasOffer::assignAffiliateToPublicOffers($user->idrep);
-
-            if (
-                Session::permissions()->can(Permissions::EDIT_REFERRALS) &&
-                $request->boolean('enable_referral') &&
-                !empty($validated['referral_user_id']) &&
-                !empty($validated['start_date']) &&
-                !empty($validated['referral_type']) &&
-                array_key_exists('amount', $validated)
-            ) {
-                Referrals::addReferral($validated['referral_user_id'], $user->idrep, [
-                    'start_date' => $validated['start_date'],
-                    'end_date' => $validated['end_date'] ?? '',
-                    'referral_type' => $validated['referral_type'],
-                    'payout' => $validated['amount'] ?? 0,
-                ]);
-            }
-
-            Bonus::assignUsersInheritableBonuses([$user->idrep], $validated['referrer_repid']);
+            DB::table('report_permissions')->insert(['user_id' => $user->idrep]);
         });
+
+        Tree::rebuild_tree(1, 1);
+        RepHasOffer::assignAffiliateToPublicOffers($user->idrep);
+
+        if (
+            Session::permissions()->can(Permissions::EDIT_REFERRALS) &&
+            $request->boolean('enable_referral') &&
+            !empty($validated['referral_user_id']) &&
+            !empty($validated['start_date']) &&
+            !empty($validated['referral_type']) &&
+            array_key_exists('amount', $validated)
+        ) {
+            Referrals::addReferral($validated['referral_user_id'], $user->idrep, [
+                'start_date' => $validated['start_date'],
+                'end_date' => $validated['end_date'] ?? '',
+                'referral_type' => $validated['referral_type'],
+                'payout' => $validated['amount'] ?? 0,
+            ]);
+        }
+
+        Bonus::assignUsersInheritableBonuses([$user->idrep], $validated['referrer_repid']);
 
         return redirect('/user/pending')->with('message', config('branding.affiliate.singular') . ' activated successfully.');
     }

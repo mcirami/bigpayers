@@ -42,9 +42,10 @@ class Tree
         // the right value of this node is the left value + 1
         $right = $left + 1;
 
-        $sql = 'SELECT idrep FROM rep WHERE referrer_repid= :parent AND status = 1';
+        $sql = 'SELECT idrep FROM rep WHERE referrer_repid = :parent AND status = 1 AND idrep != :self_id ORDER BY idrep ASC';
         $prep = $db->prepare($sql);
         $prep->bindParam(":parent", $referrer_repid);
+        $prep->bindParam(":self_id", $referrer_repid);
         $prep->execute();
 
 
@@ -130,4 +131,3 @@ class Tree
 
 
 }
-

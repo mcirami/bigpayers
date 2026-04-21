@@ -231,9 +231,10 @@ class User extends Login
         // the right value of this node is the left value + 1
         $right = $left + 1;
 
-        $sql = 'SELECT idrep FROM rep WHERE referrer_repid= :parent ';
+        $sql = 'SELECT idrep FROM rep WHERE referrer_repid = :parent AND idrep != :self_id ORDER BY idrep ASC';
         $prep = $db->prepare($sql);
         $prep->bindParam(":parent", $referrer_repid);
+        $prep->bindParam(":self_id", $referrer_repid);
         $prep->execute();
 
 
