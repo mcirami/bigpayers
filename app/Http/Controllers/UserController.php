@@ -149,7 +149,7 @@ class UserController extends Controller
             $permissionList['aff_id'] = $userId;
             $permissionService->createPermissions($permissionList);
 
-            Tree::rebuild_tree(1, 1);
+            $this->rebuildUserTree();
 
             if ($targetRole === Privilege::ROLE_AFFILIATE) {
                 RepHasOffer::assignAffiliateToPublicOffers($userId);
@@ -243,7 +243,12 @@ class UserController extends Controller
 
         $selectedPermissions = $this->filterSelectedPermissions($validated['permissions'] ?? [], $targetRole);
 
-        DB::transaction(function () use ($validated, $user, $targetRole, $canManageRole, $selectedPermissions) {
+        $requestedOwner = (int) ($validated['referrer_repid'] ?? $user->referrer_repid);
+        $requestedStatus = (int) ($validated['status'] ?? $user->status);
+        $shouldRebuildTree = $this->shouldRebuildUserTree($user, $requestedOwner, $requestedStatus);
+        $shouldReassignBonuses = $this->shouldReassignInheritableBonuses($user, $requestedOwner);
+
+        DB::transaction(function () use ($validated, $user, $targetRole, $canManageRole, $selectedPermissions, $shouldRebuildTree, $shouldReassignBonuses) {
             $updatePayload = [
                 'first_name' => $validated['first_name'] ?? '',
                 'last_name' => $validated['last_name'] ?? '',
@@ -289,14 +294,18 @@ class UserController extends Controller
                 }
             }
 
-            Tree::rebuild_tree(1, 1);
+            if ($shouldRebuildTree) {
+                $this->rebuildUserTree();
+            }
 
             if (!empty($validated['referrer_box'])) {
                 Referrals::updateReferrer($user->idrep, $validated['referrer_box']);
             }
 
             $bonusOwner = (int) ($updatePayload['referrer_repid'] ?? $user->referrer_repid);
-            Bonus::assignUsersInheritableBonuses([$user->idrep], $bonusOwner);
+            if ($shouldReassignBonuses) {
+                Bonus::assignUsersInheritableBonuses([$user->idrep], $bonusOwner);
+            }
         });
 
         return redirect("/user/{$user->idrep}/edit")->with('message', 'User updated successfully.');
@@ -1079,6 +1088,22 @@ class UserController extends Controller
     private function userHasChildren(User $user): bool
     {
         return Tree::findChildren((int) $user->lft, (int) $user->rgt) !== 0;
+    }
+
+    private function rebuildUserTree(): void
+    {
+        Tree::rebuild_tree(1, 1);
+    }
+
+    private function shouldRebuildUserTree(User $user, int $requestedOwner, int $requestedStatus): bool
+    {
+        return (int) $user->referrer_repid !== $requestedOwner
+            || (int) $user->status !== $requestedStatus;
+    }
+
+    private function shouldReassignInheritableBonuses(User $user, int $requestedOwner): bool
+    {
+        return (int) $user->referrer_repid !== $requestedOwner;
     }
 
     private function userHasReferralStructure(User $user): bool

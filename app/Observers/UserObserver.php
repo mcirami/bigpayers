@@ -2,7 +2,8 @@
 
 namespace App\Observers;
 
-use PDO;
+use App\User;
+use LeadMax\TrackYourStats\User\Tree;
 
 class UserObserver
 {
@@ -24,70 +25,15 @@ class UserObserver
          */
     }
 
-    public function created()
+    public function saved(User $user): void
     {
-        $this->rebuild_tree(1, 1);
-    }
-
-    public function updated()
-    {
-        $this->rebuild_tree(1, 1);
-    }
-
-    public function saved()
-    {
-        $this->rebuild_tree(1, 1);
-    }
-
-    public function deleted()
-    {
-        $this->rebuild_tree(1, 1);
-    }
-
-
-    /**
-     * Rebuilds the User Hierarchy tree.
-     * TODO: Should be refactored.
-     * @param $referrer_repid
-     * @param $left
-     * @return int|mixed
-     */
-    function rebuild_tree($referrer_repid, $left)
-    {
-        $db = \DB::getPdo();
-        // the right value of this node is the left value + 1
-        $right = $left + 1;
-
-        $sql = 'SELECT idrep FROM rep WHERE referrer_repid= :parent ';
-        $prep = $db->prepare($sql);
-        $prep->bindParam(":parent", $referrer_repid);
-        $prep->execute();
-
-
-        // get all children of this node
-        $result = $prep->fetchAll(PDO::FETCH_ASSOC);
-
-        foreach ($result as $row) {
-            // recursive execution of this function for each
-            // child of this node
-            // $right is the current right value, which is
-            // incremented by the rebuild_tree function
-            $right = $this->rebuild_tree($row['idrep'], $right);
+        if ($user->wasRecentlyCreated || $user->wasChanged(['referrer_repid', 'status'])) {
+            Tree::rebuild_tree(1, 1);
         }
+    }
 
-        // we've got the left value, and now that we've processed
-        // the children of this node we also know the right value
-        $sql = "UPDATE rep SET lft=:left, rgt=
-        :right WHERE idrep=:parent ";
-
-        $prep = $db->prepare($sql);
-        $prep->bindParam(":left", $left);
-        $prep->bindParam(":right", $right);
-        $prep->bindParam(":parent", $referrer_repid);
-
-        $prep->execute();
-
-        // return the right value of this node + 1
-        return $right + 1;
+    public function deleted(User $user): void
+    {
+        Tree::rebuild_tree(1, 1);
     }
 }

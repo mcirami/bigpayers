@@ -280,28 +280,33 @@ class OfferController extends Controller
 	public function create(Request $request)
 	{
 		$this->validateOfferRequest($request);
-		DB::beginTransaction();
-		$offer = new Offer($request->all());
-		if (!$request->has('campaign_id')) {
-			$offer->campaign_id = Campaigns::getDefaultCampaignId();
-		}
-		$offer->offer_timestamp = Carbon::now('UTC')->format('Y-m-d H:i:s');
-		$offer->created_by = \LeadMax\TrackYourStats\System\Session::user()->idrep;
-		$offer->save();
+		DB::transaction(function () use ($request) {
+			$offer = new Offer($request->all());
+			if (!$request->has('campaign_id')) {
+				$offer->campaign_id = Campaigns::getDefaultCampaignId();
+			}
+			$offer->offer_timestamp = Carbon::now('UTC')->format('Y-m-d H:i:s');
+			$offer->created_by = \LeadMax\TrackYourStats\System\Session::user()->idrep;
+			$offer->save();
 
-		$users = User::query()->whereIn('idrep', $request->users)->get();
-		if ($users->first() && $users->first()->role != \App\Privilege::ROLE_AFFILIATE) {
-			$users = User::withRole(\App\Privilege::ROLE_AFFILIATE)->whereIn('referrer_repid', $users->pluck('idrep'))->get();
-		}
+			$userIds = User::query()
+				->withRole(\App\Privilege::ROLE_AFFILIATE)
+				->whereIn('rep.idrep', $request->users)
+				->pluck('rep.idrep')
+				->map(fn ($value) => (int) $value)
+				->unique()
+				->values();
 
-		foreach ($users as $user) {
-			$userOffer = new UserOffer();
-			$userOffer->rep_idrep = $user->idrep;
-			$userOffer->offer_idoffer = $offer->idoffer;
-			$userOffer->payout = $offer->payout;
-			$userOffer->save();
-		}
-		DB::commit();
+			if ($userIds->isNotEmpty()) {
+				$rows = $userIds->map(fn (int $userId) => [
+					'rep_idrep' => $userId,
+					'offer_idoffer' => $offer->idoffer,
+					'payout' => $offer->payout,
+				])->all();
+
+				DB::table('rep_has_offer')->insert($rows);
+			}
+		});
 
 		return redirect('/offer/manage')->with('message', 'Offer created successfully.');
 	}

@@ -56,7 +56,7 @@ class SettingsController extends Controller
             self::COLOR_FIELDS
         ));
 
-        $company->updateCompany(
+        $updated = $company->updateCompany(
             $validated['shortHand'],
             $colorString,
             $validated['email'] ?? '',
@@ -64,6 +64,12 @@ class SettingsController extends Controller
             $validated['loginURL'] ?? '',
             $validated['landingPage'] ?? ''
         );
+
+        if (!$updated) {
+            throw ValidationException::withMessages([
+                'shortHand' => 'Unable to save company settings right now. Please try again.',
+            ]);
+        }
 
         $this->storeBrandAsset($request, 'logo', 'logo.png');
         $this->storeBrandAsset($request, 'favicon', 'favicon.ico');
