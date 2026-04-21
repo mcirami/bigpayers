@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use LeadMax\TrackYourStats\User\Login;
 use LeadMax\TrackYourStats\User\User;
 use LeadMax\TrackYourStats\System\Company;
@@ -68,20 +69,35 @@ class LegacyLoginController extends Controller
 
 	private function loginView(User $user, Company $company, $error = null)
 	{
-		if ($company->login_theme != '') {
-			$filePath = public_path('login_themes/'.$company->login_theme.'/index.php');
-			if (file_exists($filePath)) {
-				ob_start();
-				include $filePath;
-				return response(ob_get_clean());
-			}
-		}
+		$loginTheme = $this->resolveLoginTheme($company);
+		$themeCssPath = $loginTheme ? public_path("login_themes/{$loginTheme}/theme.css") : null;
+		$themeCssUrl = $themeCssPath && File::exists($themeCssPath)
+			? "/login_themes/{$loginTheme}/theme.css?v=" . filemtime($themeCssPath)
+			: null;
 
 		return view('auth.login', [
 			'webroot' => getWebRoot(),
 			'user' => $user,
 			'error' => $error,
+			'company' => $company,
+			'loginTheme' => $loginTheme,
+			'themeCssUrl' => $themeCssUrl,
 		]);
+	}
+
+	private function resolveLoginTheme(Company $company): ?string
+	{
+		$savedTheme = trim((string) ($company->login_theme ?? ''));
+
+		if ($savedTheme !== '' && File::exists(public_path("login_themes/{$savedTheme}/theme.css"))) {
+			return $savedTheme;
+		}
+
+		if (File::exists(public_path('login_themes/command-center/theme.css'))) {
+			return 'command-center';
+		}
+
+		return null;
 	}
     public function logout()
     {

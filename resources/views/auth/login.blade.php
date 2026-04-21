@@ -1,88 +1,125 @@
-<?php
-$webroot = getWebRoot();
-?>
+@php
+    /** @var \LeadMax\TrackYourStats\System\Company $company */
+    $logoPath = $company->getImgDir() . '/logo.png';
+    $faviconPath = $company->getImgDir() . '/favicon.ico';
+    $rawColors = $company->getColors();
 
-        <!DOCTYPE html>
-<html>
+    $hexColor = function ($value, $fallback) {
+        $candidate = is_string($value) ? ltrim($value, '#') : '';
+        $candidate = preg_replace('/[^a-fA-F0-9]/', '', $candidate);
+
+        if (strlen($candidate) === 3) {
+            $candidate = $candidate[0] . $candidate[0] . $candidate[1] . $candidate[1] . $candidate[2] . $candidate[2];
+        }
+
+        if (strlen($candidate) !== 6) {
+            return $fallback;
+        }
+
+        return '#' . strtoupper($candidate);
+    };
+
+    $brandStrong = $hexColor($rawColors[3] ?? null, '#0F766E');
+    $brandSoft = $hexColor($rawColors[4] ?? null, '#F59E0B');
+    $brandDeep = $hexColor($rawColors[0] ?? null, '#0F172A');
+    $pageBase = $hexColor($rawColors[7] ?? null, '#F8FAFC');
+    $pageTint = $hexColor($rawColors[6] ?? null, '#E2E8F0');
+    $textMuted = $hexColor($rawColors[8] ?? null, '#475569');
+    $supportTelegram = $company->getSkype();
+    $themeClass = $loginTheme ? 'login-theme-' . str_replace(['/', '\\', ' '], '-', $loginTheme) : 'login-theme-default';
+@endphp
+<!DOCTYPE html>
+<html
+    lang="en"
+    style="
+        --login-brand-strong: {{ $brandStrong }};
+        --login-brand-soft: {{ $brandSoft }};
+        --login-brand-deep: {{ $brandDeep }};
+        --login-page-base: {{ $pageBase }};
+        --login-page-tint: {{ $pageTint }};
+        --login-text-muted: {{ $textMuted }};
+    "
+>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="shortcut icon" type="image/ico" href="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/favicon.ico"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css"/>
-    <link rel="stylesheet" href="<?php echo $webroot; ?>css/company.css">
-    <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
-    <link href="<?php echo $webroot; ?>css/drawer.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="<?php echo $webroot; ?>css/magic.min.css">
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/jquery_2.1.3_jquery.min.js"></script>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/jscolor.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="<?php echo $webroot; ?>js/main.js"></script>
-    <title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
-    <style>
-        .white_box { box-sizing: border-box; margin-top: 40px; }
-        .white_box_outer { float:none; margin:0 auto; max-width:400px; box-sizing:border-box; }
-        @media screen and (max-width: 768px) { .white_box_outer { max-width:none; float:left; width:100%; } }
-        .left_con01 { width:auto; padding:10px 10px 5px 17px; float:none; }
-        .heading_holder { margin:0 0 10px 0; }
-    </style>
+    <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
+    @if($themeCssUrl)
+        <link rel="stylesheet" type="text/css" href="{{ $themeCssUrl }}">
+    @endif
+    <title>{{ $company->getShortHand() }}</title>
 </head>
-<body style="background-color:#EAEEF1;">
-<div class="top_sec value_span1">
-    <div class="logo">
-        <a href="<?php echo $webroot ?>"><img src="<?= \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() ?>/logo.png" alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>" title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
-    </div>
-</div>
-<div class="white_box_outer">
-    <div class="clear"></div>
-    <div class="white_box value_span8">
-        <div class="com_acc">
-            <form method="post" class="login_form">
-				<?php echo csrf_field(); ?>
-                @if(request()->has('redirectUri'))
-                    <input type="hidden" name="redirectUri" value="{{ request('redirectUri') }}" />
-                @endif
-                <div class="left_con01">
-                    <div class="heading_holder">
-                        <span class="lft value_span9">{{ env('LOGIN_PAGE_TEXT') }}</span>
+<body class="login-page {{ $themeClass }}">
+<div class="login-shell">
+    <section class="login-shell__brand value_span1">
+        <div class="login-shell__brand-inner">
+            <a href="{{ $webroot }}" class="login-shell__logo-link" aria-label="{{ $company->getShortHand() }} home">
+                <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
+            </a>
+            <p class="login-shell__eyebrow">Affiliate login</p>
+            <h1 class="login-shell__title value_span2">{{ env('LOGIN_PAGE_TEXT') }}</h1>
+            <p class="login-shell__copy">
+                Access your dashboard, reporting, offers, and account tools from a login experience that now follows your install’s live brand settings.
+            </p>
+
+            <div class="login-shell__support">
+                @if($company->getEmail())
+                    <div class="login-shell__support-item">
+                        <span class="login-shell__support-label">Support Email</span>
+                        <a href="mailto:{{ $company->getEmail() }}" class="login-shell__support-value">{{ $company->getEmail() }}</a>
                     </div>
-                    <br/>
-                    @if(isset($error))
-                        <div class="alert alert-danger" style=" padding-bottom:5px;">
-                            <i class="glyphicon glyphicon-warning-sign"></i> &nbsp;<span style="color:red;">{{ $error }}</span>
-                        </div>
-                    @endif
-                    <p>
-                        <input type="text" name="txt_uname_email" placeholder="Enter Username" value="{{ $user->autoFillEmail }}" required/>
-                    </p>
-                    <p>
-                        <input type="password" name="txt_password" placeholder="Enter Password" required/>
-                    </p>
-                    <p>
-                        <a class="small_txt value_span10" style="font-size:14px;float:left;" href="aff_help.php">{{ env('FORGOT_PASS_LINK_TEXT') }}</a>
-                    </p>
-                    <span class="btn_yellow btn_wrap">
-                        <input type="submit" name="button" class="value_span5-1 value_span2 value_span4" value="{{ env('LOGIN_PAGE_BUTTON_TEXT') }}"/>
-                    </span>
-                    <br/>
+                @endif
+
+                @if($supportTelegram)
+                    <div class="login-shell__support-item">
+                        <span class="login-shell__support-label">Telegram</span>
+                        <span class="login-shell__support-value">{{ $supportTelegram }}</span>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </section>
+
+    <section class="login-shell__panel value_span8">
+        <div class="login-card">
+            <p class="login-card__kicker">Sign in</p>
+            <h2 class="login-card__title value_span9">Welcome back</h2>
+            <p class="login-card__copy value_span10">Use your account credentials to continue into the affiliate workspace.</p>
+
+            <form method="post" action="/login" class="login-form">
+                {!! csrf_field() !!}
+                @if(request()->has('redirectUri'))
+                    <input type="hidden" name="redirectUri" value="{{ request('redirectUri') }}"/>
+                @endif
+
+                @if(isset($error))
+                    <div class="login-alert">
+                        <strong>Unable to sign in.</strong>
+                        <span>{!! $error !!}</span>
+                    </div>
+                @endif
+
+                <label class="login-field">
+                    <span class="login-field__label">Username or email</span>
+                    <input type="text" name="txt_uname_email" value="{{ $user->autoFillEmail }}" placeholder="Enter username or email" required/>
+                </label>
+
+                <label class="login-field">
+                    <span class="login-field__label">Password</span>
+                    <input type="password" name="txt_password" placeholder="Enter password" required/>
+                </label>
+
+                <div class="login-form__row">
+                    <a class="login-form__link value_span5" href="aff_help.php">{{ env('FORGOT_PASS_LINK_TEXT') }}</a>
                 </div>
+
+                <button type="submit" name="button" class="login-form__submit value_span11 value_span2 value_span4">
+                    {{ env('LOGIN_PAGE_BUTTON_TEXT') }}
+                </button>
             </form>
         </div>
-    </div>
+    </section>
 </div>
-{{--<script type="text/javascript" src="js/dropdown.min.js"></script>
-<script type="text/javascript" src="js/jquery-ui.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/bootstrap-tooltip.js"></script>
-<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
-<script type="text/javascript" src="js/widget-staticRow.min.js"></script>
-<script type="text/javascript" src="js/moment-timezone-with-data.js"></script>
-<script type="text/javascript" src="js/jquery-ui-timepicker-addon.js"></script>
-<script type="text/javascript" src="js/drawer.min.js" charset="utf-8"></script>
-<script type="text/javascript">
-	$(document).ready(function () {
-		$('.drawer').drawer();
-		$('[data-toggle="popover"]').popover();
-	});
-</script>--}}
 </body>
 </html>

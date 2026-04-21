@@ -108,6 +108,16 @@
                             <input id="loginURL" name="loginURL" class="bp-form-input" type="text" value="{{ $settingsValues['loginURL'] }}">
                         </div>
 
+                        <div class="bp-form-field">
+                            <label class="bp-form-label" for="login_theme">Login Theme</label>
+                            <select id="login_theme" name="login_theme" class="bp-form-input">
+                                @foreach ($availableLoginThemes as $themeValue => $themeLabel)
+                                    <option value="{{ $themeValue }}" {{ $settingsValues['login_theme'] === $themeValue ? 'selected' : '' }}>{{ $themeLabel }}</option>
+                                @endforeach
+                            </select>
+                            <p class="bp-form-note">Loads the login layout from `/public/login_themes/&lt;theme&gt;/theme.css` while still using the shared brand colors and company logo.</p>
+                        </div>
+
                         <div class="bp-form-field bp-form-field-full">
                             <label class="bp-form-label" for="landingPage">Landing Page</label>
                             <input id="landingPage" name="landingPage" class="bp-form-input" type="text" value="{{ $settingsValues['landingPage'] }}">

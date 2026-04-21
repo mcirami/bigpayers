@@ -294,11 +294,12 @@ class Company
         $this->setSession();
     }
 
-    public function updateCompany($shortHand, $colors, $email, $skype, $loginURL, $landingPage)
+    public function updateCompany($shortHand, $colors, $email, $skype, $loginURL, $landingPage, $loginTheme = null)
     {
         try {
             $db   = DatabaseConnection::getMasterInstance();
-            $sql  = "UPDATE company SET shortHand = :shortHand, colors = :colors, email = :email, skype = :skype, login_url = :loginURL, landing_page = :landingPage WHERE subDomain = :subDomain";
+            $resolvedLoginTheme = $loginTheme ?? $this->login_theme;
+            $sql  = "UPDATE company SET shortHand = :shortHand, colors = :colors, email = :email, skype = :skype, login_url = :loginURL, landing_page = :landingPage, login_theme = :loginTheme WHERE subDomain = :subDomain";
             $prep = $db->prepare($sql);
             $prep->bindParam(":shortHand", $shortHand);
             $prep->bindParam(":colors", $colors);
@@ -307,6 +308,7 @@ class Company
             $prep->bindParam(":skype", $skype);
             $prep->bindParam(":loginURL", $loginURL);
             $prep->bindParam(":landingPage", $landingPage);
+            $prep->bindParam(":loginTheme", $resolvedLoginTheme);
 
 
             $prep->execute();

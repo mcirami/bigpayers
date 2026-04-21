@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use LeadMax\TrackYourStats\System\Company;
 
@@ -39,6 +41,7 @@ class SettingsController extends Controller
             'email' => 'nullable|email|max:255',
             'loginURL' => 'nullable|string|max:255',
             'landingPage' => 'nullable|string|max:255',
+            'login_theme' => ['nullable', 'string', Rule::in(array_keys($this->availableLoginThemes()))],
             'logo' => 'nullable|file|mimes:png|max:16384',
             'favicon' => 'nullable|file|max:16384',
         ] + $this->colorValidationRules());
@@ -63,7 +66,8 @@ class SettingsController extends Controller
             $validated['email'] ?? '',
             $validated['telegram'] ?? $validated['skype'] ?? '',
             $validated['loginURL'] ?? '',
-            $validated['landingPage'] ?? ''
+            $validated['landingPage'] ?? '',
+            $validated['login_theme'] ?? ''
         );
 
         if (!$updated) {
@@ -82,6 +86,8 @@ class SettingsController extends Controller
     {
         $company = Company::loadFromSession();
         $colors = $company->getColors();
+        $availableLoginThemes = $this->availableLoginThemes();
+        $savedLoginTheme = $company->login_theme ?: (array_key_first($availableLoginThemes) ?: '');
         $subDomain = Company::getCustomSub();
         $logoPath = public_path("images/{$subDomain}/logo.png");
         $faviconPath = public_path("images/{$subDomain}/favicon.ico");
@@ -105,7 +111,9 @@ class SettingsController extends Controller
                 'email' => old('email', $company->getEmail()),
                 'loginURL' => old('loginURL', $company->getLoginURL()),
                 'landingPage' => old('landingPage', $company->getLandingPage()),
+                'login_theme' => old('login_theme', $savedLoginTheme),
             ],
+            'availableLoginThemes' => $availableLoginThemes,
             'logoUrl' => file_exists($logoPath) ? "/images/{$subDomain}/logo.png?v=" . filemtime($logoPath) : null,
             'faviconUrl' => file_exists($faviconPath) ? "/images/{$subDomain}/favicon.ico?v=" . filemtime($faviconPath) : null,
             'subDomain' => $subDomain,
@@ -165,5 +173,30 @@ class SettingsController extends Controller
         File::ensureDirectoryExists($directory);
 
         $request->file($field)->move($directory, $filename);
+    }
+
+    private function availableLoginThemes(): array
+    {
+        $themeRoot = public_path('login_themes');
+
+        if (!File::isDirectory($themeRoot)) {
+            return [];
+        }
+
+        $themes = [];
+
+        foreach (File::directories($themeRoot) as $directory) {
+            $slug = basename($directory);
+
+            if (!File::exists($directory . DIRECTORY_SEPARATOR . 'theme.css')) {
+                continue;
+            }
+
+            $themes[$slug] = Str::headline(str_replace('-', ' ', $slug));
+        }
+
+        ksort($themes);
+
+        return $themes;
     }
 }
