@@ -96,7 +96,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
-                <table class="table table-condensed table-bordered table_01" id="mainTable">
+                <table class="table table-condensed table-bordered table_01 bp-offer-manage-table" id="mainTable">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -282,7 +282,7 @@
 
                         if (userType !== 3) {
                             html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";
-                            html += "<td class='value_span10 action_column'>";
+                            html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
                         }
 
                         if (userType !== 3 && canCreateOffers) {
@@ -303,7 +303,7 @@
                         }
 
                         if (userType !== 3) {
-                            html += "</td>";
+                            html += "</div></td>";
                         }
 
                         html += "</tr>";

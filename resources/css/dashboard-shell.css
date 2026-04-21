@@ -1329,8 +1329,29 @@
 
   .bp-table-actions {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
     gap: 0.65rem;
+  }
+
+  .bp-offer-manage-table td.action_column,
+  .bp-offer-manage-table td.actions {
+    display: table-cell;
+    vertical-align: top;
+  }
+
+  .bp-offer-manage-table .bp-table-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0.65rem;
+  }
+
+  .bp-offer-manage-table .bp-table-actions > a,
+  .bp-offer-manage-table .bp-table-actions > form {
+    width: 100%;
   }
 
   .bp-action-link {
