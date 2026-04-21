@@ -95,6 +95,7 @@ class UserController extends Controller
             'email' => 'nullable|email|max:155|unique:rep,email',
             'cell_phone' => 'nullable|string|max:155',
             'company_name' => 'nullable|string|max:255',
+            'telegram' => 'nullable|string|max:255',
             'skype' => 'nullable|string|max:255',
             'user_name' => 'required|string|max:155|unique:rep,user_name',
             'password' => 'required|string|min:5|max:255',
@@ -142,7 +143,7 @@ class UserController extends Controller
                 'status' => (int) $validated['status'],
                 'referrer_repid' => (int) $validated['referrer_repid'],
                 'rep_timestamp' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
-                'skype' => $validated['skype'] ?? '',
+                'skype' => $validated['telegram'] ?? $validated['skype'] ?? '',
                 'company_name' => $validated['company_name'] ?? '',
             ]);
 
@@ -215,6 +216,7 @@ class UserController extends Controller
             'email' => ['nullable', 'email', 'max:155', Rule::unique('rep', 'email')->ignore($user->idrep, 'idrep')],
             'cell_phone' => 'nullable|string|max:155',
             'company_name' => 'nullable|string|max:255',
+            'telegram' => 'nullable|string|max:255',
             'skype' => 'nullable|string|max:255',
             'user_name' => [
                 Rule::requiredIf(Session::userType() === Privilege::ROLE_GOD),
@@ -267,7 +269,7 @@ class UserController extends Controller
                 'cell_phone' => $validated['cell_phone'] ?? '',
                 'email' => $validated['email'] ?? '',
                 'status' => (int) $validated['status'],
-                'skype' => $validated['skype'] ?? '',
+                'skype' => $validated['telegram'] ?? $validated['skype'] ?? '',
                 'company_name' => $validated['company_name'] ?? '',
             ];
 

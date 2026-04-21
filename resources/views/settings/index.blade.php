@@ -99,8 +99,8 @@
                         </div>
 
                         <div class="bp-form-field">
-                            <label class="bp-form-label" for="skype">Skype</label>
-                            <input id="skype" name="skype" class="bp-form-input" type="text" value="{{ $settingsValues['skype'] }}">
+                            <label class="bp-form-label" for="telegram">Telegram</label>
+                            <input id="telegram" name="telegram" class="bp-form-input" type="text" value="{{ $settingsValues['telegram'] }}">
                         </div>
 
                         <div class="bp-form-field">

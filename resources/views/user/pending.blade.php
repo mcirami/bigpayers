@@ -14,7 +14,7 @@
     @php
         $totalPending = $users->count();
         $withCompany = $users->filter(fn ($user) => filled($user->company_name))->count();
-        $withSkype = $users->filter(fn ($user) => filled($user->skype))->count();
+        $withTelegram = $users->filter(fn ($user) => filled($user->skype))->count();
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
@@ -48,9 +48,9 @@
             </article>
 
             <article class="bp-stat-card">
-                <p class="bp-stat-label">Skype Added</p>
-                <p class="bp-stat-value">{{ $withSkype }}</p>
-                <p class="bp-stat-note">Profiles that already shared a Skype contact.</p>
+                <p class="bp-stat-label">Telegram Added</p>
+                <p class="bp-stat-value">{{ $withTelegram }}</p>
+                <p class="bp-stat-note">Profiles that already shared a Telegram contact.</p>
             </article>
         </section>
 

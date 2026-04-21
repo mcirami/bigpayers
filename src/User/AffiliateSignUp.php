@@ -100,7 +100,10 @@ class AffiliateSignUp
 
         $firstName = $this->getP("tys_first_name");
         $lastName = $this->getP("tys_last_name");
-        $skype = $this->getP("tys_skype");
+        $skype = $this->getP("tys_telegram");
+        if ($skype === "") {
+            $skype = $this->getP("tys_skype");
+        }
         $company_name = $this->getP("tys_company_name");
 
 		if ($this->getP("mid") != "") {

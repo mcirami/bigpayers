@@ -34,6 +34,7 @@ class SettingsController extends Controller
 
         $validated = $request->validate([
             'shortHand' => 'required|string|max:255',
+            'telegram' => 'nullable|string|max:255',
             'skype' => 'nullable|string|max:255',
             'email' => 'nullable|email|max:255',
             'loginURL' => 'nullable|string|max:255',
@@ -60,7 +61,7 @@ class SettingsController extends Controller
             $validated['shortHand'],
             $colorString,
             $validated['email'] ?? '',
-            $validated['skype'] ?? '',
+            $validated['telegram'] ?? $validated['skype'] ?? '',
             $validated['loginURL'] ?? '',
             $validated['landingPage'] ?? ''
         );
@@ -100,7 +101,7 @@ class SettingsController extends Controller
             'colorFields' => $colorFields,
             'settingsValues' => [
                 'shortHand' => old('shortHand', $company->getShortHand()),
-                'skype' => old('skype', $company->getSkype()),
+                'telegram' => old('telegram', old('skype', $company->getSkype())),
                 'email' => old('email', $company->getEmail()),
                 'loginURL' => old('loginURL', $company->getLoginURL()),
                 'landingPage' => old('landingPage', $company->getLandingPage()),

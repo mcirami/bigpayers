@@ -126,8 +126,8 @@
                     </label>
 
                     <label class="bp-form-field">
-                        <span class="bp-form-label">Skype</span>
-                        <input class="bp-form-input" type="text" name="skype" maxlength="255" value="{{ old('skype', $targetUser->skype ?? '') }}">
+                        <span class="bp-form-label">Telegram</span>
+                        <input class="bp-form-input" type="text" name="telegram" maxlength="255" value="{{ old('telegram', old('skype', $targetUser->skype ?? '')) }}">
                     </label>
                 </div>
             </section>

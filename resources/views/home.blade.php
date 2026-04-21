@@ -92,7 +92,7 @@
                         </div>
 
                         <div class="bp-detail-row">
-                            <p class="bp-detail-label">Skype</p>
+                            <p class="bp-detail-label">Telegram</p>
                             <p class="bp-detail-value">{{ $user->skype ?: 'Not set' }}</p>
                         </div>
 

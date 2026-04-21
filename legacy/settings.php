@@ -282,7 +282,7 @@ opacity: 0.4; " -->
 						</p>
 						<p>
 
-							<label class="value_span9">Skype:</label>
+							<label class="value_span9">Telegram:</label>
 							<input name="skype" placeholder="" onfocus="this.placeholder = ''"
 							       type="text"
 							       value="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getSkype(); ?>">

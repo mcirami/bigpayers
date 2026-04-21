@@ -151,7 +151,7 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
           <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->cell_phone; ?></h3>
         </li>
         <li>
-          <h2 class="label value_span2">Skype Id</h2>
+          <h2 class="label value_span2">Telegram</h2>
           <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->skype; ?></h3>
         </li>
           <?php
@@ -164,4 +164,3 @@ $navBar = new \LeadMax\TrackYourStats\System\NavBar(\LeadMax\TrackYourStats\Syst
       </ul>
 
     </div><!--left_panel-->
-

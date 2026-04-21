@@ -38,7 +38,7 @@ $users = \LeadMax\TrackYourStats\User\AffiliateSignUp::queryFetchPendingAffiliat
 					<th class = "value_span9">First Name</th>
 					<th class = "value_span9">Last Name</th>
 					<th class = "value_span9">Email</th>
-					<th class = "value_span9">Skype</th>
+					<th class = "value_span9">Telegram</th>
 					<th class = "value_span9">Company Name</th>
 					<th class = "value_span9">Timestamp</th>
 					<th class = "value_span9">Actions</th>
@@ -82,5 +82,4 @@ $users = \LeadMax\TrackYourStats\User\AffiliateSignUp::queryFetchPendingAffiliat
 </script>
 
 <?php include 'footer.php'; ?>
-
 

@@ -92,7 +92,7 @@
                     </label>
 
                     <label class="bp-form-field">
-                        <span class="bp-form-label">Skype</span>
+                        <span class="bp-form-label">Telegram</span>
                         <input class="bp-form-input" type="text" value="{{ $user->skype }}" readonly>
                     </label>
                 </div>

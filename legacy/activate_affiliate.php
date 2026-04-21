@@ -74,7 +74,7 @@ $create->dumpPermissionsToJavascript();
 							   value = "" id = "company_name"/>
 					</p>
 					<p>
-						<label class = "value_span9">Skype</label>
+						<label class = "value_span9">Telegram</label>
 						<!-- TODO Link Referrer Payout -->
 						<input readonly type = "text" class = "form-control" name = "skype" minlength = "5" maxlength = "255" value = "<?= $affiliate->skype ?>"
 							   value = "" id = "skype"/>
@@ -272,4 +272,3 @@ $create->dumpPermissionsToJavascript();
 	
 	
 	</script>
-
