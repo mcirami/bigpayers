@@ -11,6 +11,20 @@ use LeadMax\TrackYourStats\System\Company;
 
 class SettingsController extends Controller
 {
+    private const STORAGE_COLOR_ORDER = [
+        'valueSpan1',
+        'valueSpan2',
+        'valueSpan3',
+        'valueSpan4',
+        'valueSpan5',
+        'valueSpan6',
+        'valueSpan7',
+        'valueSpan8',
+        'valueSpan9',
+        'valueSpan10',
+        'valueSpan11',
+    ];
+
     private const COLOR_FIELDS = [
         ['key' => 'valueSpan1', 'label' => 'Header & selected nav', 'note' => 'Top header and selected navigation backgrounds.'],
         ['key' => 'valueSpan2', 'label' => 'Button text', 'note' => 'Sub-menu text, button text, and sidebar labels.'],
@@ -59,8 +73,8 @@ class SettingsController extends Controller
         }
 
         $colorString = implode(';', array_map(
-            fn (array $field) => strtoupper(ltrim((string) $validated[$field['key']], '#')),
-            self::COLOR_FIELDS
+            fn (string $fieldKey) => strtoupper(ltrim((string) $validated[$fieldKey], '#')),
+            self::STORAGE_COLOR_ORDER
         ));
 
         $updated = $company->updateCompany(
@@ -142,19 +156,7 @@ class SettingsController extends Controller
 
     private function getColorIndexForField(string $field): int
     {
-        return match ($field) {
-            'valueSpan1' => 0,
-            'valueSpan2' => 1,
-            'valueSpan3' => 2,
-            'valueSpan4' => 3,
-            'valueSpan5' => 4,
-            'valueSpan6' => 5,
-            'valueSpan7' => 6,
-            'valueSpan8' => 7,
-            'valueSpan9' => 8,
-            'valueSpan10' => 9,
-            'valueSpan11' => 10,
-        };
+        return array_search($field, self::STORAGE_COLOR_ORDER, true);
     }
 
     private function normalizeHex(string $value): string
