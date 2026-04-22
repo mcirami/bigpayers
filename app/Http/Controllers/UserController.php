@@ -127,10 +127,7 @@ class UserController extends Controller
 
         $shouldRebuildTree = (int) $validated['status'] === 1;
 
-        $permissionList = Permissions::defaultUserPermissions([], $targetRole);
-        foreach ($selectedPermissions as $permissionKey) {
-            $permissionList[$permissionKey] = 1;
-        }
+        $permissionList = $this->buildPermissionListForRole($selectedPermissions, $targetRole);
 
         $newUserId = DB::transaction(function () use ($validated, $targetRole, $permissionList) {
             $userId = DB::table('rep')->insertGetId([
@@ -208,7 +205,9 @@ class UserController extends Controller
 
         $targetRole = $user->getRole();
         $canManageRole = $this->canManageUserRoles($user);
-        $allowedRoleIds = array_keys($this->getRoleOptionsForCurrentUser());
+        $allowedRoleIds = $canManageRole
+            ? array_keys($this->getRoleOptionsForCurrentUser())
+            : [$user->getRole()];
 
         $validated = $request->validate([
             'first_name' => 'nullable|string|max:155',
@@ -295,10 +294,7 @@ class UserController extends Controller
                 ]);
 
                 $permissionService = new Permissions();
-                $permissionList = Permissions::defaultUserPermissions([], $targetRole);
-                foreach ($selectedPermissions as $permissionKey) {
-                    $permissionList[$permissionKey] = 1;
-                }
+                $permissionList = $this->buildPermissionListForRole($selectedPermissions, $targetRole);
 
                 if (!Permissions::permissionsExist($user->idrep)) {
                     $permissionList['aff_id'] = $user->idrep;
@@ -871,16 +867,19 @@ class UserController extends Controller
 
     private function authorizeUserEdit(User $user)
     {
+        $sessionUserId = (int) Session::userID();
+        $targetUserId = (int) $user->idrep;
+
         if (Session::userType() === Privilege::ROLE_AFFILIATE) {
-            abort_unless($user->idrep === Session::userID(), 403);
+            abort_unless($targetUserId === $sessionUserId, 403);
             return;
         }
 
-        if ($user->idrep !== Session::userID() && !Session::permissions()->can(Permissions::EDIT_AFFILIATES)) {
+        if ($targetUserId !== $sessionUserId && !Session::permissions()->can(Permissions::EDIT_AFFILIATES)) {
             abort(403);
         }
 
-        if (Session::userType() === Privilege::ROLE_MANAGER && $user->idrep !== Session::userID() && !LegacyUser::userOwnsUser(Session::userID(), $user->idrep)) {
+        if (Session::userType() === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
             abort(403);
         }
     }
@@ -1097,6 +1096,21 @@ class UserController extends Controller
         $allowed = array_keys($this->getPermissionOptionsForRole($role));
 
         return array_values(array_intersect($selectedPermissions, $allowed));
+    }
+
+    private function buildPermissionListForRole(array $selectedPermissions, int $role): array
+    {
+        $permissionList = Permissions::defaultUserPermissions([], $role);
+
+        foreach ($selectedPermissions as $permissionKey) {
+            $permissionList[$permissionKey] = 1;
+        }
+
+        if ($role === Privilege::ROLE_AFFILIATE) {
+            $permissionList[Permissions::EDIT_AFFILIATES] = 1;
+        }
+
+        return $permissionList;
     }
 
     private function canManageUserRoles(User $user): bool

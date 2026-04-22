@@ -58,125 +58,125 @@ class Permissions
 
     public static $permissionsArray = [
 
-        self::CREATE_ADMINS => ["description" => "Can Create Admin Accounts", "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]],
+        self::CREATE_ADMINS => ["description" => "Create New Admins", "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]],
 
         self::CREATE_MANAGERS => [
-            "description" => "Can Create " . self::ACCOUNT_TYPE . " Accounts",
+            "description" => "Create New " . self::ACCOUNT_TYPE . "s",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
         ],
 
         self::CREATE_AFFILIATES => [
-            "description" => "Can Create " . self::AFFILIATE_TYPE . " Accounts",
+            "description" => "Create New " . self::AFFILIATE_TYPE . "s",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
         ],
 
         self::EDIT_AFFILIATES => [
-            "description" => "Can Edit " . self::AFFILIATE_TYPE . " Accounts",
+            "description" => "Edit Existing " . self::AFFILIATE_TYPE . "s",
             /*"required_permissions" => [self::CREATE_AFFILIATES],*/
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE],
         ],
 
-        self::SMS_CHAT => [
+        /*self::SMS_CHAT => [
 	        'description' => 'Can use SMS Verification',
 	        'allowed_user_types' => [Privilege::ROLE_GOD, Privilege::ROLE_AFFILIATE]
-        ],
+        ],*/
 
-        self::VIEW_SMS_STATS => [
+        /*self::VIEW_SMS_STATS => [
 	        'description' => 'Can View SMS Stats',
 	        'allowed_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER]
-        ],
+        ],*/
 
         self::VIEW_ALL_USERS => [
-	        "description" => "Can View All Users",
+	        "description" => "View All Users",
 	        "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN]
         ],
 
-        self::CREATE_OFFERS => ["description" => "Can Create Offers", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
+        self::CREATE_OFFERS => ["description" => "Create Offers", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 
         self::EDIT_OFFER_RULES => [
-            "description" => "Can Edit Offer Rules",
+            "description" => "Edit Offer Rules",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::VIEW_POSTBACK => [
-            "description" => "Can View PostBack URL",
+            "description" => "View PostBack URL",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::EDIT_REFERRALS => [
-            "description" => "Can Edit Affiliate Referrals",
+            "description" => "Edit Affiliate Referrals",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::VIEW_FRAUD_DATA => [
-            "description" => "Can View Fraud Data in Click Reports",
+            "description" => "View Fraud Data in Click Reports",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::EDIT_AFF_PAYOUT => [
-            "description" => "Can Edit Affiliate Offer Payouts",
+            "description" => "Edit Affiliate Offer Payouts",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
         ],
 
-        self::CREATE_NOTIFICATIONS => [
+        /*self::CREATE_NOTIFICATIONS => [
             "description" => "Can Create Notifications",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
-        ],
+        ],*/
 
         self::CREATE_BONUSES => [
-            "description" => "Can Create And Edit Bonuses",
+            "description" => "Create And Edit Bonuses",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::ASSIGN_BONUSES => [
-            "description" => "Can Assign Affiliates to Bonuses",
+            "description" => "Assign Affiliates to Bonuses",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::EDIT_SALARIES => [
-            "description" => "Can Edit Affiliate Salaries",
+            "description" => "Edit Affiliate Salaries",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::PAY_SALARIES => [
-            "description" => "Can Pay Affiliate Salaries",
+            "description" => "Pay Affiliate Salaries",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::EDIT_OFFER_URLS => [
-            "description" => "Can Edit or Create Offer URLs",
+            "description" => "Edit or Create Offer URLs",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
         self::APPROVE_OFFER_REQUESTS => [
-            "description" => "Can Approve Offer Requests",
+            "description" => "Approve Offer Requests",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD],
         ],
 
-        self::APPROVE_AFFILIATE_SIGN_UPS => [
+        /*self::APPROVE_AFFILIATE_SIGN_UPS => [
             "description" => "Can Approve Affiliate Sign ups",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
-        ],
+        ],*/
 
-        self::EDIT_REPORT_PERMISSIONS => [
+        /*self::EDIT_REPORT_PERMISSIONS => [
             "description" => "Can Edit Affiliate Report Permissions",
             "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER],
-        ],
+        ],*/
 
         self::VIEW_PAYOUTS => [
-	        "description" => "Can View Payouts",
+	        "description" => "View Payouts",
 	        "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
         ],
 
         self::VIEW_ADV_REPORTS => [
-	        "description" => "Can View Adv Reports",
+	        "description" => "View Adv Reports",
 	        "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
         ],
 
-        self::ADJUST_SALES => ["description" => "Can Adjust Sales", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
+        self::ADJUST_SALES => ["description" => "Adjust Sales", "allowed_user_types" => [\App\Privilege::ROLE_GOD]],
 
 
-        self::BAN_USERS => ["description" => "Can Ban Users", "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER]],
+       // self::BAN_USERS => ["description" => "Can Ban Users", "allowed_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER]],
 
 //        self::EMAIL_POOLS => ['description' => 'Can use Email Pools', 'allowed_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER, Privilege::ROLE_AFFILIATE]],
 

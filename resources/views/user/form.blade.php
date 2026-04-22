@@ -195,7 +195,7 @@
             </section>
 
             @if(!empty($permissionOptionsByRole))
-                <section class="bp-card value_span8">
+                <section class="bp-card value_span8" id="permissionsSection">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Permissions</p>
@@ -379,6 +379,7 @@
             const roleSelect = document.getElementById('priv');
             const ownerSelect = document.getElementById('referrer_repid');
             const permissionItems = Array.from(document.querySelectorAll('[data-role]'));
+            const permissionsSection = document.getElementById('permissionsSection');
             const referralPanel = document.getElementById('create_referral_panel');
             const referralToggle = document.getElementById('enable_referral');
             const referralFields = document.getElementById('referral_fields');
@@ -388,6 +389,7 @@
             const subIdStatus = document.getElementById('subid_status');
             const subIdTable = $('#subIdTable');
             const managedUserId = @json((int) ($managedUser->idrep ?? 0));
+            const affiliateRole = @json(\App\Privilege::ROLE_AFFILIATE);
             let subIds = [];
 
             const refreshOwners = () => {
@@ -414,14 +416,22 @@
                 }
 
                 const role = String(roleSelect.value);
+                let visibleCount = 0;
                 permissionItems.forEach((item) => {
                     const visible = item.getAttribute('data-role') === role;
                     item.style.display = visible ? '' : 'none';
                     item.querySelector('input').disabled = !visible;
+                    if (visible) {
+                        visibleCount += 1;
+                    }
                     if (!visible) {
                         item.querySelector('input').checked = false;
                     }
                 });
+
+                if (permissionsSection) {
+                    permissionsSection.style.display = Number(role) === Number(affiliateRole) || visibleCount === 0 ? 'none' : '';
+                }
             };
 
             const refreshReferralPanel = () => {
