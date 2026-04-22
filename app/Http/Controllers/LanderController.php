@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
+use LeadMax\TrackYourStats\System\Lander;
 
 class LanderController extends Controller
 {
@@ -11,9 +12,9 @@ class LanderController extends Controller
 
     public function getAsset($subDomain, $asset)
     {
-        $path = storage_path('landers/' . $subDomain . '/' . $asset);
+        $path = Lander::resolveAssetPath($subDomain, $asset);
 
-        if ( ! File::exists($path)) {
+        if (!$path || !File::exists($path) || File::isDirectory($path)) {
             abort(404);
         }
 
