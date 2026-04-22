@@ -35,7 +35,6 @@ class Lander
 
     public function loadCompanyLander()
     {
-
         if (!$this->isLandingPage()) {
             send_to("login");
         }
