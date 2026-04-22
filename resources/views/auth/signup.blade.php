@@ -1,7 +1,7 @@
 @php
     /** @var \LeadMax\TrackYourStats\System\Company $company */
-    $logoPath = $company->getImgDir() . '/logo.png';
-    $faviconPath = $company->getImgDir() . '/favicon.ico';
+    $logoPath = $company->getBrandAssetUrl('logo.png');
+    $faviconPath = $company->getBrandAssetUrl('favicon.ico');
     $rawColors = $company->getColors();
 
     $hexColor = function ($value, $fallback) {

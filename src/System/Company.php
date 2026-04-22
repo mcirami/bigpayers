@@ -200,6 +200,18 @@ class Company
         return "images/" . $this->subDomain;
     }
 
+    public function getBrandAssetUrl(string $filename): string
+    {
+        $relativePath = trim($this->getImgDir(), '/\\') . '/' . ltrim($filename, '/\\');
+        $fullPath = public_path($relativePath);
+
+        if (file_exists($fullPath)) {
+            return '/' . $relativePath . '?v=' . filemtime($fullPath);
+        }
+
+        return '/' . $relativePath;
+    }
+
     public function getColors()
     {
         if ($this->isLoaded()) {

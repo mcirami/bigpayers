@@ -3,8 +3,8 @@
     $user = \LeadMax\TrackYourStats\System\Session::userData();
     $isAdminLogin = request()->has('adminLogin');
     $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];
-    $logoPath = $webroot . $company->getImgDir() . '/logo.png';
-    $faviconPath = $webroot . $company->getImgDir() . '/favicon.ico';
+    $logoPath = $company->getBrandAssetUrl('logo.png');
+    $faviconPath = $company->getBrandAssetUrl('favicon.ico');
     $companyName = $company->getShortHand();
     $rawColors = $company->getColors();
 
