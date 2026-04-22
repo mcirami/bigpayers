@@ -25,7 +25,8 @@
     $pageBase = $hexColor($rawColors[7] ?? null, '#F8FAFC');
     $pageTint = $hexColor($rawColors[6] ?? null, '#E2E8F0');
     $textMuted = $hexColor($rawColors[8] ?? null, '#475569');
-    $supportTelegram = $company->getSkype();
+    $supportMessengerUsername = $company->getMessengerUsername();
+    $supportMessengerType = $company->getMessengerType();
     $themeClass = $loginTheme ? 'login-theme-' . str_replace(['/', '\\', ' '], '-', $loginTheme) : 'login-theme-default';
 @endphp
 <!DOCTYPE html>
@@ -71,10 +72,10 @@
                     </div>
                 @endif
 
-                @if($supportTelegram)
+                @if($supportMessengerUsername)
                     <div class="login-shell__support-item">
-                        <span class="login-shell__support-label">Telegram</span>
-                        <span class="login-shell__support-value">{{ $supportTelegram }}</span>
+                        <span class="login-shell__support-label">{{ $supportMessengerType }}</span>
+                        <span class="login-shell__support-value">{{ $supportMessengerUsername }}</span>
                     </div>
                 @endif
             </div>

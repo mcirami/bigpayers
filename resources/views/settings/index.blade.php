@@ -101,6 +101,19 @@
                         <div class="bp-form-field">
                             <label class="bp-form-label" for="telegram">Telegram</label>
                             <input id="telegram" name="telegram" class="bp-form-input" type="text" value="{{ $settingsValues['telegram'] }}">
+                            <p class="bp-form-note">Legacy compatibility field. New signup approval messaging uses the messenger settings below.</p>
+                        </div>
+
+                        <div class="bp-form-field">
+                            <label class="bp-form-label" for="messenger_type">Messenger Type</label>
+                            <input id="messenger_type" name="messenger_type" class="bp-form-input" type="text" value="{{ $settingsValues['messenger_type'] }}">
+                            <p class="bp-form-note">Examples: Telegram, Skype, Discord, Slack.</p>
+                        </div>
+
+                        <div class="bp-form-field">
+                            <label class="bp-form-label" for="messenger_username">Messenger Username</label>
+                            <input id="messenger_username" name="messenger_username" class="bp-form-input" type="text" value="{{ $settingsValues['messenger_username'] }}">
+                            <p class="bp-form-note">Shown on signup success so new users know who to contact for approval.</p>
                         </div>
 
                         <div class="bp-form-field">
@@ -122,6 +135,15 @@
                             <label class="bp-form-label" for="landingPage">Landing Page</label>
                             <input id="landingPage" name="landingPage" class="bp-form-input" type="text" value="{{ $settingsValues['landingPage'] }}">
                             <p class="bp-form-note">Used by install-specific flows that reference the company landing destination.</p>
+                        </div>
+
+                        <div class="bp-form-field bp-form-field-full">
+                            <label class="bp-form-label" for="allow_register">Allow Registration</label>
+                            <select id="allow_register" name="allow_register" class="bp-form-input">
+                                <option value="1" {{ $settingsValues['allow_register'] ? 'selected' : '' }}>Enabled</option>
+                                <option value="0" {{ !$settingsValues['allow_register'] ? 'selected' : '' }}>Disabled</option>
+                            </select>
+                            <p class="bp-form-note">If disabled, `/signup` will redirect to `/login` for this install.</p>
                         </div>
                     </div>
                 </section>

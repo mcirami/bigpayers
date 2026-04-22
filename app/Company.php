@@ -20,12 +20,15 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $telephone
  * @property string $email
  * @property string $skype
+ * @property string|null $messenger_type
+ * @property string|null $messenger_username
  * @property string $colors
  * @property string $uid
  * @property float $db_version
  * @property string $login_url
  * @property string $landing_page
  * @property string $login_theme
+ * @property bool $allow_register
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Company whereAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Company whereCity($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Company whereColors($value)

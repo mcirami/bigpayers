@@ -143,6 +143,10 @@ body.login-page {
   backdrop-filter: blur(16px);
 }
 
+.login-card-signup {
+  width: min(42rem, 100%);
+}
+
 .login-card__kicker {
   margin: 0;
   font-size: 0.78rem;
@@ -169,6 +173,15 @@ body.login-page {
   display: grid;
   gap: 1rem;
   margin-top: 1.75rem;
+}
+
+.signup-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.login-field--full {
+  grid-column: 1 / -1;
 }
 
 .login-field {
@@ -222,6 +235,9 @@ body.login-page {
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 28px 52px -32px rgba(15, 23, 42, 0.44);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .login-alert {
@@ -255,6 +271,12 @@ body.login-page {
 
   .login-shell__panel {
     padding-top: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .signup-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 

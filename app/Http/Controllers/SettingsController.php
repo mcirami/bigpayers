@@ -38,6 +38,9 @@ class SettingsController extends Controller
             'shortHand' => 'required|string|max:255',
             'telegram' => 'nullable|string|max:255',
             'skype' => 'nullable|string|max:255',
+            'messenger_type' => 'nullable|string|max:255',
+            'messenger_username' => 'nullable|string|max:255',
+            'allow_register' => 'nullable|boolean',
             'email' => 'nullable|email|max:255',
             'loginURL' => 'nullable|string|max:255',
             'landingPage' => 'nullable|string|max:255',
@@ -67,7 +70,10 @@ class SettingsController extends Controller
             $validated['telegram'] ?? $validated['skype'] ?? '',
             $validated['loginURL'] ?? '',
             $validated['landingPage'] ?? '',
-            $validated['login_theme'] ?? ''
+            $validated['login_theme'] ?? '',
+            $validated['messenger_type'] ?? '',
+            $validated['messenger_username'] ?? ($validated['telegram'] ?? $validated['skype'] ?? ''),
+            $request->boolean('allow_register')
         );
 
         if (!$updated) {
@@ -108,6 +114,9 @@ class SettingsController extends Controller
             'settingsValues' => [
                 'shortHand' => old('shortHand', $company->getShortHand()),
                 'telegram' => old('telegram', old('skype', $company->getSkype())),
+                'messenger_type' => old('messenger_type', $company->getMessengerType()),
+                'messenger_username' => old('messenger_username', $company->getMessengerUsername()),
+                'allow_register' => (bool) old('allow_register', $company->allowsRegister()),
                 'email' => old('email', $company->getEmail()),
                 'loginURL' => old('loginURL', $company->getLoginURL()),
                 'landingPage' => old('landingPage', $company->getLandingPage()),

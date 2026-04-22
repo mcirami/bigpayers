@@ -22,6 +22,8 @@ class Company
     public $uid;
 
     public $skype = "";
+    public $messenger_type = "";
+    public $messenger_username = "";
 
     public $email = "";
 
@@ -32,6 +34,7 @@ class Company
     public $colors = false;
 
     public $login_theme = '';
+    public $allow_register = true;
 
 
     function __construct()
@@ -215,6 +218,33 @@ class Company
         return false;
     }
 
+    public function getMessengerType()
+    {
+        if ($this->isLoaded()) {
+            return $this->messenger_type !== '' ? $this->messenger_type : 'Telegram';
+        }
+
+        return false;
+    }
+
+    public function getMessengerUsername()
+    {
+        if ($this->isLoaded()) {
+            return $this->messenger_username !== '' ? $this->messenger_username : $this->skype;
+        }
+
+        return false;
+    }
+
+    public function allowsRegister(): bool
+    {
+        if ($this->isLoaded()) {
+            return (bool) $this->allow_register;
+        }
+
+        return false;
+    }
+
     public function getEmail()
     {
         if ($this->isLoaded()) {
@@ -261,6 +291,8 @@ class Company
             $this->subDomain = $this->getCustomSub();
 
             $this->skype = $company["skype"] ?? '';
+            $this->messenger_type = $company["messenger_type"] ?? '';
+            $this->messenger_username = $company["messenger_username"] ?? '';
 
             $this->email = $company["email"] ?? '';
 
@@ -272,6 +304,7 @@ class Company
             $this->login_url = $company["login_url"]  ?? '';
 
             $this->login_theme = $company['login_theme'] ?? '';
+            $this->allow_register = array_key_exists('allow_register', $company) ? (bool) $company['allow_register'] : true;
 
             $this->loaded();
 
@@ -294,21 +327,27 @@ class Company
         $this->setSession();
     }
 
-    public function updateCompany($shortHand, $colors, $email, $skype, $loginURL, $landingPage, $loginTheme = null)
+    public function updateCompany($shortHand, $colors, $email, $skype, $loginURL, $landingPage, $loginTheme = null, $messengerType = null, $messengerUsername = null, $allowRegister = null)
     {
         try {
             $db   = DatabaseConnection::getMasterInstance();
             $resolvedLoginTheme = $loginTheme ?? $this->login_theme;
-            $sql  = "UPDATE company SET shortHand = :shortHand, colors = :colors, email = :email, skype = :skype, login_url = :loginURL, landing_page = :landingPage, login_theme = :loginTheme WHERE subDomain = :subDomain";
+            $resolvedMessengerType = $messengerType ?? $this->messenger_type;
+            $resolvedMessengerUsername = $messengerUsername ?? $this->messenger_username ?? $skype;
+            $resolvedAllowRegister = $allowRegister ?? $this->allow_register;
+            $sql  = "UPDATE company SET shortHand = :shortHand, colors = :colors, email = :email, skype = :skype, messenger_type = :messengerType, messenger_username = :messengerUsername, login_url = :loginURL, landing_page = :landingPage, login_theme = :loginTheme, allow_register = :allowRegister WHERE subDomain = :subDomain";
             $prep = $db->prepare($sql);
             $prep->bindParam(":shortHand", $shortHand);
             $prep->bindParam(":colors", $colors);
             $prep->bindParam(":subDomain", $this->subDomain);
             $prep->bindParam(":email", $email);
             $prep->bindParam(":skype", $skype);
+            $prep->bindParam(":messengerType", $resolvedMessengerType);
+            $prep->bindParam(":messengerUsername", $resolvedMessengerUsername);
             $prep->bindParam(":loginURL", $loginURL);
             $prep->bindParam(":landingPage", $landingPage);
             $prep->bindParam(":loginTheme", $resolvedLoginTheme);
+            $prep->bindParam(":allowRegister", $resolvedAllowRegister, PDO::PARAM_BOOL);
 
 
             $prep->execute();

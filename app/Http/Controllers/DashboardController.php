@@ -20,7 +20,7 @@ class DashboardController extends Controller
             'firstName' => Session::userData()->first_name,
             'email' => Session::userData()->email,
 	        'userType' => Session::userType(),
-	        'domain' => request()->getSchemeAndHttpHost() . "/signup.php?mid=",
+	        'domain' => request()->getSchemeAndHttpHost() . "/signup?mid=",
         ];
 
         return view('home', $with);

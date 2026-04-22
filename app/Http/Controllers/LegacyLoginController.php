@@ -48,7 +48,7 @@ class LegacyLoginController extends Controller
 
 				return redirect('dashboard');
 			} elseif ($result == Login::RESULT_PENDING) {
-				return redirect('signup_success.php?pending=1');
+				return redirect('/signup-success?pending=1');
 			} else {
 				$user->badLoginAttempt();
 
