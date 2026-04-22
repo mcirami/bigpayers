@@ -105,7 +105,7 @@
                     </div>
                 </article>
 
-                <article class="bp-card">
+                {{--<article class="bp-card">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Navigation</p>
@@ -135,7 +135,7 @@
                             </div>
                         @endforelse
                     </div>
-                </article>
+                </article>--}}
             </div>
 
             <div class="space-y-6">
@@ -163,7 +163,7 @@
                     </div>
                 </article>
 
-                <article class="bp-card">
+                {{--<article class="bp-card">
                     <p class="bp-section-kicker">Tracking Links</p>
                     <h3 class="bp-section-title">Copy-ready endpoints</h3>
 
@@ -197,7 +197,7 @@
                             </div>
                         @endunless
                     </div>
-                </article>
+                </article>--}}
             </div>
         </section>
     </div>

@@ -40,8 +40,8 @@
                 </div>
             </div>
 
-            <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-                <div class="bp-report-toolbar">
+            <div class="mt-6">
+                {{--<div class="bp-report-toolbar">
                     @if (!$isAffiliate)
                         @include('report.options.active')
                     @endif
@@ -63,7 +63,7 @@
                             </select>
                         </div>
                     @endif
-                </div>
+                </div>--}}
 
                 <div class="bp-offer-search">
                     <label class="bp-detail-label" for="searchBox">Search offers</label>
@@ -100,7 +100,7 @@
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
-                        <th class="value_span9">Name</th>
+                        <th class="value_span9">Offer</th>
                         @if ($isAffiliate)
                             <th class="value_span9">Link</th>
                         @elseif($canEditAffiliates && !$isAffiliate && !$isManager)
@@ -111,15 +111,8 @@
                             <th class="value_span9">Payout</th>
                         @endif
 
-                        <th class="value_span9">Adv</th>
-
                         @if ($isAffiliate)
                             <th class="value_span9">Postback</th>
-                        @endif
-
-                        @if (!$isAffiliate)
-                            <th class="value_span9">Added</th>
-                            <th class="value_span9">Actions</th>
                         @endif
                     </tr>
                     </thead>
@@ -272,7 +265,7 @@
                             }
                         }
 
-                        html += "<td class='value_span10'>" + offer.campaign_name + "</td>";
+                        /*html += "<td class='value_span10'>" + offer.campaign_name + "</td>";*/
 
                         if (userType === 3) {
                             html += "<td class='value_span10'>" +
@@ -280,10 +273,10 @@
                                 "</td>";
                         }
 
-                        if (userType !== 3) {
+                       /* if (userType !== 3) {
                             html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";
                             html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
-                        }
+                        }*/
 
                         if (userType !== 3 && canCreateOffers) {
                             html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
@@ -293,18 +286,18 @@
                             html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
                         }
 
-                        if (userType !== 3) {
+                        /*if (userType !== 3) {
                             html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
-                        }
+                        }*/
 
                         if (userType === 0) {
                             html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
                                 "<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer.idoffer + "' title='Delete Offer' href='#'>Delete</a>";
                         }
 
-                        if (userType !== 3) {
+                       /* if (userType !== 3) {
                             html += "</div></td>";
-                        }
+                        }*/
 
                         html += "</tr>";
                     });

@@ -27,16 +27,13 @@
 
         <tr>
             <th class="value_span9">ID</th>
-            <th class="value_span9">Name</th>
+            <th class="value_span9">Offer</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Signups</th>
-            <th class="value_span9">Pending</th>
             <th class="value_span9">Convs</th>
             @if (Session::userType() == Privilege::ROLE_GOD ||
                 (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
                 <th class="value_span9">Revenue</th>
-                <th class="value_span9">Deductions</th>
                 <th class="value_span9">EPC</th>
             @endif
         </tr>
@@ -46,9 +43,9 @@
             if (Session::userType() == Privilege::ROLE_GOD ||
             (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
             ) {
-				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'EPC'];
+				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'Conversions', 'Revenue', 'EPC'];
 			} else {
-				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions'];
+				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'Conversions'];
 			}
 
 			$reporter->between($dates['startDate'], $dates['endDate'],

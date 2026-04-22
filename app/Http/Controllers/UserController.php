@@ -70,7 +70,7 @@ class UserController extends Controller
 		}
 		*/
         $users = $users->get();
-		$users = $this->getDiffForHumans($users);
+		//$users = $this->getDiffForHumans($users);
 
         return view('user.manage', compact('users'));
     }

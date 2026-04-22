@@ -32,7 +32,7 @@ class NavBar
 
             "Verification" => ['url' => '/verification', 'required_user_types' => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_AFFILIATE], 'required_permissions' => [Permissions::SMS_CHAT]],
 
-            "Notifications" => ['url' => '/notifications'],
+            /*"Notifications" => ['url' => '/notifications'],*/
 
             "IP Blacklist" => ['url' => '/ip-blacklist', "required_user_types" => [\App\Privilege::ROLE_GOD]],
 
@@ -51,7 +51,7 @@ class NavBar
                 'url' => '/report/offer',
             ],
 
-            "GEO Report" => [
+            "Country Report" => [
 	            'url' => '/report/geo',
 	            "required_user_types" => [\App\Privilege::ROLE_GOD, \App\Privilege::ROLE_ADMIN],
             ],

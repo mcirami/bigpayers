@@ -42,14 +42,14 @@
                 </div>
 
                 <div class="rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-slate-500 shadow-sm">
-                    {{ $selectedRoleLabel }} • {{ $showInactive ? 'Inactive only' : 'Active only' }}
+                    {{ $selectedRoleLabel }} • {{ $showInactive ? 'Inactive' : 'Active' }}
                 </div>
             </div>
 
             <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
                 <div class="bp-report-toolbar">
                     @include('report.options.user-type')
-                    @include('report.options.active')
+                    {{--@include('report.options.active')--}}
                 </div>
 
                 <div class="bp-offer-search">
@@ -107,7 +107,6 @@
                         <th class="value_span9">{{ $tableIdentityLabel }}</th>
                         <th class="value_span9">Email</th>
                         <th class="value_span9">{{ $accountTypeLabel }}</th>
-                        <th class="value_span9">Added</th>
                         <th class="value_span9">Actions</th>
                     </tr>
                     </thead>
@@ -155,11 +154,11 @@
                     );
                 }
 
-                if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
+                /*if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
                     actions.push(
                         `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/affiliates">View {{ $affiliateTypeLabelPlural }}</a>`
                     );
-                }
+                }*/
 
                 if (canBanUsers) {
                     actions.push(
@@ -184,7 +183,6 @@
                             <td class="username">${escapeHtml(user.user_name)}</td>
                             <td>${escapeHtml(user.email || 'No email')}</td>
                             <td>${escapeHtml(managerName)}</td>
-                            <td>${escapeHtml(user.rep_timestamp || 'Timestamp unavailable')}</td>
                             <td class="actions">${renderActions(user)}</td>
                         </tr>
                     `;
