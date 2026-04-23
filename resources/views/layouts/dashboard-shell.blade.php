@@ -7,6 +7,10 @@
     $faviconPath = $company->getBrandAssetUrl('favicon.ico');
     $companyName = $company->getShortHand();
     $rawColors = $company->getColors();
+    $dashboardShellCssPath = public_path('css/dashboard-shell.css');
+    $companyCssPath = public_path('css/company.css');
+    $dashboardShellCssUrl = $webroot . 'css/dashboard-shell.css' . (file_exists($dashboardShellCssPath) ? '?v=' . filemtime($dashboardShellCssPath) : '');
+    $companyCssUrl = $webroot . 'css/company.css' . (file_exists($companyCssPath) ? '?v=' . filemtime($companyCssPath) : '');
 
     $hexColor = function ($value, $fallback) {
         $candidate = is_string($value) ? ltrim($value, '#') : '';
@@ -50,8 +54,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
     <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/font-awesome/css/all.css">
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/dashboard-shell.css?v=20260420a">
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
+    <link rel="stylesheet" type="text/css" href="{{ $dashboardShellCssUrl }}">
+    <link rel="stylesheet" type="text/css" href="{{ $companyCssUrl }}">
     @stack('head')
     <title>{{ $companyName }}</title>
 </head>
