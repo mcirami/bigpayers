@@ -36,11 +36,8 @@
             <option {{request()->query('dateSelect') == 0 ? 'selected' : ''}} value='0'>Today</option>
             <option {{request()->query('dateSelect') == 1 ? 'selected' : ''}} value='1'>Yesterday</option>
             <option {{request()->query('dateSelect') == 2 ? 'selected' : ''}} value='2'>Week to Date</option>
-            <option {{request()->query('dateSelect') == 3 ? 'selected' : ''}} value='3'>Month to Date</option>
-            <option {{request()->query('dateSelect') == 4 ? 'selected' : ''}} value='4'>Year to Date</option>
             <option {{request()->query('dateSelect') == 5 ? 'selected' : ''}} value='5'>Last Week</option>
-            <option {{request()->query('dateSelect') == 6 ? 'selected' : ''}} value='6'>Last Month</option>
-            <option {{request()->query('dateSelect') == 7 ? 'selected' : ''}} value='7'>Custom</option>
+            <option {{request()->query('dateSelect') == 7 ? 'selected' : ''}} value='7'>Choose Dates</option>
         </select>
     </label>
 
