@@ -396,28 +396,28 @@ class Rules
     {
         $url = "http://".$_SERVER["HTTP_HOST"];
 
-        $url .= "/?";
+        $params = \LeadMax\TrackYourStats\Clicks\TrackingParameters::normalize($_GET);
+        $query = [];
 
-        $first = true;
-        foreach ($_GET as $key => $val) {
-
-            if ($key == "offerid") {
-                if ($first) {
-                    $url .= "{$key}={$offid}";
-                } else {
-                    $url .= "&{$key}={$offid}";
-                }
-            } else {
-                if ($first) {
-                    $url .= "{$key}={$val}";
-                } else {
-                    $url .= "&{$key}={$val}";
-                }
-
+        foreach ($params as $key => $val) {
+            if ($key === "offerid" || in_array($key, ["repid", "sub1", "sub2", "sub3", "sub4", "sub5"], true)) {
+                continue;
             }
 
-            $first = false;
+            $query[$key] = $val;
         }
+
+        $query["rid"] = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "repid");
+        $query["oid"] = $offid;
+
+        for ($i = 1; $i <= 5; $i++) {
+            $subValue = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "sub{$i}");
+            if ($subValue !== null) {
+                $query["s{$i}"] = $subValue;
+            }
+        }
+
+        $url .= "/?" . http_build_query($query);
 
         return $url;
 

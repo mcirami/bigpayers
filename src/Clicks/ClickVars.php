@@ -39,14 +39,15 @@ class ClickVars
     {
         if ($incoming) {
             $this->incoming = $incoming;
+            $trackingQuery = TrackingParameters::normalize($_GET);
 
             //get Affiliate data who's ID is linked to that click, stored as PDO::FETCH_OBJ
             $affData = new User();
-            $this->affData = User::SelectOne($_GET["repid"]);
+            $this->affData = User::SelectOne(TrackingParameters::get($trackingQuery, "repid"));
 
 
             // gets offer url
-            $this->offerURL = Offer::selectOneQuery($_GET["offerid"])->fetch(PDO::FETCH_OBJ)->url;
+            $this->offerURL = Offer::selectOneQuery(TrackingParameters::get($trackingQuery, "offerid"))->fetch(PDO::FETCH_OBJ)->url;
 
         } else {
             // Get click info as PDO::FETCH_OBJ
@@ -149,7 +150,7 @@ class ClickVars
 
     public function processIncomingClick()
     {
-        $getArray = $_GET;
+        $getArray = TrackingParameters::normalize($_GET);
 
         $newURL = $this->processTYSVariables($this->offerURL);
 
@@ -214,6 +215,7 @@ class ClickVars
         }
 
         parse_str($storedClickQuery["query"], $storedClickQuery);
+        $storedClickQuery = TrackingParameters::normalize($storedClickQuery);
 
         $postBackUrl = $url;
 
@@ -281,8 +283,9 @@ class ClickVars
     {
 
         if ($this->incoming) { //landingpage.php
-            $url = str_replace("#affid#", $_GET["repid"], $url);
-            $url = str_replace("#offid#", $_GET["offerid"], $url);
+            $trackingQuery = TrackingParameters::normalize($_GET);
+            $url = str_replace("#affid#", TrackingParameters::get($trackingQuery, "repid"), $url);
+            $url = str_replace("#offid#", TrackingParameters::get($trackingQuery, "offerid"), $url);
             $url = str_replace("#clickid#", UID::encode($this->clickID), $url);
         } else // postback.php
         {
@@ -319,6 +322,7 @@ class ClickVars
         }
 
         parse_str($parseClickUri["query"], $parseClickUri);
+        $parseClickUri = TrackingParameters::normalize($parseClickUri);
 
 
         foreach ($parseClickUri as $key2 => $val2) {
@@ -364,8 +368,7 @@ class ClickVars
 
         parse_str($storedClickQuery["query"], $storedClickQuery);
 
-
-        return $storedClickQuery;
+        return TrackingParameters::normalize($storedClickQuery);
     }
 
     static function selectSubVars($id)

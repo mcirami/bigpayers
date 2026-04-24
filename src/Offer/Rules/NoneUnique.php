@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use LeadMax\TrackYourStats\Clicks\Cookie;
+use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 use LeadMax\TrackYourStats\System\Company;
 
 class NoneUnique implements Rule
@@ -39,9 +40,12 @@ class NoneUnique implements Rule
 
     public function checkRules()
     {
+        $params = TrackingParameters::normalize($_GET);
 
-
-        $offerLogCookie = new Cookie($_GET["repid"], $_GET["offerid"]);
+        $offerLogCookie = new Cookie(
+            TrackingParameters::get($params, "repid"),
+            TrackingParameters::get($params, "offerid")
+        );
 
         if ($offerLogCookie->isUnique()) {
             return true;

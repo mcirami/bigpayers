@@ -98,6 +98,8 @@ class Click
             $this->subVarArray = $_GET;
         }
 
+        $this->subVarArray = TrackingParameters::normalize($this->subVarArray);
+
         if (isset($this->queryString) == false) {
             $this->queryString = $_SERVER["REQUEST_URI"];
         }
@@ -120,6 +122,7 @@ class Click
     }
 
 	private function saveSubId() {
+		$this->subVarArray = TrackingParameters::normalize($this->subVarArray);
 		$sub1 = trim($this->subVarArray['sub1'] ?? '');
 		if ($sub1 === '') {
 			return false;

@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Clicks\PostBackURLEventHandler;
+use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
 use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\IPBlackList;
@@ -17,8 +18,12 @@ class IndexController extends Controller
 
     public function index(Request $request)
     {
+        $trackingQuery = TrackingParameters::normalize($request->query());
 
-        if ($request->get('repid') && $request->get('offerid')) {
+        if (
+            TrackingParameters::get($trackingQuery, 'repid') &&
+            TrackingParameters::get($trackingQuery, 'offerid')
+        ) {
             return $this->clickRegistration($request);
         }
 
@@ -82,15 +87,20 @@ class IndexController extends Controller
 
     public function clickRegistration(Request $request)
     {
-        if ( ! $request->get('repid') && ! $request->get('offerid')) {
+        $trackingQuery = TrackingParameters::normalize($request->query());
+        $repId = TrackingParameters::get($trackingQuery, 'repid');
+        $offerId = TrackingParameters::get($trackingQuery, 'offerid');
+        $sub1 = TrackingParameters::get($trackingQuery, 'sub1');
+
+        if (!$repId && !$offerId) {
             return redirect('404')->setStatusCode('404');
         }
 
-	    if ( $request->get('sub1') && $request->get('sub1') != "") {
-		    $subId = $request->get( 'sub1' );
+	    if ($sub1) {
+		    $subId = $sub1;
 
 		    $blocked = DB::table( 'blocked_sub_ids' )
-		                 ->where( 'rep_idrep', '=', $request->get( 'repid' ) )
+		                 ->where( 'rep_idrep', '=', $repId )
 		                 ->where( 'sub_id', '=', $subId )
 		                 ->distinct()->get()->pluck( 'sub_id' );
 		    if ( ! $blocked->isEmpty() ) {
@@ -115,8 +125,7 @@ class IndexController extends Controller
             }
         }
 
-        $clickRegistrationEvent = new ClickRegistrationEvent($request->get('repid'), $request->get('offerid'),
-            $request->query(), $ip);
+        $clickRegistrationEvent = new ClickRegistrationEvent($repId, $offerId, $trackingQuery, $ip);
         if ( ! $clickRegistrationEvent->fire()) {
             return redirect('404');
         }

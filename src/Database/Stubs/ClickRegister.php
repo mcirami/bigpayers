@@ -47,7 +47,7 @@ class ClickRegister implements Stub
             foreach ($this->offerIds as $offerId) {
                 for ($i = 0; $i < 20; $i++) {
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, $this->offerUrl."?repid={$userId}&offerid={$offerId}&sub1=&price=.5");
+                    curl_setopt($ch, CURLOPT_URL, $this->offerUrl."?rid={$userId}&oid={$offerId}&s1=&price=.5");
 
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
                     curl_setopt($ch, CURLOPT_USERAGENT, "THICCBOI");

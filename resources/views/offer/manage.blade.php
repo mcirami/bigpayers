@@ -52,7 +52,7 @@
                     @if ($isAffiliate)
                         <div class="bp-inline-note">
                             Add up to 5 Sub variables:
-                            <span>http://domain.com/?repid=1&offerid=1&sub1=XXX&sub2=YYY&sub3=ZZZ&sub4=AAA&sub5=BBB</span>
+                            <span>http://domain.com/?rid=1&oid=1&s1=XXX&s2=YYY&s3=ZZZ&s4=AAA&s5=BBB</span>
                         </div>
                     @endif
 
@@ -262,8 +262,8 @@
                         if (userType === 3) {
                             html += "<br><span class='link_label'>Offer Link:</span><br>" +
                                 "<span class='offer_link'>https://" + selectedUrl +
-                                "/?repid=" + sessionUser +
-                                "&offerid=" + offer.idoffer + "&sub1=</span>";
+                                "/?rid=" + sessionUser +
+                                "&oid=" + offer.idoffer + "&s1=</span>";
                         }
 
                         html += "</td>";
@@ -271,8 +271,8 @@
                         if (userType === 3) {
                             html += "<td class='value_span10'>" +
                                 "<button data-url='https://" + selectedUrl +
-                                "/?repid=" + sessionUser +
-                                "&offerid=" + offer.idoffer + "&sub1=' data-toggle='tooltip' title='Copy My Link' class='copy_button btn btn-default'>Copy My Link</button></td>";
+                                "/?rid=" + sessionUser +
+                                "&oid=" + offer.idoffer + "&s1=' data-toggle='tooltip' title='Copy My Link' class='copy_button btn btn-default'>Copy My Link</button></td>";
                         }
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {

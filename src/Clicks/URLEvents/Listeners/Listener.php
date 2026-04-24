@@ -8,7 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
-use function Couchbase\defaultDecoder;
+use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 
 abstract class Listener
 {
@@ -22,8 +22,10 @@ abstract class Listener
 
     protected function checkGETRequirements()
     {
+        $params = TrackingParameters::normalize($_GET);
+
         foreach ($this->GETRequirements as $var) {
-            if (isset($_GET[$var]) == false || is_null($_GET[$var]) || $_GET[$var] == '') {
+            if (!TrackingParameters::has($params, $var) || TrackingParameters::get($params, $var) === '') {
                 return false;
             }
         }

@@ -162,7 +162,7 @@ class View
                     <td class=\"value_span10\">".Offer::offerTypeAsString($rows->offer_type)."</td>
                    ";
             if ($this->userType == Privilege::ROLE_AFFILIATE) {
-                echo "<p style='display:none;' id=\"url_{$rows->idoffer}\">http://{$this->urls[$this->url][0]}/?repid=".Session::userID()."&offerid={$rows->idoffer}&sub1=</p>";
+                echo "<p style='display:none;' id=\"url_{$rows->idoffer}\">http://{$this->urls[$this->url][0]}/?rid=".Session::userID()."&oid={$rows->idoffer}&s1=</p>";
 
                 echo "<td class=\"value_span10\">
                         <button data-toggle=\"tooltip\" title=\"Copy Offer URL\" onclick=\"copyToClipboard(getElementById('url_{$rows->idoffer}'));\" class=\"btn btn-default\">

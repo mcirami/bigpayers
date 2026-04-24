@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 
+use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 use LeadMax\TrackYourStats\Clicks\URLEvents\BonusRegistrationEvent;
 
 class BonusListener extends Listener
@@ -18,15 +19,17 @@ class BonusListener extends Listener
 
     public function dispatch()
     {
-        $register = new BonusRegistrationEvent($_GET["bonusid"], $_GET["repid"]);
+        $params = TrackingParameters::normalize($_GET);
+        $register = new BonusRegistrationEvent($params["bonusid"], TrackingParameters::get($params, "repid"));
 
         return $register->fire();
     }
 
     public function shouldBeDispatched()
     {
+        $params = TrackingParameters::normalize($_GET);
         if ($this->checkGETRequirements()) {
-            if ($_GET["function"] == BonusRegistrationEvent::getEventString()) {
+            if (($params["function"] ?? null) == BonusRegistrationEvent::getEventString()) {
                 return true;
             }
         }

@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
+use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
 
 class ClickListener extends Listener
@@ -18,6 +19,8 @@ class ClickListener extends Listener
 
     public function dispatch()
     {
+        $params = TrackingParameters::normalize($_GET);
+
         if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
             $ip = $_SERVER['HTTP_CLIENT_IP'];
             if ( str_contains( $ip, ',' ) ) {
@@ -35,7 +38,12 @@ class ClickListener extends Listener
             }
         }
 
-        $register = new ClickRegistrationEvent($_GET["repid"], $_GET["offerid"], $_GET, $ip);
+        $register = new ClickRegistrationEvent(
+            TrackingParameters::get($params, "repid"),
+            TrackingParameters::get($params, "offerid"),
+            $params,
+            $ip
+        );
 
         return $register->fire();
     }
@@ -43,8 +51,9 @@ class ClickListener extends Listener
 
     public function shouldBeDispatched()
     {
+        $params = TrackingParameters::normalize($_GET);
         if ($this->checkGETRequirements()) {
-            if ($_GET["function"] == ClickRegistrationEvent::getEventString()) {
+            if (($params["function"] ?? null) == ClickRegistrationEvent::getEventString()) {
                 return true;
             }
         }

@@ -193,15 +193,28 @@ class Caps
     public function sendToRedirectOffer()
     {
         $url = findProtocol().$_SERVER["HTTP_HOST"];
-        $url .= "/?";
+        $params = \LeadMax\TrackYourStats\Clicks\TrackingParameters::normalize($_GET);
+        $query = [];
 
-        foreach ($_GET as $name => $val) {
-            if ($name !== "offerid") {
-                $url .= $name."=".$val."&";
+        foreach ($params as $name => $val) {
+            if ($name === "offerid" || in_array($name, ["repid", "sub1", "sub2", "sub3", "sub4", "sub5"], true)) {
+                continue;
+            }
+
+            $query[$name] = $val;
+        }
+
+        $query["rid"] = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "repid");
+        $query["oid"] = $this->cap_rules["redirect_offer"];
+
+        for ($i = 1; $i <= 5; $i++) {
+            $subValue = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "sub{$i}");
+            if ($subValue !== null) {
+                $query["s{$i}"] = $subValue;
             }
         }
 
-        $url .= "offerid=".$this->cap_rules["redirect_offer"];
+        $url .= "/?" . http_build_query($query);
 
         send_to($url);
 
