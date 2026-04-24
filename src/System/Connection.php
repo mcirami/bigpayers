@@ -235,6 +235,8 @@ class Connection
     private function normalizeHost(string $host): string
     {
         $normalized = strtolower(trim($host));
+        $normalized = preg_replace('/:\d+$/', '', $normalized);
+        $normalized = rtrim($normalized, '.');
 
         if (str_starts_with($normalized, 'www.')) {
             return substr($normalized, 4);
