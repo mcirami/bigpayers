@@ -922,6 +922,22 @@
     align-items: start;
   }
 
+  .bp-rules-settings-stack {
+    display: grid;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .bp-rules-settings-row {
+    display: grid;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .bp-hidden {
+    display: none !important;
+  }
+
   .bp-rules-settings-grid .bp-choice-pill {
     display: grid;
     grid-template-columns: 1rem minmax(0, auto);
@@ -947,7 +963,44 @@
     justify-self: start;
   }
 
+  .bp-rules-settings-row .bp-choice-pill {
+    display: grid;
+    grid-template-columns: 1rem minmax(0, auto);
+    justify-content: flex-start !important;
+    justify-items: start;
+    align-items: center;
+    text-align: left;
+    width: 100%;
+    gap: 0.8rem;
+    padding-left: 1.15rem;
+    padding-right: 1.15rem;
+    min-height: 3.25rem;
+  }
+
+  .bp-rules-settings-row .bp-choice-pill input {
+    margin: 0;
+    flex: 0 0 auto;
+    justify-self: start;
+  }
+
+  .bp-rules-settings-row .bp-choice-pill span {
+    text-align: left;
+    flex: 0 1 auto;
+    justify-self: start;
+  }
+
   .bp-rules-settings-grid .selectBox {
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.94);
+    color: #0f172a;
+    box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.3);
+  }
+
+  .bp-rules-settings-row .selectBox {
     width: 100%;
     min-height: 3rem;
     padding: 0.85rem 1rem;
@@ -976,6 +1029,12 @@
     font-weight: 700;
     color: #1e293b;
     text-align: left;
+  }
+
+  @media (min-width: 768px) {
+    .bp-rules-settings-row--two {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
   }
 
   .bp-cap-toggle {

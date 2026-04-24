@@ -153,49 +153,57 @@
                         </div>
                     </div>
 
-                    <div class="bp-rules-settings-grid mt-4">
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Load Predefined Rule</span>
-                            <select id="geoPredefinedRuleSelect" class="bp-form-input">
-                                <option value="">Select a saved rule...</option>
-                                @foreach ($predefinedGeoRules as $predefinedRule)
-                                    <option value="{{ $predefinedRule['id'] }}">{{ $predefinedRule['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </label>
+                    <div class="bp-rules-settings-stack mt-4">
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Load Predefined Rule</span>
+                                <select id="geoPredefinedRuleSelect" class="bp-form-input">
+                                    <option value="">Select a saved rule...</option>
+                                    @foreach ($predefinedGeoRules as $predefinedRule)
+                                        <option value="{{ $predefinedRule['id'] }}">{{ $predefinedRule['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
 
-                        <label class="bp-choice-pill">
-                            <input id="geoIsAllowed" type="checkbox">
-                            <span>Items in this list will be denied</span>
-                        </label>
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Rule Name</span>
+                                <input type="text" class="bp-form-input" id="geoRuleName">
+                            </label>
+                        </div>
 
-                        <label class="bp-choice-pill">
-                            <input checked id="geoIsActive" type="checkbox">
-                            <span>Rule is active</span>
-                        </label>
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-choice-pill">
+                                <input checked id="geoIsActive" type="checkbox">
+                                <span>Rule is active</span>
+                            </label>
+
+                            <label class="bp-choice-pill">
+                                <input id="geoIsAllowed" type="checkbox">
+                                <span>Items in this list will be denied</span>
+                            </label>
+                        </div>
+
+                        <div class="bp-rules-settings-row">
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Redirect Offer</span>
+                                {!! $geoRedirectOfferSelect !!}
+                            </label>
+                        </div>
+
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-choice-pill">
+                                <input id="geoShouldSavePredefined" type="checkbox">
+                                <span>Create predefined rule</span>
+                            </label>
+
+                            <label class="bp-form-field bp-hidden" id="geoPredefinedRuleNameField">
+                                <span class="bp-form-label">Predefined Rule Name</span>
+                                <input type="text" class="bp-form-input" id="geoPredefinedRuleName" placeholder="Save this rule for reuse..." disabled>
+                            </label>
+                        </div>
 
                         <input type="hidden" id="offerID" value="{{ $offer->idoffer }}">
                         <input type="hidden" id="geoRuleID" value="">
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Rule Name</span>
-                            <input type="text" class="bp-form-input" id="geoRuleName">
-                        </label>
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Redirect Offer</span>
-                            {!! $geoRedirectOfferSelect !!}
-                        </label>
-
-                        <label class="bp-choice-pill">
-                            <input id="geoShouldSavePredefined" type="checkbox">
-                            <span>Create predefined rule</span>
-                        </label>
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Predefined Rule Name</span>
-                            <input type="text" class="bp-form-input" id="geoPredefinedRuleName" placeholder="Save this rule for reuse..." disabled>
-                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -272,61 +280,71 @@
                         </div>
                     </div>
 
-                    <div class="bp-rules-settings-grid mt-4">
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Load Predefined Rule</span>
-                            <select id="devicePredefinedRuleSelect" class="bp-form-input">
-                                <option value="">Select a saved rule...</option>
-                                @foreach ($predefinedDeviceRules as $predefinedRule)
-                                    <option value="{{ $predefinedRule['id'] }}">{{ $predefinedRule['name'] }}</option>
-                                @endforeach
-                            </select>
-                        </label>
+                    <div class="bp-rules-settings-stack mt-4">
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Load Predefined Rule</span>
+                                <select id="devicePredefinedRuleSelect" class="bp-form-input">
+                                    <option value="">Select a saved rule...</option>
+                                    @foreach ($predefinedDeviceRules as $predefinedRule)
+                                        <option value="{{ $predefinedRule['id'] }}">{{ $predefinedRule['name'] }}</option>
+                                    @endforeach
+                                </select>
+                            </label>
 
-                        <label class="bp-choice-pill">
-                            <input id="deviceIsAllowed" type="checkbox">
-                            <span>Items in this list will be denied</span>
-                        </label>
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Rule Name</span>
+                                <input type="text" class="bp-form-input" id="deviceRuleName">
+                            </label>
+                        </div>
 
-                        <label class="bp-choice-pill">
-                            <input checked id="deviceIsActive" type="checkbox">
-                            <span>Rule is active</span>
-                        </label>
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-choice-pill">
+                                <input checked id="deviceIsActive" type="checkbox">
+                                <span>Rule is active</span>
+                            </label>
+
+                            <label class="bp-choice-pill">
+                                <input id="deviceIsAllowed" type="checkbox">
+                                <span>Items in this list will be denied</span>
+                            </label>
+                        </div>
+
+                        <div class="bp-rules-settings-row">
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Redirect Offer</span>
+                                {!! $deviceRedirectOfferSelect !!}
+                            </label>
+                        </div>
+
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Cap</span>
+                                <label class="bp-choice-pill">
+                                    <input {{ $activeCap ? 'checked' : '' }} id="capIsActive" type="checkbox">
+                                    <span>Enable</span>
+                                </label>
+                            </label>
+
+                            <label class="bp-form-field">
+                                <span class="bp-form-label">Max Conv</span>
+                                <input type="number" class="bp-form-input" id="deviceCap" value="{{ $capAmount }}">
+                            </label>
+                        </div>
+
+                        <div class="bp-rules-settings-row bp-rules-settings-row--two">
+                            <label class="bp-choice-pill">
+                                <input id="deviceShouldSavePredefined" type="checkbox">
+                                <span>Create predefined rule</span>
+                            </label>
+
+                            <label class="bp-form-field bp-hidden" id="devicePredefinedRuleNameField">
+                                <span class="bp-form-label">Predefined Rule Name</span>
+                                <input type="text" class="bp-form-input" id="devicePredefinedRuleName" placeholder="Save this rule for reuse..." disabled>
+                            </label>
+                        </div>
 
                         <input type="hidden" id="deviceRuleID" value="">
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Rule Name</span>
-                            <input type="text" class="bp-form-input" id="deviceRuleName">
-                        </label>
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Redirect Offer</span>
-                            {!! $deviceRedirectOfferSelect !!}
-                        </label>
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Cap</span>
-                            <label class="bp-choice-pill">
-                                <input {{ $activeCap ? 'checked' : '' }} id="capIsActive" type="checkbox">
-                                <span>Enable</span>
-                            </label>
-                        </label>
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Max Conv</span>
-                            <input type="number" class="bp-form-input" id="deviceCap" value="{{ $capAmount }}">
-                        </label>
-
-                        <label class="bp-choice-pill">
-                            <input id="deviceShouldSavePredefined" type="checkbox">
-                            <span>Create predefined rule</span>
-                        </label>
-
-                        <label class="bp-form-field">
-                            <span class="bp-form-label">Predefined Rule Name</span>
-                            <input type="text" class="bp-form-input" id="devicePredefinedRuleName" placeholder="Save this rule for reuse..." disabled>
-                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -391,9 +409,10 @@
             }
         }
 
-        function togglePredefinedNameField(toggleSelector, inputSelector) {
+        function togglePredefinedNameField(toggleSelector, inputSelector, fieldSelector) {
             const shouldSave = $(toggleSelector).is(":checked");
             $(inputSelector).prop("disabled", !shouldSave);
+            $(fieldSelector).toggleClass("bp-hidden", !shouldSave);
 
             if (!shouldSave) {
                 $(inputSelector).val("");
@@ -786,6 +805,7 @@
             $("#devicePredefinedRuleSelect").val("");
             $("#deviceShouldSavePredefined").prop("checked", false);
             $("#devicePredefinedRuleName").val("").prop("disabled", true);
+            $("#devicePredefinedRuleNameField").addClass("bp-hidden");
             $("#deviceRuleTitle").text("New Device Rule");
             $("#deviceIsAllowed").prop("checked", false);
             $("#deviceIsActive").prop("checked", true);
@@ -804,6 +824,7 @@
             $("#geoPredefinedRuleSelect").val("");
             $("#geoShouldSavePredefined").prop("checked", false);
             $("#geoPredefinedRuleName").val("").prop("disabled", true);
+            $("#geoPredefinedRuleNameField").addClass("bp-hidden");
             $("#geoRuleTitle").text("New Geo Rule");
             $("#geoIsAllowed").prop("checked", false);
             $("#geoIsActive").prop("checked", true);
@@ -823,11 +844,11 @@
         });
 
         $("#geoShouldSavePredefined").change(function () {
-            togglePredefinedNameField("#geoShouldSavePredefined", "#geoPredefinedRuleName");
+            togglePredefinedNameField("#geoShouldSavePredefined", "#geoPredefinedRuleName", "#geoPredefinedRuleNameField");
         });
 
         $("#deviceShouldSavePredefined").change(function () {
-            togglePredefinedNameField("#deviceShouldSavePredefined", "#devicePredefinedRuleName");
+            togglePredefinedNameField("#deviceShouldSavePredefined", "#devicePredefinedRuleName", "#devicePredefinedRuleNameField");
         });
 
         $("#geoPredefinedRuleSelect").change(function () {
