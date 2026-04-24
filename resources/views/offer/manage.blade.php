@@ -17,8 +17,11 @@
         $canCreateOffers = $permissions->can('create_offers');
         $canEditAffiliates = $permissions->can('edit_affiliates');
         $canEditOfferRules = $permissions->can('edit_offer_rules');
+		$canViewPayouts = $permissions->can('view_payouts');
         $isAffiliate = $sessionUserType == \App\Privilege::ROLE_AFFILIATE;
         $isManager = $sessionUserType == \App\Privilege::ROLE_MANAGER;
+		$isGod = $sessionUserType == \App\Privilege::ROLE_GOD;
+
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
@@ -65,7 +68,19 @@
                     @endif
                 </div>--}}
 
-                <div class="bp-offer-search">
+                @if ($isAffiliate)
+                    <div class="bp-report-toolbar w-full">
+                        <div class="bp-select-group">
+                            <label class="value_span9" for="offer_url">Offer URLs</label>
+                            <select onchange="handleSelect(this);" class="selectBox" id="offer_url" name="offer_url">
+                                @for ($i = 0; $i < count($urls); $i++)
+                                    <option value="{{ $i }}" {{ request('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+                @endif
+                <div class="bp-offer-search mt-10">
                     <label class="bp-detail-label" for="searchBox">Search offers</label>
                     <input id="searchBox" class="bp-search-input" type="text" placeholder="Search by offer name or ID">
                 </div>
@@ -107,12 +122,20 @@
                             <th class="value_span9">Access</th>
                         @endif
 
-                        @if (!$isManager)
+                        @if ($isGod || $canViewPayouts)
                             <th class="value_span9">Payout</th>
                         @endif
 
-                        @if ($isAffiliate)
+                        @if ($isGod)
+                            <th class="value_span9">Adv</th>
+                        @endif
+
+                        {{--@if ($isAffiliate)
                             <th class="value_span9">Postback</th>
+                        @endif--}}
+
+                        @if ($isGod)
+                            <th class="value_span9">Actions</th>
                         @endif
                     </tr>
                     </thead>
@@ -191,6 +214,7 @@
             const canCreateOffers = @json($canCreateOffers);
             const canEditAffiliates = @json($canEditAffiliates);
             const canEditOfferRules = @json($canEditOfferRules);
+	        const canViewPayouts = @json($canViewPayouts);
             const sessionUser = {{ (int) \LeadMax\TrackYourStats\System\Session::userID() }};
             const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? request()->getHttpHost());
             const offers = @json($offers);
@@ -253,11 +277,11 @@
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
                             html += "<td class='value_span10'>" +
-                                "<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer_access.php?id=" + offer.idoffer + "'>Affiliate Access</a>" +
+                                "<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer/mass-assign?id=" + offer.idoffer + "'>Affiliate Access</a>" +
                                 "</td>";
                         }
 
-                        if (userType !== 2) {
+                        if (userType === 0 || canViewPayouts) {
                             if (userType === 3) {
                                 html += "<td class='value_span10'>$" + offer.pivot.payout + "</td>";
                             } else {
@@ -265,39 +289,26 @@
                             }
                         }
 
-                        /*html += "<td class='value_span10'>" + offer.campaign_name + "</td>";*/
+	                    if (userType === 0) {
+		                    html += "<td class='value_span10'>" + offer.campaign_name + "</td>";
+	                    }
 
-                        if (userType === 3) {
+                        /*if (userType === 3) {
                             html += "<td class='value_span10'>" +
                                 "<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' href='/offer_edit_pb.php?offid=" + offer.idoffer + "'>Edit Post Back</a>" +
                                 "</td>";
-                        }
-
-                       /* if (userType !== 3) {
-                            html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";
-                            html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
-                        }*/
-
-                        if (userType !== 3 && canCreateOffers) {
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
-                        }
-
-                        if (canEditOfferRules && userType !== 3) {
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
-                        }
-
-                        /*if (userType !== 3) {
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
                         }*/
 
                         if (userType === 0) {
+                            /*html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";*/
+                            html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
+                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
+                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
+                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
                             html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
                                 "<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer.idoffer + "' title='Delete Offer' href='#'>Delete</a>";
-                        }
-
-                       /* if (userType !== 3) {
                             html += "</div></td>";
-                        }*/
+                        }
 
                         html += "</tr>";
                     });

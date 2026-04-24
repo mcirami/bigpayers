@@ -28,7 +28,6 @@
             <th class="value_span9">Unique</th>
             <th class="value_span9">Conversions</th>
             <th class="value_span9">Revenue</th>
-            <th class="value_span9">EPC</th>
         </tr>
         </thead>
         <tbody>

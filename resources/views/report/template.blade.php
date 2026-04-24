@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="rounded-full bg-white/80 px-4 py-2 text-sm font-semibold text-slate-500 shadow-sm">
-                    Sort, filter, and export with the current brand theme intact
+                    Sort, filter, and export data
                 </div>
             </div>
 

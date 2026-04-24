@@ -39,7 +39,7 @@
 
                 <div class="relative z-10 grid gap-3 sm:grid-cols-2">
                     <a href="/user/{{ $userId }}/edit" class="bp-button-secondary">Update profile</a>
-                    <a href="/report/affiliate" class="bp-button-primary">Open {{ strtolower($affiliateTypeLabel) }} report</a>
+                    <a href="/report/offer" class="bp-button-primary">Open offer report</a>
                 </div>
             </div>
         </section>
@@ -152,10 +152,17 @@
                             <span>Offer report</span>
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </a>
-                        <a href="/report/affiliate" class="bp-button-secondary w-full justify-between">
-                            <span>{{ $affiliateTypeLabel }} report</span>
-                            <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                        </a>
+                        @if ($userType == 3)
+                            <a href="/report/sub" class="bp-button-secondary w-full justify-between">
+                                <span>Sub report</span>
+                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        @else
+                            <a href="/report/affiliate" class="bp-button-secondary w-full justify-between">
+                                <span>{{ $affiliateTypeLabel }} report</span>
+                                <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                            </a>
+                        @endif
                         <a href="/user/{{ $userId }}/edit" class="bp-button-primary w-full justify-between">
                             <span>Edit my account</span>
                             <i class="fas fa-pen" aria-hidden="true"></i>

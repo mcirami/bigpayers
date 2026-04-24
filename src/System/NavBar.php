@@ -72,7 +72,7 @@ class NavBar
 
             "Sub Report" => ['url' => '/report/sub', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
 
-            "Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],
+            /*"Payout Report" => ['url' => '/report/payout', "required_user_types" => [\App\Privilege::ROLE_AFFILIATE]],*/
         ],
 
         "Users" => [

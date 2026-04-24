@@ -1,7 +1,7 @@
 @extends('report.template')
 
 @section('report-title')
-    Click Reports
+    Offer Reports
 @endsection
 
 @section('table-options')
@@ -16,13 +16,8 @@
             <th class="value_span9">Name</th>
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
-            <th class="value_span9">Signups</th>
-            <th class="value_span9">Pending</th>
             <th class="value_span9">Convs</th>
             <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
-            <th class="value_span9">EPC</th>
-            <th class="value_span9">TOTAL</th>
         </tr>
         </thead>
         <tbody>
@@ -32,13 +27,8 @@
                 'offer_name',
                 'Clicks',
                 'UniqueClicks',
-                'FreeSignUps',
-                'PendingConversions',
                 'Conversions',
                 'Revenue',
-                'Deductions',
-                'EPC',
-                'TOTAL',
             ]));
         @endphp
         </tbody>
