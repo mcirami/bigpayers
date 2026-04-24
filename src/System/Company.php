@@ -59,10 +59,11 @@ class Company
     public function isCompanyOfferUrl($url)
     {
         $offerUrls = self::getOfferUrls();
+        $normalizedUrl = $this->normalizeHost((string) $url);
 
         if ( is_array($offerUrls) && ! empty( $offerUrls ) ) {
             foreach ($offerUrls as $offer_url) {
-                if ($offer_url[0] === $url) {
+                if ($this->normalizeHost((string) $offer_url[0]) === $normalizedUrl) {
                     return true;
                 }
             }
@@ -156,6 +157,17 @@ class Company
         }
 
         return false;
+    }
+
+    private function normalizeHost(string $host): string
+    {
+        $normalized = strtolower(trim($host));
+
+        if (str_starts_with($normalized, 'www.')) {
+            return substr($normalized, 4);
+        }
+
+        return $normalized;
     }
 
 

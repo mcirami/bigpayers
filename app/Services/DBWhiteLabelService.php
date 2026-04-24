@@ -37,7 +37,8 @@ class DBWhiteLabelService
 
     public static function getSubDomain()
     {
-        $sub = explode(".", request()->getHttpHost());
+        $host = static::normalizeHost(request()->getHttpHost());
+        $sub = explode(".", $host);
 
         return $sub[0];
     }
@@ -72,7 +73,8 @@ class DBWhiteLabelService
 
     public function checkAndSetIfLoginPageOrLanderPage($url)
     {
-        $company = Company::where('login_url', $url)->orWhere('landing_page', $url)->first();
+        $hosts = $this->candidateHosts($url);
+        $company = Company::whereIn('login_url', $hosts)->orWhereIn('landing_page', $hosts)->first();
 
         if (is_null($company) == false) {
             $this->subDomain = $company->subDomain;
@@ -85,7 +87,7 @@ class DBWhiteLabelService
 
     public function checkAndSetIfOfferUrl($url)
     {
-        $offerUrl = OfferURL::where('url', $url)->first();
+        $offerUrl = OfferURL::whereIn('url', $this->candidateHosts($url))->first();
 
         if (is_null($offerUrl) == false) {
             $company = Company::where('id', $offerUrl->company_id)->first();
@@ -111,6 +113,29 @@ class DBWhiteLabelService
             $this->subDomain = 'debug';
         }
 
+    }
+
+    private static function normalizeHost(string $host): string
+    {
+        $normalized = strtolower(trim($host));
+
+        if (str_starts_with($normalized, 'www.')) {
+            return substr($normalized, 4);
+        }
+
+        return $normalized;
+    }
+
+    private function candidateHosts(string $host): array
+    {
+        $normalized = static::normalizeHost($host);
+        $hosts = [$normalized];
+
+        if (!str_starts_with(strtolower(trim($host)), 'www.')) {
+            $hosts[] = 'www.' . $normalized;
+        }
+
+        return array_values(array_unique($hosts));
     }
 
 

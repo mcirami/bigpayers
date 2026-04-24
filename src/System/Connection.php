@@ -88,10 +88,12 @@ class Connection
     public function isLoginPage()
     {
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE login_url = :url";
+        $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE login_url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $loginURL = $_SERVER["HTTP_HOST"];
+        $loginURL = $this->normalizeHost($_SERVER["HTTP_HOST"]);
+        $wwwLoginURL = 'www.' . $loginURL;
         $prep->bindParam(":url", $loginURL);
+        $prep->bindParam(":wwwUrl", $wwwLoginURL);
         $prep->execute();
 
         if ($prep->rowCount() > 0) {
@@ -109,9 +111,12 @@ class Connection
     {
 
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT * FROM ". env('DB_DATABASE') . ".offer_urls WHERE url = :url";
+        $sql = "SELECT * FROM ". env('DB_DATABASE') . ".offer_urls WHERE url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":url", $_SERVER["HTTP_HOST"]);
+        $host = $this->normalizeHost($_SERVER["HTTP_HOST"]);
+        $wwwHost = 'www.' . $host;
+        $prep->bindParam(":url", $host);
+        $prep->bindParam(":wwwUrl", $wwwHost);
         $prep->execute();
         $foundOfferUrl = $prep->rowCount();
 
@@ -210,10 +215,12 @@ class Connection
     private function isLanderPage()
     {
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE landing_page = :url";
+        $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE landing_page IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $loginURL = $_SERVER["HTTP_HOST"];
+        $loginURL = $this->normalizeHost($_SERVER["HTTP_HOST"]);
+        $wwwLoginURL = 'www.' . $loginURL;
         $prep->bindParam(":url", $loginURL);
+        $prep->bindParam(":wwwUrl", $wwwLoginURL);
         $prep->execute();
 
         if ($prep->rowCount() > 0) {
@@ -223,6 +230,17 @@ class Connection
         }
 
         return false;
+    }
+
+    private function normalizeHost(string $host): string
+    {
+        $normalized = strtolower(trim($host));
+
+        if (str_starts_with($normalized, 'www.')) {
+            return substr($normalized, 4);
+        }
+
+        return $normalized;
     }
 
 }
