@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Campaign;
 use App\Offer;
 use App\OfferURL;
+use App\PredefinedOfferRule;
 use App\Privilege;
 use App\User;
 use App\UserOffer;
@@ -228,6 +229,44 @@ class OfferController extends Controller
 				->pluck('offer_name', 'idoffer')
 				->toArray();
 
+        $predefinedGeoRules = PredefinedOfferRule::query()
+            ->where('type', '=', 'geo')
+            ->orderBy('name')
+            ->get()
+            ->map(function (PredefinedOfferRule $rule) {
+                return [
+                    'id' => (int) $rule->id,
+                    'name' => $rule->name,
+                    'rule_name' => $rule->rule_name,
+                    'redirectOffer' => (int) $rule->redirect_offer,
+                    'deny' => (int) $rule->deny,
+                    'is_active' => (int) $rule->is_active,
+                    'items' => $rule->items,
+                ];
+            })
+            ->values()
+            ->all();
+
+        $predefinedDeviceRules = PredefinedOfferRule::query()
+            ->where('type', '=', 'device')
+            ->orderBy('name')
+            ->get()
+            ->map(function (PredefinedOfferRule $rule) {
+                return [
+                    'id' => (int) $rule->id,
+                    'name' => $rule->name,
+                    'rule_name' => $rule->rule_name,
+                    'redirectOffer' => (int) $rule->redirect_offer,
+                    'deny' => (int) $rule->deny,
+                    'is_active' => (int) $rule->is_active,
+                    'capAmount' => (int) $rule->cap_amount,
+                    'capStatus' => (int) $rule->cap_status,
+                    'items' => $rule->items,
+                ];
+            })
+            ->values()
+            ->all();
+
 		ob_start();
 		$rules->printTable();
 		$rulesTableHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
@@ -256,8 +295,58 @@ class OfferController extends Controller
 			'redirectOfferMap' => $redirectOfferMap,
 			'activeCap' => $activeCap,
 			'capAmount' => $capAmount,
+            'predefinedGeoRules' => $predefinedGeoRules,
+            'predefinedDeviceRules' => $predefinedDeviceRules,
 		]);
 	}
+
+    public function storePredefinedRule(Request $request): JsonResponse
+    {
+        $payload = $request->validate([
+            'type' => 'required|in:geo,device',
+            'name' => 'required|string|min:3|max:120',
+            'rule_name' => 'nullable|string|max:120',
+            'redirect_offer' => 'nullable|integer|min:0',
+            'deny' => 'required|boolean',
+            'is_active' => 'required|boolean',
+            'cap_amount' => 'nullable|integer|min:0',
+            'cap_status' => 'required|boolean',
+            'items' => 'required|array|min:1',
+        ]);
+
+        if ($payload['type'] === 'geo') {
+            foreach ($payload['items'] as $item) {
+                if (!is_array($item) || empty($item['country_code'])) {
+                    return response()->json(['message' => 'Each geo predefined rule item must include a country code.'], 422);
+                }
+            }
+        }
+
+        if ($payload['type'] === 'device') {
+            foreach ($payload['items'] as $item) {
+                if (!is_string($item) || trim($item) === '') {
+                    return response()->json(['message' => 'Each device predefined rule item must be a valid device name.'], 422);
+                }
+            }
+        }
+
+        $rule = PredefinedOfferRule::query()->create([
+            'type' => $payload['type'],
+            'name' => trim($payload['name']),
+            'rule_name' => isset($payload['rule_name']) ? trim((string) $payload['rule_name']) : null,
+            'redirect_offer' => (int) ($payload['redirect_offer'] ?? 0),
+            'deny' => (bool) $payload['deny'],
+            'is_active' => (bool) $payload['is_active'],
+            'cap_amount' => (int) ($payload['cap_amount'] ?? 0),
+            'cap_status' => (bool) $payload['cap_status'],
+            'items_json' => json_encode(array_values($payload['items'])),
+        ]);
+
+        return response()->json([
+            'id' => $rule->id,
+            'message' => 'Predefined rule saved.',
+        ]);
+    }
 
 	private function validateOfferRequest(Request $request, bool $requireUsers = true)
 	{

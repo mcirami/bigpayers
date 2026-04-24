@@ -154,6 +154,16 @@
                     </div>
 
                     <div class="bp-rules-settings-grid mt-4">
+                        <label class="bp-form-field">
+                            <span class="bp-form-label">Load Predefined Rule</span>
+                            <select id="geoPredefinedRuleSelect" class="bp-form-input">
+                                <option value="">Select a saved rule...</option>
+                                @foreach ($predefinedGeoRules as $predefinedRule)
+                                    <option value="{{ $predefinedRule['id'] }}">{{ $predefinedRule['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+
                         <label class="bp-choice-pill">
                             <input id="geoIsAllowed" type="checkbox">
                             <span>Items in this list will be denied</span>
@@ -175,6 +185,16 @@
                         <label class="bp-form-field">
                             <span class="bp-form-label">Redirect Offer</span>
                             {!! $geoRedirectOfferSelect !!}
+                        </label>
+
+                        <label class="bp-choice-pill">
+                            <input id="geoShouldSavePredefined" type="checkbox">
+                            <span>Create predefined rule</span>
+                        </label>
+
+                        <label class="bp-form-field">
+                            <span class="bp-form-label">Predefined Rule Name</span>
+                            <input type="text" class="bp-form-input" id="geoPredefinedRuleName" placeholder="Save this rule for reuse..." disabled>
                         </label>
                     </div>
                 </div>
@@ -253,6 +273,16 @@
                     </div>
 
                     <div class="bp-rules-settings-grid mt-4">
+                        <label class="bp-form-field">
+                            <span class="bp-form-label">Load Predefined Rule</span>
+                            <select id="devicePredefinedRuleSelect" class="bp-form-input">
+                                <option value="">Select a saved rule...</option>
+                                @foreach ($predefinedDeviceRules as $predefinedRule)
+                                    <option value="{{ $predefinedRule['id'] }}">{{ $predefinedRule['name'] }}</option>
+                                @endforeach
+                            </select>
+                        </label>
+
                         <label class="bp-choice-pill">
                             <input id="deviceIsAllowed" type="checkbox">
                             <span>Items in this list will be denied</span>
@@ -287,6 +317,16 @@
                             <span class="bp-form-label">Max Conv</span>
                             <input type="number" class="bp-form-input" id="deviceCap" value="{{ $capAmount }}">
                         </label>
+
+                        <label class="bp-choice-pill">
+                            <input id="deviceShouldSavePredefined" type="checkbox">
+                            <span>Create predefined rule</span>
+                        </label>
+
+                        <label class="bp-form-field">
+                            <span class="bp-form-label">Predefined Rule Name</span>
+                            <input type="text" class="bp-form-input" id="devicePredefinedRuleName" placeholder="Save this rule for reuse..." disabled>
+                        </label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -304,7 +344,12 @@
         const countryMap = @json($countryMap);
         const geoRules = @json($geoRules);
         const deviceRules = @json($deviceRules);
+        const predefinedGeoRules = @json($predefinedGeoRules);
+        const predefinedDeviceRules = @json($predefinedDeviceRules);
         const redirectOfferMap = @json($redirectOfferMap ?? []);
+        const csrfToken = @json(csrf_token());
+        let geoSubmitting = false;
+        let deviceSubmitting = false;
 
         $(document).ready(function () {
             $("#rules").tablesorter({
@@ -346,28 +391,241 @@
             }
         }
 
+        function togglePredefinedNameField(toggleSelector, inputSelector) {
+            const shouldSave = $(toggleSelector).is(":checked");
+            $(inputSelector).prop("disabled", !shouldSave);
+
+            if (!shouldSave) {
+                $(inputSelector).val("");
+            }
+        }
+
+        function clearGeoSelections() {
+            const rows = $('#toAdd > tbody > tr').toArray();
+
+            rows.forEach(function (row) {
+                const rowElement = $(row);
+                rowElement.find('td.caps').remove();
+                $("#countryListBody").append(rowElement);
+                $("#_" + row.id).attr("onclick", "addCountry('" + row.id + "');");
+                setRuleActionState($("#_" + row.id), "add");
+            });
+
+            sortCountries("a", "asc");
+        }
+
+        function clearDeviceSelections() {
+            const rows = $('#deviceToAdd > tbody > tr').toArray();
+
+            rows.forEach(function (row) {
+                const rowElement = $(row);
+                $("#deviceListBody").append(rowElement);
+                $("#_" + row.id).attr("onclick", "addDevice('" + row.id + "')");
+                setRuleActionState($("#_" + row.id), "add");
+            });
+        }
+
+        function fillGeoRuleForm(rule) {
+            $("#geoRuleName").val(rule.name || rule.rule_name || "");
+            syncSelectValue($("#geoRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
+            $("#geoIsAllowed").prop("checked", Number(rule.deny) === 1 || rule.deny === true);
+            $("#geoIsActive").prop("checked", Number(rule.is_active) === 1 || rule.is_active === true);
+            clearGeoSelections();
+
+            (rule.countries || rule.items || []).forEach((country) => {
+                addCountry(
+                    country.country_code || country.code || country.countryCode,
+                    country.cap_status ?? country.capStatus ?? 0,
+                    country.cap ?? 0,
+                    false
+                );
+            });
+
+            sortTable($('#toAdd'), 'asc');
+        }
+
+        function fillDeviceRuleForm(rule) {
+            $("#deviceRuleName").val(rule.name || rule.rule_name || "");
+            syncSelectValue($("#deviceRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
+            $("#deviceIsAllowed").prop("checked", Number(rule.deny) === 1 || rule.deny === true);
+            $("#deviceIsActive").prop("checked", Number(rule.is_active) === 1 || rule.is_active === true);
+            $("#capIsActive").prop("checked", Number(rule.capStatus ?? rule.cap_status) === 1 || rule.capStatus === true || rule.cap_status === true);
+            $("#deviceCap").val(rule.capAmount ?? rule.cap_amount ?? 0);
+            clearDeviceSelections();
+
+            (rule.devices || rule.items || []).forEach((deviceName) => {
+                addDevice(String(deviceName).toLowerCase());
+            });
+        }
+
+        function getGeoItems() {
+            return $('#toAdd > tbody > tr').toArray().map(function (row) {
+                return {
+                    country_code: normalizeCountryCode(row.id),
+                    country_name: row.children[0].innerText,
+                    cap_status: row.querySelector('.cap_active')?.checked ? 1 : 0,
+                    cap: row.querySelector('.cap_amount')?.value || 0
+                };
+            });
+        }
+
+        function getDeviceItems() {
+            return $('#deviceToAdd > tbody > tr').toArray().map(function (row) {
+                return row.id;
+            });
+        }
+
+        function buildGeoPredefinedRulePayload() {
+            return {
+                _token: csrfToken,
+                type: 'geo',
+                name: $("#geoPredefinedRuleName").val().trim(),
+                rule_name: $("#geoRuleName").val().trim(),
+                redirect_offer: $("#geoRedirectOffer").val(),
+                deny: $("#geoIsAllowed").is(":checked") ? 1 : 0,
+                is_active: $("#geoIsActive").is(":checked") ? 1 : 0,
+                cap_amount: 0,
+                cap_status: 0,
+                items: getGeoItems()
+            };
+        }
+
+        function buildDevicePredefinedRulePayload() {
+            return {
+                _token: csrfToken,
+                type: 'device',
+                name: $("#devicePredefinedRuleName").val().trim(),
+                rule_name: $("#deviceRuleName").val().trim(),
+                redirect_offer: $("#deviceRedirectOffer").val(),
+                deny: $("#deviceIsAllowed").is(":checked") ? 1 : 0,
+                is_active: $("#deviceIsActive").is(":checked") ? 1 : 0,
+                cap_amount: $("#deviceCap").val() || 0,
+                cap_status: $("#capIsActive").is(":checked") ? 1 : 0,
+                items: getDeviceItems()
+            };
+        }
+
+        function persistPredefinedRule(payload) {
+            return $.ajax({
+                type: "POST",
+                url: "/offer/rules/predefined",
+                data: payload,
+                cache: false
+            });
+        }
+
+        function validatePredefinedRuleRequest(toggleSelector, inputSelector) {
+            if (!$(toggleSelector).is(":checked")) {
+                return true;
+            }
+
+            if ($(inputSelector).val().trim() !== "") {
+                return true;
+            }
+
+            alert("Please enter a predefined rule name.");
+            $(inputSelector).focus();
+            return false;
+        }
+
+        function setGeoSubmitting(isSubmitting) {
+            geoSubmitting = isSubmitting;
+            $("#geoCreateButton, #geoUpdateButton").prop("disabled", isSubmitting);
+        }
+
+        function setDeviceSubmitting(isSubmitting) {
+            deviceSubmitting = isSubmitting;
+            $("#deviceCreateButton, #deviceUpdateButton").prop("disabled", isSubmitting);
+        }
+
         $("#geoCreateButton").click(function () {
+            if (geoSubmitting) {
+                return;
+            }
+
+            if (!validatePredefinedRuleRequest("#geoShouldSavePredefined", "#geoPredefinedRuleName")) {
+                return;
+            }
+
+            setGeoSubmitting(true);
+
             $.ajax({
                 type: "POST",
                 url: "/scripts/offer/rules/geo/addGeo.php",
                 data: { data: parseCountries("toAdd") },
                 cache: false,
                 success: function () {
-                    $("#geoModal").modal("hide");
-                    location.reload();
+                    const shouldSavePredefined = $("#geoShouldSavePredefined").is(":checked");
+                    const finalize = function () {
+                        $("#geoModal").modal("hide");
+                        location.reload();
+                    };
+
+                    if (shouldSavePredefined) {
+                        const payload = buildGeoPredefinedRulePayload();
+
+                        persistPredefinedRule(payload)
+                            .fail(function (result) {
+                                alert(result.responseJSON?.message || result.responseText || "Rule saved, but predefined rule could not be created.");
+                            })
+                            .always(finalize);
+
+                        return;
+                    }
+
+                    finalize();
+                },
+                error: function (result) {
+                    alert(result.responseText || result);
+                },
+                complete: function () {
+                    setGeoSubmitting(false);
                 }
             });
         });
 
         $("#deviceCreateButton").click(function () {
+            if (deviceSubmitting) {
+                return;
+            }
+
+            if (!validatePredefinedRuleRequest("#deviceShouldSavePredefined", "#devicePredefinedRuleName")) {
+                return;
+            }
+
+            setDeviceSubmitting(true);
+
             $.ajax({
                 type: "POST",
                 url: "/scripts/offer/rules/device/add.php",
                 data: { data: parseDevices("deviceToAdd") },
                 cache: false,
                 success: function () {
-                    $("#deviceModal").modal("hide");
-                    location.reload();
+                    const shouldSavePredefined = $("#deviceShouldSavePredefined").is(":checked");
+                    const finalize = function () {
+                        $("#deviceModal").modal("hide");
+                        location.reload();
+                    };
+
+                    if (shouldSavePredefined) {
+                        const payload = buildDevicePredefinedRulePayload();
+
+                        persistPredefinedRule(payload)
+                            .fail(function (result) {
+                                alert(result.responseJSON?.message || result.responseText || "Rule saved, but predefined rule could not be created.");
+                            })
+                            .always(finalize);
+
+                        return;
+                    }
+
+                    finalize();
+                },
+                error: function (result) {
+                    alert(result.responseText || result);
+                },
+                complete: function () {
+                    setDeviceSubmitting(false);
                 }
             });
         });
@@ -382,17 +640,9 @@
             $("#geoRuleTitle").text("Edit Rule");
             $("#geoRuleID").val(ruleID);
             $("#geoRuleName").val(rule.name || "");
-            syncSelectValue($("#geoRedirectOffer"), rule.redirectOffer, redirectOfferMap);
-            $("#geoIsAllowed").prop("checked", Number(rule.deny) === 1);
-            $("#geoIsActive").prop("checked", Number(rule.is_active) === 1);
+            fillGeoRuleForm(rule);
             $("#geoCreateButton").hide();
             $("#geoUpdateButton").show();
-
-            (rule.countries || []).forEach((country) => {
-                addCountry(country.country_code, country.cap_status, country.cap, false);
-            });
-
-            sortTable($('#toAdd'), 'asc');
         }
 
         function loadDeviceRule(ruleID) {
@@ -404,21 +654,22 @@
 
             $("#deviceRuleTitle").text("Edit Rule");
             $("#deviceRuleID").val(ruleID);
-            $("#deviceRuleName").val(rule.name || "");
-            syncSelectValue($("#deviceRedirectOffer"), rule.redirectOffer, redirectOfferMap);
-            $("#deviceIsAllowed").prop("checked", Number(rule.deny) === 1);
-            $("#deviceIsActive").prop("checked", Number(rule.is_active) === 1);
-            $("#capIsActive").prop("checked", Number(rule.capStatus) === 1);
-            $("#deviceCap").val(rule.capAmount || 0);
+            fillDeviceRuleForm(rule);
             $("#deviceCreateButton").hide();
             $("#deviceUpdateButton").show();
-
-            (rule.devices || []).forEach((deviceName) => {
-                addDevice(deviceName);
-            });
         }
 
         $("#geoUpdateButton").click(function () {
+            if (geoSubmitting) {
+                return;
+            }
+
+            if (!validatePredefinedRuleRequest("#geoShouldSavePredefined", "#geoPredefinedRuleName")) {
+                return;
+            }
+
+            setGeoSubmitting(true);
+
             const ruleData = {
                 name: $("#geoRuleName").val(),
                 ruleID: $("#geoRuleID").val(),
@@ -438,16 +689,46 @@
                 cache: false,
                 traditional: true,
                 success: function () {
-                    $("#geoModal").modal("hide");
-                    location.reload();
+                    const shouldSavePredefined = $("#geoShouldSavePredefined").is(":checked");
+                    const finalize = function () {
+                        $("#geoModal").modal("hide");
+                        location.reload();
+                    };
+
+                    if (shouldSavePredefined) {
+                        const payload = buildGeoPredefinedRulePayload();
+
+                        persistPredefinedRule(payload)
+                            .fail(function (result) {
+                                alert(result.responseJSON?.message || result.responseText || "Rule updated, but predefined rule could not be created.");
+                            })
+                            .always(finalize);
+
+                        return;
+                    }
+
+                    finalize();
                 },
                 error: function (result) {
                     alert(result.responseText || result);
+                },
+                complete: function () {
+                    setGeoSubmitting(false);
                 }
             });
         });
 
         $("#deviceUpdateButton").click(function () {
+            if (deviceSubmitting) {
+                return;
+            }
+
+            if (!validatePredefinedRuleRequest("#deviceShouldSavePredefined", "#devicePredefinedRuleName")) {
+                return;
+            }
+
+            setDeviceSubmitting(true);
+
             const ruleData = {
                 name: $("#deviceRuleName").val(),
                 ruleID: $("#deviceRuleID").val(),
@@ -469,55 +750,68 @@
                 cache: false,
                 traditional: true,
                 success: function () {
-                    $("#deviceModal").modal("hide");
-                    location.reload();
+                    const shouldSavePredefined = $("#deviceShouldSavePredefined").is(":checked");
+                    const finalize = function () {
+                        $("#deviceModal").modal("hide");
+                        location.reload();
+                    };
+
+                    if (shouldSavePredefined) {
+                        const payload = buildDevicePredefinedRulePayload();
+
+                        persistPredefinedRule(payload)
+                            .fail(function (result) {
+                                alert(result.responseJSON?.message || result.responseText || "Rule updated, but predefined rule could not be created.");
+                            })
+                            .always(finalize);
+
+                        return;
+                    }
+
+                    finalize();
                 },
                 error: function (result) {
                     alert(result.responseText || result);
+                },
+                complete: function () {
+                    setDeviceSubmitting(false);
                 }
             });
         });
 
         function resetDeviceModal() {
-            const rows = $('#deviceToAdd > tbody > tr');
-
             $("#deviceRuleName").val("");
             $("#deviceRuleID").val("");
             $("#deviceRedirectOffer").val("");
+            $("#devicePredefinedRuleSelect").val("");
+            $("#deviceShouldSavePredefined").prop("checked", false);
+            $("#devicePredefinedRuleName").val("").prop("disabled", true);
             $("#deviceRuleTitle").text("New Device Rule");
             $("#deviceIsAllowed").prop("checked", false);
             $("#deviceIsActive").prop("checked", true);
+            $("#capIsActive").prop("checked", {{ $activeCap ? 'true' : 'false' }});
+            $("#deviceCap").val({{ $capAmount ?: 0 }});
             $("#deviceCreateButton").show();
             $("#deviceUpdateButton").hide();
-
-            for (let i = 0; i < rows.length; i++) {
-                $("#deviceListBody").append(rows[i]);
-                $("#_" + rows[i].id).attr("onclick", "addDevice('" + rows[i].id + "')");
-                setRuleActionState($("#_" + rows[i].id), "add");
-            }
+            setDeviceSubmitting(false);
+            clearDeviceSelections();
         }
 
         function resetGeoModal() {
-            const rows = $('#toAdd > tbody > tr');
-
             $("#geoRuleName").val("");
             $("#geoRuleID").val("");
             $("#geoRedirectOffer").val("");
+            $("#geoPredefinedRuleSelect").val("");
+            $("#geoShouldSavePredefined").prop("checked", false);
+            $("#geoPredefinedRuleName").val("").prop("disabled", true);
             $("#geoRuleTitle").text("New Geo Rule");
             $("#geoIsAllowed").prop("checked", false);
             $("#geoIsActive").prop("checked", true);
             $("#searchCountryList").val("");
             $("#geoCreateButton").show();
             $("#geoUpdateButton").hide();
-
-            for (let i = 0; i < rows.length; i++) {
-                rows[i].lastChild.remove();
-                $("#countryListBody").append(rows[i]);
-                $("#_" + rows[i].id).attr("onclick", "addCountry('" + rows[i].id + "')");
-                setRuleActionState($("#_" + rows[i].id), "add");
-            }
-
-            sortCountries("a", "asc");
+            setGeoSubmitting(false);
+            clearGeoSelections();
         }
 
         $("#geoCancelButton, #geoModal .close").click(function () {
@@ -526,6 +820,40 @@
 
         $("#deviceCancelButton, #deviceModal .close").click(function () {
             resetDeviceModal();
+        });
+
+        $("#geoShouldSavePredefined").change(function () {
+            togglePredefinedNameField("#geoShouldSavePredefined", "#geoPredefinedRuleName");
+        });
+
+        $("#deviceShouldSavePredefined").change(function () {
+            togglePredefinedNameField("#deviceShouldSavePredefined", "#devicePredefinedRuleName");
+        });
+
+        $("#geoPredefinedRuleSelect").change(function () {
+            const ruleID = $(this).val();
+            const rule = predefinedGeoRules.find(function (item) {
+                return String(item.id) === String(ruleID);
+            });
+
+            if (!rule) {
+                return;
+            }
+
+            fillGeoRuleForm(rule);
+        });
+
+        $("#devicePredefinedRuleSelect").change(function () {
+            const ruleID = $(this).val();
+            const rule = predefinedDeviceRules.find(function (item) {
+                return String(item.id) === String(ruleID);
+            });
+
+            if (!rule) {
+                return;
+            }
+
+            fillDeviceRuleForm(rule);
         });
 
         function addDevice(deviceName) {
