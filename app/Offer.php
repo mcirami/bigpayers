@@ -17,6 +17,9 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $offer_type
  * @property int|null $is_public
  * @property float|null $payout
+ * @property float|null $affiliate_payout
+ * @property float|null $manager_payout
+ * @property float|null $admin_payout
  * @property int|null $status
  * @property string|null $offer_timestamp
  * @property int $campaign_id
@@ -53,6 +56,9 @@ class Offer extends Model
         'url',
         'offer_type',
         'payout',
+        'affiliate_payout',
+        'manager_payout',
+        'admin_payout',
         'status',
         'offer_timestamp',
         'is_public',
@@ -75,6 +81,21 @@ class Offer extends Model
     public function affiliates()
     {
         return $this->belongsToMany(User::class, 'rep_has_offer', 'offer_idoffer', 'rep_idrep');
+    }
+
+    public function getRolePayoutForRole(int $role): ?float
+    {
+        return match ($role) {
+            Privilege::ROLE_ADMIN => $this->admin_payout,
+            Privilege::ROLE_MANAGER => $this->manager_payout,
+            Privilege::ROLE_AFFILIATE => $this->affiliate_payout,
+            default => null,
+        };
+    }
+
+    public function resolveDefaultPayoutForRole(int $role): float
+    {
+        return (float) ($this->getRolePayoutForRole($role) ?? $this->payout ?? 0);
     }
 
 }

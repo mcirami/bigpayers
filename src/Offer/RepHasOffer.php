@@ -102,7 +102,6 @@ class RepHasOffer
 
         $offer = Offer::selectOneQuery($offer_id)->fetch(\PDO::FETCH_OBJ);
 
-
         if (!$offer) {
             return false;
         }
@@ -113,7 +112,8 @@ class RepHasOffer
         $prep = $db->prepare($sql);
         $prep->bindParam(":offer_id", $offer_id);
         $prep->bindParam(":user_id", $user_id);
-        $prep->bindParam(":payout", $offer->payout);
+        $defaultPayout = null;
+        $prep->bindParam(":payout", $defaultPayout);
 
 
         return $prep->execute();
@@ -229,7 +229,6 @@ class RepHasOffer
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         foreach ($offerList as $offerID) {
-            $defaultOfferPayout = Offer::selectOneQuery($offerID)->fetch(PDO::FETCH_ASSOC)["payout"];
             $sql = "INSERT IGNORE INTO rep_has_offer (rep_idrep, offer_idoffer, payout) VALUES";
             $questionMarks = [];
             $insertValues = [];
@@ -237,7 +236,7 @@ class RepHasOffer
                 $questionMarks[] = "(?,?,?)";
                 $insertValues[] = $userID;
                 $insertValues[] = $offerID;
-                $insertValues[] = $defaultOfferPayout;
+                $insertValues[] = null;
             }
 
             $sql .= implode(",", $questionMarks);
@@ -727,7 +726,7 @@ class RepHasOffer
             $questionMarks[] = "(?,?,?)";
 
             $insertValues[] = $offer->idoffer;
-            $insertValues[] = $offer->payout;
+            $insertValues[] = null;
             $insertValues[] = $user_id;
         }
 
@@ -816,7 +815,7 @@ class RepHasOffer
 
                         $repIdFinalQueryArray[$key]["offer_idoffer"] = $lastOfferId;
                         //$affIdArray = array_merge($affIdArray, $affIdFinalQueryArray);
-                        $repIdFinalQueryArray[$key]["payout"] = $payout;
+                        $repIdFinalQueryArray[$key]["payout"] = null;
 
                     }
 

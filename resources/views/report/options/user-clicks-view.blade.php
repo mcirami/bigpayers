@@ -3,11 +3,13 @@
     $filterValue = isset($_GET['filter']) ? $_GET['filter'] : "subid";
 
 @endphp
-
-<select name="filter" id="filter" class="selectBox" onchange="getConversionsView(this);" style="width: 170px; margin-bottom: 20px;">
-    <option value="subid" @php if($filterValue == "subid") { echo "selected"; } @endphp>SubId View</option>
-    <option value="country" @php if($filterValue == "country") { echo "selected"; } @endphp>Country View</option>
-</select>
+<label class="bp-form-label flex flex-col gap-2">
+    <span class="bp-form-label">View</span>
+    <select name="filter" id="filter" class="selectBox" onchange="getConversionsView(this);" style="width: 170px;">
+        <option value="subid" @php if($filterValue == "subid") { echo "selected"; } @endphp>SubId</option>
+        <option value="country" @php if($filterValue == "country") { echo "selected"; } @endphp>Country</option>
+    </select>
+</label>
 
 <script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function() {

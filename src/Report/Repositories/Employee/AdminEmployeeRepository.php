@@ -4,7 +4,9 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
 
 
 use Carbon\Carbon;
+use App\Privilege;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
@@ -244,13 +246,14 @@ class AdminEmployeeRepository extends Repository
         
         $adminUserID = Session::userID();
         $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
+        $revenueExpression = Payouts::sqlForRole(Privilege::ROLE_ADMIN, 'offer', 'rep_has_offer');
 
         $result = DB::table('clicks')
-        ->whereBetween('clicks.first_timestamp', [$dateFrom,$dateTo])
         ->where('clicks.click_type', '!=', 2)
         ->leftJoin('rep', function($query) use($managers) {
             $query->on('rep.idrep', '=', 'clicks.rep_idrep')->whereIn('referrer_repid', $managers);
         })
+        ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
         ->join('privileges', 'rep.idrep', '=', 'privileges.rep_idrep')
         ->leftJoin('pending_conversions as pc', function($query) {
             $query->on('clicks.idclicks', '=', 'pc.click_id')->where('pc.converted', '=' , 0);
@@ -259,15 +262,16 @@ class AdminEmployeeRepository extends Repository
         ->leftJoin('deductions', 'deductions.conversion_id', '=', 'conversions.id')
         ->leftJoin('conversions as deducted', 'deducted.id', '=', 'deductions.conversion_id')
         ->leftJoin('free_sign_ups', 'free_sign_ups.click_id', '=', 'clicks.idclicks')
+        ->whereBetween('conversions.timestamp', [$dateFrom, $dateTo])
         ->select(
             'rep.idrep',
             'rep.user_name',
             'rep.lft',
 			'rep.rgt',
             DB::raw('COUNT(conversions.id) as Conversions'),
-            DB::raw('SUM(conversions.paid) as Revenue'),
+            DB::raw("SUM({$revenueExpression}) as Revenue"),
             DB::raw('COUNT(free_sign_ups.id) as FreeSignUps'),
-            DB::raw('SUM(deducted.paid) as Deductions')
+            DB::raw("SUM(CASE WHEN deducted.id IS NOT NULL THEN {$revenueExpression} ELSE 0 END) as Deductions")
             )
             ->groupBy('rep.idrep')
             ->orderBy('conversions', 'desc')

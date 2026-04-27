@@ -2,8 +2,10 @@
 
 namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
 
+use App\Privilege;
 use App\User;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 
@@ -72,6 +74,7 @@ class AdminOfferRepository extends Repository
     private function getConversions($dateFrom, $dateTo)
     {
         $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
+        $revenueExpression = Payouts::sqlForRole(Privilege::ROLE_ADMIN, 'offer', 'rep_has_offer');
         $result = DB::table('offer')
             ->leftJoin('clicks as rawClicks', 'rawClicks.offer_idoffer', 'offer.idoffer')
             ->leftJoin('conversions', 'conversions.click_id', 'rawClicks.idclicks')
@@ -86,8 +89,8 @@ class AdminOfferRepository extends Repository
                 'offer.offer_name',
                 DB::raw('COUNT(f.id) as FreeSignUps'),
                 DB::raw('COUNT(conversions.id) as Conversions'),
-                DB::raw('SUM(conversions.paid) as Revenue'),
-                DB::raw('SUM(deducted.paid) as Deductions')
+                DB::raw("SUM({$revenueExpression}) as Revenue"),
+                DB::raw("SUM(CASE WHEN deducted.id IS NOT NULL THEN {$revenueExpression} ELSE 0 END) as Deductions")
             ])
             ->groupBy('offer.idoffer', 'rawClicks.offer_idoffer')->get()->toArray();
         

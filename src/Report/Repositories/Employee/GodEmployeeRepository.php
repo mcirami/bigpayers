@@ -5,6 +5,7 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
@@ -244,14 +245,15 @@ class GodEmployeeRepository extends Repository
 
     private function getConversions($dateFrom, $dateTo): array {
         $db = $this->getDB();
+        $revenueExpression = Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
         $sql = "
 				SELECT
 					rep.idrep,
 					rep.user_name,
 					count(c.id) Conversions,
-					sum(c.paid) Revenue,
+					sum({$revenueExpression}) Revenue,
 					count(u.id) FreeSignUps,
-					sum(deducted.paid) Deductions,
+					sum(CASE WHEN deducted.id IS NOT NULL THEN {$revenueExpression} ELSE 0 END) Deductions,
 					rep.lft,
 					rep.rgt
 				FROM
@@ -260,6 +262,7 @@ class GodEmployeeRepository extends Repository
 				INNER JOIN privileges p on rep.idrep = p.rep_idrep
 				
 				LEFT JOIN clicks rawClicks ON rawClicks.rep_idrep = rep.idrep
+				LEFT JOIN offer ON offer.idoffer = rawClicks.offer_idoffer
 				
 				LEFT JOIN conversions c on rawClicks.idclicks = c.click_id
 				

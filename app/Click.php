@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
+use LeadMax\TrackYourStats\Offer\Payouts;
+use LeadMax\TrackYourStats\System\Session;
 
 /**
  * App\Click
@@ -83,25 +85,42 @@ class Click extends Model
 		             ->pluck('ip_address');
 	}
 
+    protected static function resolvedPaidExpressionForRole(
+        int $role,
+        string $offerAlias = 'offer',
+        string $repHasOfferAlias = 'rep_has_offer'
+    ): string {
+        if ($role === Privilege::ROLE_AFFILIATE) {
+            return 'conversions.paid';
+        }
+
+        return Payouts::sqlForRole($role, $offerAlias, $repHasOfferAlias);
+    }
+
 	public function scopeUserClicksReport(
 		Builder $query,
 		int $userId,
 		string $startDate,
 		string $endDate
 	): Builder {
+        $resolvedPaid = self::resolvedPaidExpressionForRole(Privilege::ROLE_AFFILIATE);
 		return $query
-			->where('rep_idrep', '=', $userId)
+			->where('clicks.rep_idrep', '=', $userId)
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
 			->whereBetween('clicks.first_timestamp', [$startDate, $endDate])
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->leftJoin('rep_has_offer', function ($join) {
+                $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                    ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+            })
 			->select(
 				'clicks.idclicks',
 				'clicks.first_timestamp as timestamp',
 				'offer.offer_name',
 				'conversions.timestamp as conversion_timestamp',
-				'conversions.paid as paid',
+				DB::raw($resolvedPaid . ' as paid'),
 				'click_vars.url',
 				'click_vars.sub1',
 				'click_vars.sub2',
@@ -121,7 +140,7 @@ class Click extends Model
 		int $role
 	): Builder {
 		if (in_array($role, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN, Privilege::ROLE_MANAGER], true)) {
-			$query->whereIn('rep_idrep', function ($subQuery) use ($userId) {
+			$query->whereIn('clicks.rep_idrep', function ($subQuery) use ($userId) {
 				$subQuery->from('rep as child')
 					->select('child.idrep')
 					->join('privileges as p', 'p.rep_idrep', '=', 'child.idrep')
@@ -130,8 +149,10 @@ class Click extends Model
 					->whereRaw('child.rgt < (SELECT rgt FROM rep WHERE idrep = ?)', [$userId]);
 			});
 		} else {
-			$query->where('rep_idrep', '=', $userId);
+			$query->where('clicks.rep_idrep', '=', $userId);
 		}
+
+        $resolvedPaid = self::resolvedPaidExpressionForRole($role);
 
 		return $query
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
@@ -139,12 +160,16 @@ class Click extends Model
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->leftJoin('rep_has_offer', function ($join) {
+                $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                    ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+            })
 			->select(
 				'clicks.idclicks',
 				'clicks.first_timestamp as timestamp',
 				'offer.offer_name',
 				'conversions.timestamp as conversion_timestamp',
-				'conversions.paid as paid',
+				DB::raw($resolvedPaid . ' as paid'),
 				'click_vars.url',
 				'click_vars.sub1',
 				'click_vars.sub2',
@@ -162,12 +187,17 @@ class Click extends Model
 		string $endDate,
 		?string $geoCode = null
 	): Builder {
+        $resolvedPaid = self::resolvedPaidExpressionForRole(Session::userType());
 		return $query
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 			->leftJoin('click_geo_cache as geo', 'geo.ip_address', '=', 'clicks.ip_address')
 			->join('rep', 'rep.idrep', '=', 'clicks.rep_idrep')
 			->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->leftJoin('rep_has_offer', function ($join) {
+                $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                    ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+            })
 			->whereBetween('first_timestamp', [$startDate, $endDate])
 			->where('clicks.click_type', '!=', self::TYPE_BLACKLISTED)
 			->when($geoCode, function (Builder $builder) use ($geoCode) {
@@ -180,7 +210,7 @@ class Click extends Model
 				'clicks.idclicks',
 				'clicks.first_timestamp',
 				'conversions.timestamp as conversion_timestamp',
-				'conversions.paid',
+				DB::raw($resolvedPaid . ' as paid'),
 				'click_vars.sub1',
 				'click_vars.sub2',
 				'click_vars.sub3',
@@ -189,7 +219,7 @@ class Click extends Model
 				'clicks.referer',
 				'geo.ip_address as click_geo_ip',
 			])
-			->orderByDesc('conversions.paid');
+			->orderByDesc('paid');
 	}
 
 	public function scopeCountryClicksByOfferInGeo(

@@ -354,7 +354,10 @@ class OfferController extends Controller
 			'offer_name' => 'required|min:3',
 			'url' => 'required',
 			'offer_type' => 'required',
-			'payout' => 'required|numeric',
+			'payout' => 'required|numeric|min:0',
+            'affiliate_payout' => 'nullable|numeric|min:0',
+            'manager_payout' => 'nullable|numeric|min:0',
+            'admin_payout' => 'nullable|numeric|min:0',
 			'status' => 'required|numeric',
 			'is_public' => 'required|numeric',
 		];
@@ -366,11 +369,36 @@ class OfferController extends Controller
 		$this->validate($request, $rules);
 	}
 
+    private function normalizedOfferPayload(Request $request): array
+    {
+        $payload = $request->only([
+            'offer_name',
+            'description',
+            'url',
+            'offer_type',
+            'payout',
+            'affiliate_payout',
+            'manager_payout',
+            'admin_payout',
+            'status',
+            'is_public',
+            'campaign_id',
+        ]);
+
+        foreach (['affiliate_payout', 'manager_payout', 'admin_payout'] as $key) {
+            if ($payload[$key] === '' || $payload[$key] === null) {
+                $payload[$key] = null;
+            }
+        }
+
+        return $payload;
+    }
+
 	public function create(Request $request)
 	{
 		$this->validateOfferRequest($request);
 		DB::transaction(function () use ($request) {
-			$offer = new Offer($request->all());
+			$offer = new Offer($this->normalizedOfferPayload($request));
 			if (!$request->has('campaign_id')) {
 				$offer->campaign_id = Campaigns::getDefaultCampaignId();
 			}
@@ -390,7 +418,7 @@ class OfferController extends Controller
 				$rows = $userIds->map(fn (int $userId) => [
 					'rep_idrep' => $userId,
 					'offer_idoffer' => $offer->idoffer,
-					'payout' => $offer->payout,
+					'payout' => null,
 				])->all();
 
 				DB::table('rep_has_offer')->insert($rows);
@@ -405,16 +433,7 @@ class OfferController extends Controller
 		$this->validateOfferRequest($request, false);
 
 		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
-		$offer->fill($request->only([
-			'offer_name',
-			'description',
-			'url',
-			'offer_type',
-			'payout',
-			'status',
-			'is_public',
-			'campaign_id',
-		]));
+		$offer->fill($this->normalizedOfferPayload($request));
 
 		if (!$request->has('campaign_id')) {
 			$offer->campaign_id = Campaigns::getDefaultCampaignId();

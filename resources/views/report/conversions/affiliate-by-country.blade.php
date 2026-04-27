@@ -28,14 +28,13 @@
 @endsection
 
 @section('table')
-<div class="table_wrap">
-    <table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+    <table id="mainTable" class="table table-bordered table_01 tablesorter">
         <thead>
         <tr>
             <th class="value_span9">Country</th>
-            <th class="value_span9">Clicks</th>
-            <th class="value_span9">Unique Clicks</th>
-            <th class="value_span9">Conversions</th>
+            <th class="value_span9">Raw</th>
+            <th class="value_span9">Unique</th>
+            <th class="value_span9">Convs</th>
         </tr>
         </thead>
         <tbody>
@@ -49,7 +48,7 @@
                 <td>{{$row['unique_clicks']}}</td>
                 <td>
                     @if ($row['total_conversions'] > 0 && Session::userType() != Privilege::ROLE_AFFILIATE)
-                        <a href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-conversions-in-country?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
+                        <a class="bp-report-link" href="/user/{{$user->idrep}}/{{$offer->idoffer}}/subid-conversions-in-country?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
                     @else
                         {{$row['total_conversions']}}    
                     @endif
@@ -58,6 +57,16 @@
         @endforeach
         </tbody>
     </table>
-</div>
 
+@endsection
+
+@section('footer')
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#mainTable").tablesorter({
+                sortList: [[3, 1]],
+                widgets: ['staticRow']
+            });
+        });
+    </script>
 @endsection

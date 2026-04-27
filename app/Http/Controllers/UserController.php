@@ -681,7 +681,7 @@ class UserController extends Controller
 
 		$userID = $request->rep;
 		$offer = $request->offer_id;
-		$payout = $request->payout;
+		$payout = $request->filled('payout') ? $request->payout : null;
 
 		// TODO: check if already has access or not.
 
@@ -722,7 +722,7 @@ class UserController extends Controller
 				DB::table('rep_has_offer')->insert([
 					'rep_idrep'     => $userID,
 					'offer_idoffer' => $offer,
-					'payout'        => $request->payout
+					'payout'        => $request->filled('payout') ? $request->payout : null
 				]);
 			} else {
 				DB::table('rep_has_offer')
@@ -743,7 +743,11 @@ class UserController extends Controller
 		$userID = $user->idrep;
 		$userFName = $user->first_name;
 
-		$offers = DB::table('offer')->where('status', '=', 1)->select('idoffer', 'offer_name', 'payout')->get()->toArray();
+		$offers = DB::table('offer')
+            ->where('status', '=', 1)
+            ->select('idoffer', 'offer_name', 'payout', 'affiliate_payout')
+            ->get()
+            ->toArray();
         $assignedOffers = DB::table('rep_has_offer')
             ->where('rep_idrep', '=', $userID)
             ->get()
@@ -762,8 +766,12 @@ class UserController extends Controller
 				$offers[$index]->reppayout = $affHasOffer->payout;
 			} else {
 				$offers[$index]->has_offer = false;
-				$offers[$index]->reppayout = 1.00;
+				$offers[$index]->reppayout = null;
 			}
+
+            $offers[$index]->effective_payout = $offers[$index]->reppayout
+                ?? $offers[$index]->affiliate_payout
+                ?? $offers[$index]->payout;
 
             $offers[$index]->cap_enabled = $offerCap ? (bool) $offerCap->status : false;
             $offers[$index]->cap = $offerCap ? (int) $offerCap->cap : 0;

@@ -133,7 +133,7 @@ jQuery(document).ready(function ($) {
             offerPayoutInputs.forEach((offer) => {
                 offer.addEventListener(evt, (e) => {
                     if( (evt === "keydown" && e.keyCode === 13) || evt === "focusout") {
-                        const payout = e.target.value;
+                        const payout = e.target.value.trim();
                         const offer = e.target.dataset.offer;
                         const rep = e.target.dataset.rep;
 
@@ -145,6 +145,22 @@ jQuery(document).ready(function ($) {
 
                         axios.post('/user/change-aff-payout', packets).then((response) => {
                             if (response.data.success) {
+                                const field = e.target.closest('.bp-custom-payout-field');
+                                const hint = field ? field.querySelector('.bp-custom-payout-hint') : null;
+                                const fallbackDisplay = e.target.dataset.fallbackDisplay || 'default payout';
+                                const hasCustomPayout = payout !== '';
+
+                                if (field) {
+                                    field.classList.toggle('is-custom', hasCustomPayout);
+                                    field.classList.toggle('is-fallback', !hasCustomPayout);
+                                }
+
+                                if (hint) {
+                                    hint.textContent = hasCustomPayout
+                                        ? 'Custom override active'
+                                        : `Using fallback: ${fallbackDisplay}`;
+                                }
+
                                 e.target.classList.add('updated_animation');
 
                                 setTimeout(() => {

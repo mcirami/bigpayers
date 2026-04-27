@@ -20,7 +20,7 @@
         @endif
 
 
-        @if(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers"))
+        @if(\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers") && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_MANAGER)
             <option @if(request('role',3) == 2) selected @endif value='2'>{{ $accountLabelPlural }}</option>
         @endif
         <option @if(request('role',3 ) == 3) selected @endif value='3'>{{ $affiliateLabel }}</option>

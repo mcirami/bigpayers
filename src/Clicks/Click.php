@@ -22,7 +22,13 @@ class Click
     public $click_type;
     public $last_clickid;
 
-    public $subVarArray;
+	public $subVarArray;
+
+    private const GEO_DB_CANDIDATES = [
+        'storage/GeoIP2-City.mmdb',
+        'public/GeoIP2-City.mmdb',
+        'resources/GeoIP2-City.mmdb',
+    ];
     public $queryString;
 
 
@@ -147,7 +153,7 @@ class Click
 
         try {
             // new geoip reader
-            $reader = new Reader('resources/GeoIP2-City.mmdb');
+            $reader = new Reader($this->resolveGeoDatabasePath());
 
             //trys to get their iso code and postal
             $record = $reader->city($this->ip_address);
@@ -178,6 +184,27 @@ class Click
 
         //insert into click_geo
         return $stmt->execute();
+    }
+
+    private function resolveGeoDatabasePath(): string
+    {
+        $configuredPath = env('GEO_IP_DATABASE');
+
+        if (is_string($configuredPath) && $configuredPath !== '' && is_readable($configuredPath)) {
+            return $configuredPath;
+        }
+
+        $root = dirname(__DIR__, 2);
+
+        foreach (self::GEO_DB_CANDIDATES as $candidate) {
+            $path = $root . DIRECTORY_SEPARATOR . $candidate;
+
+            if (is_readable($path)) {
+                return $path;
+            }
+        }
+
+        return 'resources/GeoIP2-City.mmdb';
     }
 
     // SELECT ONE

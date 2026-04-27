@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Click;
 use App\Offer;
 use App\Privilege;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\User;
 use Carbon\Carbon;
@@ -155,6 +156,8 @@ class ClickReportController extends ReportController
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$searchType = request()->query('searchType');
+        $selectedRole = (int) request()->query('role', Session::userType());
+        $resolvedPaid = Payouts::sqlForRole($selectedRole, 'offer', 'rep_has_offer');
 		$user = null;
 		$offer = null;
 
@@ -172,12 +175,16 @@ class ClickReportController extends ReportController
 			       ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
 			       ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
 			       ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
+                   ->leftJoin('rep_has_offer', function ($join) {
+                       $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                           ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                   })
 			       ->select(
 					   'clicks.idclicks',
 				       'clicks.first_timestamp as timestamp',
 				       'offer.offer_name',
 				       'conversions.timestamp  as conversion_timestamp',
-				       'conversions.paid as paid',
+				       DB::raw($resolvedPaid . ' as paid'),
 				       'click_vars.url',
 				       'click_vars.sub1',
 				       'click_vars.sub2',
@@ -187,7 +194,7 @@ class ClickReportController extends ReportController
 				       'clicks.ip_address as ip_address',
 				       'clicks.offer_idoffer  as offer_id'
 			       )
-			       ->orderBy( 'conversions.paid', 'DESC' )->paginate( 100 );
+			       ->orderBy( 'paid', 'DESC' )->paginate( 100 );
 		} else {
 
 			$offer = Offer::findOrFail($id);
@@ -201,12 +208,16 @@ class ClickReportController extends ReportController
 			        ->leftJoin( 'click_vars', 'click_vars.click_id', '=', 'clicks.idclicks' )
 			        ->leftJoin( 'conversions', 'conversions.click_id', '=', 'clicks.idclicks' )
 			        ->leftJoin( 'offer', 'offer.idoffer', '=', 'clicks.offer_idoffer' )
+                    ->leftJoin('rep_has_offer', function ($join) {
+                        $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                            ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                    })
 			        ->select(
 						'clicks.idclicks as id',
 				        'clicks.first_timestamp as timestamp',
 				        'clicks.rep_idrep as affiliate_id',
 				        'conversions.timestamp as conversion_timestamp',
-				        'conversions.paid as paid',
+				        DB::raw($resolvedPaid . ' as paid'),
 				        'click_vars.sub1',
 				        'click_vars.sub2',
 				        'click_vars.sub3',
@@ -217,7 +228,7 @@ class ClickReportController extends ReportController
 				        'clicks.offer_idoffer as offer_id',
 				        'offer.offer_name',
 			        )
-			        ->orderBy( 'conversions.paid', 'DESC' )->paginate( 100 );
+			        ->orderBy( 'paid', 'DESC' )->paginate( 100 );
 		}
 
 

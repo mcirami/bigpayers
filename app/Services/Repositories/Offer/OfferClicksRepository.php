@@ -12,6 +12,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use LaravelIdea\Helper\App\_IH_Click_C;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
@@ -61,6 +62,9 @@ class OfferClicksRepository implements Repository
 	 * @return _IH_Click_C|array|LengthAwarePaginator
 	 */
     public function query(Carbon $start, Carbon $end): _IH_Click_C|array|LengthAwarePaginator {
+        $resolvedPaid = Session::userType() === \App\Privilege::ROLE_AFFILIATE
+            ? 'conversions.paid'
+            : Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
         $select = [];
         if ($this->showFraudData) {
             $select[] = 'clicks.idclicks as id';
@@ -68,7 +72,7 @@ class OfferClicksRepository implements Repository
         $select = array_merge($select, [
             'clicks.first_timestamp as timestamp',
             'conversions.timestamp as conversion_timestamp',
-            'conversions.paid as paid',
+            \DB::raw($resolvedPaid . ' as paid'),
             'click_vars.url as query_string',
 	        'click_vars.url',
 	        'click_vars.sub1',
@@ -84,8 +88,13 @@ class OfferClicksRepository implements Repository
 	    if(Session::permissions()->can('view_all_users')) {
 		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
 		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
+                        ->leftJoin('offer', 'offer.idoffer', 'clicks.offer_idoffer')
+                        ->leftJoin('rep_has_offer', function ($join) {
+                            $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                                ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                        })
 		                ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
-		                ->where('offer_idoffer', $this->offerId)
+		                ->where('clicks.offer_idoffer', $this->offerId)
 		                ->whereBetween('clicks.first_timestamp', [$start, $end])
 		                ->select($select)
 		                ->orderBy('paid', 'DESC')
@@ -93,8 +102,13 @@ class OfferClicksRepository implements Repository
 	    } else {
 		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
 		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
+                        ->leftJoin('offer', 'offer.idoffer', 'clicks.offer_idoffer')
+                        ->leftJoin('rep_has_offer', function ($join) {
+                            $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                                ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                        })
 		                ->join('rep', 'rep.idrep', 'clicks.rep_idrep')
-		                ->where('offer_idoffer', $this->offerId)
+		                ->where('clicks.offer_idoffer', $this->offerId)
 		                ->where('rep.lft', '>', $this->user->lft)
 		                ->where('rep.rgt', '<', $this->user->rgt)
 		                ->whereBetween('clicks.first_timestamp', [$start, $end])

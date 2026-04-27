@@ -3,7 +3,9 @@
 namespace LeadMax\TrackYourStats\Clicks;
 
 
+use App\Privilege;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Bonus;
 use LeadMax\TrackYourStats\User\ReferralRegister;
@@ -138,7 +140,13 @@ class Conversion
     public function getAffiliateData()
     {
         $db = DatabaseConnection::getInstance();
-        $sql = "SELECT clicks.rep_idrep, rep_has_offer.payout FROM clicks INNER JOIN rep_has_offer ON rep_has_offer.rep_idrep = clicks.rep_idrep AND rep_has_offer.offer_idoffer = clicks.offer_idoffer WHERE idclicks = :click_id";
+        $sql = "SELECT
+                    clicks.rep_idrep,
+                    " . Payouts::sqlForRole(Privilege::ROLE_AFFILIATE, 'offer', 'rep_has_offer') . " AS resolved_payout
+                FROM clicks
+                INNER JOIN offer ON offer.idoffer = clicks.offer_idoffer
+                INNER JOIN rep_has_offer ON rep_has_offer.rep_idrep = clicks.rep_idrep AND rep_has_offer.offer_idoffer = clicks.offer_idoffer
+                WHERE idclicks = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":click_id", $this->click_id);
         $prep->execute();
@@ -151,7 +159,7 @@ class Conversion
         $this->user_id = $result["rep_idrep"];
 
         if ($this->customPayoutSet() == false) {
-            $this->paid = $result["payout"];
+            $this->paid = $result["resolved_payout"];
         }
 
         return true;
@@ -232,14 +240,20 @@ class Conversion
         }
 
 
-        $sql = "SELECT clicks.rep_idrep, rep_has_offer.payout FROM clicks INNER JOIN rep_has_offer ON rep_has_offer.rep_idrep = clicks.rep_idrep AND rep_has_offer.offer_idoffer = clicks.offer_idoffer WHERE idclicks = :click_id";
+        $sql = "SELECT
+                    clicks.rep_idrep,
+                    " . Payouts::sqlForRole(Privilege::ROLE_AFFILIATE, 'offer', 'rep_has_offer') . " AS resolved_payout
+                FROM clicks
+                INNER JOIN offer ON offer.idoffer = clicks.offer_idoffer
+                INNER JOIN rep_has_offer ON rep_has_offer.rep_idrep = clicks.rep_idrep AND rep_has_offer.offer_idoffer = clicks.offer_idoffer
+                WHERE idclicks = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":click_id", $clickid);
         $prep->execute();
         $result = $prep->fetch(PDO::FETCH_ASSOC);
 
         $user_id = $result["rep_idrep"];
-        $paid = $result["payout"];
+        $paid = $result["resolved_payout"];
 
         if ($customPayout) {
             $paid = $customPayout;

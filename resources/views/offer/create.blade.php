@@ -126,9 +126,27 @@
                     </label>
 
                     <label class="bp-form-field">
-                        <span class="bp-form-label">Payout</span>
+                        <span class="bp-form-label">Default Payout</span>
                         <input class="bp-form-input" type="number" step="0.01" min="0" name="payout" maxlength="12" value="{{ old('payout', $offer->payout) }}" id="payout" required>
-                        <span class="bp-form-note">The amount paid per conversion to the assigned {{ strtolower($affiliateTypeLabelPlural) }}.</span>
+                        <span class="bp-form-note">Base fallback payout used when no role-specific or user-specific override exists.</span>
+                    </label>
+
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Affiliate Payout</span>
+                        <input class="bp-form-input" type="number" step="0.01" min="0" name="affiliate_payout" maxlength="12" value="{{ old('affiliate_payout', $offer->affiliate_payout) }}" id="affiliate_payout">
+                        <span class="bp-form-note">If set, affiliates without a custom offer payout will use this before falling back to the default.</span>
+                    </label>
+
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Manager Payout</span>
+                        <input class="bp-form-input" type="number" step="0.01" min="0" name="manager_payout" maxlength="12" value="{{ old('manager_payout', $offer->manager_payout) }}" id="manager_payout">
+                        <span class="bp-form-note">Used for manager-facing report calculations when present.</span>
+                    </label>
+
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Admin Payout</span>
+                        <input class="bp-form-input" type="number" step="0.01" min="0" name="admin_payout" maxlength="12" value="{{ old('admin_payout', $offer->admin_payout) }}" id="admin_payout">
+                        <span class="bp-form-note">Used for admin-facing report calculations when present.</span>
                     </label>
 
                     <label class="bp-form-field bp-form-field-full">

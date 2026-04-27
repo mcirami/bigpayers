@@ -48,9 +48,9 @@
             </article>
 
             <article class="bp-stat-card">
-                <p class="bp-stat-label">Payout</p>
+                <p class="bp-stat-label">Default Payout</p>
                 <p class="bp-stat-value">${{ number_format((float) $offer->payout, 2) }}</p>
-                <p class="bp-stat-note">Base payout before any affiliate-specific overrides are applied.</p>
+                <p class="bp-stat-note">Base payout before any role-specific or affiliate-specific overrides are applied.</p>
             </article>
 
             <article class="bp-stat-card">
@@ -93,11 +93,26 @@
                     </div>
 
                     <div class="bp-detail-row">
+                        <p class="bp-detail-label">Affiliate Payout</p>
+                        <p class="bp-detail-value">{{ $offer->affiliate_payout !== null ? '$' . number_format((float) $offer->affiliate_payout, 2) : 'Uses default payout' }}</p>
+                    </div>
+
+                    <div class="bp-detail-row">
+                        <p class="bp-detail-label">Manager Payout</p>
+                        <p class="bp-detail-value">{{ $offer->manager_payout !== null ? '$' . number_format((float) $offer->manager_payout, 2) : 'Uses default payout' }}</p>
+                    </div>
+
+                    <div class="bp-detail-row">
+                        <p class="bp-detail-label">Admin Payout</p>
+                        <p class="bp-detail-value">{{ $offer->admin_payout !== null ? '$' . number_format((float) $offer->admin_payout, 2) : 'Uses default payout' }}</p>
+                    </div>
+
+                    <div class="bp-detail-row">
                         <p class="bp-detail-label">Created</p>
                         <p class="bp-detail-value">{{ $offer->offer_timestamp ?: 'Not set' }}</p>
                     </div>
 
-                    <div class="bp-detail-row">
+                    <div class="bp-detail-row md:col-span-2">
                         <p class="bp-detail-label">Destination URL</p>
                         <p class="bp-detail-value break-all">{{ $offer->url ?: 'Not set' }}</p>
                     </div>

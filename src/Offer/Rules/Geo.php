@@ -14,6 +14,11 @@ use MaxMind\Db\Reader\InvalidDatabaseException;
 
 class Geo implements Rule
 {
+    private const GEO_DB_CANDIDATES = [
+        'storage/GeoIP2-City.mmdb',
+        'public/GeoIP2-City.mmdb',
+        'resources/GeoIP2-City.mmdb',
+    ];
 
     // countries list from github
     static $countries = array(
@@ -286,13 +291,34 @@ class Geo implements Rule
         $this->rules = $rules;
 
         // instantiate our new MaxMind db Reader
-        $this->geoReader = new Reader(env("GEO_IP_DATABASE"));
+        $this->geoReader = new Reader($this->resolveGeoDatabasePath());
 
         // find ISO Code with current incoming click traffic
         $this->getISOCode();
 
         $this->processRules();
 
+    }
+
+    private function resolveGeoDatabasePath(): string
+    {
+        $configuredPath = env("GEO_IP_DATABASE");
+
+        if (is_string($configuredPath) && $configuredPath !== '' && is_readable($configuredPath)) {
+            return $configuredPath;
+        }
+
+        $root = dirname(__DIR__, 4);
+
+        foreach (self::GEO_DB_CANDIDATES as $candidate) {
+            $path = $root . DIRECTORY_SEPARATOR . $candidate;
+
+            if (is_readable($path)) {
+                return $path;
+            }
+        }
+
+        return (string) $configuredPath;
     }
 
     public function getRedirectOffer()

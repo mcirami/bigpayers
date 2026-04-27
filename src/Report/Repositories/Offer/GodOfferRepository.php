@@ -4,6 +4,7 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
 
 use App\User;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use LeadMax\TrackYourStats\System\Session;
 
@@ -86,14 +87,15 @@ class GodOfferRepository extends Repository
     private function getConversions($dateFrom, $dateTo)
     {
         $db = $this->getDB();
+        $revenueExpression = Payouts::sqlForRole(\App\Privilege::ROLE_GOD, 'offer', 'rep_has_offer');
         $sql = "
 				SELECT
 					offer.idoffer,
 					offer.offer_name,
 					count(f.id) FreeSignUps,
 					count(conversions.id) Conversions,
-					sum(conversions.paid) Revenue,
-					sum(deducted.paid) Deductions
+					sum({$revenueExpression}) Revenue,
+					sum(CASE WHEN deducted.id IS NOT NULL THEN {$revenueExpression} ELSE 0 END) Deductions
 				FROM
 					offer
 					

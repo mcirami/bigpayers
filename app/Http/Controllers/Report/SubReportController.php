@@ -9,9 +9,11 @@ use App\User;
 use App\Conversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\SubVarRepository;
 use LeadMax\TrackYourStats\Report\Filters;
+use LeadMax\TrackYourStats\System\Session;
 use App\Http\Traits\ClickTraits;
 
 class SubReportController extends ReportController
@@ -42,6 +44,7 @@ class SubReportController extends ReportController
 
 		$subID = $request->get('subid');
 		$dates = self::getDates();
+        $resolvedPaid = Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
 
 		$subReport = DB::table('click_vars')
 		  ->where('sub1', '=', $subID)
@@ -49,10 +52,14 @@ class SubReportController extends ReportController
 		  ->orWhere('sub3', '=', $subID)
 		  ->leftJoin('clicks', 'clicks.idclicks', '=', 'click_vars.click_id')
 		  ->leftJoin('offer', 'clicks.offer_idoffer', '=', 'offer.idoffer')
+          ->leftJoin('rep_has_offer', function ($join) {
+              $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                  ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+          })
 		  ->join('conversions', function($query) use($dates) {
 			  $query->on('conversions.click_id', '=', 'clicks.idclicks')->whereBetween('conversions.timestamp', [$dates['startDate'], $dates['endDate']]);
 		  })
-		  ->select('conversions.paid', 'conversions.timestamp', 'offer.offer_name')->orderBy('offer.offer_name')->get();
+		  ->select(DB::raw($resolvedPaid . ' as paid'), 'conversions.timestamp', 'offer.offer_name')->orderBy('offer.offer_name')->get();
 
 		return view ('report.single-sub', compact('subReport', 'subID'));
 	}
@@ -94,6 +101,7 @@ class SubReportController extends ReportController
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$subId = request()->query('subId');
+        $resolvedPaid = Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
 
 	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
 					->where('clicks.offer_idoffer', '=', $offer->idoffer)
@@ -106,12 +114,16 @@ class SubReportController extends ReportController
 					->where('click_vars.sub1', '=', $subId)
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+                    ->leftJoin('rep_has_offer', function ($join) {
+                        $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                            ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                    })
 	                ->select(
 						'clicks.idclicks',
 						'clicks.first_timestamp as timestamp',
 						'offer.offer_name',
 						'conversions.timestamp as conversion_timestamp',
-						'conversions.paid as paid',
+						DB::raw($resolvedPaid . ' as paid'),
 						'click_vars.url',
 						'click_vars.sub1 as subId',
 						'clicks.referer',
@@ -230,6 +242,7 @@ class SubReportController extends ReportController
 		$country = request()->query('country');
 		$userId = $user->idrep;
 		$offerId = $offer->idoffer;
+        $resolvedPaid = Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
 
 		$ipAddresses = Click::where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)
@@ -261,12 +274,16 @@ class SubReportController extends ReportController
 					})
 	                ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+                    ->leftJoin('rep_has_offer', function ($join) {
+                        $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                            ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                    })
 	                ->select(
 						'clicks.idclicks',
 						'clicks.first_timestamp as timestamp',
 						'offer.offer_name',
 						'conversions.timestamp as conversion_timestamp',
-						'conversions.paid as paid',
+						DB::raw($resolvedPaid . ' as paid'),
 						'click_vars.url',
 						'click_vars.sub1 as subId',
 						'clicks.referer',

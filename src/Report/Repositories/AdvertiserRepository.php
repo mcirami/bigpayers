@@ -81,16 +81,16 @@ class AdvertiserRepository extends Repository
     private function conversions($dateFrom, $dateTo)
     {
         $sql = "
-				SELECT
-				    campaigns.id,
-				    campaigns.name,
-				    'advertiser' as type,
-					count(f.id) FreeSignUps,
-					count(conversions.id) Conversions,
-					sum(conversions.paid) Revenue,
-					sum(deducted.paid) Deductions
-				FROM
-					campaigns
+					SELECT
+					    campaigns.id,
+					    campaigns.name,
+					    'advertiser' as type,
+						count(f.id) FreeSignUps,
+						count(conversions.id) Conversions,
+						COALESCE(SUM(o.payout), 0) Revenue,
+						sum(deducted.paid) Deductions
+					FROM
+						campaigns
 					
                 INNER JOIN offer AS o ON o.campaign_id = campaigns.id
 					
@@ -153,13 +153,13 @@ class AdvertiserRepository extends Repository
 										->join('offer', function ($join) use ($id) {
 											$join->on('offer.idoffer', '=', 'clicks.offer_idoffer')
 											     ->where('offer.campaign_id', '=', $id);
-										})
-										->selectRaw('
-									        clicks.offer_idoffer AS offer_id,
-									        COUNT(conversions.id) AS conversions,
-									        COALESCE(SUM(conversions.paid), 0) AS total
-									    ')
-										->groupBy('clicks.offer_idoffer');
+											})
+											->selectRaw('
+										        clicks.offer_idoffer AS offer_id,
+										        COUNT(conversions.id) AS conversions,
+										        COALESCE(SUM(offer.payout), 0) AS total
+										    ')
+											->groupBy('clicks.offer_idoffer');
 
 		return DB::query()->fromSub($clicksSubquery, "clicks")
 					->leftJoinSub($conversionsSubquery, 'conversions', function ($join) {

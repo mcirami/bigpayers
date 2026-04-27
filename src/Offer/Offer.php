@@ -167,10 +167,12 @@ class Offer
 
 
         // insert god's ID
-        $sql = "INSERT INTO rep_has_offer (rep_idrep, offer_idoffer, payout) VALUES(:user_id, :offer_id, 0)";
+        $sql = "INSERT INTO rep_has_offer (rep_idrep, offer_idoffer, payout) VALUES(:user_id, :offer_id, :payout)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
         $prep->bindParam(":offer_id", $lastID);
+        $defaultPayout = null;
+        $prep->bindParam(":payout", $defaultPayout);
 
         $prep->execute();
 

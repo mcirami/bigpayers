@@ -15,7 +15,7 @@
         $canEditAffiliatePayout = \LeadMax\TrackYourStats\System\Session::permissions()->can('edit_aff_payout');
         $canManageOfferCaps = \LeadMax\TrackYourStats\System\Session::userType() === \App\Privilege::ROLE_GOD;
         $accessibleOffers = collect($offers)->where('has_offer', true)->count();
-        $customPayoutOffers = collect($offers)->filter(fn ($offer) => (float) $offer->reppayout !== (float) $offer->payout)->count();
+        $customPayoutOffers = collect($offers)->filter(fn ($offer) => $offer->reppayout !== null)->count();
     @endphp
 
     <div id="error_message" class="bp-error-banner">
@@ -129,7 +129,12 @@
 
                             @if ($canEditAffiliatePayout)
                                 <td>
-                                    <div class="bp-input-prefix-wrap">
+                                    @php
+                                        $fallbackPayoutDisplay = '$' . number_format((float) $offer->effective_payout, 2);
+                                        $hasCustomPayout = $offer->reppayout !== null;
+                                    @endphp
+                                    <div class="bp-custom-payout-field {{ $hasCustomPayout ? 'is-custom' : 'is-fallback' }}">
+                                        <div class="bp-input-prefix-wrap">
                                         <input
                                             class="update_aff_payout bp-input-compact bp-input-compact-prefixed"
                                             type="number"
@@ -137,8 +142,14 @@
                                             id="offer_{{ $offer->idoffer }}"
                                             data-offer="{{ $offer->idoffer }}"
                                             data-rep="{{ $offer->idrep }}"
-                                            value="{{ $offer->reppayout }}"
+                                            data-fallback-display="{{ $fallbackPayoutDisplay }}"
+                                            value="{{ $offer->reppayout ?? '' }}"
+                                            placeholder=""
                                         />
+                                    </div>
+                                        <p class="bp-custom-payout-hint">
+                                            {{ $hasCustomPayout ? 'Custom override active' : 'Using fallback: ' . $fallbackPayoutDisplay }}
+                                        </p>
                                     </div>
                                 </td>
                                 <td>
@@ -156,7 +167,7 @@
                                     </label>
                                 </td>
                             @else
-                                <td>${{ number_format((float) $offer->reppayout, 2) }}</td>
+                                <td>${{ number_format((float) $offer->effective_payout, 2) }}</td>
                                 <td>
                                     <span class="bp-status-pill {{ $offer->has_offer ? 'bp-status-pill-active' : '' }}">
                                         {{ $offer->has_offer ? 'Enabled' : 'Disabled' }}
