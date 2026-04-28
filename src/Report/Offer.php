@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Report;
 
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\ReportBase;
 
@@ -178,6 +179,7 @@ class Offer extends ReportBase
         $SELECT_NONACTIVE = false
     ) {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $revenueExpression = Payouts::sqlForRole($this->repType, 'offer', null);
 
 
         $sql = "SELECT
@@ -239,7 +241,7 @@ class Offer extends ReportBase
              
              
                ( SELECT
-        sum(conversions.paid)
+        sum({$revenueExpression})
     FROM
         clicks
         LEFT JOIN rep ON rep.referrer_repid = :referrer_repid2
@@ -369,6 +371,7 @@ class Offer extends ReportBase
     ) {
 
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $revenueExpression = Payouts::sqlForRole($this->repType, 'offer', null);
 
 
         $sql = "SELECT
@@ -436,7 +439,7 @@ class Offer extends ReportBase
                 
                 
              ( SELECT
-        sum(conversions.paid)
+        sum({$revenueExpression})
     FROM
        conversions 
     INNER JOIN clicks 

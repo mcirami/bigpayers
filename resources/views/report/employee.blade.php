@@ -3,6 +3,8 @@
 	use App\Privilege;
 	use LeadMax\TrackYourStats\System\Session;
 	$userType = Session::userType();
+    $showRevenueColumns = in_array($userType, [Privilege::ROLE_GOD, Privilege::ROLE_MANAGER], true)
+        || ($userType == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts"));
 @endphp
 
 @extends('report.template')
@@ -52,24 +54,14 @@
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
             <th class="value_span9">Conversions</th>
-            @if(Session::userType() == Privilege::ROLE_GOD ||
-                (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+            @if($showRevenueColumns)
                 <th class="value_span9  headers ">Revenue</th>
-            @endif
-            @if(Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") && !Session::permissions()->can("view_sms_stats") )
-                <th class="value_span9  ">Deductions</th>
-            @endif
-            @if(Session::userType() == Privilege::ROLE_GOD ||
-              (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
-                <th class="value_span9">EPC</th>
-                <th class="value_span9">TOTAL</th>
             @endif
         </tr>
         </thead>
         <tbody>
         @php
-            if (Session::userType() == Privilege::ROLE_GOD ||
-            (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )) {
+            if ($showRevenueColumns) {
                     $array = [
                         'idrep',
                         'user_name',
@@ -77,9 +69,6 @@
                         'UniqueClicks',
                         'Conversions',
                         'Revenue',
-                        Session::userType() == Privilege::ROLE_ADMIN && !Session::permissions()->can('view_sms_stats') ? 'Deductions' : null,
-                        'EPC',
-                        'TOTAL'
                     ];
                 } else {
                     $array = [

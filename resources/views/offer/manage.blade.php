@@ -14,13 +14,14 @@
     @php
         $sessionUserType = \LeadMax\TrackYourStats\System\Session::userType();
         $permissions = \LeadMax\TrackYourStats\System\Session::permissions();
-        $canCreateOffers = $permissions->can('create_offers');
+		$canCreateOffers = $permissions->can('create_offers');
         $canEditAffiliates = $permissions->can('edit_affiliates');
         $canEditOfferRules = $permissions->can('edit_offer_rules');
 		$canViewPayouts = $permissions->can('view_payouts');
         $isAffiliate = $sessionUserType == \App\Privilege::ROLE_AFFILIATE;
         $isManager = $sessionUserType == \App\Privilege::ROLE_MANAGER;
 		$isGod = $sessionUserType == \App\Privilege::ROLE_GOD;
+        $showPayoutColumn = $isGod || $canViewPayouts || $isManager;
 
     @endphp
 
@@ -122,7 +123,7 @@
                             <th class="value_span9">Access</th>
                         @endif
 
-                        @if ($isGod || $canViewPayouts)
+                        @if ($showPayoutColumn)
                             <th class="value_span9">Payout</th>
                         @endif
 
@@ -215,6 +216,7 @@
             const canEditAffiliates = @json($canEditAffiliates);
             const canEditOfferRules = @json($canEditOfferRules);
 	        const canViewPayouts = @json($canViewPayouts);
+            const showPayoutColumn = @json($showPayoutColumn);
             const sessionUser = {{ (int) \LeadMax\TrackYourStats\System\Session::userID() }};
             const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? request()->getHttpHost());
             const offers = @json($offers);
@@ -281,9 +283,19 @@
                                 "</td>";
                         }
 
-                        if (userType === 0 || canViewPayouts) {
+                        if (showPayoutColumn) {
                             if (userType === 3) {
                                 html += "<td class='value_span10'>$" + offer.pivot.payout + "</td>";
+                            } else if (userType === 1) {
+                                const adminPayout = offer.admin_payout !== null && offer.admin_payout !== undefined
+                                    ? offer.admin_payout
+                                    : offer.payout;
+                                html += "<td class='value_span10'>$" + adminPayout + "</td>";
+                            } else if (userType === 2) {
+                                const managerPayout = offer.manager_payout !== null && offer.manager_payout !== undefined
+                                    ? offer.manager_payout
+                                    : offer.payout;
+                                html += "<td class='value_span10'>$" + managerPayout + "</td>";
                             } else {
                                 html += "<td class='value_span10'>$" + offer.payout + "</td>";
                             }

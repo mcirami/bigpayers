@@ -11,15 +11,21 @@ use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
 use Illuminate\Support\Facades\DB;
+use LeadMax\TrackYourStats\Offer\Payouts;
+use LeadMax\TrackYourStats\System\Session;
 
 class ConversionReportController extends ReportController
 {
     use ClickTraits;
 
-    public function showUserConversions($userId) {
+	public function showUserConversions($userId) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$offerId = request()->query('offer');
+        $selectedRole = (int) request()->query('role', Session::userType());
+        $resolvedPaid = $selectedRole === Privilege::ROLE_AFFILIATE
+            ? 'conversions.paid'
+            : Payouts::sqlForRole($selectedRole, 'offer', 'rep_has_offer');
 
         $user = User::myUsers()->findOrFail($userId);
 
@@ -28,11 +34,15 @@ class ConversionReportController extends ReportController
 					->leftJoin('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
 	                ->leftJoin('click_vars', 'click_vars.click_id', '=', 'conversions.click_id')
 	                ->leftJoin('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+                    ->leftJoin('rep_has_offer', function ($join) {
+                        $join->on('rep_has_offer.offer_idoffer', '=', 'clicks.offer_idoffer')
+                            ->on('rep_has_offer.rep_idrep', '=', 'clicks.rep_idrep');
+                    })
 	                ->select(
 						'clicks.idclicks',
 						'offer.offer_name',
 						'conversions.timestamp as conversion_timestamp',
-						'conversions.paid as paid',
+						DB::raw($resolvedPaid . ' as paid'),
 						'click_vars.sub1',
 						'click_vars.sub2',
 		                'click_vars.sub3',

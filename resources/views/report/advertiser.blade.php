@@ -18,14 +18,12 @@
             <th class="value_span9">Unique</th>
             <th class="value_span9">Convs</th>
             <th class="value_span9">Revenue</th>
-            <th class="value_span9">EPC</th>
-            <th class="value_span9">TOTAL</th>
         </tr>
         </thead>
         <tbody>
         @php
             $reporter->between($dates['startDate'],$dates['endDate'], new \LeadMax\TrackYourStats\Report\Formats\HTML(true,[
-            'id','name','Clicks','UniqueClicks','Conversions','Revenue','EPC','TOTAL'
+            'id','name','Clicks','UniqueClicks','Conversions','Revenue'
             ]));
         @endphp
         </tbody>
@@ -37,7 +35,7 @@
         $(document).ready(function () {
             $("#mainTable").tablesorter(
                 {
-                    sortList: [[7, 1]],
+                    sortList: [[5, 1]],
                     widgets: ['staticRow']
                 });
         });

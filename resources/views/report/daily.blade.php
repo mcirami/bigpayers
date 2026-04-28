@@ -20,7 +20,6 @@
             <th class="value_span9">Pending</th>
             <th class="value_span9">Convs</th>
             <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
         </tr>
         </thead>
         <tbody>
@@ -33,7 +32,6 @@
                 <td>{{$row['pending_conversions']}}</td>
                 <td>{{$row['conversions']}}</td>
                 <td>{{$row['revenue']}}</td>
-                <td>{{$row['deductions']}}</td>
             </tr>
         @endforeach
         </tbody>

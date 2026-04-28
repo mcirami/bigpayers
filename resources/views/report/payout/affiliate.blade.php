@@ -35,10 +35,8 @@
                 <tr>
                     <th>Week range</th>
                     <th>Revenue</th>
-                    <th>Deductions</th>
                     <th>Bonuses</th>
                     <th>Referrals</th>
-                    <th>Total</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -48,10 +46,8 @@
                         <tr>
                             <td>{{$row["start_of_week"]}} - {{$row["end_of_week"]}}</td>
                             <td>{{$row['revenue']}}</td>
-                            <td>{{$row['deductions']}}</td>
                             <td>{{$row['bonuses']}}</td>
                             <td>{{$row['referrals']}}</td>
-                            <td>{{$row['TOTAL']}}</td>
                             <td>
                                 <button v-if="this.activeIds.indexOf({{$row['id']}}) == -1"
                                         class="btn btn-default btn-sm"
@@ -79,7 +75,6 @@
                             <td><b>Revenue</b></td>
                             <td><b>Date Achieved</b></td>
                             <td></td>
-                            <td></td>
                         </tr>
 
 
@@ -105,9 +100,6 @@
                                         <th class="value_span9">Pending Conversions</th>
                                         <th class="value_span9">Conversions</th>
                                         <th class="value_span9">Revenue</th>
-                                        <th class="value_span9">Deductions</th>
-                                        <th class="value_span9">EPC</th>
-                                        <th class="value_span9">TOTAL</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -120,9 +112,6 @@
                                         <td v-text="row.PendingConversions"></td>
                                         <td v-text="row.Conversions"></td>
                                         <td v-text="row.Revenue"></td>
-                                        <td v-text="row.Deductions"></td>
-                                        <td v-text="row.EPC"></td>
-                                        <td v-text="row.TOTAL"></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -136,8 +125,6 @@
                                 <td>Total Offer Revenue</td>
                                 <td></td>
                                 <td v-text="this.reportData[{{$row['id']}}].offer_revenue"></td>
-                                <td></td>
-                                <td></td>
                                 <td></td>
                             </tr>
                         </template>

@@ -8,6 +8,7 @@ namespace LeadMax\TrackYourStats\Report\ID;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Clicks\ClickVars;
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use LeadMax\TrackYourStats\User\Permissions;
@@ -47,6 +48,7 @@ class Clicks extends ReportBase
     private function queryEmployee($d_from = false, $d_to = false, $repID, $rowCount = false)
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $resolvedPaid = Payouts::sqlForRole($this->userType, 'offer', null);
 
 
         $sql1 = "SELECT lft, rgt FROM rep WHERE idrep = :repIDjuan";
@@ -62,15 +64,17 @@ class Clicks extends ReportBase
         $per = Permissions::loadFromSession();
 
         if ($per->can("view_fraud_data")) {
-            $sql = "SELECT  clicks.idclicks, clicks.first_timestamp,  conversions.timestamp, conversions.paid, click_vars.url,  click_geo.ip, rep.idrep, rep.first_name, clicks.offer_idoffer FROM clicks
+            $sql = "SELECT  clicks.idclicks, clicks.first_timestamp,  conversions.timestamp, {$resolvedPaid} as paid, click_vars.url,  click_geo.ip, rep.idrep, rep.first_name, clicks.offer_idoffer FROM clicks
                     INNER JOIN click_vars ON click_vars.click_id = clicks.idclicks
                     INNER JOIN click_geo ON click_geo.click_id = clicks.idclicks
-                    LEFT JOIN conversions ON conversions.click_id = clicks.idclicks                    ";
+                    LEFT JOIN conversions ON conversions.click_id = clicks.idclicks
+                    LEFT JOIN offer ON offer.idoffer = clicks.offer_idoffer                    ";
         } else {
-            $sql = "SELECT clicks.first_timestamp,  conversions.timestamp,conversions.paid,  click_vars.url,  click_geo.ip, rep.idrep, rep.first_name, clicks.offer_idoffer FROM clicks
+            $sql = "SELECT clicks.first_timestamp,  conversions.timestamp, {$resolvedPaid} as paid,  click_vars.url,  click_geo.ip, rep.idrep, rep.first_name, clicks.offer_idoffer FROM clicks
                     INNER JOIN click_vars ON click_vars.click_id = clicks.idclicks
                     INNER JOIN click_geo ON click_geo.click_id = clicks.idclicks  
-                    LEFT JOIN conversions ON conversions.click_id = clicks.idclicks                    ";
+                    LEFT JOIN conversions ON conversions.click_id = clicks.idclicks
+                    LEFT JOIN offer ON offer.idoffer = clicks.offer_idoffer                    ";
         }
 
 

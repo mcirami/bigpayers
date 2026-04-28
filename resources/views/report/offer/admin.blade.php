@@ -2,6 +2,8 @@
     use App\Privilege;
 	use LeadMax\TrackYourStats\System\Session;
 	$userType = Session::userType();
+    $showRevenueColumns = in_array($userType, [Privilege::ROLE_GOD, Privilege::ROLE_MANAGER], true)
+        || ($userType == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts"));
 @endphp
 
 @extends('report.template')
@@ -31,19 +33,15 @@
             <th class="value_span9">Raw</th>
             <th class="value_span9">Unique</th>
             <th class="value_span9">Convs</th>
-            @if (Session::userType() == Privilege::ROLE_GOD ||
-                (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+            @if ($showRevenueColumns)
                 <th class="value_span9">Revenue</th>
-                <th class="value_span9">EPC</th>
             @endif
         </tr>
         </thead>
         <tbody>
         @php
-            if (Session::userType() == Privilege::ROLE_GOD ||
-            (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
-            ) {
-				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'Conversions', 'Revenue', 'EPC'];
+            if ($showRevenueColumns) {
+				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'Conversions', 'Revenue'];
 			} else {
 				$array = ['idoffer', 'offer_name', 'Clicks', 'UniqueClicks', 'Conversions'];
 			}
@@ -61,7 +59,7 @@
         $(document).ready(function () {
             $("#mainTable").tablesorter(
                 {
-                    sortList: [[6, 1]],
+                    sortList: [[5, 1]],
                     widgets: ['staticRow']
                 });
         });

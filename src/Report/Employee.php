@@ -13,6 +13,7 @@
 namespace LeadMax\TrackYourStats\Report;
 
 
+use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
@@ -296,6 +297,7 @@ class Employee extends ReportBase
 
     function reportGod($items_per_page = false, $offset = false, $d_from = false, $d_to = false)
     {
+        $revenueExpression = Payouts::sqlForRole($this->repType, 'offer', null);
 
 
         $sql = "SELECT
@@ -335,7 +337,8 @@ class Employee extends ReportBase
 				AND free_sign_ups.timestamp BETWEEN :freeDateFrom AND :freeDateTo
 				WHERE clicks.rep_idrep = rep.idrep) as free_sign_ups,
     
-  (SELECT sum(conversions.paid)  FROM clicks INNER JOIN conversions ON conversions.click_id = clicks.idclicks    
+  (SELECT sum({$revenueExpression})  FROM clicks INNER JOIN conversions ON conversions.click_id = clicks.idclicks
+ INNER JOIN offer ON offer.idoffer = clicks.offer_idoffer   
 ";
 
         if ($d_from && $d_to) {
@@ -426,6 +429,7 @@ class Employee extends ReportBase
 
     function reportManager($items_per_page, $offset, $d_from = false, $d_to = false)
     {
+        $revenueExpression = Payouts::sqlForRole($this->repType, 'offer', null);
         $sql = "SELECT
                 rep.idrep,
                 rep.user_name,
@@ -463,7 +467,8 @@ class Employee extends ReportBase
 				WHERE clicks.rep_idrep = rep.idrep) as free_sign_ups,
 			
 			
-  (SELECT sum(conversions.paid)  FROM clicks INNER JOIN conversions ON conversions.click_id = clicks.idclicks 
+  (SELECT sum({$revenueExpression})  FROM clicks INNER JOIN conversions ON conversions.click_id = clicks.idclicks
+ INNER JOIN offer ON offer.idoffer = clicks.offer_idoffer
           ";
 
         if ($d_from && $d_to) {
@@ -552,5 +557,3 @@ class Employee extends ReportBase
 
 }
 	
-
-
