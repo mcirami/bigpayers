@@ -41,10 +41,14 @@ use Illuminate\Database\Eloquent\Model;
 class Offer extends Model
 {
 
-    const TYPE_CPA = 0;
-    const TYPE_CPC = 1;
-    const TYPE_BLACKLISTED = 2;
-    const TYPE_PENDING_CONVERSION = 3;
+	const TYPE_PPS = 0;
+	const TYPE_PPC = 1;
+	const TYPE_BLACKLISTED = 2;
+	const TYPE_PPL = 3;
+	const TYPE_DATING = 4;
+	const TYPE_CAMS = 5;
+	const TYPE_SWEEPS = 6;
+	const TYPE_NUTRA = 7;
 
     CONST VISIBILITY_PRIVATE = 0;
     const VISIBILITY_PUBLIC = 1;

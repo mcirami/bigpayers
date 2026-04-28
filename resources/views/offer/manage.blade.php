@@ -17,11 +17,21 @@
 		$canCreateOffers = $permissions->can('create_offers');
         $canEditAffiliates = $permissions->can('edit_affiliates');
         $canEditOfferRules = $permissions->can('edit_offer_rules');
-		$canViewPayouts = $permissions->can('view_payouts');
+        $canViewPayouts = $permissions->can('view_payouts');
         $isAffiliate = $sessionUserType == \App\Privilege::ROLE_AFFILIATE;
         $isManager = $sessionUserType == \App\Privilege::ROLE_MANAGER;
 		$isGod = $sessionUserType == \App\Privilege::ROLE_GOD;
         $showPayoutColumn = $isGod || $canViewPayouts || $isManager;
+        $offerTypeLabels = [
+            \App\Offer::TYPE_PPS => 'PPS',
+            \App\Offer::TYPE_PPC => 'PPC',
+            \App\Offer::TYPE_BLACKLISTED => 'Blacklisted',
+            \App\Offer::TYPE_PPL => 'PPL',
+            \App\Offer::TYPE_DATING => 'Dating',
+            \App\Offer::TYPE_CAMS => 'Cams',
+            \App\Offer::TYPE_SWEEPS => 'Sweeps',
+            \App\Offer::TYPE_NUTRA => 'Nutra',
+        ];
 
     @endphp
 
@@ -118,6 +128,9 @@
                         <th class="value_span9">ID</th>
                         <th class="value_span9">Offer</th>
                         @if ($isAffiliate)
+                            <th class="value_span9">Category</th>
+                            <th class="value_span9">Countries</th>
+                            <th class="value_span9">Payout</th>
                             <th class="value_span9">Link</th>
                         @elseif($canEditAffiliates && !$isAffiliate && !$isManager)
                             <th class="value_span9">Access</th>
@@ -215,14 +228,24 @@
             const canCreateOffers = @json($canCreateOffers);
             const canEditAffiliates = @json($canEditAffiliates);
             const canEditOfferRules = @json($canEditOfferRules);
-	        const canViewPayouts = @json($canViewPayouts);
+            const canViewPayouts = @json($canViewPayouts);
             const showPayoutColumn = @json($showPayoutColumn);
             const sessionUser = {{ (int) \LeadMax\TrackYourStats\System\Session::userID() }};
             const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? request()->getHttpHost());
             const offers = @json($offers);
+            const offerTypeLabels = @json($offerTypeLabels);
             const paginationContainer = "#pagination";
             const itemsContainer = document.querySelector("#offers_container");
             const searchBox = document.getElementById("searchBox");
+
+            function escapeHtml(value) {
+                return String(value ?? "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
 
             document.querySelectorAll(".delete_offer").forEach((offer) => {
                 offer.addEventListener("click", (e) => {
@@ -257,24 +280,34 @@
                     let html = "";
 
                     pageItems.forEach((offer) => {
+                        const categoryLabel = offerTypeLabels[offer.offer_type] ?? "Unknown";
+                        const countriesText = (offer.description || "").trim();
+                        const countriesMarkup = countriesText.length
+                            ? "<div class='bp-offer-country-cell'>" +
+                                "<span class='bp-offer-country-preview'>" + escapeHtml(countriesText) + "</span>" +
+                                "<span class='bp-offer-country-hint' hidden>Hover for more...</span>" +
+                                "<div class='bp-offer-country-popover'>" + escapeHtml(countriesText) + "</div>" +
+                              "</div>"
+                            : "<span class='bp-table-meta'>Not set</span>";
                         html += "<tr>" +
                             "<td>" + offer.idoffer + "</td>" +
-                            "<td>" + offer.offer_name;
+                            "<td>" + offer.offer_name + "</td>";
 
                         if (userType === 3) {
-                            html += "<br><span class='link_label'>Offer Link:</span><br>" +
-                                "<span class='offer_link'>https://" + selectedUrl +
-                                "/?rid=" + sessionUser +
-                                "&oid=" + offer.idoffer + "&s1=</span>";
-                        }
+                            const affiliatePayout = offer.affiliate_payout !== null && offer.affiliate_payout !== undefined
+                                ? offer.affiliate_payout
+                                : offer.payout;
 
-                        html += "</td>";
+                            html += "<td>" + categoryLabel + "</td>";
+                            html += "<td>" + countriesMarkup + "</td>";
+                            html += "<td class='value_span10'>$" + affiliatePayout + "</td>";
+                        }
 
                         if (userType === 3) {
                             html += "<td class='value_span10'>" +
                                 "<button data-url='https://" + selectedUrl +
                                 "/?rid=" + sessionUser +
-                                "&oid=" + offer.idoffer + "&s1=' data-toggle='tooltip' title='Copy My Link' class='copy_button btn btn-default'>Copy My Link</button></td>";
+                                "&oid=" + offer.idoffer + "&s1=' data-toggle='tooltip' title='Copy' class='copy_button btn btn-default'>Copy</button></td>";
                         }
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
@@ -285,7 +318,7 @@
 
                         if (showPayoutColumn) {
                             if (userType === 3) {
-                                html += "<td class='value_span10'>$" + offer.pivot.payout + "</td>";
+                                html += "";
                             } else if (userType === 1) {
                                 const adminPayout = offer.admin_payout !== null && offer.admin_payout !== undefined
                                     ? offer.admin_payout
@@ -366,7 +399,22 @@
                 }
 
                 showItems(currentPage);
+                updateCountryPreviewHints();
                 setupPagination();
+            }
+
+            function updateCountryPreviewHints() {
+                document.querySelectorAll(".bp-offer-country-cell").forEach((cell) => {
+                    const preview = cell.querySelector(".bp-offer-country-preview");
+                    const hint = cell.querySelector(".bp-offer-country-hint");
+
+                    if (!preview || !hint) {
+                        return;
+                    }
+
+                    const hasOverflow = preview.scrollHeight > preview.clientHeight + 2;
+                    hint.hidden = !hasOverflow;
+                });
             }
 
             function bindDeleteButtons() {

@@ -14,9 +14,13 @@
     @php
         $isEdit = ($mode ?? 'create') === 'edit';
         $offerTypeOptions = [
-            \App\Offer::TYPE_CPA => 'CPA',
-            \App\Offer::TYPE_CPC => 'CPC',
-            \App\Offer::TYPE_PENDING_CONVERSION => 'Pending Conversion',
+            \App\Offer::TYPE_PPS => 'PPS',
+            \App\Offer::TYPE_PPC => 'PPC',
+            \App\Offer::TYPE_PPL => 'PPL',
+            \App\Offer::TYPE_DATING => 'Dating',
+            \App\Offer::TYPE_CAMS => 'Cams',
+            \App\Offer::TYPE_SWEEPS => 'Sweeps',
+            \App\Offer::TYPE_NUTRA => 'Nutra',
         ];
 
         $visibilityOptions = [
@@ -111,7 +115,7 @@
                         <span class="bp-form-label">Type</span>
                         <select class="bp-form-input" id="offer_type" name="offer_type">
                             @foreach($offerTypeOptions as $value => $label)
-                                <option value="{{ $value }}" @selected((int) old('offer_type', $offer->offer_type ?? \App\Offer::TYPE_CPA) === $value)>{{ $label }}</option>
+                                <option value="{{ $value }}" @selected((int) old('offer_type', $offer->offer_type ?? \App\Offer::TYPE_PPS) === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
                     </label>

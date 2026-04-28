@@ -5,10 +5,13 @@
 @section('content')
     @php
         $typeLabels = [
-            \App\Offer::TYPE_CPA => 'CPA',
-            \App\Offer::TYPE_CPC => 'CPC',
-            \App\Offer::TYPE_BLACKLISTED => 'Blacklisted',
-            \App\Offer::TYPE_PENDING_CONVERSION => 'Pending conversion',
+            \App\Offer::TYPE_PPS => 'PPS',
+            \App\Offer::TYPE_PPC => 'PPC',
+            \App\Offer::TYPE_PPL => 'PPL',
+            \App\Offer::TYPE_DATING => 'Dating',
+            \App\Offer::TYPE_CAMS => 'Cams',
+            \App\Offer::TYPE_SWEEPS => 'Sweeps',
+            \App\Offer::TYPE_NUTRA => 'Nutra',
         ];
         $visibilityLabels = [
             \App\Offer::VISIBILITY_PRIVATE => 'Private',
