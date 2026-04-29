@@ -98,8 +98,8 @@
 					@if (Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Encoded ID</th>
 					@endif
-					<th class="value_span9"><br>Timestamp</th>
-					<th class="value_span9">Conversion Timestamp</th>
+					<th class="value_span9"><br>Click Time</th>
+					<th class="value_span9">Conv Time</th>
                     @if(Session::userType() == Privilege::ROLE_GOD ||
                         (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
                     )
@@ -112,7 +112,9 @@
 					<th class="value_span9">Sub 5</th> --}}
 					<th class="value_span9">Affiliate</th>
 					<th class="value_span9">Offer</th>
-					<th class="value_span9">Referer Url</th>
+                    @if (Session::permissions()->can("view_fraud_data"))
+                        <th class="value_span9">Referer Url</th>
+                    @endif
 					@if (Session::permissions()->can("view_fraud_data"))
 						<th class="value_span9">Ip Address</th>
 						<th class="value_span9">Sub Division</th>
@@ -121,7 +123,7 @@
 						<th class="value_span9">Longitude</th>
 						<th class="value_span9">Latitude</th>
 					@endif
-					<th class="value_span9">Iso Code</th>
+					<th class="value_span9">Country</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -153,8 +155,8 @@
 						@endfor
 						<td>{{$row['affiliate_id']}}</td>
 						<td>{{$row['offer_id']}}</td>
-						<td>{{$row['referer']}}</td>
 						@if (Session::permissions()->can("view_fraud_data"))
+                                <td>{{$row['referer']}}</td>
                                 <td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
                                 <td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>
                                 <td>{{isset($row['city']) ? $row['city'] : ""}}</td>

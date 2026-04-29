@@ -35,7 +35,7 @@ class Clicks extends ReportBase
     }
 
 
-    public function getCount($d_from = false, $d_to = false, $repID)
+    public function getCount($d_from = false, $d_to = false, $repID = null)
     {
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
             return $this->queryAffiliate($d_from, $d_to, $repID, 0, 0, true)->rowCount();
@@ -45,7 +45,7 @@ class Clicks extends ReportBase
     }
 
 
-    private function queryEmployee($d_from = false, $d_to = false, $repID, $rowCount = false)
+    private function queryEmployee($d_from = false, $d_to = false, $repID = null, $rowCount = false)
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $resolvedPaid = Payouts::sqlForRole($this->userType, 'offer', null);
@@ -124,7 +124,7 @@ class Clicks extends ReportBase
     }
 
 
-    public function queryAffiliate($d_from = false, $d_to = false, $repID, $items_per_page, $offset, $rowCount = false)
+    public function queryAffiliate($d_from = false, $d_to = false, $repID = null, $items_per_page = 0, $offset = 0, $rowCount = false)
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 
@@ -187,7 +187,7 @@ class Clicks extends ReportBase
     }
 
 
-    public function fetchReport($d_from = false, $d_to = false, $repID, $items_per_page, $offset)
+    public function fetchReport($d_from = false, $d_to = false, $repID = null, $items_per_page = 0, $offset = 0)
     {
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
             $this->report = $this->queryAffiliate($d_from, $d_to, $repID, $items_per_page, $offset)

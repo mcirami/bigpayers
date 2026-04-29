@@ -13,8 +13,8 @@
     <table class="table-sm table-bordered table-striped table_01 tablesorter" id="mainTable">
         <thead>
         <tr>
-            <th class="value_span9">Offer Name</th>
-            <th class="value_span9">Conversion Timestamp</th>
+            <th class="value_span9">Offer</th>
+            <th class="value_span9">Conv Time</th>
             <th class="value_span9">Paid</th>
         </tr>
         </thead>

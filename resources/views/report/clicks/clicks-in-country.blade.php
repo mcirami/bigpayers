@@ -28,15 +28,14 @@
         <thead>
         <tr>
             <th class="value_span9">Click</th>
-            <th class="value_span9">Time</th>
+            <th class="value_span9">Click Time</th>
             <th class="value_span9">Conv Time</th>
             <th class="value_span9">Paid</th>
             <th class="value_span9">Sub 1</th>
             <th class="value_span9">Sub 2</th>
             <th class="value_span9">Sub 3</th>
-            <th class="value_span9">Aff</th>
+            <th class="value_span9">Affiliate</th>
             <th class="value_span9">Offer</th>
-            <th class="value_span9">Referer</th>
             <th class="value_span9">IP</th>
         </tr>
         </thead>
@@ -52,7 +51,6 @@
                 <td>{{$row->sub3}}</td>
                 <td>{{$row->rep_idrep}}</td>
                 <td>{{$row->offer_idoffer}}</td>
-                <td>{{$row->referer}}</td>
                 <td>{{$row->click_geo_ip}}</td>
             </tr>
         @endforeach

@@ -58,7 +58,7 @@ class HTML implements Format
 
             if (empty($this->printTheseArrayKeys)) {
                 foreach ($row as $item => $val) {
-					if($item == "conversions" && $val > 0 && (key_exists('sub', $row) && $row["sub"] != "TOTAL") ) {
+					if($item == "conversions" && $val > 0 && (key_exists('sub', $row) && $row["sub"] != "TOTAL") && $row["sub"] !== "(empty)" ) {
 						echo "<td><a class='bp-report-link' href='/report/sub/conversions?subid={$row["sub"]}". "&" . "{$params}'>{$val}</a></td>";
 					} else {
 						echo "<td>{$val}</td>";

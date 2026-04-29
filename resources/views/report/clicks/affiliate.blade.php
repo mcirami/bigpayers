@@ -45,20 +45,20 @@
 				@if (Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">Click ID</th>
 				@endif
-				<th class="value_span9">Timestamp</th>
-				<th class="value_span9">Offer Name</th>
-				<th class="value_span9">Conversion Timestamp</th>
+				<th class="value_span9">Click Time</th>
+				<th class="value_span9">Offer</th>
+				<th class="value_span9">Conv Time</th>
                 @if($canViewFraudData || (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
                     <th class="value_span9">Paid</th>
                 @endif
 				<th class="value_span9">Sub 1</th>
 				<th class="value_span9">Sub 2</th>
 				<th class="value_span9">Sub 3</th>
-				<th class="value_span9">Referer Url</th>
-				@if (Session::permissions()->can("view_fraud_data"))
+                @if (Session::permissions()->can("view_fraud_data"))
+				    <th class="value_span9">Referer</th>
 					<th class="value_span9">IP Address</th>
 				@endif
-				<th class="value_span9">Iso Code</th>
+				<th class="value_span9">Country</th>
 				@if (Session::permissions()->can("view_fraud_data"))
 					<th class="value_span9">Sub Division</th>
 					<th class="value_span9">City</th>
@@ -93,7 +93,9 @@
 					<td>{{$row->sub1}}</td>
 					<td>{{$row->sub2}}</td>
 					<td>{{$row->sub3}}</td>
-					<td>{{$row->referer}}</td>
+                    @if($canViewFraudData)
+                        <td>{{$row->referer}}</td>
+                    @endif
 					@if (Session::permissions()->can("view_fraud_data"))
 						<td>{{$row->ip_address}}</td>
 					@endif
