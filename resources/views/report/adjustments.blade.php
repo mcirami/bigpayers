@@ -14,14 +14,14 @@
     <table class="table table-bordered table-striped table_01 tablesorter" id="mainTable">
         <thead>
         <tr>
-            <th class="value_span9">Log ID</th>
-            <th class="value_span9">User Name</th>
+            <th class="value_span9">ID</th>
+            <th class="value_span9">Affiliatee</th>
             <th class="value_span9">Click ID</th>
-            <th class="value_span9">Offer Name</th>
-            <th class="value_span9">Conversion ID</th>
+            <th class="value_span9">Offer</th>
+            <th class="value_span9">Conv ID</th>
             <th class="value_span9">Paid</th>
             <th class="value_span9">Timestamp (UTC)</th>
-            <th class="value_span9">Creator User Name</th>
+            <th class="value_span9">Creator</th>
             <th class="value_span9">Action</th>
         </tr>
         </thead>

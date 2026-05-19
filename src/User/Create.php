@@ -79,7 +79,7 @@ class Create
             //User::sendWelcomeEmail($affiliate_id);
 
 	        if ($id == null) {
-		        send_to( "aff_update.php?idrep={$affiliate_id}" );
+		        send_to("/user/{$affiliate_id}/edit");
 	        }
 
         }

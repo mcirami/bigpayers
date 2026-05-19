@@ -85,7 +85,7 @@ class AffiliateSignUp
         }
 
 
-        $msg = "A new affiliate sign up has been requested, to over look and approve it please user this link  <a href=\"activate_affiliate.php?id={$affiliate_id}\">here</a>";
+        $msg = "A new affiliate sign up has been requested, to over look and approve it please user this link  <a href=\"/user/pending/{$affiliate_id}/activate\">here</a>";
 
 
         return \LeadMax\TrackYourStats\System\Notifications::sendNotification($user_ids, 1, "Affiliate Sign Up Request",

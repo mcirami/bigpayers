@@ -36,7 +36,7 @@
 							<div class="form-group password mb-0">
 								<input type="password" class="form-control" id="txt_password" name="txt_password" placeholder="Password">
 							</div>
-							<a href="aff_help.php">Forgot Password?</a>
+							<a href="/forgot-password">Forgot Password?</a>
 							<button type="submit" class="btn btn-primary d-block text-center mt-2 value_span6-2 value_span2 value_span1-2">Sign In</button>
 						</form>
 					</div>

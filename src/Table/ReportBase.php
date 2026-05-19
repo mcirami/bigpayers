@@ -26,7 +26,7 @@ class ReportBase
         $padding = "style='margin-left:5px;'";
 
         $logintouser = "<a href='#'  onclick='adminLogin({$userID});'>Login</a>";
-        $edituser = "<a {$padding} href='/aff_update.php?idrep={$userID}' target='_blank'>edit</a>";
+        $edituser = "<a {$padding} href='/user/{$userID}/edit' target='_blank'>edit</a>";
 
         $returnstr =
             "<a href=\"#\" data-toggle=\"popover\" data-trigger=\"focus\"

@@ -64,7 +64,7 @@
 									<label for="password">Password</label>
 									<input placeholder="Password" type="password" class="form-control" id="password" name="txt_password">
 								</div>
-								<a href="aff_help.php">Forgot Password?</a>
+								<a href="/forgot-password">Forgot Password?</a>
 								<button type="submit" class="d-block text-center w-100">Login Now</button>
 							</form>
 							<div class="text-center mt-3">

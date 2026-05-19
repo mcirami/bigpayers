@@ -193,7 +193,7 @@ class View
                     ";
 
             if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
-                echo "<td class=\"value_span10\"><a class='btn btn-default' data-toggle=\"tooltip\" title=\"Offer PostBack Options\" href=\"offer_edit_pb.php?offid={$rows->idoffer}\">Edit Post Back</a></td>";
+                echo "<td class=\"value_span10\"><a class='btn btn-default' data-toggle=\"tooltip\" title=\"Offer PostBack Options\" href=\"/offer_edit_pb.php?offid={$rows->idoffer}\">Edit Post Back</a></td>";
 
 
             }
@@ -209,20 +209,20 @@ class View
             if ($this->userType != Privilege::ROLE_AFFILIATE && $this->userType != \App\Privilege::ROLE_UNKNOWN) {
                 if ($per->can("create_offers")) {
                     echo "  <td class=\"value_span10\" >
-                                                         <a class=\"btn btn-default btn-sm\"  data-toggle=\"tooltip\" title=\"Edit Offer\" href=\"offer_update.php?idoffer=".$rows->idoffer."\">Edit</a>
+                                                         <a class=\"btn btn-default btn-sm\"  data-toggle=\"tooltip\" title=\"Edit Offer\" href=\"/offer/edit/".$rows->idoffer."\">Edit</a>
                                                       
                                                  </td>";
                 }
 
                 if ($per->can("edit_offer_rules")) {
                     echo " <td class=\"value_span10\" >
-                                                         <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Edit Offer Rules\"  href=\"offer_edit_rules.php?offid=".$rows->idoffer."\"> Rules</a>
+                                                         <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Edit Offer Rules\"  href=\"/offer/rules/".$rows->idoffer."\"> Rules</a>
                                                       
                                            </td>    ";
                 }
 
                 echo " <td class=\"value_span10\" >
-                                                         <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"View Offer\"  href=\"offer_details.php?idoffer=".$rows->idoffer."\"> View</a>
+                                                         <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"View Offer\"  href=\"/offer/view/".$rows->idoffer."\"> View</a>
                                                     
                                               </td>     </td>";
 

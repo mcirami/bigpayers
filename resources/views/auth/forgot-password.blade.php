@@ -58,10 +58,10 @@
             <a href="{{ $webroot }}" class="login-shell__logo-link" aria-label="{{ $company->getShortHand() }} home">
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
-            <p class="login-shell__eyebrow">Affiliate login</p>
-            <h1 class="login-shell__title value_span2">{{ env('LOGIN_PAGE_TEXT') }}</h1>
+            <p class="login-shell__eyebrow">Account recovery</p>
+            <h1 class="login-shell__title value_span2">{{ env('FORGOT_PASS_PAGE_TEXT') }}</h1>
             <p class="login-shell__copy">
-                Access your dashboard, reporting, offers, and account tools from a login experience that now follows your install’s live brand settings.
+                Request a password reset link or choose a new password if you already have a valid reset token.
             </p>
 
             <div class="login-shell__support">
@@ -84,39 +84,54 @@
 
     <section class="login-shell__panel value_span8">
         <div class="login-card">
-            <p class="login-card__kicker">Sign in</p>
-            <h2 class="login-card__title value_span9">Welcome back</h2>
-            <p class="login-card__copy value_span10">Use your account credentials to continue into the affiliate workspace.</p>
+            <p class="login-card__kicker">{{ $token ? 'Reset password' : 'Forgot password' }}</p>
+            <h2 class="login-card__title value_span9">
+                {{ $token ? 'Create a new password' : 'We can help you back in' }}
+            </h2>
+            <p class="login-card__copy value_span10">
+                @if($token && $tokenUserName)
+                    Resetting password for {{ $tokenUserName }}.
+                @elseif($token)
+                    Enter a new password to finish resetting your account.
+                @else
+                    Enter the email address tied to your account and we’ll send reset instructions if it exists.
+                @endif
+            </p>
 
-            <form method="post" action="/login" class="login-form">
+            @if($status)
+                <div class="login-alert{{ $statusType === 'success' ? ' login-alert--success' : ($statusType === 'error' ? ' login-alert--error' : '') }}">
+                    <span>{!! $status !!}</span>
+                </div>
+            @endif
+
+            <form method="post" action="/forgot-password" class="login-form">
                 {!! csrf_field() !!}
-                @if(request()->has('redirectUri'))
-                    <input type="hidden" name="redirectUri" value="{{ request('redirectUri') }}"/>
+
+                @if($token)
+                    <input type="hidden" name="token" value="{{ $token }}">
+
+                    <label class="login-field">
+                        <span class="login-field__label">New password</span>
+                        <input type="password" name="password" placeholder="Enter new password" required/>
+                    </label>
+
+                    <label class="login-field">
+                        <span class="login-field__label">Confirm password</span>
+                        <input type="password" name="confirmpassword" placeholder="Confirm new password" required/>
+                    </label>
+                @else
+                    <label class="login-field">
+                        <span class="login-field__label">Email</span>
+                        <input type="email" name="email" value="{{ old('email') }}" placeholder="Enter your email" required/>
+                    </label>
                 @endif
-
-                @if(isset($error))
-                    <div class="login-alert">
-                        <strong>Unable to sign in.</strong>
-                        <span>{!! $error !!}</span>
-                    </div>
-                @endif
-
-                <label class="login-field">
-                    <span class="login-field__label">Username or email</span>
-                    <input type="text" name="txt_uname_email" value="{{ $user->autoFillEmail }}" placeholder="Enter username or email" required/>
-                </label>
-
-                <label class="login-field">
-                    <span class="login-field__label">Password</span>
-                    <input type="password" name="txt_password" placeholder="Enter password" required/>
-                </label>
 
                 <div class="login-form__row">
-                    <a class="login-form__link value_span5" href="/forgot-password">{{ env('FORGOT_PASS_LINK_TEXT') }}</a>
+                    <a class="login-form__link value_span5" href="/login">{{ env('LOGIN_PAGE_BUTTON_TEXT') === 'Login Now' ? 'Back to login' : 'Return to login' }}</a>
                 </div>
 
                 <button type="submit" name="button" class="login-form__submit value_span11 value_span2 value_span4">
-                    {{ env('LOGIN_PAGE_BUTTON_TEXT') }}
+                    {{ env('FORGOT_PASS_PAGE_BUTTON_TEXT') }}
                 </button>
             </form>
         </div>

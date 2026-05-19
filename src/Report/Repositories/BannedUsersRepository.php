@@ -30,7 +30,7 @@ class BannedUsersRepository extends Repository
     {
         foreach ($report as &$row) {
             $row["status"] = ($row["status"] === 1 && $row["expires"] > Carbon::now()->format('Y-m-d H:i:s')) ? "Active" : "In-Active";
-            $row["actions"] = "<a target='_blank' class='btn btn-default btn-sm' href='ban_user_edit.php?uid={$row["user_id"]}'>Ban Settings</a>";
+            $row["actions"] = "<a target='_blank' class='btn btn-default btn-sm' href='/user/{$row["user_id"]}/ban/edit'>Ban Settings</a>";
         }
 
         return $report;

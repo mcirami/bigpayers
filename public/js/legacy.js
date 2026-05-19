@@ -2725,7 +2725,7 @@ function unCheckBoxesInDiv(divID) {
 }
 function adminLogin(id)
 {
-    window.open('alogin.php?affid=' + id);
+    window.open('/login/' + id);
 }
 jQuery(document).ready(function ($) {
     var $trigger = $(".dropdown");

@@ -203,11 +203,11 @@ class Update
         }
         echo "
                 <input {$man} 
-                    onchange=\"window.location = 'offer_update.php?ast=1&idoffer={$this->offerID}';\"
+                    onchange=\"window.location = '/offer/edit/{$this->offerID}?ast=1';\"
                     type=\"radio\"
                     name=\"assignToType\" value=\"man\" style=\"width:2%;\"> Managers
                 <input {$aff}
-                    onchange=\"window.location = 'offer_update.php?ast=0&idoffer= {$this->offerID} ';\"
+                    onchange=\"window.location = '/offer/edit/{$this->offerID}?ast=0';\"
                     type=\"radio\"
                     name=\"assignToType\" value=\"aff\" style=\"width:2%;\">Affiliates
                     ";
@@ -218,11 +218,12 @@ class Update
     public function checkAndUpdate()
     {
         $assignType = $this->assign->get("ast");
+        $redirectUrl = "/offer/edit/{$this->assign->get("idoffer")}";
 
         if ($assignType == 0) {
-            $this->UpdateOfferWithRepHasOffer("offer_update.php?idoffer={$this->assign->get("idoffer")}");
+            $this->UpdateOfferWithRepHasOffer($redirectUrl);
         } else {
-            $this->UpdateOfferWithManager("offer_update.php?idoffer={$this->assign->get("idoffer")}");
+            $this->UpdateOfferWithManager($redirectUrl);
         }
 
     }

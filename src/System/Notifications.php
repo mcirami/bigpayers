@@ -97,7 +97,7 @@ class Notifications
     public function deleteAndRedirect($id)
     {
         $this->delete($id);
-        send_to("notifications.php");
+        send_to("/notifications");
     }
 
 
@@ -115,7 +115,7 @@ class Notifications
     public function markAndRedirect($id)
     {
         $this->markAsRead($id);
-        send_to("notifications.php");
+        send_to("/notifications");
     }
 
     public function markAsRead($id)
@@ -320,7 +320,10 @@ class Notifications
                      
                                 <a class='btn btn-default btn-sm' href='/notifications/{$notification["id"]}'>View</a>
 
-                        <a class='btn btn-default btn-sm' href='notifications.php?action=mark&id={$notification["id"]}'>Mark as Read</a>
+                        <form method='post' action='/notifications/{$notification["id"]}/mark-read' style='display:inline;'>
+                            " . csrf_field() . "
+                            <button type='submit' class='btn btn-default btn-sm'>Mark as Read</button>
+                        </form>
                         <a class='btn btn-default btn-sm' onclick='confirmPlease({$notification["id"]});' href='javascript:void(0);'>Delete</a>
                     
                 </td>";

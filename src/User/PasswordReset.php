@@ -55,7 +55,7 @@ function checkPasswordResetRequest()
                             <br/>
                                      
                             <p>You can reset your password with this link:
-                              <a href=\"{$webroot}aff_help.php?token={$hash}\">Here</a>
+                              <a href=\"" . url('/forgot-password?token=' . $hash) . "\">Here</a>
                             </p>
 
                             <p>
@@ -153,7 +153,7 @@ function checkPasswordAndReset()
                 $prep->bindParam(":token", $_POST["token"]);
                 $prep->execute();
 
-                $autoFill = "Password successfully reset for {$result["user_name"]}. <a href='/login.php'>Go to login.</a>";
+                $autoFill = "Password successfully reset for {$result["user_name"]}. <a href='/login'>Go to login.</a>";
 
             } else {
                 $autoFill = "Token has expired, please request a new reset.";

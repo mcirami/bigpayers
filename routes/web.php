@@ -37,6 +37,7 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ClickSearchController;
 use App\Http\Controllers\GlobalPostbackController;
+use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SignupController;
@@ -53,6 +54,10 @@ Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
 Route::get('/login', [LegacyLoginController::class, 'showLoginForm']);
 Route::post('/login', [LegacyLoginController::class, 'login']);
+Route::get('/login.php', [LegacyCompatibilityController::class, 'redirectLoginPhp']);
+Route::get('/logout.php', [LegacyCompatibilityController::class, 'redirectLogoutPhp']);
+Route::match(['get', 'post'], '/forgot-password', [LegacyCompatibilityController::class, 'forgotPassword']);
+Route::match(['get', 'post'], '/aff_help.php', [LegacyCompatibilityController::class, 'forgotPassword']);
 Route::get('/signup', [SignupController::class, 'show']);
 Route::post('/signup', [SignupController::class, 'submit']);
 Route::get('/signup.php', [SignupController::class, 'show']);
@@ -64,7 +69,44 @@ Route::get('/logout', [LegacyLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
+    Route::get('home.php', [LegacyCompatibilityController::class, 'redirectHomePhp']);
     Route::get('dashboard', [DashboardController::class, 'home']);
+    Route::get('alogin.php', [LegacyCompatibilityController::class, 'redirectAdminLogin']);
+    Route::get('aff_update.php', [LegacyCompatibilityController::class, 'redirectAffUpdate'])->middleware(['role:0,1,2,3']);
+    Route::get('activate_affiliate.php', [LegacyCompatibilityController::class, 'redirectActivateAffiliate'])->middleware([
+        'permissions:' . Permissions::APPROVE_AFFILIATE_SIGN_UPS
+    ]);
+    Route::get('clicksearch.php', [LegacyCompatibilityController::class, 'redirectClickSearch'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('ip_black_list.php', [LegacyCompatibilityController::class, 'redirectIpBlacklist'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('global_postback.php', [LegacyCompatibilityController::class, 'redirectGlobalPostback']);
+    Route::get('offer_add.php', [LegacyCompatibilityController::class, 'redirectOfferAdd'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
+    Route::get('offer_update.php', [LegacyCompatibilityController::class, 'redirectOfferUpdate'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
+    Route::get('offer_edit_rules.php', [LegacyCompatibilityController::class, 'redirectOfferEditRules'])->middleware(['permissions:' . Permissions::EDIT_OFFER_RULES]);
+    Route::get('offer_details.php', [LegacyCompatibilityController::class, 'redirectOfferDetails'])->middleware(['role:0,1,2']);
+    Route::get('offer_urls.php', [LegacyCompatibilityController::class, 'redirectOfferUrls'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+    Route::get('add_offer_url.php', [LegacyCompatibilityController::class, 'redirectAddOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+    Route::get('edit_offer_url.php', [LegacyCompatibilityController::class, 'redirectEditOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
+    Route::get('notifications.php', [LegacyCompatibilityController::class, 'notificationsCompatibility']);
+    Route::get('view_pending_affiliates.php', [LegacyCompatibilityController::class, 'redirectViewPendingAffiliates'])->middleware([
+        'permissions:' . Permissions::APPROVE_AFFILIATE_SIGN_UPS
+    ]);
+    Route::get('banned_users.php', [LegacyCompatibilityController::class, 'redirectBannedUsers'])->middleware([
+        'permissions:' . Permissions::BAN_USERS
+    ]);
+    Route::get('ban_user.php', [LegacyCompatibilityController::class, 'redirectBanUser'])->middleware([
+        'permissions:' . Permissions::BAN_USERS
+    ]);
+    Route::get('ban_user_edit.php', [LegacyCompatibilityController::class, 'redirectBanUserEdit'])->middleware([
+        'permissions:' . Permissions::BAN_USERS
+    ]);
+    Route::get('aff_edit_ref.php', [LegacyCompatibilityController::class, 'redirectAffEditRef'])->middleware(['role:0,1,2']);
+    Route::get('add_referral.php', [LegacyCompatibilityController::class, 'redirectAddReferral'])->middleware(['role:0,1,2']);
+    Route::get('add_sale.php', [LegacyCompatibilityController::class, 'redirectAddSale'])->middleware('permissions:' . Permissions::ADJUST_SALES);
+    Route::get('create_notification.php', [LegacyCompatibilityController::class, 'redirectCreateNotification'])->middleware('permissions:' . Permissions::CREATE_NOTIFICATIONS);
+    Route::get('campaign_manage.php', [LegacyCompatibilityController::class, 'redirectCampaignManage'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('campaign_create.php', [LegacyCompatibilityController::class, 'redirectCampaignCreate'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('campaign_edit.php', [LegacyCompatibilityController::class, 'redirectCampaignEdit'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('settings.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('click-search', [ClickSearchController::class, 'show'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('ip-blacklist', [IPBlacklistController::class, 'index'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('ip-blacklist/create', [IPBlacklistController::class, 'create'])->middleware('role:' . Privilege::ROLE_GOD);

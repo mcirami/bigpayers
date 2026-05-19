@@ -44,7 +44,7 @@
 										<input type="password" class="form-control" id="password" name="txt_password">
 									</div>
 									<button type="submit" class="btn btn-primary d-block text-center w-100">Sign In</button>
-									<a href="aff_help.php">Forgot Password?</a>
+									<a href="/forgot-password">Forgot Password?</a>
 								</form>
 								<div class="contact_info">
 									<p>Contact Magnetdollars Owner on Skype to Join:</p>

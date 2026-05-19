@@ -37,7 +37,7 @@ class Assignments
 
     protected $required = array();
 
-    public $redirectURL = "home.php";
+    public $redirectURL = "/dashboard";
 
     public $cleanData = false;
 
