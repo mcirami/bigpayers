@@ -55,7 +55,7 @@ class RepHasOffer
         $user = User::SelectOne($user_id);
 
         $title = "{$user->user_name} Offer Request";
-        $body = "User {$user->user_name} has request access to offer $offer->offer_name. <br/>To assign them to this offer click <a href='approve_offer_request.php?id={$offer_id}&u={$user_id}'>here</a>. </br>
+        $body = "User {$user->user_name} has request access to offer $offer->offer_name. <br/>To assign them to this offer click <a href='/offer/{$offer_id}/approve-request/{$user_id}'>here</a>. </br>
         This is an automated message. If you have any questions please ask an Administrator.
 ";
 

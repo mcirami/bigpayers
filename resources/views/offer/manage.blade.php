@@ -340,7 +340,7 @@
 
                         /*if (userType === 3) {
                             html += "<td class='value_span10'>" +
-                                "<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' href='/offer_edit_pb.php?offid=" + offer.idoffer + "'>Edit Post Back</a>" +
+                                "<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' href='/offer/" + offer.idoffer + "/postback'>Edit Post Back</a>" +
                                 "</td>";
                         }*/
 

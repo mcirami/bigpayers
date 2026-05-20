@@ -28,6 +28,7 @@ The following wrappers have now been implemented in Laravel:
 - `/ip_black_list.php` -> `/ip-blacklist`
 - `/global_postback.php` -> `/global-postback`
 - `/offer_add.php` -> `/offer/create`
+- `/offer_edit_pb.php?offid=` -> `/offer/{id}/postback`
 - `/offer_update.php?idoffer=` -> `/offer/edit/{id}`
 - `/offer_edit_rules.php?offid=` -> `/offer/rules/{id}`
 - `/offer_details.php?idoffer=` -> `/offer/view/{id}`
@@ -41,6 +42,7 @@ The following wrappers have now been implemented in Laravel:
 - `/aff_edit_ref.php?affid=` -> `/user/{id}/referrals`
 - `/add_referral.php?id=` -> `/user/{id}/referrals/create`
 - `/add_sale.php` -> `/sales/add`
+- `/approve_offer_request.php?id=&u=` -> `/offer/{id}/approve-request/{user}`
 - `/create_notification.php` -> `/notifications/create`
 - `/campaign_manage.php` -> `/advertisers`
 - `/campaign_create.php` -> `/advertisers/create`
@@ -77,6 +79,7 @@ compatibility wrappers plus internal link cleanup.
 | `/add_offer_url.php` | `/offer/urls/create` | Wrapped | Explicit compatibility route |
 | `/edit_offer_url.php?id=` | `/offer/urls/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/offer_add.php` | `/offer/create` | Wrapped | Explicit compatibility route |
+| `/offer_edit_pb.php?offid=` | `/offer/{id}/postback` | Wrapped | Explicit compatibility route |
 | `/offer_update.php?idoffer=` | `/offer/edit/{id}` | Wrapped | Explicit compatibility route |
 | `/offer_details.php?idoffer=` | `/offer/view/{id}` | Wrapped | Explicit compatibility route |
 | `/offer_edit_rules.php?offid=` | `/offer/rules/{id}` | Wrapped | Explicit compatibility route |
@@ -103,12 +106,10 @@ them from modern controllers, views, reports, or services.
 
 | Legacy URL | Referenced from | Recommended action |
 | --- | --- | --- |
-| `/offer_edit_pb.php?offid=` | `resources/views/offer/manage.blade.php`, `src/Offer/View.php` | Migrate offer postback editor or wrap old page behind controller |
 | `/offer_access.php?id=` | `src/Offer/View.php` | Point to `/offer/mass-assign?id=` or a dedicated access page |
 | `/create_none_unique.php?id=` | `resources/views/offer/rules.blade.php` | Migrate none-unique rule UI into modern rules page |
 | `/edit_none_unique.php?id=` | `src/Offer/Rules.php` | Same as above |
 | `/sale_log_view.php?id=` | `src/Report/Repositories/AffiliateChatLogRepository.php` | Migrate sale-log detail view or route-wrap old page |
-| `/approve_offer_request.php` | `src/Offer/RepHasOffer.php` | Add Laravel approval endpoint for access requests |
 
 ## 3. Legacy-Only Feature Areas
 
@@ -210,14 +211,12 @@ be retired once legacy signup is no longer used.
 These do not currently appear to have explicit Laravel compatibility routes and
 should be considered likely breakpoints once the fallback is removed.
 
-- `/offer_edit_pb.php`
 - `/offer_access.php`
 - `/create_none_unique.php`
 - `/edit_none_unique.php`
 - `/sale_log_view.php`
 - `/sale_log_edit.php`
 - `/log_sale.php`
-- `/approve_offer_request.php`
 - `/bonus.php`
 - `/bonus_assign.php`
 - `/bonus_edit.php`
@@ -246,8 +245,8 @@ should be considered likely breakpoints once the fallback is removed.
 ### Phase 2: Replace live script endpoints
 
 1. Migrate `/scripts/offer/rules/...` into Laravel controllers.
-2. Migrate offer postback editing.
-3. Migrate approve-offer-request flow.
+2. Migrate offer postback editing. Done: `/offer/{id}/postback` replaces `/offer_edit_pb.php?offid=`.
+3. Migrate approve-offer-request flow. Done: `/offer/{id}/approve-request/{user}` replaces `/approve_offer_request.php?id=&u=`.
 
 ### Phase 3: Finish remaining legacy-only admin tools
 

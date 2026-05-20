@@ -193,7 +193,7 @@ class View
                     ";
 
             if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
-                echo "<td class=\"value_span10\"><a class='btn btn-default' data-toggle=\"tooltip\" title=\"Offer PostBack Options\" href=\"/offer_edit_pb.php?offid={$rows->idoffer}\">Edit Post Back</a></td>";
+                echo "<td class=\"value_span10\"><a class='btn btn-default' data-toggle=\"tooltip\" title=\"Offer PostBack Options\" href=\"/offer/{$rows->idoffer}/postback\">Edit Post Back</a></td>";
 
 
             }

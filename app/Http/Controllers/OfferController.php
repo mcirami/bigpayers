@@ -32,6 +32,69 @@ class OfferController extends Controller
 		return response()->json($result);
 	}
 
+    public function approveRequest($id, $user)
+    {
+        $offerId = (int) $id;
+        $userId = (int) $user;
+
+        abort_unless(\LeadMax\TrackYourStats\User\User::hasAffiliate($userId), 403, 'You do not have access to this user.');
+
+        $offer = Offer::query()->findOrFail($offerId);
+
+        if (UserOffer::query()->where('offer_idoffer', '=', $offerId)->where('rep_idrep', '=', $userId)->exists()) {
+            return redirect('/notifications')->with('message', 'That user already has access to this offer.');
+        }
+
+        if (!\LeadMax\TrackYourStats\Offer\RepHasOffer::assignAffiliateToOffer($offerId, $userId)) {
+            return redirect('/notifications')->withErrors(['offer' => 'Error assigning user to offer.']);
+        }
+
+        \LeadMax\TrackYourStats\System\Notifications::sendNotification(
+            $userId,
+            1,
+            "Offer '{$offer->offer_name}' approved.",
+            "Offer {$offer->offer_name} was approved. <br/> This is an automated message."
+        );
+
+        return redirect('/notifications')->with('message', 'Successfully assigned offer.');
+    }
+
+    public function showPostback($id)
+    {
+        $offer = $this->findAffiliateOfferOrFail((int) $id);
+        $userId = \LeadMax\TrackYourStats\System\Session::userID();
+
+        return view('offer.postback', [
+            'offer' => $offer,
+            'conversionPostback' => old('postback_url', (string) (new \LeadMax\TrackYourStats\User\PostBackURLs\ConversionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'freeSignUpPostback' => old('free_sign_up_url', (string) (new \LeadMax\TrackYourStats\User\PostBackURLs\FreePostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'deductionPostback' => old('deduction_url', (string) (new \LeadMax\TrackYourStats\User\PostBackURLs\DeductionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+        ]);
+    }
+
+    public function updatePostback(Request $request, $id)
+    {
+        $offer = $this->findAffiliateOfferOrFail((int) $id);
+        $userId = \LeadMax\TrackYourStats\System\Session::userID();
+
+        $validated = $request->validate([
+            'postback_url' => 'nullable|string|max:255',
+            'free_sign_up_url' => 'nullable|string|max:255',
+            'deduction_url' => 'nullable|string|max:255',
+        ]);
+
+        (new \LeadMax\TrackYourStats\User\PostBackURLs\ConversionPostBackURL($userId, $offer->idoffer))
+            ->updateOfferURL(trim((string) ($validated['postback_url'] ?? '')));
+
+        (new \LeadMax\TrackYourStats\User\PostBackURLs\FreePostBackURL($userId, $offer->idoffer))
+            ->updateOfferURL(trim((string) ($validated['free_sign_up_url'] ?? '')));
+
+        (new \LeadMax\TrackYourStats\User\PostBackURLs\DeductionPostBackURL($userId, $offer->idoffer))
+            ->updateOfferURL(trim((string) ($validated['deduction_url'] ?? '')));
+
+        return redirect("/offer/{$offer->idoffer}/postback")->with('message', 'Offer postbacks updated successfully.');
+    }
+
     public function storeGeoRule(Request $request): JsonResponse
     {
         $data = $this->decodeRulePayload($request->input('data'));
@@ -535,6 +598,21 @@ class OfferController extends Controller
             $offerId,
             \LeadMax\TrackYourStats\System\Session::userID()
         );
+    }
+
+    private function findAffiliateOfferOrFail(int $offerId): Offer
+    {
+        abort_unless(\LeadMax\TrackYourStats\System\Session::userType() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+
+        $offer = Offer::query()->findOrFail($offerId);
+        $hasOffer = UserOffer::query()
+            ->where('rep_idrep', '=', \LeadMax\TrackYourStats\System\Session::userID())
+            ->where('offer_idoffer', '=', $offerId)
+            ->exists();
+
+        abort_unless($hasOffer, 404);
+
+        return $offer;
     }
 
 	private function validateOfferRequest(Request $request, bool $requireUsers = true)

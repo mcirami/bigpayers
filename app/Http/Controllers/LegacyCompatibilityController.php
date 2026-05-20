@@ -190,6 +190,14 @@ class LegacyCompatibilityController extends Controller
         return redirect($this->buildRedirectUrl("/offer/view/{$offerId}", $request, ['idoffer']));
     }
 
+    public function redirectOfferPostback(Request $request)
+    {
+        $offerId = (int) $request->query('offid');
+        abort_if($offerId <= 0, 404);
+
+        return redirect($this->buildRedirectUrl("/offer/{$offerId}/postback", $request, ['offid']));
+    }
+
     public function redirectClickSearch(Request $request)
     {
         return redirect($this->buildRedirectUrl('/click-search', $request));
@@ -278,6 +286,15 @@ class LegacyCompatibilityController extends Controller
     public function redirectAddSale(Request $request)
     {
         return redirect($this->buildRedirectUrl('/sales/add', $request));
+    }
+
+    public function redirectApproveOfferRequest(Request $request)
+    {
+        $offerId = (int) $request->query('id');
+        $userId = (int) $request->query('u');
+        abort_if($offerId <= 0 || $userId <= 0, 404);
+
+        return redirect($this->buildRedirectUrl("/offer/{$offerId}/approve-request/{$userId}", $request, ['id', 'u']));
     }
 
     public function redirectCreateNotification(Request $request)
