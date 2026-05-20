@@ -235,6 +235,12 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	        Route::get('{id}/request', [OfferController::class, 'requestOffer'])->middleware('role:3');
 	        Route::get('view/{id}', [OfferController::class, 'showView'])->middleware('role:0,1,2');
 	        Route::post('rules/predefined', [OfferController::class, 'storePredefinedRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::get('rules/geo/{rule}', [OfferController::class, 'showGeoRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::post('rules/geo', [OfferController::class, 'storeGeoRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::post('rules/geo/{rule}', [OfferController::class, 'updateGeoRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::get('rules/device/{rule}', [OfferController::class, 'showDeviceRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::post('rules/device', [OfferController::class, 'storeDeviceRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::post('rules/device/{rule}', [OfferController::class, 'updateDeviceRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
 	        Route::get('rules/{id}', [OfferController::class, 'showRules'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
 	        Route::group(['middleware' => 'role:0'], function () {
 	            Route::get('{id}/dupe', [OfferController::class, 'dupe']);

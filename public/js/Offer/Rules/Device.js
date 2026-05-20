@@ -34,7 +34,10 @@ class deviceEdit {
         //console.log(ruleData);
         $.ajax({
             type: "POST",
-            url: "/scripts/offer/rules/device/edit.php",
+            url: "/offer/rules/device/" + ruleData["ruleID"],
+            headers: {
+                "X-CSRF-TOKEN": window.csrfToken || $('meta[name="csrf-token"]').attr("content"),
+            },
             data: {
                 data: parseDevices("deviceToAdd", true),
                 ruleData: JSON.stringify(ruleData),
@@ -56,12 +59,12 @@ class deviceEdit {
     loadDevices() {
         $.ajax({
             type: "GET",
-            url: "/scripts/offer/rules/device/edit.php",
-            data: "&ruleID=" + this.ruleID + "&getDevices=1",
+            url: "/offer/rules/device/" + this.ruleID,
+            data: "&getDevices=1",
             cache: false,
 
             success: function (result) {
-                var parsed = JSON.parse(result);
+                var parsed = typeof result === "string" ? JSON.parse(result) : result;
 
                 console.log("Devices:" + parsed);
 
@@ -73,13 +76,13 @@ class deviceEdit {
     getDeviceRuleInfo() {
         $.ajax({
             type: "GET",
-            url: "/scripts/offer/rules/device/edit.php",
-            data: "&ruleID=" + this.ruleID + "&ruleInfo=1",
+            url: "/offer/rules/device/" + this.ruleID,
+            data: "&ruleInfo=1",
             cache: false,
 
             success: function (result) {
                 console.log(result);
-                var parsed = JSON.parse(result);
+                var parsed = typeof result === "string" ? JSON.parse(result) : result;
 
                 $("#deviceRuleName").val(parsed["name"]);
 

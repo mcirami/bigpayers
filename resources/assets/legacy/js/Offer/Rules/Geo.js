@@ -44,7 +44,10 @@ class geoEdit {
         $.ajax({
 
                 type: "POST",
-                url: "/scripts/offer/rules/geo/editGeo.php",
+                url: "/offer/rules/geo/" + ruleData["ruleID"],
+                headers: {
+                    "X-CSRF-TOKEN": window.csrfToken || $('meta[name="csrf-token"]').attr("content"),
+                },
                 data: {data: parseCountries("toAdd", true), ruleData: JSON.stringify(ruleData), ruleID: ruleData["ruleID"]},
                 cache: false,
                 traditional: true,
@@ -70,13 +73,13 @@ class geoEdit {
 
         $.ajax({
             type: "GET",
-            url: "/scripts/offer/rules/geo/editGeo.php",
-            data: "&ruleID=" + this.ruleID + "&ruleInfo=1",
+            url: "/offer/rules/geo/" + this.ruleID,
+            data: "&ruleInfo=1",
             cache: false,
 
             success: function (result) {
                 console.log(result);
-                var parsed = JSON.parse(result);
+                var parsed = typeof result === "string" ? JSON.parse(result) : result;
 
 
                 $("#geoRuleName").val(parsed["name"]);
@@ -110,13 +113,13 @@ class geoEdit {
         $.ajax({
 
             type: "GET",
-            url: "/scripts/offer/rules/geo/editGeo.php",
-            data: "&ruleID=" + this.ruleID + "&getISOs=1",
+            url: "/offer/rules/geo/" + this.ruleID,
+            data: "&getISOs=1",
             cache: false,
 
             success: function (result) {
 
-                var parsed = JSON.parse(result);
+                var parsed = typeof result === "string" ? JSON.parse(result) : result;
 
                 for (var i = 0; i < parsed.length; i++)
                     addCountry(parsed[i]);

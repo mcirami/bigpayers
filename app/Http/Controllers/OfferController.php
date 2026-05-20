@@ -32,6 +32,126 @@ class OfferController extends Controller
 		return response()->json($result);
 	}
 
+    public function storeGeoRule(Request $request): JsonResponse
+    {
+        $data = $this->decodeRulePayload($request->input('data'));
+        $offerId = (int) ($data[0] ?? 0);
+
+        if ($offerId <= 0 || !$this->userCanManageOfferRules($offerId)) {
+            return response()->json(['message' => 'You do not have access to this offer.'], 403);
+        }
+
+        if (!$this->hasRuleItems($data, 4)) {
+            return response()->json(['message' => 'Add at least one country before saving this rule.'], 422);
+        }
+
+        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Geo($data))->createRule();
+
+        return response()->json(['message' => 'Geo rule created.']);
+    }
+
+    public function updateGeoRule(Request $request, int $rule): JsonResponse
+    {
+        $ruleRecord = $this->findRuleOrFail($rule, 'geo');
+
+        if (!$this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer)) {
+            return response()->json(['message' => 'You do not have access to this offer.'], 403);
+        }
+
+        $ruleData = $this->decodeRuleData($request->input('ruleData'));
+        $ruleData->ruleID = $rule;
+        $countryList = $this->decodeRulePayload($request->input('data'));
+
+        if (!$this->hasRuleItems($countryList, 0)) {
+            return response()->json(['message' => 'Add at least one country before saving this rule.'], 422);
+        }
+
+        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Geo((string) $rule))->updateRule($ruleData, $countryList);
+
+        return response()->json(['message' => 'Geo rule updated.']);
+    }
+
+    public function showGeoRule(Request $request, int $rule): JsonResponse
+    {
+        $ruleRecord = $this->findRuleOrFail($rule, 'geo');
+
+        if (!$this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer)) {
+            return response()->json(['message' => 'You do not have access to this offer.'], 403);
+        }
+
+        if ($request->boolean('getISOs')) {
+            return response()->json($this->geoRuleCountries($rule));
+        }
+
+        return response()->json([
+            'name' => $ruleRecord->name,
+            'redirectOffer' => (int) $ruleRecord->redirect_offer,
+            'is_active' => (int) $ruleRecord->is_active,
+            'deny' => (int) $ruleRecord->deny,
+        ]);
+    }
+
+    public function storeDeviceRule(Request $request): JsonResponse
+    {
+        $data = $this->decodeRulePayload($request->input('data'));
+        $offerId = (int) ($data[0] ?? 0);
+
+        if ($offerId <= 0 || !$this->userCanManageOfferRules($offerId)) {
+            return response()->json(['message' => 'You do not have access to this offer.'], 403);
+        }
+
+        if (!$this->hasRuleItems($data, 6)) {
+            return response()->json(['message' => 'Add at least one device before saving this rule.'], 422);
+        }
+
+        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Device($data))->createRule();
+
+        return response()->json(['message' => 'Device rule created.']);
+    }
+
+    public function updateDeviceRule(Request $request, int $rule): JsonResponse
+    {
+        $ruleRecord = $this->findRuleOrFail($rule, 'device');
+
+        if (!$this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer)) {
+            return response()->json(['message' => 'You do not have access to this offer.'], 403);
+        }
+
+        $ruleData = $this->decodeRuleData($request->input('ruleData'));
+        $ruleData->ruleID = $rule;
+        $deviceList = $this->decodeRulePayload($request->input('data'));
+
+        if (!$this->hasRuleItems($deviceList, 0)) {
+            return response()->json(['message' => 'Add at least one device before saving this rule.'], 422);
+        }
+
+        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Device((string) $rule))->updateRule($ruleData, $deviceList);
+
+        return response()->json(['message' => 'Device rule updated.']);
+    }
+
+    public function showDeviceRule(Request $request, int $rule): JsonResponse
+    {
+        $ruleRecord = $this->findRuleOrFail($rule, 'device');
+
+        if (!$this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer)) {
+            return response()->json(['message' => 'You do not have access to this offer.'], 403);
+        }
+
+        if ($request->boolean('getDevices')) {
+            return response()->json($this->deviceRuleDevices($rule));
+        }
+
+        return response()->json([
+            'name' => $ruleRecord->name,
+            'redirectOffer' => (int) $ruleRecord->redirect_offer,
+            'is_active' => (int) $ruleRecord->is_active,
+            'deny' => (int) $ruleRecord->deny,
+            'capAmount' => (int) $ruleRecord->cap,
+            'capStatus' => (int) $ruleRecord->cap_status,
+        ]);
+    }
+
 	public function dupe($id)
 	{
 		if (\LeadMax\TrackYourStats\Offer\Offer::duplicateOffer($id)) {
@@ -346,6 +466,75 @@ class OfferController extends Controller
             'id' => $rule->id,
             'message' => 'Predefined rule saved.',
         ]);
+    }
+
+    private function decodeRulePayload($payload): array
+    {
+        $decoded = json_decode((string) $payload);
+
+        abort_if(!is_array($decoded), 422, 'Rule payload must be a valid JSON array.');
+
+        return $decoded;
+    }
+
+    private function decodeRuleData($payload): \stdClass
+    {
+        $decoded = json_decode((string) $payload);
+
+        abort_if(!$decoded instanceof \stdClass, 422, 'Rule data must be a valid JSON object.');
+
+        return $decoded;
+    }
+
+    private function findRuleOrFail(int $ruleId, string $type)
+    {
+        $rule = DB::table('rule')
+            ->where('idrule', '=', $ruleId)
+            ->where('type', '=', $type)
+            ->first();
+
+        abort_if(!$rule, 404, 'Rule not found.');
+
+        return $rule;
+    }
+
+    private function hasRuleItems(array $payload, int $metadataCount): bool
+    {
+        return count($payload) > $metadataCount;
+    }
+
+    private function geoRuleCountries(int $ruleId): array
+    {
+        return DB::table('geo_rule')
+            ->join('country_list', 'country_list.geo_rule_idgeo_rule', '=', 'geo_rule.idgeo_rule')
+            ->where('geo_rule.rule_idrule', '=', $ruleId)
+            ->select(['country_list.country_code', 'country_list.cap_status', 'country_list.cap'])
+            ->get()
+            ->map(fn ($country) => [
+                'country_code' => $country->country_code,
+                'cap_status' => (int) $country->cap_status,
+                'cap' => (int) $country->cap,
+            ])
+            ->all();
+    }
+
+    private function deviceRuleDevices(int $ruleId): array
+    {
+        return DB::table('device_rule')
+            ->join('device_list', 'device_list.device_rule_iddevice_rule', '=', 'device_rule.iddevice_rule')
+            ->where('device_rule.rule_idrule', '=', $ruleId)
+            ->pluck('device_list.device_type')
+            ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function userCanManageOfferRules(int $offerId): bool
+    {
+        return \LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer(
+            $offerId,
+            \LeadMax\TrackYourStats\System\Session::userID()
+        );
     }
 
 	private function validateOfferRequest(Request $request, bool $requireUsers = true)

@@ -366,8 +366,15 @@
         const predefinedDeviceRules = @json($predefinedDeviceRules);
         const redirectOfferMap = @json($redirectOfferMap ?? []);
         const csrfToken = @json(csrf_token());
+        window.csrfToken = csrfToken;
         let geoSubmitting = false;
         let deviceSubmitting = false;
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': csrfToken
+            }
+        });
 
         $(document).ready(function () {
             $("#rules").tablesorter({
@@ -570,7 +577,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/scripts/offer/rules/geo/addGeo.php",
+                url: "/offer/rules/geo",
                 data: { data: parseCountries("toAdd") },
                 cache: false,
                 success: function () {
@@ -616,7 +623,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/scripts/offer/rules/device/add.php",
+                url: "/offer/rules/device",
                 data: { data: parseDevices("deviceToAdd") },
                 cache: false,
                 success: function () {
@@ -699,7 +706,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/scripts/offer/rules/geo/editGeo.php",
+                url: "/offer/rules/geo/" + ruleData.ruleID,
                 data: {
                     data: parseCountries("toAdd", true),
                     ruleData: JSON.stringify(ruleData),
@@ -760,7 +767,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/scripts/offer/rules/device/edit.php",
+                url: "/offer/rules/device/" + ruleData.ruleID,
                 data: {
                     data: parseDevices("deviceToAdd", true),
                     ruleData: JSON.stringify(ruleData),

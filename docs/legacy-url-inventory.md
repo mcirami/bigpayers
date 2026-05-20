@@ -178,6 +178,15 @@ These are especially important because the redesigned UI still depends on them.
 - `/scripts/offer/rules/device/add.php`
 - `/scripts/offer/rules/device/edit.php`
 
+Status:
+- Replaced by Laravel endpoints:
+  - `POST /offer/rules/geo`
+  - `GET|POST /offer/rules/geo/{rule}`
+  - `POST /offer/rules/device`
+  - `GET|POST /offer/rules/device/{rule}`
+- The modern offer rules page and remaining rule JS assets now point at the
+  Laravel endpoints.
+
 Referenced from:
 - `resources/views/offer/rules.blade.php`
 - `public/js/Offer/Rules/Geo.js`
