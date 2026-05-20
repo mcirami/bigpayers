@@ -312,7 +312,7 @@
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
                             html += "<td class='value_span10'>" +
-                                "<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer/mass-assign?id=" + offer.idoffer + "'>Affiliate Access</a>" +
+                                "<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer/" + offer.idoffer + "/access'>Affiliate Access</a>" +
                                 "</td>";
                         }
 

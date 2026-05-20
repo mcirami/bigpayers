@@ -66,11 +66,67 @@ class ChatLogController extends Controller
 
     }
 
+    public function showSaleLog($saleLogId)
+    {
+        $saleLogId = (int) $saleLogId;
+
+        $this->authorizeSaleLogAccess($saleLogId);
+
+        return view('chatlog.view', [
+            'saleLogId' => $saleLogId,
+            'images' => $this->saleLogImages($saleLogId),
+            'subDomain' => Company::loadFromSession()->getSubDomain(),
+        ]);
+    }
+
+    public function uploadSaleLogImages(Request $request, $saleLogId)
+    {
+        $saleLogId = (int) $saleLogId;
+
+        $this->authorizeSaleLogAccess($saleLogId);
+
+        $imageUploader = new ImagesUploader();
+
+        if (!$imageUploader->isValidateFiles('images')) {
+            return back()->withErrors("Error uploading images. Please make sure every selected file is a JPG or PNG under the upload limit.");
+        }
+
+        $imageUploader->uploadDirectory = $this->saleLogDirectory($saleLogId);
+
+        if (!$imageUploader->uploadFiles('images')) {
+            return back()->withErrors("Error uploading images. Please try again.");
+        }
+
+        return redirect("/chat-log/view/{$saleLogId}")->with('message', 'Images uploaded successfully.');
+    }
+
+    public function deleteSaleLogImage(Request $request, $saleLogId)
+    {
+        $saleLogId = (int) $saleLogId;
+
+        $this->authorizeSaleLogAccess($saleLogId);
+
+        $payload = $request->validate([
+            'fileName' => 'required|string|max:255',
+        ]);
+        $fileName = basename($payload['fileName']);
+
+        abort_if($fileName !== $payload['fileName'], 404);
+
+        $filePath = $this->saleLogDirectory($saleLogId)."/{$fileName}";
+
+        if (is_file($filePath)) {
+            unlink($filePath);
+        }
+
+        return redirect("/chat-log/view/{$saleLogId}")->with('message', 'Image deleted.');
+    }
+
 
     public function getSaleLogImage($saleLogId, $fileName)
     {
 
-        $file = env('SALE_LOG_DIRECTORY').'/'.$saleLogId.'/'.$fileName;
+        $file = $this->saleLogDirectory((int) $saleLogId).'/'.basename($fileName);
 
 
         if (file_exists($file)) {
@@ -81,6 +137,33 @@ class ChatLogController extends Controller
         }
 
 
+    }
+
+    private function saleLogImages(int $saleLogId): array
+    {
+        $directory = $this->saleLogDirectory($saleLogId);
+
+        if (!is_dir($directory)) {
+            return [];
+        }
+
+        return collect(scandir($directory))
+            ->reject(fn ($fileName) => $fileName === '.' || $fileName === '..')
+            ->values()
+            ->all();
+    }
+
+    private function saleLogDirectory(int $saleLogId): string
+    {
+        return env('SALE_LOG_DIRECTORY').'/'.Company::loadFromSession()->getSubDomain()."/{$saleLogId}";
+    }
+
+    private function authorizeSaleLogAccess(int $saleLogId): void
+    {
+        $saleLogRecord = SaleLog::selectOneQuery($saleLogId)->fetch(\PDO::FETCH_OBJ);
+
+        abort_if(!$saleLogRecord, 404);
+        abort_unless((new SaleLog())->verifyLoggedInUserOwnsSaleLog($saleLogId), 403);
     }
 
 

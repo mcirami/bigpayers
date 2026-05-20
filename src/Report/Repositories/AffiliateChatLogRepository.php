@@ -45,7 +45,7 @@ class AffiliateChatLogRepository extends Repository
 
             } else {
                 if ( ! is_null($row["saleLogId"])) {
-                    $report[$key]["saleLogId"] = "<a target='' href='/sale_log_view.php?id={$row["saleLogId"]}' class='btn btn-sm btn-default' >View Log</a>";
+                    $report[$key]["saleLogId"] = "<a target='' href='/chat-log/view/{$row["saleLogId"]}' class='btn btn-sm btn-default' >View Log</a>";
                     unset($report[$key]["pendingConversionId"]);
 
                     if ($this->OPTION_SHOW == self::OPTION_SHOW_NONE_LOGGED) {

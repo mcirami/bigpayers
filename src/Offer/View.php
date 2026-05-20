@@ -173,7 +173,7 @@ class View
 
             if (Session::permissions()->can("create_offers")) {
                 echo "<td class=\"value_span10\">
-							<a target='_blank' class='btn btn-sm btn-default' href='offer_access.php?id={$rows->idoffer}'>Affiliate Access</a>
+							<a target='_blank' class='btn btn-sm btn-default' href='/offer/{$rows->idoffer}/access'>Affiliate Access</a>
 						</td>";
             }
 

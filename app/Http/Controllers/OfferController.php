@@ -18,6 +18,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as InputRequest;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Validation\Rule as ValidationRule;
 use LeadMax\TrackYourStats\Offer\Campaigns;
 use LeadMax\TrackYourStats\Offer\URLs;
 use LeadMax\TrackYourStats\System\Company;
@@ -483,6 +484,71 @@ class OfferController extends Controller
 		]);
 	}
 
+    public function showCreateNoneUniqueRule($id)
+    {
+        $offer = Offer::query()->where('idoffer', '=', (int) $id)->firstOrFail();
+
+        abort_unless($this->userCanManageOfferRules((int) $offer->idoffer), 403, 'You do not have access to this offer.');
+
+        return view('offer.none-unique-rule', [
+            'mode' => 'create',
+            'offer' => $offer,
+            'rule' => null,
+            'redirectOffers' => $this->redirectOfferOptionsForRules((int) $offer->idoffer),
+            'action' => "/offer/rules/{$offer->idoffer}/none-unique/create",
+        ]);
+    }
+
+    public function storeNoneUniqueRule(Request $request, $id)
+    {
+        $offer = Offer::query()->where('idoffer', '=', (int) $id)->firstOrFail();
+
+        abort_unless($this->userCanManageOfferRules((int) $offer->idoffer), 403, 'You do not have access to this offer.');
+
+        $payload = $this->validateNoneUniqueRuleRequest($request, (int) $offer->idoffer);
+
+        $rule = new \LeadMax\TrackYourStats\Offer\Rules\Handlers\NoneUnique();
+        $rule->name = trim($payload['name']);
+        $rule->redirect_offer = (int) $payload['redirect_offer'];
+        $rule->offer_idoffer = (int) $offer->idoffer;
+        $rule->is_active = (int) $payload['is_active'];
+        $rule->save();
+
+        return redirect("/offer/rules/{$offer->idoffer}")->with('message', 'None-unique rule created.');
+    }
+
+    public function showEditNoneUniqueRule($rule)
+    {
+        $ruleRecord = $this->findRuleOrFail((int) $rule, 'none_unique');
+        $offer = Offer::query()->where('idoffer', '=', (int) $ruleRecord->offer_idoffer)->firstOrFail();
+
+        abort_unless($this->userCanManageOfferRules((int) $offer->idoffer), 403, 'You do not have access to this offer.');
+
+        return view('offer.none-unique-rule', [
+            'mode' => 'edit',
+            'offer' => $offer,
+            'rule' => \LeadMax\TrackYourStats\Offer\Rules\Handlers\NoneUnique::loadFromId((int) $rule),
+            'redirectOffers' => $this->redirectOfferOptionsForRules((int) $offer->idoffer),
+            'action' => "/offer/rules/none-unique/{$rule}/edit",
+        ]);
+    }
+
+    public function updateNoneUniqueRule(Request $request, $rule)
+    {
+        $ruleRecord = $this->findRuleOrFail((int) $rule, 'none_unique');
+
+        abort_unless($this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer), 403, 'You do not have access to this offer.');
+
+        $payload = $this->validateNoneUniqueRuleRequest($request, (int) $ruleRecord->offer_idoffer);
+        $noneUniqueRule = \LeadMax\TrackYourStats\Offer\Rules\Handlers\NoneUnique::loadFromId((int) $rule);
+        $noneUniqueRule->name = trim($payload['name']);
+        $noneUniqueRule->redirect_offer = (int) $payload['redirect_offer'];
+        $noneUniqueRule->is_active = (int) $payload['is_active'];
+        $noneUniqueRule->update();
+
+        return redirect("/offer/rules/{$noneUniqueRule->offer_idoffer}")->with('message', 'None-unique rule updated.');
+    }
+
     public function storePredefinedRule(Request $request): JsonResponse
     {
         $payload = $request->validate([
@@ -588,6 +654,30 @@ class OfferController extends Controller
             ->where('device_rule.rule_idrule', '=', $ruleId)
             ->pluck('device_list.device_type')
             ->filter()
+            ->values()
+            ->all();
+    }
+
+    private function validateNoneUniqueRuleRequest(Request $request, int $offerId): array
+    {
+        $redirectOfferIds = collect($this->redirectOfferOptionsForRules($offerId))
+            ->pluck('idoffer')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+
+        return $request->validate([
+            'name' => 'required|string|max:255',
+            'redirect_offer' => ['required', 'integer', 'min:1', ValidationRule::in($redirectOfferIds)],
+            'is_active' => 'required|boolean',
+        ]);
+    }
+
+    private function redirectOfferOptionsForRules(int $excludeOfferId): array
+    {
+        $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
+
+        return collect($offerView->getUsersQuery()->fetchAll(\PDO::FETCH_OBJ))
+            ->filter(fn ($offer) => (int) $offer->idoffer !== $excludeOfferId)
             ->values()
             ->all();
     }
@@ -806,6 +896,47 @@ class OfferController extends Controller
 		return back()->with('message', 'Success!');
 	}
 
+    public function showAccess($id)
+    {
+        $offer = $this->findManageableAccessOfferOrFail((int) $id);
+        $users = $this->ownedAffiliateAccessRows((int) $offer->idoffer);
+        $assignedCount = $users->where('has_offer', true)->count();
+
+        return view('offer.access', [
+            'offer' => $offer,
+            'users' => $users,
+            'assignedCount' => $assignedCount,
+        ]);
+    }
+
+    public function updateAccess(Request $request, $id)
+    {
+        $offer = $this->findManageableAccessOfferOrFail((int) $id);
+        $users = $this->ownedAffiliateAccessRows((int) $offer->idoffer);
+        $ownedUserIds = $users->pluck('idrep')->map(fn ($userId) => (int) $userId)->all();
+        $selectedUserIds = collect($request->input('userList', []))
+            ->map(fn ($userId) => (int) $userId)
+            ->intersect($ownedUserIds)
+            ->values()
+            ->all();
+        $assignedUserIds = $users
+            ->where('has_offer', true)
+            ->pluck('idrep')
+            ->map(fn ($userId) => (int) $userId)
+            ->all();
+        $unassignedUserIds = array_values(array_diff($assignedUserIds, $selectedUserIds));
+
+        if (!empty($selectedUserIds)) {
+            \LeadMax\TrackYourStats\Offer\RepHasOffer::massAssignAffiliates($selectedUserIds, [(int) $offer->idoffer]);
+        }
+
+        if (!empty($unassignedUserIds)) {
+            \LeadMax\TrackYourStats\Offer\RepHasOffer::unAssignAffiliates($unassignedUserIds, (int) $offer->idoffer);
+        }
+
+        return redirect("/offer/{$offer->idoffer}/access")->with('message', 'Offer access updated successfully.');
+    }
+
 	public function showMassAssign()
 	{
 		$users = User::myUsers()->withRole(request('role', 3))->get();
@@ -814,5 +945,33 @@ class OfferController extends Controller
 
 		return view('offer.mass-assign', compact('users', 'offers'));
 	}
+
+    private function findManageableAccessOfferOrFail(int $offerId): Offer
+    {
+        $offer = Offer::query()->where('idoffer', '=', $offerId)->firstOrFail();
+
+        abort_unless($this->userCanManageOfferRules((int) $offer->idoffer), 403, 'You do not have access to this offer.');
+        abort_if($offer->parent !== null, 404);
+
+        return $offer;
+    }
+
+    private function ownedAffiliateAccessRows(int $offerId)
+    {
+        $assignedAffiliateIds = collect(
+            \LeadMax\TrackYourStats\Offer\RepHasOffer::queryGetAffiliatesAssignedToOffer($offerId)->fetchAll(\PDO::FETCH_OBJ)
+        )
+            ->pluck('idrep')
+            ->map(fn ($userId) => (int) $userId)
+            ->all();
+
+        return collect(\LeadMax\TrackYourStats\User\User::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC))
+            ->map(function (array $user) use ($assignedAffiliateIds) {
+                $user['idrep'] = (int) $user['idrep'];
+                $user['has_offer'] = in_array($user['idrep'], $assignedAffiliateIds, true);
+
+                return (object) $user;
+            });
+    }
 
 }

@@ -31,6 +31,10 @@ The following wrappers have now been implemented in Laravel:
 - `/offer_edit_pb.php?offid=` -> `/offer/{id}/postback`
 - `/offer_update.php?idoffer=` -> `/offer/edit/{id}`
 - `/offer_edit_rules.php?offid=` -> `/offer/rules/{id}`
+- `/create_none_unique.php?id=` -> `/offer/rules/{id}/none-unique/create`
+- `/edit_none_unique.php?id=` -> `/offer/rules/none-unique/{id}/edit`
+- `/offer_access.php?id=` -> `/offer/{id}/access`
+- `/sale_log_view.php?id=` -> `/chat-log/view/{id}`
 - `/offer_details.php?idoffer=` -> `/offer/view/{id}`
 - `/offer_urls.php` -> `/offer/urls`
 - `/add_offer_url.php` -> `/offer/urls/create`
@@ -83,6 +87,10 @@ compatibility wrappers plus internal link cleanup.
 | `/offer_update.php?idoffer=` | `/offer/edit/{id}` | Wrapped | Explicit compatibility route |
 | `/offer_details.php?idoffer=` | `/offer/view/{id}` | Wrapped | Explicit compatibility route |
 | `/offer_edit_rules.php?offid=` | `/offer/rules/{id}` | Wrapped | Explicit compatibility route |
+| `/create_none_unique.php?id=` | `/offer/rules/{id}/none-unique/create` | Wrapped | Explicit compatibility route |
+| `/edit_none_unique.php?id=` | `/offer/rules/none-unique/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/offer_access.php?id=` | `/offer/{id}/access` | Wrapped | Explicit compatibility route |
+| `/sale_log_view.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
 | `/view_pending_affiliates.php` | `/user/pending` | Wrapped | Explicit compatibility route |
 | `/activate_affiliate.php?id=` | `/user/pending/{id}/activate` | Wrapped | Explicit compatibility route |
 | `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route |
@@ -104,12 +112,7 @@ compatibility wrappers plus internal link cleanup.
 These are the highest-value cleanup targets because the new app still points at
 them from modern controllers, views, reports, or services.
 
-| Legacy URL | Referenced from | Recommended action |
-| --- | --- | --- |
-| `/offer_access.php?id=` | `src/Offer/View.php` | Point to `/offer/mass-assign?id=` or a dedicated access page |
-| `/create_none_unique.php?id=` | `resources/views/offer/rules.blade.php` | Migrate none-unique rule UI into modern rules page |
-| `/edit_none_unique.php?id=` | `src/Offer/Rules.php` | Same as above |
-| `/sale_log_view.php?id=` | `src/Report/Repositories/AffiliateChatLogRepository.php` | Migrate sale-log detail view or route-wrap old page |
+No direct legacy URL references are currently known in the modern app surface.
 
 ## 3. Legacy-Only Feature Areas
 
@@ -139,7 +142,6 @@ Notes:
 
 ### Sale Log / Chat Log Legacy Detail
 
-- `/sale_log_view.php`
 - `/sale_log_edit.php`
 - `/edit_sale_log.php`
 - `/log_sale.php`
@@ -211,10 +213,6 @@ be retired once legacy signup is no longer used.
 These do not currently appear to have explicit Laravel compatibility routes and
 should be considered likely breakpoints once the fallback is removed.
 
-- `/offer_access.php`
-- `/create_none_unique.php`
-- `/edit_none_unique.php`
-- `/sale_log_view.php`
 - `/sale_log_edit.php`
 - `/log_sale.php`
 - `/bonus.php`

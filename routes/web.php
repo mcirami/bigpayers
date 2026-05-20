@@ -82,8 +82,11 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('offer_add.php', [LegacyCompatibilityController::class, 'redirectOfferAdd'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
     Route::get('offer_update.php', [LegacyCompatibilityController::class, 'redirectOfferUpdate'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
     Route::get('offer_edit_rules.php', [LegacyCompatibilityController::class, 'redirectOfferEditRules'])->middleware(['permissions:' . Permissions::EDIT_OFFER_RULES]);
+    Route::match(['get', 'post'], 'create_none_unique.php', [LegacyCompatibilityController::class, 'redirectCreateNoneUniqueRule'])->middleware(['permissions:' . Permissions::EDIT_OFFER_RULES]);
+    Route::match(['get', 'post'], 'edit_none_unique.php', [LegacyCompatibilityController::class, 'redirectEditNoneUniqueRule'])->middleware(['permissions:' . Permissions::EDIT_OFFER_RULES]);
     Route::get('offer_details.php', [LegacyCompatibilityController::class, 'redirectOfferDetails'])->middleware(['role:0,1,2']);
     Route::get('offer_edit_pb.php', [LegacyCompatibilityController::class, 'redirectOfferPostback'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
+    Route::match(['get', 'post'], 'offer_access.php', [LegacyCompatibilityController::class, 'redirectOfferAccess'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
     Route::get('offer_urls.php', [LegacyCompatibilityController::class, 'redirectOfferUrls'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
     Route::get('add_offer_url.php', [LegacyCompatibilityController::class, 'redirectAddOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
     Route::get('edit_offer_url.php', [LegacyCompatibilityController::class, 'redirectEditOfferUrl'])->middleware('permissions:' . Permissions::EDIT_OFFER_URLS);
@@ -104,6 +107,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('add_referral.php', [LegacyCompatibilityController::class, 'redirectAddReferral'])->middleware(['role:0,1,2']);
     Route::get('add_sale.php', [LegacyCompatibilityController::class, 'redirectAddSale'])->middleware('permissions:' . Permissions::ADJUST_SALES);
     Route::get('approve_offer_request.php', [LegacyCompatibilityController::class, 'redirectApproveOfferRequest'])->middleware('permissions:' . Permissions::APPROVE_OFFER_REQUESTS);
+    Route::match(['get', 'post'], 'sale_log_view.php', [LegacyCompatibilityController::class, 'redirectSaleLogView']);
     Route::get('create_notification.php', [LegacyCompatibilityController::class, 'redirectCreateNotification'])->middleware('permissions:' . Permissions::CREATE_NOTIFICATIONS);
     Route::get('campaign_manage.php', [LegacyCompatibilityController::class, 'redirectCampaignManage'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('campaign_create.php', [LegacyCompatibilityController::class, 'redirectCampaignCreate'])->middleware('role:' . Privilege::ROLE_GOD);
@@ -243,6 +247,10 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 	        Route::get('rules/device/{rule}', [OfferController::class, 'showDeviceRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
 	        Route::post('rules/device', [OfferController::class, 'storeDeviceRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
 	        Route::post('rules/device/{rule}', [OfferController::class, 'updateDeviceRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::get('rules/{id}/none-unique/create', [OfferController::class, 'showCreateNoneUniqueRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::post('rules/{id}/none-unique/create', [OfferController::class, 'storeNoneUniqueRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::get('rules/none-unique/{rule}/edit', [OfferController::class, 'showEditNoneUniqueRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
+	        Route::post('rules/none-unique/{rule}/edit', [OfferController::class, 'updateNoneUniqueRule'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
 	        Route::get('rules/{id}', [OfferController::class, 'showRules'])->middleware('permissions:' . Permissions::EDIT_OFFER_RULES);
 	        Route::group(['middleware' => 'role:0'], function () {
 	            Route::get('{id}/dupe', [OfferController::class, 'dupe']);
@@ -250,6 +258,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         });
         Route::get('{id}/clicks', [ClickReportController::class, 'offerClicks'])->middleware('role:0,1,2')->name('offerClicks');
         Route::get('{id}/approve-request/{user}', [OfferController::class, 'approveRequest'])->middleware('permissions:' . Permissions::APPROVE_OFFER_REQUESTS);
+        Route::get('{id}/access', [OfferController::class, 'showAccess'])->middleware('permissions:' . Permissions::CREATE_OFFERS);
+        Route::post('{id}/access', [OfferController::class, 'updateAccess'])->middleware('permissions:' . Permissions::CREATE_OFFERS);
         Route::get('{id}/postback', [OfferController::class, 'showPostback'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
         Route::post('{id}/postback', [OfferController::class, 'updatePostback'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
         Route::get('{id}/search-clicks', [ClickReportController::class, 'searchClicks'])->middleware('role:0')->name('offer.clicks.search');
@@ -319,6 +329,9 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::group(['prefix' => 'chat-log'], function () {
         Route::get('add/{pendingConversionId}', [ChatLogController::class, 'showUploadChatLog']);
         Route::post('upload', [ChatLogController::class, 'uploadChatLog']);
+        Route::get('view/{saleLogId}', [ChatLogController::class, 'showSaleLog']);
+        Route::post('view/{saleLogId}', [ChatLogController::class, 'uploadSaleLogImages']);
+        Route::post('view/{saleLogId}/delete', [ChatLogController::class, 'deleteSaleLogImage']);
         Route::get('view/{saleLogId}/{fileName}', [ChatLogController::class, 'getSaleLogImage']);
     });
     Route::get("login/{userId}", [LegacyLoginController::class, 'adminLogin']);

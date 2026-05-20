@@ -182,6 +182,28 @@ class LegacyCompatibilityController extends Controller
         return redirect($this->buildRedirectUrl("/offer/rules/{$offerId}", $request, ['offid']));
     }
 
+    public function redirectCreateNoneUniqueRule(Request $request)
+    {
+        $offerId = (int) $request->query('id');
+        abort_if($offerId <= 0, 404);
+
+        return redirect(
+            $this->buildRedirectUrl("/offer/rules/{$offerId}/none-unique/create", $request, ['id']),
+            $request->isMethod('post') ? 307 : 302
+        );
+    }
+
+    public function redirectEditNoneUniqueRule(Request $request)
+    {
+        $ruleId = (int) $request->query('id');
+        abort_if($ruleId <= 0, 404);
+
+        return redirect(
+            $this->buildRedirectUrl("/offer/rules/none-unique/{$ruleId}/edit", $request, ['id']),
+            $request->isMethod('post') ? 307 : 302
+        );
+    }
+
     public function redirectOfferDetails(Request $request)
     {
         $offerId = (int) $request->query('idoffer');
@@ -196,6 +218,17 @@ class LegacyCompatibilityController extends Controller
         abort_if($offerId <= 0, 404);
 
         return redirect($this->buildRedirectUrl("/offer/{$offerId}/postback", $request, ['offid']));
+    }
+
+    public function redirectOfferAccess(Request $request)
+    {
+        $offerId = (int) $request->query('id');
+        abort_if($offerId <= 0, 404);
+
+        return redirect(
+            $this->buildRedirectUrl("/offer/{$offerId}/access", $request, ['id']),
+            $request->isMethod('post') ? 307 : 302
+        );
     }
 
     public function redirectClickSearch(Request $request)
@@ -295,6 +328,17 @@ class LegacyCompatibilityController extends Controller
         abort_if($offerId <= 0 || $userId <= 0, 404);
 
         return redirect($this->buildRedirectUrl("/offer/{$offerId}/approve-request/{$userId}", $request, ['id', 'u']));
+    }
+
+    public function redirectSaleLogView(Request $request)
+    {
+        $saleLogId = (int) $request->query('id');
+        abort_if($saleLogId <= 0, 404);
+
+        return redirect(
+            $this->buildRedirectUrl("/chat-log/view/{$saleLogId}", $request, ['id']),
+            $request->isMethod('post') ? 307 : 302
+        );
     }
 
     public function redirectCreateNotification(Request $request)

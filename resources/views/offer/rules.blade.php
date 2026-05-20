@@ -69,7 +69,7 @@
                     <button type="button" class="bp-button-secondary" data-toggle="modal" data-target="#deviceModal">
                         Add device rule
                     </button>
-                    <a class="bp-button-secondary" href="/create_none_unique.php?id={{ $offer->idoffer }}">Add none-unique rule</a>
+                    <a class="bp-button-secondary" href="/offer/rules/{{ $offer->idoffer }}/none-unique/create">Add none-unique rule</a>
                 </div>
             </div>
 
