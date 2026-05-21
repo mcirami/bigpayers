@@ -35,6 +35,17 @@ The following wrappers have now been implemented in Laravel:
 - `/edit_none_unique.php?id=` -> `/offer/rules/none-unique/{id}/edit`
 - `/offer_access.php?id=` -> `/offer/{id}/access`
 - `/sale_log_view.php?id=` -> `/chat-log/view/{id}`
+- `/log_sale.php?pcid=` -> `/chat-log/add/{id}`
+- `/sale_log_edit.php?id=` -> `/chat-log/view/{id}`
+- `/edit_sale_log.php?sid=` -> `/chat-log/view/{id}`
+- `/salaries.php` -> `/salaries`
+- `/edit_salaries.php` -> `/salaries/edit`
+- `/edit_salary.php?id=` -> `/user/{id}/salary/showUpdate`
+- `/bonus.php` -> `/bonuses`
+- `/create_bonus.php` -> `/bonuses/create`
+- `/bonus_edit.php?id=` -> `/bonuses/{id}/edit`
+- `/bonus_assign.php?id=` -> `/bonuses/{id}/assign`
+- `/scripts/process_bonuses.php` -> `/bonuses/process`
 - `/offer_details.php?idoffer=` -> `/offer/view/{id}`
 - `/offer_urls.php` -> `/offer/urls`
 - `/add_offer_url.php` -> `/offer/urls/create`
@@ -52,6 +63,8 @@ The following wrappers have now been implemented in Laravel:
 - `/campaign_create.php` -> `/advertisers/create`
 - `/campaign_edit.php?id=` -> `/advertisers/{id}/edit`
 - `/settings.php` -> `/settings`
+- `/upload_logo.php` -> Laravel logo upload endpoint
+- `/upload_favicon.php` -> Laravel favicon upload endpoint
 - `/notifications.php` -> `/notifications` plus legacy `action=mark|delete` compatibility
 
 Internal links for these routes have been moved to their modern Laravel targets
@@ -91,6 +104,17 @@ compatibility wrappers plus internal link cleanup.
 | `/edit_none_unique.php?id=` | `/offer/rules/none-unique/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/offer_access.php?id=` | `/offer/{id}/access` | Wrapped | Explicit compatibility route |
 | `/sale_log_view.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
+| `/log_sale.php?pcid=` | `/chat-log/add/{id}` | Wrapped | Explicit compatibility route |
+| `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
+| `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
+| `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route |
+| `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route |
+| `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route |
+| `/bonus.php` | `/bonuses` | Wrapped | Explicit compatibility route |
+| `/create_bonus.php` | `/bonuses/create` | Wrapped | Explicit compatibility route |
+| `/bonus_edit.php?id=` | `/bonuses/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/bonus_assign.php?id=` | `/bonuses/{id}/assign` | Wrapped | Explicit compatibility route |
+| `/scripts/process_bonuses.php` | `/bonuses/process` | Wrapped | Explicit compatibility route |
 | `/view_pending_affiliates.php` | `/user/pending` | Wrapped | Explicit compatibility route |
 | `/activate_affiliate.php?id=` | `/user/pending/{id}/activate` | Wrapped | Explicit compatibility route |
 | `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route |
@@ -106,6 +130,8 @@ compatibility wrappers plus internal link cleanup.
 | `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route |
 | `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route |
 | `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/upload_logo.php` | `/upload_logo.php` | Wrapped | Laravel logo upload endpoint |
+| `/upload_favicon.php` | `/upload_favicon.php` | Wrapped | Laravel favicon upload endpoint |
 
 ## 2. Legacy URLs Still Referenced Internally
 
@@ -120,44 +146,33 @@ These still appear to be primarily or entirely legacy-backed.
 
 ### Bonus Management
 
-- `/bonus.php`
-- `/bonus_assign.php`
-- `/bonus_edit.php`
-- `/create_bonus.php`
-- `/scripts/process_bonuses.php`
-
 Why it matters:
 - touches payouts/incentives
 - likely important for product clients if bonuses are part of the offering
 
+Status:
+- top-level bonus list/create/edit/assignment now have Laravel routes
+- force processing has a Laravel route and compatibility bridge
+
 ### Salary Management
 
-- `/salaries.php`
-- `/edit_salary.php`
-- `/edit_salaries.php`
-
 Notes:
-- there are some Laravel salary routes under `/user/{id}/salary/...`
-- the top-level salary management experience still looks fragmented
+- top-level salary management and salary setup now have Laravel routes
+- per-affiliate create/update routes were moved into the redesigned dashboard shell
 
 ### Sale Log / Chat Log Legacy Detail
 
-- `/sale_log_edit.php`
-- `/edit_sale_log.php`
-- `/log_sale.php`
-
 Notes:
 - upload flows have Laravel routes now
-- detailed sale-log edit/view still relies on legacy pages in places
+- add/view/edit legacy URLs now bridge to Laravel chat-log routes
 
 ### Setup / Admin Utilities
 
 - `/setup.php`
 - `/update_databases.php`
-- `/upload_logo.php`
-- `/upload_favicon.php`
 
 Notes:
+- logo and favicon upload scripts now have Laravel endpoints
 - these are especially important if the app is going to be sold repeatedly
 - setup/provisioning should become a productized admin/install flow
 
@@ -213,16 +228,6 @@ be retired once legacy signup is no longer used.
 These do not currently appear to have explicit Laravel compatibility routes and
 should be considered likely breakpoints once the fallback is removed.
 
-- `/sale_log_edit.php`
-- `/log_sale.php`
-- `/bonus.php`
-- `/bonus_assign.php`
-- `/bonus_edit.php`
-- `/create_bonus.php`
-- `/salaries.php`
-- `/edit_salary.php`
-- `/edit_salaries.php`
-
 ## Recommended Sequence For Removing `legacy` Fallback
 
 ### Phase 1: Compatibility wrappers and link cleanup
@@ -251,7 +256,7 @@ should be considered likely breakpoints once the fallback is removed.
 1. Bonuses
 2. Salaries
 3. Sale log detail/edit
-4. Setup/update tools
+4. Setup/update tools. In progress: logo/favicon upload endpoints are wrapped.
 
 ### Phase 4: Remove direct fallback
 

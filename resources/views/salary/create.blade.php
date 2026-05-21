@@ -1,41 +1,46 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@section('page-title', 'Create Salary')
 
 @section('content')
-
-    <!--right_panel-->
-    <div class="right_panel">
-        <div class="white_box_outer">
-            <div class="heading_holder value_span9"><span
-                        class="lft">Create salary for {{$user->user_name}}</span>
-            </div>
-
-
-            <form action="/user/{{$user->idrep}}/salary/create" method="post">
-                <div class="white_box value_span8">
-                    <div class="left_con01">
-                        {{csrf_field()}}
-                        <p>
-                            <label>Salary </label>
-                            <input type="number" value="" name="salary">
-                        </p>
-
-                        <p>
-                            <label>Status</label>
-                            <select name="status">
-                                <option value="1">Active</option>
-                                <option value="0">In-Active</option>
-                            </select>
-                        </p>
-
-
-                    </div>
-
-                    <input class="btn btn-primary" type="submit" value="Save" name="submit">
+    <div class="space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Payroll Workspace</p>
+                    <h2 class="bp-section-title value_span9">Create salary for {{ $user->user_name }}</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                        Add a salary record for this affiliate.
+                    </p>
                 </div>
-        </div>
-        </form>
 
+                <a href="/salaries/edit" class="bp-button-secondary">Back to salary setup</a>
+            </div>
+        </section>
 
+        <section class="bp-card value_span8">
+            <form action="/user/{{ $user->idrep }}/salary/create" method="post" class="space-y-6">
+                @csrf
+
+                <div class="bp-form-grid md:grid-cols-2">
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Salary</span>
+                        <input class="bp-form-input" type="number" step="0.01" min="0" name="salary" value="{{ old('salary') }}" required>
+                    </label>
+
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Status</span>
+                        <select class="bp-form-input" name="status">
+                            <option value="1" @selected((int) old('status', 1) === 1)>Active</option>
+                            <option value="0" @selected((int) old('status', 1) === 0)>In-Active</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="flex justify-end">
+                    <button class="bp-button-primary" type="submit">Create salary</button>
+                </div>
+            </form>
+        </section>
     </div>
-    <!--right_panel-->
 @endsection

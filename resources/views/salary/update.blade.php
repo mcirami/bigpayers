@@ -1,50 +1,51 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@section('page-title', 'Update Salary')
 
 @section('content')
+    <div class="space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Payroll Workspace</p>
+                    <h2 class="bp-section-title value_span9">Update salary for {{ $user->user_name }}</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                        Adjust the amount or active status for this affiliate salary.
+                    </p>
+                </div>
 
-    <!--right_panel-->
-    <div class="right_panel">
-        <div class="white_box_outer">
-            <div class="heading_holder value_span9"><span
-                        class="lft">Update salary for {{$user->user_name}}</span>
+                <a href="/salaries/edit" class="bp-button-secondary">Back to salary setup</a>
             </div>
+        </section>
 
+        <section class="bp-card value_span8">
+            <form action="/user/{{ $user->idrep }}/salary/update" method="post" class="space-y-6">
+                @csrf
 
-            <form action="/user/{{$user->idrep}}/salary/update" method="post">
-                <div class="white_box value_span8">
-                    <div class="left_con01">
-                        {{csrf_field()}}
-                        <p>
-                            <label>Salary </label>
-                            <input type="number" value="{{$salary->salary}}" name="salary">
-                        </p>
+                <div class="bp-form-grid md:grid-cols-3">
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Salary</span>
+                        <input class="bp-form-input" type="number" step="0.01" min="0" name="salary" value="{{ old('salary', $salary->salary) }}" required>
+                    </label>
 
-                        <p>
-                            <label>Status</label>
-                            <select name="status">
-                                <option {{$salary->status == 1 ? "selected" : ""}} value="1">Active</option>
-                                <option {{$salary->status == 0 ? "selected" : ""}} value="0">In-Active</option>
-                            </select>
-                        </p>
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Status</span>
+                        <select class="bp-form-input" name="status">
+                            <option value="1" @selected((int) old('status', $salary->status) === 1)>Active</option>
+                            <option value="0" @selected((int) old('status', $salary->status) === 0)>In-Active</option>
+                        </select>
+                    </label>
 
+                    <label class="bp-form-field">
+                        <span class="bp-form-label">Last Update</span>
+                        <input class="bp-form-input" type="text" value="{{ \Carbon\Carbon::createFromTimestamp($salary->last_update)->diffForHumans() }}" readonly>
+                    </label>
+                </div>
 
-                        <p>
-
-                        </p>
-
-                    </div>
-
-                    <div class="right_con01">
-                        <p>
-                            <label>Last Update</label>
-                            <span>{{\Carbon\Carbon::createFromTimestamp($salary->last_update)->diffForHumans()}}</span>
-                        </p>
-                        <input class="btn btn-primary" type="submit" value="Save" name="submit">
-                    </div>
+                <div class="flex justify-end">
+                    <button class="bp-button-primary" type="submit">Save salary</button>
                 </div>
             </form>
-
-
-        </div>
-        <!--right_panel-->
+        </section>
+    </div>
 @endsection

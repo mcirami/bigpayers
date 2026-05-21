@@ -16,5 +16,7 @@ class VerifyCsrfToken extends BaseVerifier
         'email/incoming',
         'email/incoming/distribute',
 	    'login',
+        'upload_logo.php',
+        'upload_favicon.php',
     ];
 }

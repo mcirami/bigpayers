@@ -341,6 +341,85 @@ class LegacyCompatibilityController extends Controller
         );
     }
 
+    public function redirectLogSale(Request $request)
+    {
+        $pendingConversionId = (int) ($request->query('pcid') ?: $request->query('cid') ?: $request->input('pendingConversionId'));
+        abort_if($pendingConversionId <= 0, 404);
+
+        if ($request->isMethod('post')) {
+            return redirect("/chat-log/upload?pendingConversionId={$pendingConversionId}", 307);
+        }
+
+        return redirect($this->buildRedirectUrl("/chat-log/add/{$pendingConversionId}", $request, ['pcid', 'cid']));
+    }
+
+    public function redirectSaleLogEdit(Request $request)
+    {
+        $saleLogId = (int) ($request->query('id') ?: $request->query('sid'));
+        abort_if($saleLogId <= 0, 404);
+
+        return redirect($this->buildRedirectUrl("/chat-log/view/{$saleLogId}", $request, ['id', 'sid']));
+    }
+
+    public function redirectSalaries(Request $request)
+    {
+        return redirect($this->buildRedirectUrl('/salaries', $request), $request->isMethod('post') ? 307 : 302);
+    }
+
+    public function redirectEditSalaries(Request $request)
+    {
+        return redirect($this->buildRedirectUrl('/salaries/edit', $request));
+    }
+
+    public function redirectEditSalary(Request $request)
+    {
+        $userId = (int) ($request->query('id') ?: $request->input('id'));
+        abort_if($userId <= 0, 404);
+
+        if ($request->isMethod('post')) {
+            return redirect("/user/{$userId}/salary/update", 307);
+        }
+
+        return redirect($this->buildRedirectUrl("/user/{$userId}/salary/showUpdate", $request, ['id']));
+    }
+
+    public function redirectBonuses(Request $request)
+    {
+        return redirect($this->buildRedirectUrl('/bonuses', $request));
+    }
+
+    public function redirectCreateBonus(Request $request)
+    {
+        return redirect($this->buildRedirectUrl('/bonuses/create', $request), $request->isMethod('post') ? 307 : 302);
+    }
+
+    public function redirectEditBonus(Request $request)
+    {
+        $bonusId = (int) ($request->query('id') ?: $request->input('id'));
+        abort_if($bonusId <= 0, 404);
+
+        return redirect(
+            $this->buildRedirectUrl("/bonuses/{$bonusId}/edit", $request, ['id']),
+            $request->isMethod('post') ? 307 : 302
+        );
+    }
+
+    public function redirectAssignBonus(Request $request)
+    {
+        $bonusId = (int) ($request->query('id') ?: $request->input('id'));
+        abort_if($bonusId <= 0, 404);
+
+        return redirect(
+            $this->buildRedirectUrl("/bonuses/{$bonusId}/assign", $request, ['id']),
+            $request->isMethod('post') ? 307 : 302
+        );
+    }
+
+    public function redirectProcessBonuses()
+    {
+        return redirect('/bonuses/process');
+    }
+
     public function redirectCreateNotification(Request $request)
     {
         return redirect($this->buildRedirectUrl('/notifications/create', $request));

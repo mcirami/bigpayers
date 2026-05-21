@@ -102,6 +102,35 @@ class SettingsController extends Controller
         return redirect('/settings')->with('message', 'Settings updated successfully.');
     }
 
+    public function uploadLogo(Request $request)
+    {
+        $request->validate([
+            'file1' => 'required|file|mimes:png|max:16384',
+        ]);
+
+        $this->storeUploadedBrandAsset($request->file('file1'), 'logo.png');
+
+        return response('logo.png upload is complete');
+    }
+
+    public function uploadFavicon(Request $request)
+    {
+        $request->validate([
+            'file2' => 'required|file|max:16384',
+        ]);
+
+        $extension = strtolower((string) $request->file('file2')->getClientOriginalExtension());
+        if ($extension !== 'ico') {
+            throw ValidationException::withMessages([
+                'file2' => 'The favicon must be an .ico file.',
+            ]);
+        }
+
+        $this->storeUploadedBrandAsset($request->file('file2'), 'favicon.ico');
+
+        return response('favicon.ico upload is complete');
+    }
+
     private function buildViewData(): array
     {
         $company = Company::loadFromSession();
@@ -180,10 +209,15 @@ class SettingsController extends Controller
             return;
         }
 
+        $this->storeUploadedBrandAsset($request->file($field), $filename);
+    }
+
+    private function storeUploadedBrandAsset($file, string $filename): void
+    {
         $directory = public_path('images/' . Company::getCustomSub());
         File::ensureDirectoryExists($directory);
 
-        $request->file($field)->move($directory, $filename);
+        $file->move($directory, $filename);
     }
 
     private function availableLoginThemes(): array
