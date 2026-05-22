@@ -63,6 +63,7 @@ The following wrappers have now been implemented in Laravel:
 - `/campaign_create.php` -> `/advertisers/create`
 - `/campaign_edit.php?id=` -> `/advertisers/{id}/edit`
 - `/settings.php` -> `/settings`
+- `/update_databases.php` -> `/admin/database-updates`
 - `/upload_logo.php` -> Laravel logo upload endpoint
 - `/upload_favicon.php` -> Laravel favicon upload endpoint
 - `/notifications.php` -> `/notifications` plus legacy `action=mark|delete` compatibility
@@ -130,6 +131,7 @@ compatibility wrappers plus internal link cleanup.
 | `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route |
 | `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route |
 | `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner |
 | `/upload_logo.php` | `/upload_logo.php` | Wrapped | Laravel logo upload endpoint |
 | `/upload_favicon.php` | `/upload_favicon.php` | Wrapped | Laravel favicon upload endpoint |
 
@@ -169,9 +171,9 @@ Notes:
 ### Setup / Admin Utilities
 
 - `/setup.php`
-- `/update_databases.php`
 
 Notes:
+- database update runner now has a Laravel admin page and compatibility route
 - logo and favicon upload scripts now have Laravel endpoints
 - these are especially important if the app is going to be sold repeatedly
 - setup/provisioning should become a productized admin/install flow
@@ -256,7 +258,7 @@ should be considered likely breakpoints once the fallback is removed.
 1. Bonuses
 2. Salaries
 3. Sale log detail/edit
-4. Setup/update tools. In progress: logo/favicon upload endpoints are wrapped.
+4. Setup/update tools. In progress: logo/favicon upload endpoints and the database update runner are wrapped.
 
 ### Phase 4: Remove direct fallback
 

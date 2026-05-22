@@ -10,7 +10,7 @@ class Updater
      * Directory of Versions used when updating databases, must have *.php at the end!
      * @var string
      */
-    public $versionsDirectory = '../src/Database/Versions/*.php';
+    public $versionsDirectory = __DIR__ . '/Versions/*.php';
 
     /**
      * List of Versions found in $versionsDirectory and not in $blackList

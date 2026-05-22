@@ -21,6 +21,7 @@ use App\Http\Controllers\LanderController;
 use App\Http\Controllers\LegacyLoginController;
 use App\Http\Controllers\RelevanceReactorController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DatabaseUpdateController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SalaryController;
@@ -125,6 +126,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('campaign_create.php', [LegacyCompatibilityController::class, 'redirectCampaignCreate'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('campaign_edit.php', [LegacyCompatibilityController::class, 'redirectCampaignEdit'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('settings.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::match(['get', 'post'], 'update_databases.php', [DatabaseUpdateController::class, 'run'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('upload_logo.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::post('upload_logo.php', [SettingsController::class, 'uploadLogo'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('upload_favicon.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
@@ -138,6 +140,8 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::post('ip-blacklist/{id}/delete', [IPBlacklistController::class, 'destroy'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('global-postback', [GlobalPostbackController::class, 'show']);
     Route::post('global-postback', [GlobalPostbackController::class, 'update']);
+    Route::get('admin/database-updates', [DatabaseUpdateController::class, 'index'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('admin/database-updates', [DatabaseUpdateController::class, 'run'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('salaries', [SalaryController::class, 'index'])->middleware('permissions:' . Permissions::PAY_SALARIES);
     Route::post('salaries', [SalaryController::class, 'pay'])->middleware('permissions:' . Permissions::PAY_SALARIES);
     Route::get('salaries/edit', [SalaryController::class, 'manage'])->middleware('permissions:' . Permissions::EDIT_SALARIES);
