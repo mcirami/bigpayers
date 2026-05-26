@@ -27,13 +27,6 @@ class AuditLegacyFallbackCoverage extends Command
 
     private array $allowedPublicPhp = [
         'index.php' => 'Laravel front controller.',
-        'css/company.php' => 'Compatibility redirect to /css/company.css.',
-        'login_themes/bigpayers/index.php' => 'Compatibility redirect to /login.',
-        'login_themes/ctpupgrade1/index.php' => 'Compatibility redirect to /login.',
-        'login_themes/magnetdollars1/index.php' => 'Compatibility redirect to /login.',
-        'login_themes/magnetdollars2/index.php' => 'Compatibility redirect to /login.',
-        'login_themes/magnetdollars3/index.php' => 'Compatibility redirect to /login.',
-        'login_themes/modelcash/index.php' => 'Compatibility redirect to /login.',
     ];
 
     public function handle(): int

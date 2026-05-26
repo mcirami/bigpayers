@@ -305,10 +305,9 @@ Remaining cleanup is mostly archival and hardening:
 
 - run `php artisan legacy:audit-fallback-coverage` after route changes to catch
   legacy PHP files that are neither explicitly routed nor intentionally retired
-- keep old public PHP compatibility shims thin; `/css/company.php` now redirects
-  to the Laravel-served `/css/company.css` route instead of booting legacy code
-- old public login theme `index.php` files now redirect to `/login`; the modern
-  login flow consumes theme CSS assets instead of executing those PHP templates
+- old public PHP compatibility shims have moved into Laravel routes; `/css/company.php`
+  redirects to the `/css/company.css` controller and old login theme `index.php`
+  URLs redirect to `/login`
 - remove or archive unused `legacy/*.php` files once the team is comfortable
 - continue replacing legacy class dependencies inside modern controllers
 - add integration tests around the explicit compatibility routes

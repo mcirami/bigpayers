@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Controllers\AffiliateMassPostbackController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\LanderController;
 use App\Http\Controllers\ClickIdToolController;
@@ -394,8 +395,6 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get("login/{userId}", [LegacyLoginController::class, 'adminLogin']);
 });
 
-Route::get('/css/company.css', function () {
-    header('Content-Type: text/css');
-    include resource_path('styles/company.php');
-    exit;
-});
+Route::get('/css/company.css', CompanyCssController::class);
+Route::get('/css/company.php', fn () => redirect('/css/company.css'));
+Route::get('/login_themes/{theme}/index.php', fn () => redirect('/login'))->where('theme', '[^/]+');
