@@ -48,9 +48,9 @@ class ChatLogController extends Controller
                     $imageUploader->uploadDirectory = env("SALE_LOG_DIRECTORY")."/".Company::loadFromSession()->getSubDomain()."/{$saleLog->id}";
                     if ($imageUploader->uploadFiles('images')) {
                         if (Session::userType() == \App\Privilege::ROLE_AFFILIATE) {
-                            return redirect("sale_log.php");
+                            return redirect("/report/sale-log");
                         } else {
-                            return redirect("sale_log.php?uid={$conversion->user_id}");
+                            return redirect("/report/sale-log?uid={$conversion->user_id}");
                         }
                     } else {
                         return back()->withErrors("Error Uploading images. Please make sure you don't have any extra image inputs that are empty.");
@@ -120,6 +120,26 @@ class ChatLogController extends Controller
         }
 
         return redirect("/chat-log/view/{$saleLogId}")->with('message', 'Image deleted.');
+    }
+
+    public function legacyDeleteSaleLogImage(Request $request)
+    {
+        $saleLogId = (int) $request->input('id');
+        $fileName = (string) $request->input('fileName');
+
+        if ($saleLogId <= 0 || $fileName === '' || basename($fileName) !== $fileName) {
+            return response('false', 400);
+        }
+
+        $this->authorizeSaleLogAccess($saleLogId);
+
+        $filePath = $this->saleLogDirectory($saleLogId)."/{$fileName}";
+
+        if (!is_file($filePath)) {
+            return response('false', 404);
+        }
+
+        return response(unlink($filePath) ? 'true' : 'false');
     }
 
 

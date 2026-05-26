@@ -23,7 +23,7 @@ $webroot = getWebRoot();
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.1"/>
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/compiled/app.min.css?v=1.4"/>
     <link rel="stylesheet" media="screen" type="text/css"
-          href="<?php echo $webroot; ?>css/company.php"/>
+          href="<?php echo $webroot; ?>css/company.css"/>
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/font-awesome/css/all.css">
 

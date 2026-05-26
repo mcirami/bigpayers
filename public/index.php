@@ -59,25 +59,6 @@ $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
 
-$urlArray = parse_url($_SERVER["REQUEST_URI"]);
-
-$file = $urlArray["path"] ?? "/";
-
-/* if ($file == "/") {
-   include("../legacy/index.php");
-    die();
-} */
-
-if ($file !== "/") {
-    $file = "../legacy".$file;
-
-
-    if (is_file($file) && is_readable($file)) {
-        include($file);
-        die();
-    }
-}
-
 $response->send();
 
 $kernel->terminate($request, $response);

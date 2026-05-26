@@ -158,6 +158,19 @@ class LegacyCompatibilityController extends Controller
         return redirect($this->buildRedirectUrl("/user/{$userId}/edit", $request, ['idrep']));
     }
 
+    public function redirectAffAdd(Request $request)
+    {
+        return redirect($this->buildRedirectUrl('/user/create', $request));
+    }
+
+    public function redirectAffDetails(Request $request)
+    {
+        $userId = (int) $request->query('idrep');
+        abort_if($userId <= 0, 404);
+
+        return redirect($this->buildRedirectUrl("/user/{$userId}/edit", $request, ['idrep']));
+    }
+
     public function redirectActivateAffiliate(Request $request)
     {
         $userId = (int) $request->query('id');
@@ -239,6 +252,19 @@ class LegacyCompatibilityController extends Controller
     public function redirectIpBlacklist(Request $request)
     {
         return redirect($this->buildRedirectUrl('/ip-blacklist', $request));
+    }
+
+    public function redirectAddIpBlacklist(Request $request)
+    {
+        return redirect($this->buildRedirectUrl('/ip-blacklist/create', $request));
+    }
+
+    public function redirectEditIpBlacklist(Request $request)
+    {
+        $entryId = (int) $request->query('id');
+        abort_if($entryId <= 0, 404);
+
+        return redirect($this->buildRedirectUrl("/ip-blacklist/{$entryId}/edit", $request, ['id']));
     }
 
     public function redirectGlobalPostback(Request $request)
@@ -418,6 +444,14 @@ class LegacyCompatibilityController extends Controller
     public function redirectProcessBonuses()
     {
         return redirect('/bonuses/process');
+    }
+
+    public function retiredGeoIpUpdater()
+    {
+        return response(
+            'The legacy GeoIP web updater is retired. Update GeoIP data through the controlled server provisioning workflow.',
+            410
+        );
     }
 
     public function redirectCreateNotification(Request $request)

@@ -1,0 +1,146 @@
+<?php
+
+namespace App\Services;
+
+use App\Company;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
+use PDO;
+use RuntimeException;
+
+class CompanyProvisioningService
+{
+    private const DEFAULT_COLORS = '484848;FFFFFF;2A58AD;1D4C9E;82A7EB;FCED16;EAEEF1;FFFFFF;404452;999999;1D4C9E';
+
+    public function provision(array $data): array
+    {
+        $subDomain = $this->normalizeSubDomain($data['subDomain']);
+
+        if (Company::where('subDomain', $subDomain)->exists()) {
+            throw new RuntimeException("An install already exists for {$subDomain}.");
+        }
+
+        $schemaPath = $this->baseInstallPath();
+        $server = $this->serverConnection();
+
+        if ($this->databaseExists($server, $subDomain)) {
+            throw new RuntimeException("A database named {$subDomain} already exists.");
+        }
+
+        $server->exec('CREATE DATABASE ' . $this->quoteIdentifier($subDomain));
+
+        $tenant = $this->tenantConnection($subDomain);
+        $tenant->exec(File::get($schemaPath));
+        $this->updateBootstrapAdmin($tenant, $data);
+
+        $company = new Company();
+        $company->shortHand = $data['shortHand'];
+        $company->subDomain = $subDomain;
+        $company->companyName = $data['companyName'];
+        $company->city = $data['city'];
+        $company->state = $data['state'];
+        $company->address = $data['address'];
+        $company->zip = $data['zip'];
+        $company->telephone = $data['telephone'];
+        $company->email = $data['email'];
+        $company->skype = $data['skype'] ?? '';
+        $company->messenger_type = $data['messenger_type'] ?? 'Telegram';
+        $company->messenger_username = $data['messenger_username'] ?? ($data['skype'] ?? '');
+        $company->colors = self::DEFAULT_COLORS;
+        $company->uid = salt(4, true);
+        $company->db_version = 0;
+        $company->login_url = $data['login_url'] ?? '';
+        $company->landing_page = $data['landing_page'] ?? '';
+        $company->login_theme = $data['login_theme'] ?? '';
+        $company->allow_register = (bool) ($data['allow_register'] ?? true);
+        $company->save();
+
+        File::ensureDirectoryExists(public_path("images/{$subDomain}"));
+
+        return [
+            'company' => $company,
+            'database' => $subDomain,
+            'schemaPath' => $schemaPath,
+            'adminUserName' => $data['userName'],
+            'adminEmail' => $data['adminEmail'],
+        ];
+    }
+
+    private function updateBootstrapAdmin(PDO $tenant, array $data): void
+    {
+        $statement = $tenant->prepare(
+            'UPDATE rep SET email = :email, user_name = :user_name, password = :password WHERE idrep = 1'
+        );
+
+        $statement->execute([
+            ':email' => $data['adminEmail'],
+            ':user_name' => $data['userName'],
+            ':password' => Hash::make($data['password']),
+        ]);
+    }
+
+    private function databaseExists(PDO $server, string $database): bool
+    {
+        $statement = $server->prepare('SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = :database');
+        $statement->execute([':database' => $database]);
+
+        return (bool) $statement->fetchColumn();
+    }
+
+    private function baseInstallPath(): string
+    {
+        $paths = [
+            base_path('base_install.sql'),
+            storage_path('base_install.sql'),
+        ];
+
+        foreach ($paths as $path) {
+            if (File::isFile($path)) {
+                return $path;
+            }
+        }
+
+        throw new RuntimeException('Unable to find base_install.sql.');
+    }
+
+    private function serverConnection(): PDO
+    {
+        return $this->makeConnection();
+    }
+
+    private function tenantConnection(string $database): PDO
+    {
+        return $this->makeConnection($database);
+    }
+
+    private function makeConnection(?string $database = null): PDO
+    {
+        $config = config('database.connections.mysql');
+        $dsn = 'mysql:host=' . $config['host'] . ';port=' . $config['port'];
+
+        if ($database !== null) {
+            $dsn .= ';dbname=' . $database;
+        }
+
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ];
+
+        if (defined('PDO::MYSQL_ATTR_MULTI_STATEMENTS')) {
+            $options[PDO::MYSQL_ATTR_MULTI_STATEMENTS] = true;
+        }
+
+        return new PDO($dsn, $config['username'], $config['password'], $options);
+    }
+
+    private function quoteIdentifier(string $identifier): string
+    {
+        return '`' . str_replace('`', '``', $identifier) . '`';
+    }
+
+    private function normalizeSubDomain(string $subDomain): string
+    {
+        return strtolower(trim($subDomain));
+    }
+}

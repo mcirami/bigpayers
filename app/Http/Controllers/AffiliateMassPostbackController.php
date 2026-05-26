@@ -1,0 +1,72 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Privilege;
+use Illuminate\Http\Request;
+use LeadMax\TrackYourStats\Offer\Offer as LegacyOffer;
+use LeadMax\TrackYourStats\Offer\RepHasOffer;
+use LeadMax\TrackYourStats\System\Session;
+use PDO;
+
+class AffiliateMassPostbackController extends Controller
+{
+    public function show()
+    {
+        $this->ensureAffiliateAccess();
+
+        return view('account.mass-postback', [
+            'offers' => $this->ownedOffers(),
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        $this->ensureAffiliateAccess();
+
+        $validated = $request->validate([
+            'postback_url' => 'nullable|string|max:255',
+            'offerList' => 'required|array|min:1',
+            'offerList.*' => 'integer',
+        ]);
+
+        $ownedOfferIds = $this->ownedOffers()
+            ->pluck('idoffer')
+            ->map(fn ($offerId) => (int) $offerId)
+            ->all();
+
+        $offerIds = collect($validated['offerList'])
+            ->map(fn ($offerId) => (int) $offerId)
+            ->intersect($ownedOfferIds)
+            ->values()
+            ->all();
+
+        abort_if(empty($offerIds), 403);
+
+        $updated = RepHasOffer::assignPostBackToAffiliatesOffers(
+            trim((string) ($validated['postback_url'] ?? '')),
+            Session::userID(),
+            $offerIds
+        );
+
+        if (!$updated) {
+            return back()
+                ->withInput()
+                ->withErrors('Unable to assign the postback URL. Please try again.');
+        }
+
+        return redirect('/account/mass-postback')->with('message', 'Postback URL assigned successfully.');
+    }
+
+    private function ownedOffers()
+    {
+        return collect(
+            LegacyOffer::selectOwnedOffers(Session::userType())->fetchAll(PDO::FETCH_OBJ)
+        )->values();
+    }
+
+    private function ensureAffiliateAccess(): void
+    {
+        abort_unless(Session::userType() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+    }
+}

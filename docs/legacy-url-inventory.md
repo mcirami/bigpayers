@@ -3,15 +3,18 @@
 This document inventories the remaining legacy URL surface in the application and
 groups it by migration status.
 
-The immediate goal is to remove the direct legacy fallback in
+The direct legacy fallback has been removed from
 [`public/index.php`](/Users/matteocirami/dev-docker/LARADOCK/bigpayers/public/index.php:53),
-which currently:
+which previously:
 
 1. boots the legacy runtime via `bootstrap/legacy_loader.php`
 2. includes `legacy/index.php` for `/`
 3. includes matching files under `legacy/` for arbitrary request paths
 
-Until the items below are handled, removing that fallback would break live URLs.
+The Laravel front controller still boots `bootstrap/legacy_loader.php` because
+the modern controllers and services continue to use legacy classes, session
+state, and tenant/company setup. What is gone is the arbitrary execution of
+matching PHP files under `legacy/`.
 
 ## Implemented Compatibility Batch
 
@@ -22,11 +25,17 @@ The following wrappers have now been implemented in Laravel:
 - `/home.php` -> `/dashboard`
 - `/alogin.php?affid=` -> `/login/{id}`
 - `/aff_help.php` -> modern forgot-password flow
+- `/aff_add.php` -> `/user/create`
+- `/aff_details.php?idrep=` -> `/user/{id}/edit`
 - `/aff_update.php?idrep=` -> `/user/{id}/edit`
+- `/aff_permissions.php` -> `/admin/report-permissions`
 - `/activate_affiliate.php?id=` -> `/user/pending/{id}/activate`
 - `/clicksearch.php` -> `/click-search`
 - `/ip_black_list.php` -> `/ip-blacklist`
+- `/add_new_ip_blacklist.php` -> `/ip-blacklist/create`
+- `/edit_blacklisted_ip.php?id=` -> `/ip-blacklist/{id}/edit`
 - `/global_postback.php` -> `/global-postback`
+- `/mass_assign_pb.php` -> `/account/mass-postback`
 - `/offer_add.php` -> `/offer/create`
 - `/offer_edit_pb.php?offid=` -> `/offer/{id}/postback`
 - `/offer_update.php?idoffer=` -> `/offer/edit/{id}`
@@ -38,6 +47,7 @@ The following wrappers have now been implemented in Laravel:
 - `/log_sale.php?pcid=` -> `/chat-log/add/{id}`
 - `/sale_log_edit.php?id=` -> `/chat-log/view/{id}`
 - `/edit_sale_log.php?sid=` -> `/chat-log/view/{id}`
+- `/scripts/sale_log.php` -> Laravel sale-log image delete endpoint
 - `/salaries.php` -> `/salaries`
 - `/edit_salaries.php` -> `/salaries/edit`
 - `/edit_salary.php?id=` -> `/user/{id}/salary/showUpdate`
@@ -54,6 +64,7 @@ The following wrappers have now been implemented in Laravel:
 - `/banned_users.php` -> `/user/banned`
 - `/ban_user.php?uid=` -> `/user/{id}/ban`
 - `/ban_user_edit.php?uid=` -> `/user/{id}/ban/edit`
+- `/aff_add_ref.php?affid=` -> `/user/{id}/referrals`
 - `/aff_edit_ref.php?affid=` -> `/user/{id}/referrals`
 - `/add_referral.php?id=` -> `/user/{id}/referrals/create`
 - `/add_sale.php` -> `/sales/add`
@@ -63,9 +74,12 @@ The following wrappers have now been implemented in Laravel:
 - `/campaign_create.php` -> `/advertisers/create`
 - `/campaign_edit.php?id=` -> `/advertisers/{id}/edit`
 - `/settings.php` -> `/settings`
+- `/setup.php` -> `/admin/setup`
 - `/update_databases.php` -> `/admin/database-updates`
+- `/scripts/update_geoip.php` -> retired with explicit 410 response
 - `/upload_logo.php` -> Laravel logo upload endpoint
 - `/upload_favicon.php` -> Laravel favicon upload endpoint
+- `/dontaskdonttell.php?action=&clickid=` -> Laravel click ID encode/decode tool
 - `/notifications.php` -> `/notifications` plus legacy `action=mark|delete` compatibility
 
 Internal links for these routes have been moved to their modern Laravel targets
@@ -90,9 +104,15 @@ compatibility wrappers plus internal link cleanup.
 | `/signup_success.php` | `/signup-success` | Replaced | Already route-wrapped |
 | `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route |
 | `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route |
+| `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
+| `/edit_blacklisted_ip.php?id=` | `/ip-blacklist/{id}/edit` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
 | `/global_postback.php` | `/global-postback` | Wrapped | Explicit compatibility route |
+| `/mass_assign_pb.php` | `/account/mass-postback` | Wrapped | Laravel affiliate mass postback assignment |
 | `/notifications.php` | `/notifications` | Wrapped | Explicit compatibility route |
 | `/settings.php` | `/settings` | Wrapped | Explicit compatibility route |
+| `/aff_add.php` | `/user/create` | Wrapped | Explicit compatibility route |
+| `/aff_details.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/aff_permissions.php` | `/admin/report-permissions` | Wrapped | Laravel report permissions management |
 | `/offer_urls.php` | `/offer/urls` | Wrapped | Explicit compatibility route |
 | `/add_offer_url.php` | `/offer/urls/create` | Wrapped | Explicit compatibility route |
 | `/edit_offer_url.php?id=` | `/offer/urls/{id}/edit` | Wrapped | Explicit compatibility route |
@@ -108,6 +128,7 @@ compatibility wrappers plus internal link cleanup.
 | `/log_sale.php?pcid=` | `/chat-log/add/{id}` | Wrapped | Explicit compatibility route |
 | `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
 | `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
+| `/scripts/sale_log.php` | `/scripts/sale_log.php` | Wrapped | Laravel compatibility endpoint for sale-log image deletion |
 | `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route |
 | `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route |
 | `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route |
@@ -122,6 +143,7 @@ compatibility wrappers plus internal link cleanup.
 | `/ban_user_edit.php?uid=` | `/user/{id}/ban/edit` | Wrapped | Explicit compatibility route |
 | `/ban_user.php?uid=` | `/user/{id}/ban` | Wrapped | Explicit compatibility route |
 | `/aff_update.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/aff_add_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
 | `/aff_edit_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
 | `/add_referral.php?id=` | `/user/{id}/referrals/create` | Wrapped | Explicit compatibility route |
 | `/add_sale.php` | `/sales/add` | Wrapped | Explicit compatibility route |
@@ -131,9 +153,12 @@ compatibility wrappers plus internal link cleanup.
 | `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route |
 | `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route |
 | `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/setup.php` | `/admin/setup` | Wrapped | Laravel company setup flow |
 | `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner |
+| `/scripts/update_geoip.php` | `/scripts/update_geoip.php` | Wrapped | Explicitly retired with 410; use provisioning/ops workflow instead |
 | `/upload_logo.php` | `/upload_logo.php` | Wrapped | Laravel logo upload endpoint |
 | `/upload_favicon.php` | `/upload_favicon.php` | Wrapped | Laravel favicon upload endpoint |
+| `/dontaskdonttell.php?action=&clickid=` | `/dontaskdonttell.php` | Wrapped | God-only click ID utility |
 
 ## 2. Legacy URLs Still Referenced Internally
 
@@ -167,25 +192,26 @@ Notes:
 Notes:
 - upload flows have Laravel routes now
 - add/view/edit legacy URLs now bridge to Laravel chat-log routes
+- the legacy sale-log image AJAX script now has a Laravel compatibility endpoint
 
 ### Setup / Admin Utilities
 
-- `/setup.php`
-
 Notes:
+- company setup now has a Laravel admin page and compatibility route
 - database update runner now has a Laravel admin page and compatibility route
 - logo and favicon upload scripts now have Laravel endpoints
+- IP blacklist add/edit legacy URLs now bridge to the Laravel blacklist forms
+- the legacy GeoIP web updater is intentionally retired with a 410 response
 - these are especially important if the app is going to be sold repeatedly
 - setup/provisioning should become a productized admin/install flow
 
 ### Miscellaneous User/Admin Pages
 
-- `/aff_add.php`
-- `/aff_details.php`
-- `/aff_permissions.php`
-- `/dontaskdonttell.php`
-
-These need review to determine whether they are still live or can be retired.
+Notes:
+- create/detail user URLs now bridge to modern user management
+- affiliate report permissions now have a Laravel admin page
+- the old God-only click ID encode/decode utility has an explicit Laravel endpoint
+- affiliate mass postback assignment now has a Laravel account page
 
 ## 4. Script Endpoints Still In Active Use
 
@@ -230,6 +256,10 @@ be retired once legacy signup is no longer used.
 These do not currently appear to have explicit Laravel compatibility routes and
 should be considered likely breakpoints once the fallback is removed.
 
+No known top-level legacy PHP pages are missing coverage. Static support files
+such as `legacy/header.php`, `legacy/footer.php`, `legacy/404.php`, and
+`legacy/500.php` are not public workflows.
+
 ## Recommended Sequence For Removing `legacy` Fallback
 
 ### Phase 1: Compatibility wrappers and link cleanup
@@ -258,26 +288,25 @@ should be considered likely breakpoints once the fallback is removed.
 1. Bonuses
 2. Salaries
 3. Sale log detail/edit
-4. Setup/update tools. In progress: logo/favicon upload endpoints and the database update runner are wrapped.
+4. Setup/update tools. Done: setup, logo/favicon upload endpoints, and the database update runner are wrapped.
 
 ### Phase 4: Remove direct fallback
 
-After the above:
+Status: done.
 
-1. Remove `legacy` include fallback from `public/index.php`
-2. Keep only explicit compatibility routes for any legacy URLs you intentionally
-   want to support
-3. Retire or archive unused `legacy/*.php` files
+The `legacy` include fallback has been removed from `public/index.php`. Old URLs
+now work only when they have an explicit Laravel route.
 
 ## Bottom Line
 
-The app is already far enough along that this is not a rewrite problem.
+The app is now past the risky dynamic fallback stage.
 
-The blocker to removing `legacy` fallback is not the modern UI. It is:
+Remaining cleanup is mostly archival and hardening:
 
-- old URLs still referenced internally
-- old script endpoints still used by the new UI
-- a handful of admin workflows that still only exist under `legacy/`
-
-Once those are wrapped or migrated, removing the direct `legacy` execution path
-becomes realistic.
+- run `php artisan legacy:audit-fallback-coverage` after route changes to catch
+  legacy PHP files that are neither explicitly routed nor intentionally retired
+- keep old public PHP compatibility shims thin; `/css/company.php` now redirects
+  to the Laravel-served `/css/company.css` route instead of booting legacy code
+- remove or archive unused `legacy/*.php` files once the team is comfortable
+- continue replacing legacy class dependencies inside modern controllers
+- add integration tests around the explicit compatibility routes

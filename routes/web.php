@@ -15,13 +15,17 @@ use App\Http\Controllers\ExportDataController;
 use App\Privilege;
 use Illuminate\Support\Facades\Route;
 use LeadMax\TrackYourStats\User\Permissions;
+use App\Http\Controllers\AffiliateMassPostbackController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\LanderController;
+use App\Http\Controllers\ClickIdToolController;
+use App\Http\Controllers\CompanySetupController;
 use App\Http\Controllers\LegacyLoginController;
 use App\Http\Controllers\RelevanceReactorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseUpdateController;
+use App\Http\Controllers\ReportPermissionController;
 use App\Http\Controllers\BonusController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SalaryController;
@@ -74,13 +78,23 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('home.php', [LegacyCompatibilityController::class, 'redirectHomePhp']);
     Route::get('dashboard', [DashboardController::class, 'home']);
     Route::get('alogin.php', [LegacyCompatibilityController::class, 'redirectAdminLogin']);
+    Route::get('aff_add.php', [LegacyCompatibilityController::class, 'redirectAffAdd'])->middleware('permissions:' . Permissions::CREATE_AFFILIATES);
+    Route::get('aff_details.php', [LegacyCompatibilityController::class, 'redirectAffDetails'])->middleware(['role:0,1,2,3']);
+    Route::get('aff_permissions.php', [ReportPermissionController::class, 'index'])->middleware('permissions:' . Permissions::EDIT_REPORT_PERMISSIONS);
+    Route::post('aff_permissions.php', [ReportPermissionController::class, 'update'])->middleware('permissions:' . Permissions::EDIT_REPORT_PERMISSIONS);
     Route::get('aff_update.php', [LegacyCompatibilityController::class, 'redirectAffUpdate'])->middleware(['role:0,1,2,3']);
     Route::get('activate_affiliate.php', [LegacyCompatibilityController::class, 'redirectActivateAffiliate'])->middleware([
         'permissions:' . Permissions::APPROVE_AFFILIATE_SIGN_UPS
     ]);
     Route::get('clicksearch.php', [LegacyCompatibilityController::class, 'redirectClickSearch'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('ip_black_list.php', [LegacyCompatibilityController::class, 'redirectIpBlacklist'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('add_new_ip_blacklist.php', [LegacyCompatibilityController::class, 'redirectAddIpBlacklist'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('add_new_ip_blacklist.php', [IPBlacklistController::class, 'store'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('edit_blacklisted_ip.php', [LegacyCompatibilityController::class, 'redirectEditIpBlacklist'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('edit_blacklisted_ip.php', [IPBlacklistController::class, 'updateLegacy'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('global_postback.php', [LegacyCompatibilityController::class, 'redirectGlobalPostback']);
+    Route::get('mass_assign_pb.php', [AffiliateMassPostbackController::class, 'show'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
+    Route::post('mass_assign_pb.php', [AffiliateMassPostbackController::class, 'update'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
     Route::get('offer_add.php', [LegacyCompatibilityController::class, 'redirectOfferAdd'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
     Route::get('offer_update.php', [LegacyCompatibilityController::class, 'redirectOfferUpdate'])->middleware(['permissions:' . Permissions::CREATE_OFFERS]);
     Route::get('offer_edit_rules.php', [LegacyCompatibilityController::class, 'redirectOfferEditRules'])->middleware(['permissions:' . Permissions::EDIT_OFFER_RULES]);
@@ -105,6 +119,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('ban_user_edit.php', [LegacyCompatibilityController::class, 'redirectBanUserEdit'])->middleware([
         'permissions:' . Permissions::BAN_USERS
     ]);
+    Route::get('aff_add_ref.php', [LegacyCompatibilityController::class, 'redirectAffEditRef'])->middleware(['role:0,1,2']);
     Route::get('aff_edit_ref.php', [LegacyCompatibilityController::class, 'redirectAffEditRef'])->middleware(['role:0,1,2']);
     Route::get('add_referral.php', [LegacyCompatibilityController::class, 'redirectAddReferral'])->middleware(['role:0,1,2']);
     Route::get('add_sale.php', [LegacyCompatibilityController::class, 'redirectAddSale'])->middleware('permissions:' . Permissions::ADJUST_SALES);
@@ -126,7 +141,11 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('campaign_create.php', [LegacyCompatibilityController::class, 'redirectCampaignCreate'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('campaign_edit.php', [LegacyCompatibilityController::class, 'redirectCampaignEdit'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('settings.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('setup.php', [CompanySetupController::class, 'create'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('setup.php', [CompanySetupController::class, 'store'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::match(['get', 'post'], 'update_databases.php', [DatabaseUpdateController::class, 'run'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('scripts/update_geoip.php', [LegacyCompatibilityController::class, 'retiredGeoIpUpdater'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('scripts/sale_log.php', [ChatLogController::class, 'legacyDeleteSaleLogImage']);
     Route::get('upload_logo.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::post('upload_logo.php', [SettingsController::class, 'uploadLogo'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('upload_favicon.php', [LegacyCompatibilityController::class, 'redirectSettings'])->middleware('role:' . Privilege::ROLE_GOD);
@@ -140,6 +159,12 @@ Route::group(['middleware' => 'legacy.auth'], function () {
     Route::post('ip-blacklist/{id}/delete', [IPBlacklistController::class, 'destroy'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('global-postback', [GlobalPostbackController::class, 'show']);
     Route::post('global-postback', [GlobalPostbackController::class, 'update']);
+    Route::get('account/mass-postback', [AffiliateMassPostbackController::class, 'show'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
+    Route::post('account/mass-postback', [AffiliateMassPostbackController::class, 'update'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
+    Route::get('admin/report-permissions', [ReportPermissionController::class, 'index'])->middleware('permissions:' . Permissions::EDIT_REPORT_PERMISSIONS);
+    Route::post('admin/report-permissions', [ReportPermissionController::class, 'update'])->middleware('permissions:' . Permissions::EDIT_REPORT_PERMISSIONS);
+    Route::get('admin/setup', [CompanySetupController::class, 'create'])->middleware('role:' . Privilege::ROLE_GOD);
+    Route::post('admin/setup', [CompanySetupController::class, 'store'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('admin/database-updates', [DatabaseUpdateController::class, 'index'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::post('admin/database-updates', [DatabaseUpdateController::class, 'run'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('salaries', [SalaryController::class, 'index'])->middleware('permissions:' . Permissions::PAY_SALARIES);
@@ -157,6 +182,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 		'role:0,3',
 		'permissions:' . Permissions::SMS_CHAT
 	);
+    Route::get('dontaskdonttell.php', ClickIdToolController::class)->middleware('role:' . Privilege::ROLE_GOD);
     Route::group(['prefix' => 'user'], function () {
         Route::get('create', [UserController::class, 'showCreateUser'])->middleware(['role:0,1,2']);
         Route::post('create', [UserController::class, 'storeUser'])->middleware(['role:0,1,2']);
