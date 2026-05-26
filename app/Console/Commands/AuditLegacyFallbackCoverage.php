@@ -25,6 +25,17 @@ class AuditLegacyFallbackCoverage extends Command
         'scripts/offer/rules/geo/editGeo.php' => 'Legacy offer-rule AJAX endpoint replaced by /offer/rules/geo/{rule}.',
     ];
 
+    private array $allowedPublicPhp = [
+        'index.php' => 'Laravel front controller.',
+        'css/company.php' => 'Compatibility redirect to /css/company.css.',
+        'login_themes/bigpayers/index.php' => 'Compatibility redirect to /login.',
+        'login_themes/ctpupgrade1/index.php' => 'Compatibility redirect to /login.',
+        'login_themes/magnetdollars1/index.php' => 'Compatibility redirect to /login.',
+        'login_themes/magnetdollars2/index.php' => 'Compatibility redirect to /login.',
+        'login_themes/magnetdollars3/index.php' => 'Compatibility redirect to /login.',
+        'login_themes/modelcash/index.php' => 'Compatibility redirect to /login.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = collect(File::allFiles(base_path('legacy')))
@@ -40,6 +51,13 @@ class AuditLegacyFallbackCoverage extends Command
             ->reject(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
             ->values();
 
+        $unexpectedPublicPhp = collect(File::allFiles(public_path()))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
+            ->reject(fn ($file) => array_key_exists($file, $this->allowedPublicPhp))
+            ->sort()
+            ->values();
+
         if ($missing->isNotEmpty()) {
             $this->error('Legacy PHP files without explicit route coverage or an intentional unrouted reason:');
             $missing->each(fn ($file) => $this->line(" - {$file}"));
@@ -47,9 +65,17 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        if ($unexpectedPublicPhp->isNotEmpty()) {
+            $this->error('Unexpected public PHP entrypoints:');
+            $unexpectedPublicPhp->each(fn ($file) => $this->line(" - public/{$file}"));
+
+            return self::FAILURE;
+        }
+
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
         $this->info(($legacyFiles->count() - count($this->intentionallyUnrouted)) . ' files have explicit Laravel route coverage.');
         $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
+        $this->info(count($this->allowedPublicPhp) . ' public PHP entrypoints are expected front controllers or compatibility redirects.');
 
         return self::SUCCESS;
     }
