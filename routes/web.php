@@ -20,6 +20,7 @@ use App\Http\Controllers\IndexController;
 use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\LanderController;
+use App\Http\Controllers\PublicCompatibilityController;
 use App\Http\Controllers\ClickIdToolController;
 use App\Http\Controllers\CompanySetupController;
 use App\Http\Controllers\LegacyLoginController;
@@ -396,5 +397,6 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 });
 
 Route::get('/css/company.css', CompanyCssController::class);
-Route::get('/css/company.php', fn () => redirect('/css/company.css'));
-Route::get('/login_themes/{theme}/index.php', fn () => redirect('/login'))->where('theme', '[^/]+');
+Route::get('/css/company.php', [PublicCompatibilityController::class, 'redirectCompanyCss']);
+Route::get('/login_themes/{theme}/index.php', [PublicCompatibilityController::class, 'redirectLoginTheme'])
+    ->where('theme', '[^/]+');

@@ -308,6 +308,8 @@ Remaining cleanup is mostly archival and hardening:
 - old public PHP compatibility shims have moved into Laravel routes; `/css/company.php`
   redirects to the `/css/company.css` controller and old login theme `index.php`
   URLs redirect to `/login`
+- compatibility redirects use controller actions so the web route table remains
+  cacheable
 - remove or archive unused `legacy/*.php` files once the team is comfortable
 - continue replacing legacy class dependencies inside modern controllers
 - add integration tests around the explicit compatibility routes
