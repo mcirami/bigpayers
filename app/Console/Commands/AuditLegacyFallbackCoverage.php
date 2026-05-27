@@ -65,10 +65,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $rewriteErrors = $this->publicRewriteHardeningErrors();
+
+        if ($rewriteErrors->isNotEmpty()) {
+            $this->error('Public rewrite hardening is incomplete:');
+            $rewriteErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
         $this->info(($legacyFiles->count() - count($this->intentionallyUnrouted)) . ' files have explicit Laravel route coverage.');
         $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
-        $this->info(count($this->allowedPublicPhp) . ' public PHP entrypoints are expected front controllers or compatibility redirects.');
+        $publicEntrypointCount = count($this->allowedPublicPhp);
+        $publicEntrypointSummary = $publicEntrypointCount === 1
+            ? '1 public PHP entrypoint is an expected front controller or compatibility redirect.'
+            : "{$publicEntrypointCount} public PHP entrypoints are expected front controllers or compatibility redirects.";
+        $this->info($publicEntrypointSummary);
+        $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
 
         return self::SUCCESS;
     }
@@ -89,5 +103,22 @@ class AuditLegacyFallbackCoverage extends Command
             ->unique()
             ->values()
             ->all();
+    }
+
+    private function publicRewriteHardeningErrors()
+    {
+        $errors = collect();
+        $htaccess = public_path('.htaccess');
+        $webConfig = public_path('web.config');
+
+        if (!File::exists($htaccess) || !str_contains(File::get($htaccess), 'Route Direct PHP Entrypoints Through Laravel')) {
+            $errors->push('public/.htaccess is missing the direct PHP entrypoint rewrite rule.');
+        }
+
+        if (!File::exists($webConfig) || !str_contains(File::get($webConfig), 'Route Direct PHP Files Through Laravel')) {
+            $errors->push('public/web.config is missing the direct PHP entrypoint rewrite rule.');
+        }
+
+        return $errors;
     }
 }

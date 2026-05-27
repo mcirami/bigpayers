@@ -228,12 +228,12 @@ class View
 
                 if (Session::userType() == \App\Privilege::ROLE_GOD) {
                     echo " <td class=\"value_span10\" >
-                                                         <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Duplicate Offer\"  href=\"offer_view.php?idoffer=".$rows->idoffer."&dupe=1\"> Duplicate </a>
+                                                         <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Duplicate Offer\"  href=\"/offer/".$rows->idoffer."/dupe\"> Duplicate </a>
                                                     
                                               </td>     </td>";
 
                     echo " <td class=\"value_span10\" >
-                             <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Delete Offer\" onclick=\"confirmSendTo('Are you sure you want to delete this offer?', 'offer_view.php?idoffer=".$rows->idoffer."&delete=1');\"  href=\"javascript:void(0);\"> Delete </a>
+                             <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Delete Offer\" onclick=\"confirmSendTo('Are you sure you want to delete this offer?', '/offer/".$rows->idoffer."/delete');\"  href=\"javascript:void(0);\"> Delete </a>
                                                     
                                               </td>     </td>";
 

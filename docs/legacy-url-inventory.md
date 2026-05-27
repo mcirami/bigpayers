@@ -310,6 +310,8 @@ Remaining cleanup is mostly archival and hardening:
   URLs redirect to `/login`
 - compatibility redirects use controller actions so the web route table remains
   cacheable
+- Apache and IIS rewrite configs route direct public `.php` file requests through
+  Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable
 - continue replacing legacy class dependencies inside modern controllers
 - add integration tests around the explicit compatibility routes
