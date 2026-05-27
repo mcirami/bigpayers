@@ -29,6 +29,18 @@ class AuditLegacyFallbackCoverage extends Command
         'index.php' => 'Laravel front controller.',
     ];
 
+    private array $retiredScriptEndpoints = [
+        'scripts/affiliate_signup.php' => 'Use the Laravel signup routes.',
+        'scripts/offer/request_offer.php' => 'Use /offer/{id}/request.',
+        'scripts/offer/rules/device/add.php' => 'Use POST /offer/rules/device.',
+        'scripts/offer/rules/device/edit.php' => 'Use GET|POST /offer/rules/device/{rule}.',
+        'scripts/offer/rules/geo/addGeo.php' => 'Use POST /offer/rules/geo.',
+        'scripts/offer/rules/geo/editGeo.php' => 'Use GET|POST /offer/rules/geo/{rule}.',
+        'scripts/process_bonuses.php' => 'Use /bonuses/process.',
+        'scripts/sale_log.php' => 'Use the Laravel chat-log routes.',
+        'scripts/update_geoip.php' => 'Use the provisioning/ops workflow; the web updater is retired.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = collect(File::allFiles(base_path('legacy')))
@@ -83,6 +95,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $modernScriptReferenceErrors = $this->modernRetiredScriptReferenceErrors();
+
+        if ($modernScriptReferenceErrors->isNotEmpty()) {
+            $this->error('Modern app code still references retired legacy script endpoints:');
+            $modernScriptReferenceErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
         $this->info(($legacyFiles->count() - count($this->intentionallyUnrouted)) . ' files have explicit Laravel route coverage.');
         $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
@@ -93,6 +114,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info($publicEntrypointSummary);
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
+        $this->info('Modern views and assets do not reference retired legacy script endpoints.');
 
         return self::SUCCESS;
     }
@@ -152,6 +174,42 @@ class AuditLegacyFallbackCoverage extends Command
         foreach ($blockedPatterns as $pattern => $message) {
             if (str_contains($contents, $pattern)) {
                 $errors->push($message);
+            }
+        }
+
+        return $errors;
+    }
+
+    private function modernRetiredScriptReferenceErrors()
+    {
+        $errors = collect();
+        $directories = [
+            'resources/views',
+            'resources/assets',
+            'public/js',
+            'src',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['js', 'php'], true)) {
+                    continue;
+                }
+
+                $contents = File::get($file->getPathname());
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                foreach ($this->retiredScriptEndpoints as $endpoint => $replacement) {
+                    if (str_contains($contents, $endpoint)) {
+                        $errors->push("{$relativePath} references {$endpoint}. {$replacement}");
+                    }
+                }
             }
         }
 

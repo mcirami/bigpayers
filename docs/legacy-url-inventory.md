@@ -217,9 +217,12 @@ Notes:
 - the old God-only click ID encode/decode utility has an explicit Laravel endpoint
 - affiliate mass postback assignment now has a Laravel account page
 
-## 4. Script Endpoints Still In Active Use
+## 4. Retired Script Endpoints
 
-These are especially important because the redesigned UI still depends on them.
+These are especially important because the redesigned UI previously depended on
+some of them. The fallback audit now fails if modern Blade views, public JS
+assets, resource JS assets, or legacy-backed PHP services reference the retired
+script URLs again.
 
 ### Offer Rules AJAX
 
@@ -237,13 +240,12 @@ Status:
 - The modern offer rules page and remaining rule JS assets now point at the
   Laravel endpoints.
 
-Referenced from:
+Former references:
 - `resources/views/offer/rules.blade.php`
 - `public/js/Offer/Rules/Geo.js`
 - `public/js/Offer/Rules/Device.js`
 
-These should be replaced with Laravel controller endpoints before the legacy
-fallback can safely disappear.
+These have been replaced with Laravel controller endpoints.
 
 ### Legacy Signup Script
 
@@ -283,7 +285,9 @@ such as `legacy/header.php`, `legacy/footer.php`, `legacy/404.php`, and
 
 ### Phase 2: Replace live script endpoints
 
-1. Migrate `/scripts/offer/rules/...` into Laravel controllers.
+1. Migrate `/scripts/offer/rules/...` into Laravel controllers. Done: modern
+   views and assets point at `/offer/rules/...`, and the audit fails if retired
+   script URLs return to modern code.
 2. Migrate offer postback editing. Done: `/offer/{id}/postback` replaces `/offer_edit_pb.php?offid=`.
 3. Migrate approve-offer-request flow. Done: `/offer/{id}/approve-request/{user}` replaces `/approve_offer_request.php?id=&u=`.
 
@@ -319,3 +323,5 @@ Remaining cleanup is mostly archival and hardening:
 - remove or archive unused `legacy/*.php` files once the team is comfortable
 - continue replacing legacy class dependencies inside modern controllers
 - add integration tests around the explicit compatibility routes
+- run `php vendor/bin/phpunit` for the initial audit and public compatibility
+  route regression tests
