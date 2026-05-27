@@ -74,6 +74,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $frontControllerErrors = $this->frontControllerFallbackErrors();
+
+        if ($frontControllerErrors->isNotEmpty()) {
+            $this->error('Front controller fallback hardening is incomplete:');
+            $frontControllerErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
         $this->info(($legacyFiles->count() - count($this->intentionallyUnrouted)) . ' files have explicit Laravel route coverage.');
         $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
@@ -83,6 +92,7 @@ class AuditLegacyFallbackCoverage extends Command
             : "{$publicEntrypointCount} public PHP entrypoints are expected front controllers or compatibility redirects.";
         $this->info($publicEntrypointSummary);
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
+        $this->info('Front controller has no dynamic legacy file fallback.');
 
         return self::SUCCESS;
     }
@@ -117,6 +127,32 @@ class AuditLegacyFallbackCoverage extends Command
 
         if (!File::exists($webConfig) || !str_contains(File::get($webConfig), 'Route Direct PHP Files Through Laravel')) {
             $errors->push('public/web.config is missing the direct PHP entrypoint rewrite rule.');
+        }
+
+        return $errors;
+    }
+
+    private function frontControllerFallbackErrors()
+    {
+        $errors = collect();
+        $frontController = public_path('index.php');
+
+        if (!File::exists($frontController)) {
+            return $errors->push('public/index.php is missing.');
+        }
+
+        $contents = File::get($frontController);
+        $blockedPatterns = [
+            '../legacy' => 'public/index.php must not include files from the legacy directory.',
+            'legacy/index.php' => 'public/index.php must not execute legacy/index.php.',
+            'is_file($file)' => 'public/index.php must not dynamically check request paths for executable files.',
+            'include($file)' => 'public/index.php must not dynamically include request-matched files.',
+        ];
+
+        foreach ($blockedPatterns as $pattern => $message) {
+            if (str_contains($contents, $pattern)) {
+                $errors->push($message);
+            }
         }
 
         return $errors;

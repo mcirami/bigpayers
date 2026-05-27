@@ -50,7 +50,7 @@ $app = require_once __DIR__.'/../bootstrap/app.php';
 
 
 // auto load legacy stuff
-include "../bootstrap/legacy_loader.php";
+require __DIR__.'/../bootstrap/legacy_loader.php';
 
 
 $kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);

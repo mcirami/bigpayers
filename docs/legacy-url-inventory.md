@@ -16,6 +16,10 @@ the modern controllers and services continue to use legacy classes, session
 state, and tenant/company setup. What is gone is the arbitrary execution of
 matching PHP files under `legacy/`.
 
+The legacy bootstrap is guarded so repeated includes in the same request do not
+restart the PHP session or re-run tenant setup. The fallback audit also checks
+that `public/index.php` does not regain a dynamic legacy file include path.
+
 ## Implemented Compatibility Batch
 
 The following wrappers have now been implemented in Laravel:

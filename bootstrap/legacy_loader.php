@@ -1,8 +1,14 @@
 <?php
 use Dotenv\Dotenv;
 
+if (defined('BIGPAYERS_LEGACY_LOADER_BOOTSTRAPPED')) {
+    return;
+}
+
+define('BIGPAYERS_LEGACY_LOADER_BOOTSTRAPPED', true);
+
 // composer auto load
-include __DIR__. "/../vendor/autoload.php";
+require_once __DIR__. "/../vendor/autoload.php";
 
 // .env
 
@@ -20,7 +26,9 @@ $dotEnv->load();
 
     }
 
-    session_start();
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
 
 
 //  TYS Install Connection
