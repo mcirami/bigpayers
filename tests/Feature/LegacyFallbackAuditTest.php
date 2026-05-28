@@ -44,11 +44,11 @@ class LegacyFallbackAuditTest extends TestCase
         }
     }
 
-    public function test_route_parser_sees_representative_compatibility_routes(): void
+    public function test_registered_route_reader_sees_representative_compatibility_routes(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $reflection = new ReflectionClass($command);
-        $method = $reflection->getMethod('routeUrisFromWebRoutes');
+        $method = $reflection->getMethod('routeUrisFromRegisteredRoutes');
         $method->setAccessible(true);
 
         $routeUris = $method->invoke($command);

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 
 class AuditLegacyFallbackCoverage extends Command
 {
@@ -66,7 +67,7 @@ class AuditLegacyFallbackCoverage extends Command
             ->sort()
             ->values();
 
-        $routeUris = $this->routeUrisFromWebRoutes();
+        $routeUris = $this->routeUrisFromRegisteredRoutes();
 
         $missing = $legacyFiles
             ->reject(fn ($file) => in_array($file, $routeUris, true))
@@ -146,20 +147,13 @@ class AuditLegacyFallbackCoverage extends Command
         return self::SUCCESS;
     }
 
-    private function routeUrisFromWebRoutes(): array
+    private function routeUrisFromRegisteredRoutes(): array
     {
-        $routes = File::get(base_path('routes/web.php'));
-
-        preg_match_all(
-            '/Route::(?:get|post|match|any|put|patch|delete)\(\s*(?:\[[^\]]+\]\s*,\s*)?[\'"]\/?([^\'"]+)[\'"]/',
-            $routes,
-            $matches
-        );
-
-        return collect($matches[1] ?? [])
-            ->map(fn ($uri) => trim($uri, '/'))
+        return collect(Route::getRoutes())
+            ->map(fn ($route) => trim($route->uri(), '/'))
             ->filter()
             ->unique()
+            ->sort()
             ->values()
             ->all();
     }
