@@ -21,6 +21,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Intentionally unrouted legacy files are not registered as Laravel routes.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern views and assets do not reference retired legacy script endpoints.',
             $output
         );
@@ -64,6 +68,25 @@ class LegacyFallbackAuditTest extends TestCase
         ] as $expectedRoute) {
             $this->assertContains($expectedRoute, $routeUris);
         }
+    }
+
+    public function test_registered_route_reader_ignores_api_routes(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
+
+        $this->assertNotContains('api/user', $routeUris);
+        $this->assertNotContains('api/sms-orders', $routeUris);
+        $this->assertContains('login.php', $routeUris);
+    }
+
+    public function test_intentionally_unrouted_files_are_not_registered_as_routes(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
+        $errors = $this->invokeAuditMethod($command, 'intentionallyUnroutedRouteErrors', [$routeUris]);
+
+        $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
     }
 
     public function test_retired_script_endpoint_guard_targets_existing_or_routed_legacy_scripts(): void
@@ -163,13 +186,13 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertStringContainsString('<action type="Rewrite" url="index.php" />', $webConfig);
     }
 
-    private function invokeAuditMethod(AuditLegacyFallbackCoverage $command, string $methodName)
+    private function invokeAuditMethod(AuditLegacyFallbackCoverage $command, string $methodName, array $arguments = [])
     {
         $reflection = new ReflectionClass($command);
         $method = $reflection->getMethod($methodName);
         $method->setAccessible(true);
 
-        return $method->invoke($command);
+        return $method->invokeArgs($command, $arguments);
     }
 
     private function auditProperty(AuditLegacyFallbackCoverage $command, string $propertyName): array

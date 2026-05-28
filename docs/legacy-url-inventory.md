@@ -314,8 +314,10 @@ Remaining cleanup is mostly archival and hardening:
 
 - run `php artisan legacy:audit-fallback-coverage` after route changes to catch
   legacy PHP files that are neither explicitly routed nor intentionally retired
-- the fallback audit reads Laravel's registered route collection, so route
-  coverage checks follow the routes the framework actually boots
+- the fallback audit reads Laravel's registered web route collection, so route
+  coverage checks follow the browser-facing routes the framework actually boots
+- intentionally retired/support-only legacy files are also checked to ensure
+  they do not become Laravel routes by accident
 - old public PHP compatibility shims have moved into Laravel routes; `/css/company.php`
   redirects to the `/css/company.css` controller and old login theme `index.php`
   URLs redirect to `/login`

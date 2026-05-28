@@ -69,6 +69,15 @@ class AuditLegacyFallbackCoverage extends Command
 
         $routeUris = $this->routeUrisFromRegisteredRoutes();
 
+        $unexpectedIntentionalRoutes = $this->intentionallyUnroutedRouteErrors($routeUris);
+
+        if ($unexpectedIntentionalRoutes->isNotEmpty()) {
+            $this->error('Legacy files marked intentionally unrouted are registered as Laravel routes:');
+            $unexpectedIntentionalRoutes->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $missing = $legacyFiles
             ->reject(fn ($file) => in_array($file, $routeUris, true))
             ->reject(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
@@ -142,6 +151,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
         $this->info('Legacy bootstrap is idempotent and guards native session startup.');
+        $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
 
         return self::SUCCESS;
@@ -150,12 +160,21 @@ class AuditLegacyFallbackCoverage extends Command
     private function routeUrisFromRegisteredRoutes(): array
     {
         return collect(Route::getRoutes())
+            ->filter(fn ($route) => in_array('web', (array) $route->getAction('middleware'), true))
             ->map(fn ($route) => trim($route->uri(), '/'))
             ->filter()
             ->unique()
             ->sort()
             ->values()
             ->all();
+    }
+
+    private function intentionallyUnroutedRouteErrors(array $routeUris)
+    {
+        return collect(array_keys($this->intentionallyUnrouted))
+            ->filter(fn ($file) => in_array($file, $routeUris, true))
+            ->map(fn ($file) => "{$file}: {$this->intentionallyUnrouted[$file]}")
+            ->values();
     }
 
     private function publicRewriteHardeningErrors()
