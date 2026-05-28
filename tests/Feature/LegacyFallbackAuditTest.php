@@ -80,4 +80,29 @@ class LegacyFallbackAuditTest extends TestCase
             $this->assertNotSame('', trim($replacement));
         }
     }
+
+    public function test_front_controller_keeps_legacy_loader_without_dynamic_legacy_fallback(): void
+    {
+        $frontController = File::get(public_path('index.php'));
+
+        $this->assertStringContainsString("require __DIR__.'/../bootstrap/legacy_loader.php';", $frontController);
+        $this->assertStringNotContainsString('../legacy', $frontController);
+        $this->assertStringNotContainsString('legacy/index.php', $frontController);
+        $this->assertStringNotContainsString('is_file($file)', $frontController);
+        $this->assertStringNotContainsString('include($file)', $frontController);
+    }
+
+    public function test_public_webserver_configs_route_direct_php_requests_through_laravel(): void
+    {
+        $htaccess = File::get(public_path('.htaccess'));
+        $webConfig = File::get(public_path('web.config'));
+
+        $this->assertStringContainsString('Route Direct PHP Entrypoints Through Laravel', $htaccess);
+        $this->assertStringContainsString('RewriteCond %{REQUEST_URI} !^/index\\.php$', $htaccess);
+        $this->assertStringContainsString('RewriteRule ^.*\\.php$ index.php [L]', $htaccess);
+
+        $this->assertStringContainsString('Route Direct PHP Files Through Laravel', $webConfig);
+        $this->assertStringContainsString('<match url="^(?!index\\.php$).+\\.php$" ignoreCase="false" />', $webConfig);
+        $this->assertStringContainsString('<action type="Rewrite" url="index.php" />', $webConfig);
+    }
 }

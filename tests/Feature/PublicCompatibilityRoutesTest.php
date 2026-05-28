@@ -2,10 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\PublicCompatibilityController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use ReflectionClass;
 use Tests\TestCase;
 
 class PublicCompatibilityRoutesTest extends TestCase
@@ -28,6 +30,10 @@ class PublicCompatibilityRoutesTest extends TestCase
             PublicCompatibilityController::class . '@redirectLoginTheme',
             Route::getRoutes()->match(Request::create('/login_themes/default/index.php'))->getActionName()
         );
+        $this->assertSame(
+            CompanyCssController::class,
+            Route::getRoutes()->match(Request::create('/css/company.css'))->getActionName()
+        );
     }
 
     public function test_public_php_compatibility_controllers_redirect_to_laravel_routes(): void
@@ -39,5 +45,46 @@ class PublicCompatibilityRoutesTest extends TestCase
         $this->assertStringEndsWith('/logout', $legacyController->redirectLogoutPhp()->getTargetUrl());
         $this->assertStringEndsWith('/css/company.css', $publicController->redirectCompanyCss()->getTargetUrl());
         $this->assertStringEndsWith('/login', $publicController->redirectLoginTheme()->getTargetUrl());
+    }
+
+    public function test_company_css_sanitizes_theme_colors_before_rendering(): void
+    {
+        $controller = app(CompanyCssController::class);
+        $reflection = new ReflectionClass($controller);
+        $hexColor = $reflection->getMethod('hexColor');
+        $hexColor->setAccessible(true);
+
+        $this->assertSame('AABBCC', $hexColor->invoke($controller, '#abc'));
+        $this->assertSame('12ABEF', $hexColor->invoke($controller, '12-AB-EF'));
+        $this->assertSame('000000', $hexColor->invoke($controller, 'not-a-color'));
+        $this->assertSame('000000', $hexColor->invoke($controller, null));
+    }
+
+    public function test_company_css_renderer_uses_sanitized_hex_values(): void
+    {
+        $controller = app(CompanyCssController::class);
+        $reflection = new ReflectionClass($controller);
+        $buildCss = $reflection->getMethod('buildCss');
+        $buildCss->setAccessible(true);
+
+        $css = $buildCss->invoke($controller, [
+            '111111',
+            '222222',
+            '333333',
+            '444444',
+            '555555',
+            '666666',
+            '777777',
+            '888888',
+            '999999',
+            'AAAAAA',
+            'BBBBBB',
+        ]);
+
+        $this->assertStringContainsString('background-color: #111111;', $css);
+        $this->assertStringContainsString('color: #222222!important;', $css);
+        $this->assertStringContainsString('background: #888888 ;', $css);
+        $this->assertStringContainsString('background: #BBBBBB;', $css);
+        $this->assertStringNotContainsString('<?php', $css);
     }
 }
