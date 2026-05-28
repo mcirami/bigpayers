@@ -18,7 +18,8 @@ matching PHP files under `legacy/`.
 
 The legacy bootstrap is guarded so repeated includes in the same request do not
 restart the PHP session or re-run tenant setup. The fallback audit also checks
-that `public/index.php` does not regain a dynamic legacy file include path.
+that `public/index.php` does not regain a dynamic legacy file include path and
+that `bootstrap/legacy_loader.php` keeps its idempotency and session guards.
 
 ## Implemented Compatibility Batch
 

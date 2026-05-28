@@ -41,6 +41,23 @@ class AuditLegacyFallbackCoverage extends Command
         'scripts/update_geoip.php' => 'Use the provisioning/ops workflow; the web updater is retired.',
     ];
 
+    private array $frontControllerForbiddenPatterns = [
+        '../legacy' => 'public/index.php must not include files from the legacy directory.',
+        'legacy/index.php' => 'public/index.php must not execute legacy/index.php.',
+        'is_file($file)' => 'public/index.php must not dynamically check request paths for executable files.',
+        'include($file)' => 'public/index.php must not dynamically include request-matched files.',
+    ];
+
+    private array $legacyBootstrapRequiredPatterns = [
+        'BIGPAYERS_LEGACY_LOADER_BOOTSTRAPPED' => 'bootstrap/legacy_loader.php is missing the idempotency guard.',
+        'require_once __DIR__. "/../vendor/autoload.php";' => 'bootstrap/legacy_loader.php must load Composer with require_once.',
+        'session_status() === PHP_SESSION_NONE' => 'bootstrap/legacy_loader.php must guard native session startup.',
+    ];
+
+    private array $legacyBootstrapForbiddenPatterns = [
+        'include __DIR__. "/../vendor/autoload.php";' => 'bootstrap/legacy_loader.php must not include Composer repeatedly.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = collect(File::allFiles(base_path('legacy')))
@@ -95,6 +112,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyBootstrapErrors = $this->legacyBootstrapHardeningErrors();
+
+        if ($legacyBootstrapErrors->isNotEmpty()) {
+            $this->error('Legacy bootstrap hardening is incomplete:');
+            $legacyBootstrapErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $modernScriptReferenceErrors = $this->modernRetiredScriptReferenceErrors();
 
         if ($modernScriptReferenceErrors->isNotEmpty()) {
@@ -114,6 +140,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info($publicEntrypointSummary);
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
+        $this->info('Legacy bootstrap is idempotent and guards native session startup.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
 
         return self::SUCCESS;
@@ -164,18 +191,25 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         $contents = File::get($frontController);
-        $blockedPatterns = [
-            '../legacy' => 'public/index.php must not include files from the legacy directory.',
-            'legacy/index.php' => 'public/index.php must not execute legacy/index.php.',
-            'is_file($file)' => 'public/index.php must not dynamically check request paths for executable files.',
-            'include($file)' => 'public/index.php must not dynamically include request-matched files.',
-        ];
 
-        foreach ($blockedPatterns as $pattern => $message) {
-            if (str_contains($contents, $pattern)) {
-                $errors->push($message);
-            }
+        $this->appendForbiddenPatternErrors($errors, $contents, $this->frontControllerForbiddenPatterns);
+
+        return $errors;
+    }
+
+    private function legacyBootstrapHardeningErrors()
+    {
+        $errors = collect();
+        $legacyBootstrap = base_path('bootstrap/legacy_loader.php');
+
+        if (!File::exists($legacyBootstrap)) {
+            return $errors->push('bootstrap/legacy_loader.php is missing.');
         }
+
+        $contents = File::get($legacyBootstrap);
+
+        $this->appendMissingPatternErrors($errors, $contents, $this->legacyBootstrapRequiredPatterns);
+        $this->appendForbiddenPatternErrors($errors, $contents, $this->legacyBootstrapForbiddenPatterns);
 
         return $errors;
     }
@@ -214,5 +248,23 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         return $errors;
+    }
+
+    private function appendMissingPatternErrors($errors, string $contents, array $requiredPatterns): void
+    {
+        foreach ($requiredPatterns as $pattern => $message) {
+            if (!str_contains($contents, $pattern)) {
+                $errors->push($message);
+            }
+        }
+    }
+
+    private function appendForbiddenPatternErrors($errors, string $contents, array $forbiddenPatterns): void
+    {
+        foreach ($forbiddenPatterns as $pattern => $message) {
+            if (str_contains($contents, $pattern)) {
+                $errors->push($message);
+            }
+        }
     }
 }
