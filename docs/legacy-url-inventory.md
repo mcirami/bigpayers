@@ -323,6 +323,9 @@ Remaining cleanup is mostly archival and hardening:
   URLs redirect to `/login`
 - compatibility redirects use controller actions so the web route table remains
   cacheable
+- legacy `.php` POST compatibility routes are exempted from Laravel CSRF checks
+  and audited so old forms reach their bridge/controller instead of failing with
+  a 419 response
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

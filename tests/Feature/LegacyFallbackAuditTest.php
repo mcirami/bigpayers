@@ -28,6 +28,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern views and assets do not reference retired legacy script endpoints.',
             $output
         );
+        $this->assertStringContainsString(
+            'Legacy POST compatibility routes have CSRF exceptions.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -171,6 +175,7 @@ class LegacyFallbackAuditTest extends TestCase
             'frontControllerFallbackErrors',
             'legacyBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
+            'legacyPostCsrfExceptionErrors',
         ] as $methodName) {
             $errors = $this->invokeAuditMethod($command, $methodName);
 

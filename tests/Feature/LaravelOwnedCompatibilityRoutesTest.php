@@ -66,15 +66,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $property->setAccessible(true);
 
         $except = $property->getValue($middleware);
+        $legacyPostUris = collect(Route::getRoutes())
+            ->filter(fn ($route) => in_array('POST', $route->methods(), true))
+            ->map(fn ($route) => trim($route->uri(), '/'))
+            ->filter(fn ($uri) => str_contains($uri, '.php'))
+            ->unique()
+            ->sort()
+            ->values();
 
-        foreach ([
-            'upload_logo.php',
-            'upload_favicon.php',
-            'add_new_ip_blacklist.php',
-            'edit_blacklisted_ip.php',
-            'mass_assign_pb.php',
-            'scripts/sale_log.php',
-        ] as $legacyPostUri) {
+        $this->assertNotEmpty($legacyPostUris);
+
+        foreach ($legacyPostUris as $legacyPostUri) {
             $this->assertContains($legacyPostUri, $except);
         }
     }

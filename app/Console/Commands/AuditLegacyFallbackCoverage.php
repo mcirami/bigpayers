@@ -2,9 +2,11 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
+use ReflectionClass;
 
 class AuditLegacyFallbackCoverage extends Command
 {
@@ -135,6 +137,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
+
+        if ($csrfExceptionErrors->isNotEmpty()) {
+            $this->error('Legacy POST compatibility routes are missing CSRF exceptions:');
+            $csrfExceptionErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
         $this->info(($legacyFiles->count() - count($this->intentionallyUnrouted)) . ' files have explicit Laravel route coverage.');
         $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
@@ -148,6 +159,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Legacy bootstrap is idempotent and guards native session startup.');
         $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
+        $this->info('Legacy POST compatibility routes have CSRF exceptions.');
 
         return self::SUCCESS;
     }
@@ -304,6 +316,34 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         return $errors;
+    }
+
+    private function legacyPostCsrfExceptionErrors()
+    {
+        $csrfExceptions = $this->csrfExceptionUris();
+
+        return collect(Route::getRoutes())
+            ->filter(fn ($route) => in_array('web', (array) $route->getAction('middleware'), true))
+            ->filter(fn ($route) => in_array('POST', $route->methods(), true))
+            ->map(fn ($route) => trim($route->uri(), '/'))
+            ->filter(fn ($uri) => str_contains($uri, '.php'))
+            ->unique()
+            ->sort()
+            ->reject(fn ($uri) => in_array($uri, $csrfExceptions, true))
+            ->map(fn ($uri) => "{$uri}: POST compatibility route is missing from VerifyCsrfToken exceptions.")
+            ->values();
+    }
+
+    private function csrfExceptionUris(): array
+    {
+        $middleware = app(VerifyCsrfToken::class);
+        $reflection = new ReflectionClass($middleware);
+        $property = $reflection->getProperty('except');
+        $property->setAccessible(true);
+
+        return collect($property->getValue($middleware))
+            ->map(fn ($uri) => trim($uri, '/'))
+            ->all();
     }
 
     private function appendMissingPatternErrors($errors, string $contents, array $requiredPatterns): void
