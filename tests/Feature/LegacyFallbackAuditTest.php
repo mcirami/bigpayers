@@ -32,6 +32,18 @@ class LegacyFallbackAuditTest extends TestCase
             'Legacy POST compatibility routes have CSRF exceptions.',
             $output
         );
+        $this->assertStringContainsString(
+            'Registered PHP compatibility routes map to legacy files or documented public exceptions.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Documented non-legacy PHP compatibility route exceptions remain registered.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Allowed public PHP entrypoints exist and have documented reasons.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -137,12 +149,111 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
     }
 
+    public function test_registered_php_routes_map_to_legacy_files_or_documented_public_exceptions(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
+        $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
+        $errors = $this->invokeAuditMethod($command, 'registeredPhpRouteInventoryErrors', [$legacyFiles, $routeUris]);
+
+        $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
+    }
+
+    public function test_registered_php_route_inventory_errors_report_unknown_php_routes(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $legacyFiles = collect([
+            'login.php',
+        ]);
+        $routeUris = [
+            'login.php',
+            'alogin.php',
+            'css/company.php',
+            'missing_compatibility.php',
+        ];
+
+        $errors = $this->invokeAuditMethod($command, 'registeredPhpRouteInventoryErrors', [$legacyFiles, $routeUris]);
+
+        $this->assertContains(
+            'missing_compatibility.php: registered PHP route has no matching legacy file or documented public exception.',
+            $errors->all()
+        );
+        $this->assertNotContains(
+            'css/company.php: registered PHP route has no matching legacy file or documented public exception.',
+            $errors->all()
+        );
+        $this->assertNotContains(
+            'alogin.php: registered PHP route has no matching legacy file or documented public exception.',
+            $errors->all()
+        );
+    }
+
+    public function test_allowed_non_legacy_php_route_inventory_errors_report_stale_or_blank_entries(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $allowedNonLegacyPhpRoutes = $this->auditProperty($command, 'allowedNonLegacyPhpRoutes');
+        $allowedNonLegacyPhpRoutes['alogin.php'] = '';
+        $allowedNonLegacyPhpRoutes['missing_public_compatibility.php'] = '';
+        $this->setAuditProperty($command, 'allowedNonLegacyPhpRoutes', $allowedNonLegacyPhpRoutes);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'allowedNonLegacyPhpRouteInventoryErrors',
+            [['alogin.php', 'css/company.php', 'login_themes/{theme}/index.php']]
+        );
+
+        $this->assertContains(
+            'alogin.php: documented non-legacy PHP route exception reason is blank.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'missing_public_compatibility.php: documented non-legacy PHP route exception is not registered.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'missing_public_compatibility.php: documented non-legacy PHP route exception reason is blank.',
+            $errors->all()
+        );
+    }
+
     public function test_public_php_inventory_has_no_unexpected_entrypoints(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $unexpectedPublicPhp = $this->invokeAuditMethod($command, 'unexpectedPublicPhpEntrypoints');
 
         $this->assertTrue($unexpectedPublicPhp->isEmpty(), $unexpectedPublicPhp->implode('; '));
+    }
+
+    public function test_allowed_public_php_entrypoints_exist_and_have_documented_reasons(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $errors = $this->invokeAuditMethod($command, 'allowedPublicPhpInventoryErrors');
+
+        $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
+    }
+
+    public function test_allowed_public_php_inventory_errors_report_stale_or_blank_entries(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $allowedPublicPhp = $this->auditProperty($command, 'allowedPublicPhp');
+        $allowedPublicPhp['index.php'] = '';
+        $allowedPublicPhp['missing_public_entrypoint.php'] = '';
+        $this->setAuditProperty($command, 'allowedPublicPhp', $allowedPublicPhp);
+
+        $errors = $this->invokeAuditMethod($command, 'allowedPublicPhpInventoryErrors');
+
+        $this->assertContains(
+            'public/index.php: allowed public PHP entrypoint reason is blank.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'public/missing_public_entrypoint.php: allowed public PHP entrypoint does not exist.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'public/missing_public_entrypoint.php: allowed public PHP entrypoint reason is blank.',
+            $errors->all()
+        );
     }
 
     public function test_retired_script_endpoint_guard_targets_existing_or_routed_legacy_scripts(): void
@@ -176,14 +287,54 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
             'legacyPostCsrfExceptionErrors',
+            'registeredPhpRouteInventoryErrors',
+            'allowedNonLegacyPhpRouteInventoryErrors',
+            'allowedPublicPhpInventoryErrors',
         ] as $methodName) {
-            $errors = $this->invokeAuditMethod($command, $methodName);
+            $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
+            $arguments = match ($methodName) {
+                'registeredPhpRouteInventoryErrors' => [
+                    $this->invokeAuditMethod($command, 'legacyPhpFiles'),
+                    $routeUris,
+                ],
+                'allowedNonLegacyPhpRouteInventoryErrors' => [$routeUris],
+                default => [],
+            };
+            $errors = $this->invokeAuditMethod($command, $methodName, $arguments);
 
             $this->assertTrue(
                 $errors->isEmpty(),
                 "{$methodName} reported errors: " . $errors->implode('; ')
             );
         }
+    }
+
+    public function test_legacy_post_csrf_exception_errors_report_missing_and_stale_entries(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $legacyPostRoutes = collect([
+            'signup.php',
+            'missing_exception.php',
+        ]);
+        $csrfExceptions = [
+            'signup.php',
+            'stale_exception.php',
+        ];
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyPostCsrfExceptionErrorsFor',
+            [$legacyPostRoutes, $csrfExceptions]
+        );
+
+        $this->assertContains(
+            'missing_exception.php: POST compatibility route is missing from VerifyCsrfToken exceptions.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'stale_exception.php: VerifyCsrfToken exception does not match a registered POST compatibility route.',
+            $errors->all()
+        );
     }
 
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void

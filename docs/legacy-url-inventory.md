@@ -326,6 +326,13 @@ Remaining cleanup is mostly archival and hardening:
 - legacy `.php` POST compatibility routes are exempted from Laravel CSRF checks
   and audited so old forms reach their bridge/controller instead of failing with
   a 419 response
+- registered `.php` compatibility routes are audited so they continue to map to
+  a real legacy file or an explicit public-route exception
+- non-legacy `.php` route exceptions such as `/alogin.php`, `/css/company.php`,
+  and login-theme `index.php` redirects are audited for both registration and
+  documented reasons
+- expected public PHP entrypoints such as `public/index.php` are audited for
+  both file existence and documented reasons
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

@@ -32,6 +32,12 @@ class AuditLegacyFallbackCoverage extends Command
         'index.php' => 'Laravel front controller.',
     ];
 
+    private array $allowedNonLegacyPhpRoutes = [
+        'alogin.php' => 'Legacy admin-login alias redirecting to /login/{id}.',
+        'css/company.php' => 'Public compatibility redirect to /css/company.css.',
+        'login_themes/{theme}/index.php' => 'Public compatibility redirect to /login.',
+    ];
+
     private array $retiredScriptEndpoints = [
         'scripts/affiliate_signup.php' => 'Use the Laravel signup routes.',
         'scripts/offer/request_offer.php' => 'Use /offer/{id}/request.',
@@ -75,6 +81,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $registeredPhpRouteErrors = $this->registeredPhpRouteInventoryErrors($legacyFiles, $routeUris);
+
+        if ($registeredPhpRouteErrors->isNotEmpty()) {
+            $this->error('Registered PHP compatibility routes are stale or undocumented:');
+            $registeredPhpRouteErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $nonLegacyPhpRouteErrors = $this->allowedNonLegacyPhpRouteInventoryErrors($routeUris);
+
+        if ($nonLegacyPhpRouteErrors->isNotEmpty()) {
+            $this->error('Documented non-legacy PHP compatibility routes are stale or incomplete:');
+            $nonLegacyPhpRouteErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $intentionalInventoryErrors = $this->intentionallyUnroutedInventoryErrors($legacyFiles);
 
         if ($intentionalInventoryErrors->isNotEmpty()) {
@@ -97,6 +121,15 @@ class AuditLegacyFallbackCoverage extends Command
         if ($unexpectedPublicPhp->isNotEmpty()) {
             $this->error('Unexpected public PHP entrypoints:');
             $unexpectedPublicPhp->each(fn ($file) => $this->line(" - public/{$file}"));
+
+            return self::FAILURE;
+        }
+
+        $publicPhpEntrypointErrors = $this->allowedPublicPhpInventoryErrors();
+
+        if ($publicPhpEntrypointErrors->isNotEmpty()) {
+            $this->error('Allowed public PHP entrypoint inventory is stale or incomplete:');
+            $publicPhpEntrypointErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -140,7 +173,7 @@ class AuditLegacyFallbackCoverage extends Command
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
-            $this->error('Legacy POST compatibility routes are missing CSRF exceptions:');
+            $this->error('Legacy POST compatibility CSRF exceptions are missing or stale:');
             $csrfExceptionErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -158,8 +191,11 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Front controller has no dynamic legacy file fallback.');
         $this->info('Legacy bootstrap is idempotent and guards native session startup.');
         $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
+        $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
         $this->info('Legacy POST compatibility routes have CSRF exceptions.');
+        $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
+        $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
 
         return self::SUCCESS;
     }
@@ -222,6 +258,37 @@ class AuditLegacyFallbackCoverage extends Command
             ->values();
     }
 
+    private function registeredPhpRouteInventoryErrors($legacyFiles, array $routeUris)
+    {
+        $legacyFileLookup = $legacyFiles->flip();
+
+        return collect($routeUris)
+            ->filter(fn ($uri) => str_contains($uri, '.php'))
+            ->reject(fn ($uri) => $legacyFileLookup->has($uri))
+            ->reject(fn ($uri) => array_key_exists($uri, $this->allowedNonLegacyPhpRoutes))
+            ->map(fn ($uri) => "{$uri}: registered PHP route has no matching legacy file or documented public exception.")
+            ->values();
+    }
+
+    private function allowedNonLegacyPhpRouteInventoryErrors(array $routeUris)
+    {
+        return collect($this->allowedNonLegacyPhpRoutes)
+            ->flatMap(function ($reason, $uri) use ($routeUris) {
+                $errors = [];
+
+                if (!in_array($uri, $routeUris, true)) {
+                    $errors[] = "{$uri}: documented non-legacy PHP route exception is not registered.";
+                }
+
+                if (!is_string($reason) || trim($reason) === '') {
+                    $errors[] = "{$uri}: documented non-legacy PHP route exception reason is blank.";
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
     private function unexpectedPublicPhpEntrypoints()
     {
         return collect(File::allFiles(public_path()))
@@ -229,6 +296,25 @@ class AuditLegacyFallbackCoverage extends Command
             ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
             ->reject(fn ($file) => array_key_exists($file, $this->allowedPublicPhp))
             ->sort()
+            ->values();
+    }
+
+    private function allowedPublicPhpInventoryErrors()
+    {
+        return collect($this->allowedPublicPhp)
+            ->flatMap(function ($reason, $file) {
+                $errors = [];
+
+                if (!File::exists(public_path($file))) {
+                    $errors[] = "public/{$file}: allowed public PHP entrypoint does not exist.";
+                }
+
+                if (!is_string($reason) || trim($reason) === '') {
+                    $errors[] = "public/{$file}: allowed public PHP entrypoint reason is blank.";
+                }
+
+                return $errors;
+            })
             ->values();
     }
 
@@ -320,8 +406,14 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPostCsrfExceptionErrors()
     {
-        $csrfExceptions = $this->csrfExceptionUris();
+        return $this->legacyPostCsrfExceptionErrorsFor(
+            $this->legacyPostRouteUris(),
+            $this->csrfExceptionUris()
+        );
+    }
 
+    private function legacyPostRouteUris()
+    {
         return collect(Route::getRoutes())
             ->filter(fn ($route) => in_array('web', (array) $route->getAction('middleware'), true))
             ->filter(fn ($route) => in_array('POST', $route->methods(), true))
@@ -329,8 +421,29 @@ class AuditLegacyFallbackCoverage extends Command
             ->filter(fn ($uri) => str_contains($uri, '.php'))
             ->unique()
             ->sort()
-            ->reject(fn ($uri) => in_array($uri, $csrfExceptions, true))
+            ->values();
+    }
+
+    private function legacyPostCsrfExceptionErrorsFor($legacyPostRoutes, array $csrfExceptions)
+    {
+        $normalizedCsrfExceptions = collect($csrfExceptions)
+            ->map(fn ($uri) => trim($uri, '/'))
+            ->unique()
+            ->values();
+
+        $missingExceptions = $legacyPostRoutes
+            ->reject(fn ($uri) => $normalizedCsrfExceptions->contains($uri))
             ->map(fn ($uri) => "{$uri}: POST compatibility route is missing from VerifyCsrfToken exceptions.")
+            ->values();
+
+        $staleExceptions = $normalizedCsrfExceptions
+            ->filter(fn ($uri) => str_contains($uri, '.php'))
+            ->reject(fn ($uri) => $legacyPostRoutes->contains($uri))
+            ->map(fn ($uri) => "{$uri}: VerifyCsrfToken exception does not match a registered POST compatibility route.")
+            ->values();
+
+        return $missingExceptions
+            ->merge($staleExceptions)
             ->values();
     }
 

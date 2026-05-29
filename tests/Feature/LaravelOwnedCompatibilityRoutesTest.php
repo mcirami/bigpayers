@@ -73,11 +73,21 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             ->unique()
             ->sort()
             ->values();
+        $legacyPhpCsrfExceptions = collect($except)
+            ->map(fn ($uri) => trim($uri, '/'))
+            ->filter(fn ($uri) => str_contains($uri, '.php'))
+            ->unique()
+            ->sort()
+            ->values();
 
         $this->assertNotEmpty($legacyPostUris);
 
         foreach ($legacyPostUris as $legacyPostUri) {
             $this->assertContains($legacyPostUri, $except);
+        }
+
+        foreach ($legacyPhpCsrfExceptions as $legacyPhpCsrfException) {
+            $this->assertContains($legacyPhpCsrfException, $legacyPostUris);
         }
     }
 
