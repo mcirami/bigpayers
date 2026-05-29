@@ -61,12 +61,7 @@ class AuditLegacyFallbackCoverage extends Command
 
     public function handle(): int
     {
-        $legacyFiles = collect(File::allFiles(base_path('legacy')))
-            ->filter(fn ($file) => $file->getExtension() === 'php')
-            ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
-            ->sort()
-            ->values();
-
+        $legacyFiles = $this->legacyPhpFiles();
         $routeUris = $this->routeUrisFromRegisteredRoutes();
 
         $unexpectedIntentionalRoutes = $this->intentionallyUnroutedRouteErrors($routeUris);
@@ -78,17 +73,17 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $missing = $legacyFiles
-            ->reject(fn ($file) => in_array($file, $routeUris, true))
-            ->reject(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
-            ->values();
+        $intentionalInventoryErrors = $this->intentionallyUnroutedInventoryErrors($legacyFiles);
 
-        $unexpectedPublicPhp = collect(File::allFiles(public_path()))
-            ->filter(fn ($file) => $file->getExtension() === 'php')
-            ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
-            ->reject(fn ($file) => array_key_exists($file, $this->allowedPublicPhp))
-            ->sort()
-            ->values();
+        if ($intentionalInventoryErrors->isNotEmpty()) {
+            $this->error('Intentionally unrouted legacy file inventory is stale or incomplete:');
+            $intentionalInventoryErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $missing = $this->legacyFilesWithoutRouteCoverage($legacyFiles, $routeUris);
+        $unexpectedPublicPhp = $this->unexpectedPublicPhpEntrypoints();
 
         if ($missing->isNotEmpty()) {
             $this->error('Legacy PHP files without explicit route coverage or an intentional unrouted reason:');
@@ -157,6 +152,15 @@ class AuditLegacyFallbackCoverage extends Command
         return self::SUCCESS;
     }
 
+    private function legacyPhpFiles()
+    {
+        return collect(File::allFiles(base_path('legacy')))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
+            ->sort()
+            ->values();
+    }
+
     private function routeUrisFromRegisteredRoutes(): array
     {
         return collect(Route::getRoutes())
@@ -169,11 +173,50 @@ class AuditLegacyFallbackCoverage extends Command
             ->all();
     }
 
+    private function legacyFilesWithoutRouteCoverage($legacyFiles, array $routeUris)
+    {
+        return $legacyFiles
+            ->reject(fn ($file) => in_array($file, $routeUris, true))
+            ->reject(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
+            ->values();
+    }
+
+    private function intentionallyUnroutedInventoryErrors($legacyFiles)
+    {
+        $legacyFileLookup = $legacyFiles->flip();
+
+        return collect($this->intentionallyUnrouted)
+            ->flatMap(function ($reason, $file) use ($legacyFileLookup) {
+                $errors = [];
+
+                if (!$legacyFileLookup->has($file)) {
+                    $errors[] = "{$file}: listed as intentionally unrouted but legacy/{$file} does not exist.";
+                }
+
+                if (!is_string($reason) || trim($reason) === '') {
+                    $errors[] = "{$file}: intentionally unrouted reason is blank.";
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
     private function intentionallyUnroutedRouteErrors(array $routeUris)
     {
         return collect(array_keys($this->intentionallyUnrouted))
             ->filter(fn ($file) => in_array($file, $routeUris, true))
             ->map(fn ($file) => "{$file}: {$this->intentionallyUnrouted[$file]}")
+            ->values();
+    }
+
+    private function unexpectedPublicPhpEntrypoints()
+    {
+        return collect(File::allFiles(public_path()))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
+            ->reject(fn ($file) => array_key_exists($file, $this->allowedPublicPhp))
+            ->sort()
             ->values();
     }
 

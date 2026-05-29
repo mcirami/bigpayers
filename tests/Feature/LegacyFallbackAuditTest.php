@@ -30,22 +30,66 @@ class LegacyFallbackAuditTest extends TestCase
         );
     }
 
+    public function test_audit_summary_uses_current_inventory_counts(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
+        $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
+
+        $this->assertSame(Command::SUCCESS, Artisan::call('legacy:audit-fallback-coverage'));
+        $output = Artisan::output();
+
+        $this->assertStringContainsString("Audited {$legacyFiles->count()} legacy PHP files.", $output);
+        $this->assertStringContainsString(
+            ($legacyFiles->count() - count($intentionallyUnrouted)) . ' files have explicit Laravel route coverage.',
+            $output
+        );
+        $this->assertStringContainsString(
+            count($intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.',
+            $output
+        );
+    }
+
     public function test_intentionally_unrouted_legacy_files_have_documented_reasons(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
-        $reflection = new ReflectionClass($command);
-        $property = $reflection->getProperty('intentionallyUnrouted');
-        $property->setAccessible(true);
-
-        $intentionallyUnrouted = $property->getValue($command);
+        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
+        $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
+        $inventoryErrors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors', [$legacyFiles]);
 
         $this->assertNotEmpty($intentionallyUnrouted);
+        $this->assertTrue($inventoryErrors->isEmpty(), $inventoryErrors->implode('; '));
 
         foreach ($intentionallyUnrouted as $legacyFile => $reason) {
             $this->assertFileExists(base_path('legacy/' . $legacyFile));
             $this->assertIsString($reason);
             $this->assertNotSame('', trim($reason));
         }
+    }
+
+    public function test_intentionally_unrouted_inventory_errors_report_stale_or_blank_entries(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
+        $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
+        $intentionallyUnrouted['404.php'] = '';
+        $intentionallyUnrouted['missing_legacy_file.php'] = '';
+        $this->setAuditProperty($command, 'intentionallyUnrouted', $intentionallyUnrouted);
+
+        $errors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors', [$legacyFiles]);
+
+        $this->assertContains(
+            '404.php: intentionally unrouted reason is blank.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'missing_legacy_file.php: listed as intentionally unrouted but legacy/missing_legacy_file.php does not exist.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'missing_legacy_file.php: intentionally unrouted reason is blank.',
+            $errors->all()
+        );
     }
 
     public function test_registered_route_reader_sees_representative_compatibility_routes(): void
@@ -87,6 +131,14 @@ class LegacyFallbackAuditTest extends TestCase
         $errors = $this->invokeAuditMethod($command, 'intentionallyUnroutedRouteErrors', [$routeUris]);
 
         $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
+    }
+
+    public function test_public_php_inventory_has_no_unexpected_entrypoints(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+        $unexpectedPublicPhp = $this->invokeAuditMethod($command, 'unexpectedPublicPhpEntrypoints');
+
+        $this->assertTrue($unexpectedPublicPhp->isEmpty(), $unexpectedPublicPhp->implode('; '));
     }
 
     public function test_retired_script_endpoint_guard_targets_existing_or_routed_legacy_scripts(): void
@@ -202,5 +254,13 @@ class LegacyFallbackAuditTest extends TestCase
         $property->setAccessible(true);
 
         return $property->getValue($command);
+    }
+
+    private function setAuditProperty(AuditLegacyFallbackCoverage $command, string $propertyName, array $value): void
+    {
+        $reflection = new ReflectionClass($command);
+        $property = $reflection->getProperty($propertyName);
+        $property->setAccessible(true);
+        $property->setValue($command, $value);
     }
 }
