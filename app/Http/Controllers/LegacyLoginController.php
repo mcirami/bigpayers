@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use LeadMax\TrackYourStats\User\Login;
 use LeadMax\TrackYourStats\User\User;
-use LeadMax\TrackYourStats\System\Company;
 
 class LegacyLoginController extends Controller
 {
@@ -14,8 +14,7 @@ class LegacyLoginController extends Controller
 	public function showLoginForm(Request $request)
 	{
 		$user = new User();
-		$company = Company::loadFromSession();
-		$company->reloadSettings();
+		$company = $this->currentCompany();
 
 		if ($user->is_loggedin() && $user->verify_login_session()) {
 			return redirect('dashboard');
@@ -29,8 +28,7 @@ class LegacyLoginController extends Controller
 	public function login(Request $request)
 	{
 		$user = new User();
-		$company = Company::loadFromSession();
-		$company->reloadSettings();
+		$company = $this->currentCompany();
 
 		$user->checkLoginAttempts();
 
@@ -83,6 +81,15 @@ class LegacyLoginController extends Controller
 			'loginTheme' => $loginTheme,
 			'themeCssUrl' => $themeCssUrl,
 		]);
+	}
+
+	private function currentCompany(): Company
+	{
+		$company = Company::instance()->first();
+
+		abort_unless($company, 404, 'Company install not found.');
+
+		return $company;
 	}
 
 	private function resolveLoginTheme(Company $company): ?string

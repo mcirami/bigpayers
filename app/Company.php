@@ -74,7 +74,54 @@ class Company extends Model
 
     public function colors(): array
     {
-        return explode(';', $this->colors);
+        return explode(';', (string) $this->colors);
+    }
+
+    public function getColors(): array
+    {
+        return $this->colors();
+    }
+
+    public function getShortHand(): string
+    {
+        return (string) $this->shortHand;
+    }
+
+    public function getImgDir(): string
+    {
+        return 'images/' . $this->subDomain;
+    }
+
+    public function getBrandAssetUrl(string $filename): string
+    {
+        $relativePath = trim($this->getImgDir(), '/\\') . '/' . ltrim($filename, '/\\');
+        $fullPath = public_path($relativePath);
+
+        if (file_exists($fullPath)) {
+            return '/' . $relativePath . '?v=' . filemtime($fullPath);
+        }
+
+        return '/' . $relativePath;
+    }
+
+    public function getMessengerType(): string
+    {
+        return (string) ($this->messenger_type ?: 'Telegram');
+    }
+
+    public function getMessengerUsername(): string
+    {
+        return (string) ($this->messenger_username ?: $this->skype);
+    }
+
+    public function getEmail(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function allowsRegister(): bool
+    {
+        return (bool) $this->allow_register;
     }
 
 }

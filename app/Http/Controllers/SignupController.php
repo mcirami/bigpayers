@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\User\AffiliateSignUp;
 use LeadMax\TrackYourStats\User\User;
 
@@ -13,8 +13,7 @@ class SignupController extends Controller
     public function show(Request $request)
     {
         $user = new User();
-        $company = Company::loadFromSession();
-        $company->reloadSettings();
+        $company = $this->currentCompany();
 
         if (!$company->allowsRegister()) {
             return redirect('/login');
@@ -31,8 +30,7 @@ class SignupController extends Controller
 
     public function submit(Request $request)
     {
-        $company = Company::loadFromSession();
-        $company->reloadSettings();
+        $company = $this->currentCompany();
 
         if (!$company->allowsRegister()) {
             return redirect('/login');
@@ -67,8 +65,7 @@ class SignupController extends Controller
 
     public function success(Request $request)
     {
-        $company = Company::loadFromSession();
-        $company->reloadSettings();
+        $company = $this->currentCompany();
 
         return view('auth.signup-success', [
             'company' => $company,
@@ -79,6 +76,15 @@ class SignupController extends Controller
             'messengerUsername' => $company->getMessengerUsername(),
             'themeCssUrl' => $this->themeCssUrl($company),
         ]);
+    }
+
+    private function currentCompany(): Company
+    {
+        $company = Company::instance()->first();
+
+        abort_unless($company, 404, 'Company install not found.');
+
+        return $company;
     }
 
     private function signupView(Company $company, array $data = [], int $status = 200)

@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Company;
 use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\PublicCompatibilityController;
@@ -79,6 +80,44 @@ class PublicCompatibilityRoutesTest extends TestCase
     public function test_company_css_controller_does_not_load_legacy_company_from_session(): void
     {
         $controller = File::get(app_path('Http/Controllers/CompanyCssController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
+        $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
+    }
+
+    public function test_laravel_company_model_exposes_auth_view_presentation_helpers(): void
+    {
+        $company = new Company();
+        $company->shortHand = 'Acme Affiliates';
+        $company->subDomain = 'acme';
+        $company->colors = '#abc;123456';
+        $company->messenger_type = '';
+        $company->messenger_username = '';
+        $company->skype = 'acme-support';
+        $company->email = 'support@example.test';
+        $company->allow_register = true;
+
+        $this->assertSame(['#abc', '123456'], $company->getColors());
+        $this->assertSame('Acme Affiliates', $company->getShortHand());
+        $this->assertSame('images/acme', $company->getImgDir());
+        $this->assertSame('/images/acme/logo.png', $company->getBrandAssetUrl('logo.png'));
+        $this->assertSame('Telegram', $company->getMessengerType());
+        $this->assertSame('acme-support', $company->getMessengerUsername());
+        $this->assertSame('support@example.test', $company->getEmail());
+        $this->assertTrue($company->allowsRegister());
+    }
+
+    public function test_signup_controller_does_not_load_legacy_company_from_session(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/SignupController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
+        $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
+    }
+
+    public function test_login_controller_does_not_load_legacy_company_from_session(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
         $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
