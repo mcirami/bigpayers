@@ -6,6 +6,7 @@ use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\PublicCompatibilityController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 use Tests\TestCase;
@@ -58,6 +59,29 @@ class PublicCompatibilityRoutesTest extends TestCase
         $this->assertSame('12ABEF', $hexColor->invoke($controller, '12-AB-EF'));
         $this->assertSame('000000', $hexColor->invoke($controller, 'not-a-color'));
         $this->assertSame('000000', $hexColor->invoke($controller, null));
+    }
+
+    public function test_company_css_normalizes_missing_theme_color_slots(): void
+    {
+        $controller = app(CompanyCssController::class);
+        $reflection = new ReflectionClass($controller);
+        $normalizedColors = $reflection->getMethod('normalizedColors');
+        $normalizedColors->setAccessible(true);
+
+        $colors = $normalizedColors->invoke($controller, ['#abc']);
+
+        $this->assertCount(11, $colors);
+        $this->assertSame('AABBCC', $colors[0]);
+        $this->assertSame('000000', $colors[1]);
+        $this->assertSame('000000', $colors[10]);
+    }
+
+    public function test_company_css_controller_does_not_load_legacy_company_from_session(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/CompanyCssController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
+        $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
     }
 
     public function test_company_css_renderer_uses_sanitized_hex_values(): void

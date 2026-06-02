@@ -333,6 +333,8 @@ Remaining cleanup is mostly archival and hardening:
   documented reasons
 - expected public PHP entrypoints such as `public/index.php` are audited for
   both file existence and documented reasons
+- `/css/company.css` now renders through a Laravel controller backed by the
+  Laravel company model instead of loading the legacy company object from session
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

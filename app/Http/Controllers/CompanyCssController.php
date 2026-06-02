@@ -2,22 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use LeadMax\TrackYourStats\System\Company;
+use App\Company;
 
 class CompanyCssController extends Controller
 {
     public function __invoke()
     {
-        $colors = Company::loadFromSession()->getColors();
+        $css = $this->buildCss($this->normalizedColors($this->currentCompanyColors()));
 
+        return response($css, 200)
+            ->header('Content-Type', 'text/css; charset=UTF-8');
+    }
+
+    private function currentCompanyColors(): array
+    {
+        $company = Company::instance()->first();
+
+        return $company ? $company->colors() : [];
+    }
+
+    private function normalizedColors(array $colors): array
+    {
         for ($i = 0; $i < 11; $i++) {
             $colors[$i] = $this->hexColor($colors[$i] ?? null);
         }
 
-        $css = $this->buildCss($colors);
-
-        return response($css, 200)
-            ->header('Content-Type', 'text/css; charset=UTF-8');
+        return $colors;
     }
 
     private function hexColor($value): string
