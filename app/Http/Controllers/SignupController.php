@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use LeadMax\TrackYourStats\User\AffiliateSignUp;
 use LeadMax\TrackYourStats\User\User;
 
@@ -74,7 +73,7 @@ class SignupController extends Controller
             'pending' => (bool) $request->query('pending'),
             'messengerType' => $company->getMessengerType(),
             'messengerUsername' => $company->getMessengerUsername(),
-            'themeCssUrl' => $this->themeCssUrl($company),
+            'themeCssUrl' => $company->themeCssUrl(),
         ]);
     }
 
@@ -92,26 +91,10 @@ class SignupController extends Controller
         return response()->view('auth.signup', array_merge([
             'company' => $company,
             'webroot' => getWebRoot(),
-            'themeCssUrl' => $this->themeCssUrl($company),
+            'themeCssUrl' => $company->themeCssUrl(),
             'errorCode' => null,
             'formValues' => [],
             'mid' => '',
         ], $data), $status);
-    }
-
-    private function themeCssUrl(Company $company): ?string
-    {
-        $savedTheme = trim((string) ($company->login_theme ?? ''));
-        $theme = $savedTheme !== '' && File::exists(public_path("login_themes/{$savedTheme}/theme.css"))
-            ? $savedTheme
-            : (File::exists(public_path('login_themes/command-center/theme.css')) ? 'command-center' : null);
-
-        if (!$theme) {
-            return null;
-        }
-
-        $themeCssPath = public_path("login_themes/{$theme}/theme.css");
-
-        return "/login_themes/{$theme}/theme.css?v=" . filemtime($themeCssPath);
     }
 }

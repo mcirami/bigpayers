@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
 use LeadMax\TrackYourStats\User\Login;
 use LeadMax\TrackYourStats\User\User;
 
@@ -67,11 +66,7 @@ class LegacyLoginController extends Controller
 
 	private function loginView(User $user, Company $company, $error = null)
 	{
-		$loginTheme = $this->resolveLoginTheme($company);
-		$themeCssPath = $loginTheme ? public_path("login_themes/{$loginTheme}/theme.css") : null;
-		$themeCssUrl = $themeCssPath && File::exists($themeCssPath)
-			? "/login_themes/{$loginTheme}/theme.css?v=" . filemtime($themeCssPath)
-			: null;
+		$loginTheme = $company->loginTheme();
 
 		return view('auth.login', [
 			'webroot' => getWebRoot(),
@@ -79,7 +74,7 @@ class LegacyLoginController extends Controller
 			'error' => $error,
 			'company' => $company,
 			'loginTheme' => $loginTheme,
-			'themeCssUrl' => $themeCssUrl,
+			'themeCssUrl' => $company->themeCssUrl(),
 		]);
 	}
 
@@ -90,21 +85,6 @@ class LegacyLoginController extends Controller
 		abort_unless($company, 404, 'Company install not found.');
 
 		return $company;
-	}
-
-	private function resolveLoginTheme(Company $company): ?string
-	{
-		$savedTheme = trim((string) ($company->login_theme ?? ''));
-
-		if ($savedTheme !== '' && File::exists(public_path("login_themes/{$savedTheme}/theme.css"))) {
-			return $savedTheme;
-		}
-
-		if (File::exists(public_path('login_themes/command-center/theme.css'))) {
-			return 'command-center';
-		}
-
-		return null;
 	}
     public function logout()
     {

@@ -1,6 +1,10 @@
 <?php
 //ini_set('display_errors', 1);
 $webroot = getWebRoot();
+$company = \App\Company::instance()->first();
+$companyName = $company ? ($company->getShortHand() ?: 'BigPayers') : 'BigPayers';
+$logoPath = $company ? $company->getBrandAssetUrl('logo.png') : asset('images/logo.png');
+$faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('favicon.ico');
 
 ?>
 <!DOCTYPE html>
@@ -11,9 +15,9 @@ $webroot = getWebRoot();
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="shortcut icon" type="image/ico"
-          href="<?PHP echo $webroot . "/" . \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
+          href="{{ $faviconPath }}"/>
     <link rel="shortcut icon" type="image/ico"
-          href="<?PHP echo $webroot . "/" . \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . "/favicon.ico"; ?>"/>
+          href="{{ $faviconPath }}"/>
     <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
     <link href="{{$webroot}}css/bootstrap.min.css" rel="stylesheet">-->
@@ -48,7 +52,7 @@ $webroot = getWebRoot();
     @endif
 
 
-    <title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
+    <title>{{ $companyName }}</title>
 </head>
 
 <body>
@@ -59,9 +63,9 @@ $webroot = getWebRoot();
             <div class="nav_wrap">
                 <nav class="navbar navbar-expand-lg bg-body-tertiary">
                     <a class="navbar-brand" href="{{$webroot}}">
-                        <img src="{{ $webroot.\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() .  "/logo.png"}}"
-                             alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"
-                             title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/>
+                        <img src="{{ $logoPath }}"
+                             alt="{{ $companyName }}"
+                             title="{{ $companyName }}"/>
                     </a>
                     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>

@@ -4,8 +4,8 @@
 
 @section('content')
     @php
+        /** @var \App\Company $company */
         $user = \LeadMax\TrackYourStats\System\Session::userData();
-        $company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
         $roleLabels = [
             0 => 'God',
             1 => 'Admin',

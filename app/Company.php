@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\File;
 
 /**
  * App\Company
@@ -92,6 +93,11 @@ class Company extends Model
         return 'images/' . $this->subDomain;
     }
 
+    public function getSubDomain(): string
+    {
+        return (string) $this->subDomain;
+    }
+
     public function getBrandAssetUrl(string $filename): string
     {
         $relativePath = trim($this->getImgDir(), '/\\') . '/' . ltrim($filename, '/\\');
@@ -102,6 +108,36 @@ class Company extends Model
         }
 
         return '/' . $relativePath;
+    }
+
+    public function loginTheme(): ?string
+    {
+        $savedTheme = trim((string) ($this->login_theme ?? ''));
+
+        if ($savedTheme !== '' && File::exists(public_path("login_themes/{$savedTheme}/theme.css"))) {
+            return $savedTheme;
+        }
+
+        if (File::exists(public_path('login_themes/command-center/theme.css'))) {
+            return 'command-center';
+        }
+
+        return null;
+    }
+
+    public function themeCssUrl(): ?string
+    {
+        $theme = $this->loginTheme();
+
+        if (!$theme) {
+            return null;
+        }
+
+        $themeCssPath = public_path("login_themes/{$theme}/theme.css");
+
+        return File::exists($themeCssPath)
+            ? "/login_themes/{$theme}/theme.css?v=" . filemtime($themeCssPath)
+            : null;
     }
 
     public function getMessengerType(): string
@@ -117,6 +153,11 @@ class Company extends Model
     public function getEmail(): string
     {
         return (string) $this->email;
+    }
+
+    public function getUID(): string
+    {
+        return (string) $this->uid;
     }
 
     public function allowsRegister(): bool

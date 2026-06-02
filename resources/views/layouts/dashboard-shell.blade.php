@@ -1,5 +1,5 @@
 @php
-    $company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
+    /** @var \App\Company $company */
     $user = \LeadMax\TrackYourStats\System\Session::userData();
     $isAdminLogin = request()->has('adminLogin');
     $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];

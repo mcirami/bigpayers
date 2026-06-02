@@ -2,6 +2,12 @@
 //ini_set('display_errors', 1);
 
 ?>
+@php
+    /** @var \App\Company $company */
+    $companyName = $company->getShortHand();
+    $logoPath = $company->getBrandAssetUrl('logo.png');
+    $faviconPath = $company->getBrandAssetUrl('favicon.ico');
+@endphp
 
 <!DOCTYPE html>
 <html>
@@ -11,11 +17,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="shortcut icon" type="image/ico"
-          href="<?PHP echo $webroot . "/" . \LeadMax\TrackYourStats\System\Company::loadFromSession()
-                  ->getImgDir() . "/favicon.ico"; ?>"/>
+          href="{{ $faviconPath }}"/>
     <link rel="shortcut icon" type="image/ico"
-          href="<?PHP echo $webroot . "/" . \LeadMax\TrackYourStats\System\Company::loadFromSession()
-                  ->getImgDir() . "/favicon.ico"; ?>"/>
+          href="{{ $faviconPath }}"/>
     <link href="{{$webroot}}css/bootstrap.min.css" rel="stylesheet">
     <!--    <link href="css/bootstrap-theme.min.css" rel="stylesheet">-->
     <link href="{{$webroot}}css/animate.css" rel="stylesheet">
@@ -60,7 +64,7 @@
     @endif
 
 
-    <title><?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?></title>
+    <title>{{ $companyName }}</title>
 </head>
 
 <body class="drawer drawer--top value_span7">
@@ -71,9 +75,9 @@
     <nav class="drawer-nav" role="navigation">
         <div class="logo value_span1">
             <a href="{{$webroot}}"><img
-                        src="{{ $webroot.\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() .  "/logo.png"}}"
-                        alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"
-                        title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
+                        src="{{ $logoPath }}"
+                        alt="{{ $companyName }}"
+                        title="{{ $companyName }}"/></a>
         </div>
         <ul class="drawer-menu value_span1">
             @php
@@ -94,9 +98,9 @@
 <div class="top_sec value_span1">
     <div class="logo">
         <a href="{{$webroot}}"><img
-                    src="{{ $webroot.\LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() .  "/logo.png"}}"
-                    alt="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"
-                    title="<?php echo \LeadMax\TrackYourStats\System\Company::loadFromSession()->getShortHand(); ?>"/></a>
+                    src="{{ $logoPath }}"
+                    alt="{{ $companyName }}"
+                    title="{{ $companyName }}"/></a>
     </div>
 
     <ul class="main_menu">

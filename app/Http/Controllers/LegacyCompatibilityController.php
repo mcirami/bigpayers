@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Mail;
 use LeadMax\TrackYourStats\System\Session as LegacySession;
 use LeadMax\TrackYourStats\User\User;
@@ -39,8 +38,7 @@ class LegacyCompatibilityController extends Controller
     public function forgotPassword(Request $request)
     {
         $user = new User();
-        $company = Company::loadFromSession();
-        $company->reloadSettings();
+        $company = $this->currentCompany();
 
         if ($user->is_loggedin() && $user->verify_login_session()) {
             return redirect('/dashboard');
@@ -141,13 +139,22 @@ class LegacyCompatibilityController extends Controller
         return view('auth.forgot-password', [
             'company' => $company,
             'webroot' => getWebRoot(),
-            'loginTheme' => $loginTheme = $this->resolveLoginTheme($company),
-            'themeCssUrl' => $this->themeCssUrl($loginTheme),
+            'loginTheme' => $company->loginTheme(),
+            'themeCssUrl' => $company->themeCssUrl(),
             'token' => $token,
             'tokenUserName' => $tokenUserName,
             'status' => $status,
             'statusType' => $statusType,
         ]);
+    }
+
+    private function currentCompany(): Company
+    {
+        $company = Company::instance()->first();
+
+        abort_unless($company, 404, 'Company install not found.');
+
+        return $company;
     }
 
     public function redirectAffUpdate(Request $request)
@@ -508,33 +515,5 @@ class LegacyCompatibilityController extends Controller
         $query = $request->except($ignoredKeys);
 
         return empty($query) ? $basePath : $basePath . '?' . http_build_query($query);
-    }
-
-    private function resolveLoginTheme(Company $company): ?string
-    {
-        $savedTheme = trim((string) ($company->login_theme ?? ''));
-
-        if ($savedTheme !== '' && File::exists(public_path("login_themes/{$savedTheme}/theme.css"))) {
-            return $savedTheme;
-        }
-
-        if (File::exists(public_path('login_themes/command-center/theme.css'))) {
-            return 'command-center';
-        }
-
-        return null;
-    }
-
-    private function themeCssUrl(?string $loginTheme): ?string
-    {
-        if (!$loginTheme) {
-            return null;
-        }
-
-        $themeCssPath = public_path("login_themes/{$loginTheme}/theme.css");
-
-        return File::exists($themeCssPath)
-            ? "/login_themes/{$loginTheme}/theme.css?v=" . filemtime($themeCssPath)
-            : null;
     }
 }

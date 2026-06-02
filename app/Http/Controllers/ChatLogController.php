@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use App\Offer;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Clicks\Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\PendingConversion;
 use LeadMax\TrackYourStats\Offer\SaleLog;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Files\ImagesUploader;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
@@ -45,7 +45,7 @@ class ChatLogController extends Controller
                 $saleLog = new SaleLog();
                 $saleLog->conversion_id = $conversion->id;
                 if ($saleLog->save()) {
-                    $imageUploader->uploadDirectory = env("SALE_LOG_DIRECTORY")."/".Company::loadFromSession()->getSubDomain()."/{$saleLog->id}";
+                    $imageUploader->uploadDirectory = env("SALE_LOG_DIRECTORY")."/".$this->companySubDomain()."/{$saleLog->id}";
                     if ($imageUploader->uploadFiles('images')) {
                         if (Session::userType() == \App\Privilege::ROLE_AFFILIATE) {
                             return redirect("/report/sale-log");
@@ -75,7 +75,7 @@ class ChatLogController extends Controller
         return view('chatlog.view', [
             'saleLogId' => $saleLogId,
             'images' => $this->saleLogImages($saleLogId),
-            'subDomain' => Company::loadFromSession()->getSubDomain(),
+            'subDomain' => $this->companySubDomain(),
         ]);
     }
 
@@ -175,7 +175,16 @@ class ChatLogController extends Controller
 
     private function saleLogDirectory(int $saleLogId): string
     {
-        return env('SALE_LOG_DIRECTORY').'/'.Company::loadFromSession()->getSubDomain()."/{$saleLogId}";
+        return env('SALE_LOG_DIRECTORY').'/'.$this->companySubDomain()."/{$saleLogId}";
+    }
+
+    private function companySubDomain(): string
+    {
+        $company = Company::instance()->first();
+
+        abort_unless($company, 404, 'Company install not found.');
+
+        return $company->getSubDomain();
     }
 
     private function authorizeSaleLogAccess(int $saleLogId): void

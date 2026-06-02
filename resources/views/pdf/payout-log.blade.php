@@ -18,9 +18,14 @@
 </head>
 <body>
 
+@php
+    /** @var \App\Company $company */
+    $company = \App\Company::getInstance();
+@endphp
+
 <div class="container"
-     style="background-color: #{{array_first(\App\Company::getInstance()->colors())}}; padding:10px; margin-bottom: 10px;">
-    <img src="{{asset( \LeadMax\TrackYourStats\System\Company::loadFromSession()->getImgDir() . '/logo.png')}}">
+     style="background-color: #{{array_first($company->colors())}}; padding:10px; margin-bottom: 10px;">
+    <img src="{{asset($company->getImgDir() . '/logo.png')}}">
 </div>
 
 <div class="container">

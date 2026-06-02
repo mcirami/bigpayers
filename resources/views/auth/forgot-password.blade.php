@@ -1,5 +1,5 @@
 @php
-    /** @var \LeadMax\TrackYourStats\System\Company $company */
+    /** @var \App\Company $company */
     $logoPath = $company->getBrandAssetUrl('logo.png');
     $faviconPath = $company->getBrandAssetUrl('favicon.ico');
     $rawColors = $company->getColors();

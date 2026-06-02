@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Company;
 use App\Observers\UserObserver;
 use App\User;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +33,11 @@ class AppServiceProvider extends ServiceProvider
             $navBar = new NavBar(Session::userType(), Session::permissions());
             $notifications = new Notifications(Session::userID());
             $notifications->fetchUsersNotifications();
-            $view->with(['navBar' => $navBar, 'notifications' => $notifications]);
+            $view->with([
+                'company' => Company::instance()->first(),
+                'navBar' => $navBar,
+                'notifications' => $notifications,
+            ]);
         });
         User::observe(UserObserver::class);
 

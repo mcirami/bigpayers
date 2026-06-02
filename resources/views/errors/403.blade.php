@@ -1,10 +1,11 @@
 @php
-    $company = \LeadMax\TrackYourStats\System\Company::loadFromSession();
+    /** @var \App\Company|null $company */
+    $company = \App\Company::instance()->first();
     $userId = \LeadMax\TrackYourStats\System\Session::userID();
-    $logoPath = $company->getBrandAssetUrl('logo.png');
-    $faviconPath = $company->getBrandAssetUrl('favicon.ico');
-    $companyName = $company->getShortHand() ?: 'BigPayers';
-    $rawColors = $company->getColors();
+    $logoPath = $company ? $company->getBrandAssetUrl('logo.png') : asset('images/logo.png');
+    $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('favicon.ico');
+    $companyName = $company ? ($company->getShortHand() ?: 'BigPayers') : 'BigPayers';
+    $rawColors = $company ? $company->getColors() : [];
     $dashboardShellCssPath = public_path('css/dashboard-shell.css');
     $companyCssPath = public_path('css/company.css');
     $dashboardShellCssUrl = asset('css/dashboard-shell.css') . (file_exists($dashboardShellCssPath) ? '?v=' . filemtime($dashboardShellCssPath) : '');
