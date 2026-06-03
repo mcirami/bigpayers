@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
-                    @if (\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_NOTIFICATIONS))
+                    @if ($canCreateNotifications)
                         <a href="/notifications/create" class="bp-button-primary">Create notification</a>
                     @endif
                 </div>

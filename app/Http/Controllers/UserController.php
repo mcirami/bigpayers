@@ -45,7 +45,8 @@ class UserController extends Controller
     {
 
 	    $userType = Session::userType();
-	    $canViewUsers = Session::permissions()->can('view_all_users');
+	    $permissions = Session::permissions();
+	    $canViewUsers = $permissions->can('view_all_users');
 
         $this->validate(request(), [
             'showInactive' => 'numeric|min:0|max:1'
@@ -72,7 +73,13 @@ class UserController extends Controller
         $users = $users->get();
 		//$users = $this->getDiffForHumans($users);
 
-        return view('user.manage', compact('users'));
+        return view('user.manage', [
+            'canBanUsers' => $permissions->can(Permissions::BAN_USERS),
+            'canCreateAffiliates' => $permissions->can(Permissions::CREATE_AFFILIATES),
+            'canCreateManagers' => $permissions->can(Permissions::CREATE_MANAGERS),
+            'canEditAffiliates' => $permissions->can(Permissions::EDIT_AFFILIATES),
+            'users' => $users,
+        ]);
     }
 
     public function showCreateUser()

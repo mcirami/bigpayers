@@ -354,9 +354,9 @@ Remaining cleanup is mostly archival and hardening:
 - dashboard shell, legacy master, home, and branded error views now receive
   current user/session values from Laravel view data instead of reading the
   legacy session class directly in Blade
-- user account action/form/offer views now receive permission and user-state
-  booleans from Laravel controller data instead of reading the legacy session
-  class directly in Blade
+- notification inbox, user directory, and user account action/form/offer views now
+  receive permission and user-state booleans from Laravel controller data instead
+  of reading the legacy session class directly in Blade
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

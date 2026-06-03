@@ -120,10 +120,10 @@
 @section('footer')
     <script type="text/javascript">
         $(document).ready(function () {
-            const canEditAffiliates = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES));
-            const canCreateAffiliates = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_AFFILIATES));
-            const canCreateManagers = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::CREATE_MANAGERS));
-            const canBanUsers = @json(\LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::BAN_USERS));
+            const canEditAffiliates = @json($canEditAffiliates);
+            const canCreateAffiliates = @json($canCreateAffiliates);
+            const canCreateManagers = @json($canCreateManagers);
+            const canBanUsers = @json($canBanUsers);
             const role = @json($role);
             const users = @json($users);
             const itemsContainer = document.querySelector("#users_container");

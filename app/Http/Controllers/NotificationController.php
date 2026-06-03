@@ -19,6 +19,7 @@ class NotificationController extends Controller
         $notifications = $this->notificationsQuery()->get();
 
         return view('notifications.index', [
+            'canCreateNotifications' => Session::permissions()->can(Permissions::CREATE_NOTIFICATIONS),
             'notificationsList' => $notifications,
             'unreadCount' => $notifications->where('seen', 0)->count(),
             'readCount' => $notifications->where('seen', 1)->count(),

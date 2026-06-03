@@ -240,8 +240,10 @@ class PublicCompatibilityRoutesTest extends TestCase
     public function test_user_account_views_do_not_read_legacy_session_directly(): void
     {
         foreach ([
+            resource_path('views/notifications/index.blade.php'),
             resource_path('views/user/partials/account-actions.blade.php'),
             resource_path('views/user/form.blade.php'),
+            resource_path('views/user/manage.blade.php'),
             resource_path('views/user/offers.blade.php'),
         ] as $path) {
             $contents = File::get($path);
