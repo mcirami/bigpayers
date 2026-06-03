@@ -12,8 +12,6 @@
 
 @section('content')
     @php
-        $canEditAffiliatePayout = \LeadMax\TrackYourStats\System\Session::permissions()->can('edit_aff_payout');
-        $canManageOfferCaps = \LeadMax\TrackYourStats\System\Session::userType() === \App\Privilege::ROLE_GOD;
         $accessibleOffers = collect($offers)->where('has_offer', true)->count();
         $customPayoutOffers = collect($offers)->filter(fn ($offer) => $offer->reppayout !== null)->count();
     @endphp

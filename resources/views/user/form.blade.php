@@ -222,7 +222,7 @@
                 </section>
             @endif
 
-            @if(!$isEdit && \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_REFERRALS))
+            @if($canCreateReferrals)
                 <section class="bp-card value_span8" id="create_referral_panel">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>

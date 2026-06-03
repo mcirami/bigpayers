@@ -1,24 +1,7 @@
 @php
-    $showManageOffers = ($canManageOffers ?? false)
-        || (
-            isset($managedUser)
-            && \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_AFFILIATES)
-            && $managedUser->getRole() === \App\Privilege::ROLE_AFFILIATE
-        );
-
-    $showManageSubIds = ($canManageSubIds ?? false)
-        || (
-            isset($managedUser)
-            && \LeadMax\TrackYourStats\System\Session::userType() === \App\Privilege::ROLE_GOD
-            && $managedUser->getRole() === \App\Privilege::ROLE_AFFILIATE
-        );
-
-    $showLoginAsUser = ($canLoginAsUser ?? false)
-        || (
-            isset($managedUser)
-            && \LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE
-            && $managedUser->idrep !== \LeadMax\TrackYourStats\System\Session::userID()
-        );
+    $showManageOffers = $canManageOffers ?? false;
+    $showManageSubIds = $canManageSubIds ?? false;
+    $showLoginAsUser = $canLoginAsUser ?? false;
 @endphp
 
 <div class="{{ ($currentWorkspace ?? '') === 'offers' ? 'bp-offer-action-row' : 'flex flex-wrap items-center gap-3' }}">

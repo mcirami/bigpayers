@@ -237,6 +237,19 @@ class PublicCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_user_account_views_do_not_read_legacy_session_directly(): void
+    {
+        foreach ([
+            resource_path('views/user/partials/account-actions.blade.php'),
+            resource_path('views/user/form.blade.php'),
+            resource_path('views/user/offers.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
+        }
+    }
+
     public function test_chat_log_controller_does_not_load_legacy_company_from_session(): void
     {
         $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));

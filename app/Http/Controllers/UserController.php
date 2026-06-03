@@ -783,6 +783,8 @@ class UserController extends Controller
             'offers' => $offers,
             'name' => $userFName,
             'managedUser' => $user,
+            'canEditAffiliatePayout' => Session::permissions()->can('edit_aff_payout'),
+            'canManageOfferCaps' => Session::userType() === Privilege::ROLE_GOD,
             'canManageOffers' => Session::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
             'canManageSubIds' => Session::userType() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
             'canLoginAsUser' => Session::userType() !== Privilege::ROLE_AFFILIATE && $user->idrep !== Session::userID(),
@@ -930,6 +932,7 @@ class UserController extends Controller
             'canLoginAsUser' => $isEdit && Session::userType() !== Privilege::ROLE_AFFILIATE && $user->idrep !== Session::userID(),
             'canManageOffers' => $isEdit && Session::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
             'canManageSubIds' => $isEdit && Session::userType() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canCreateReferrals' => !$isEdit && Session::permissions()->can(Permissions::EDIT_REFERRALS),
             'canEditReferrals' => $isEdit && Session::permissions()->can(Permissions::EDIT_REFERRALS) && $user->getRole() === Privilege::ROLE_AFFILIATE,
             'referralOptions' => Session::permissions()->can(Permissions::EDIT_REFERRALS)
                 ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('rep.user_name')->get(['rep.idrep', 'rep.user_name'])
