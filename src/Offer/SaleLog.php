@@ -10,7 +10,6 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use LeadMax\TrackYourStats\Clicks\Conversion;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Session;
 use \LeadMax\TrackYourStats\User\User;
 
@@ -81,7 +80,7 @@ class SaleLog
 
     public static function getImageURLsFromSaleId($sale_id)
     {
-        $files = scandir(env('SALE_LOG_DIRECTORY').'/'.Company::loadFromSession()->getSubDomain().'/'.$sale_id);
+        $files = scandir(env('SALE_LOG_DIRECTORY').'/'.\App\Company::currentSubDomain().'/'.$sale_id);
 
         $filtered = [];
 

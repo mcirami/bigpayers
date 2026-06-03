@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Clicks\PostBackURLEventHandler;
 use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\IPBlackList;
 use LeadMax\TrackYourStats\System\Lander;
 
@@ -18,6 +18,7 @@ class IndexController extends Controller
 
     public function index(Request $request)
     {
+        $company = $this->currentCompany();
         $trackingQuery = TrackingParameters::normalize($request->query());
 
         if (
@@ -32,16 +33,13 @@ class IndexController extends Controller
         }
 
         // if its an offer url, and there wasn't any parameters for posting or generating clicks..
-        if (Company::loadFromSession()->isCompanyOfferUrl($request->getHttpHost()) == true) {
+        if ($company->isCompanyOfferUrl($request->getHttpHost())) {
             return redirect('404');
         }
 
-        if (Company::getSub() != "chattrackpro") {
-
-            $company = Company::loadFromSession();
-
+        if (env('DB_DATABASE') != "chattrackpro") {
             if ($request->getHttpHost() !== $company->landing_page && $request->getHttpHost() !== $company->login_url) {
-                if (Company::getCustomSub() == "debug") {
+                if ($company->getSubDomain() == "debug") {
                     return redirect('login');
                 }
             }
@@ -57,13 +55,14 @@ class IndexController extends Controller
     public function postBackRegistration(Request $request)
     {
         if ($request->get('uid')) {
+            $company = $this->currentCompany();
 
             $blacklist = new IPBlackList($request->ip());
             if ($blacklist->isBlackListed()) {
                 $blacklist->logIP();
             }
 
-            if ($request->get("uid") !== Company::loadFromSession()->getUID()) {
+            if ($request->get("uid") !== $company->getUID()) {
                 return response()->json(['status' => 404, 'message' => 'Unknown UID.'], 404);
             }
 
@@ -82,6 +81,15 @@ class IndexController extends Controller
 
         }
 
+    }
+
+    private function currentCompany(): Company
+    {
+        $company = Company::instance()->first();
+
+        abort_unless($company, 404, 'Company install not found.');
+
+        return $company;
     }
 
 

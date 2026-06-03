@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Throwable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\File;
@@ -59,18 +60,33 @@ class Company extends Model
 
     public static function getInstance(): Company
     {
-        return static::where('subDomain', \LeadMax\TrackYourStats\System\Company::getCustomSub())->first();
+        return static::where('subDomain', static::currentSubDomain())->first();
     }
 
     // This stuff should really be refactored but whatever
     public function scopeInstance(Builder $query)
     {
-        return $query->where('subDomain', \LeadMax\TrackYourStats\System\Company::getCustomSub());
+        return $query->where('subDomain', static::currentSubDomain());
+    }
+
+    public static function currentSubDomain(): string
+    {
+        return (string) ($_SESSION['COMPANY_SUBDOMAIN'] ?? env('DB_DATABASE'));
     }
 
     public function offerUrls()
     {
         return $this->hasMany(OfferURL::class);
+    }
+
+    public function isCompanyOfferUrl(string $url): bool
+    {
+        $normalizedUrl = $this->normalizeHost($url);
+
+        return $this->offerUrls()
+            ->where('status', 1)
+            ->pluck('url')
+            ->contains(fn ($offerUrl) => $this->normalizeHost((string) $offerUrl) === $normalizedUrl);
     }
 
     public function colors(): array
@@ -96,6 +112,11 @@ class Company extends Model
     public function getSubDomain(): string
     {
         return (string) $this->subDomain;
+    }
+
+    public function getID(): int
+    {
+        return (int) $this->id;
     }
 
     public function getBrandAssetUrl(string $filename): string
@@ -150,6 +171,11 @@ class Company extends Model
         return (string) ($this->messenger_username ?: $this->skype);
     }
 
+    public function getSkype(): string
+    {
+        return (string) $this->skype;
+    }
+
     public function getEmail(): string
     {
         return (string) $this->email;
@@ -160,9 +186,68 @@ class Company extends Model
         return (string) $this->uid;
     }
 
+    public function getLoginURL(): string
+    {
+        return (string) $this->login_url;
+    }
+
+    public function getLandingPage(): string
+    {
+        return (string) $this->landing_page;
+    }
+
     public function allowsRegister(): bool
     {
         return (bool) $this->allow_register;
+    }
+
+    public function updateSettings(
+        string $shortHand,
+        string $colors,
+        string $email,
+        string $skype,
+        string $loginURL,
+        string $landingPage,
+        string $loginTheme,
+        string $messengerType,
+        string $messengerUsername,
+        bool $allowRegister
+    ): bool {
+        try {
+            $this->shortHand = $shortHand;
+            $this->colors = $colors;
+            $this->email = $email;
+            $this->skype = $skype;
+            $this->login_url = $loginURL;
+            $this->landing_page = $landingPage;
+            $this->login_theme = $loginTheme;
+            $this->messenger_type = $messengerType;
+            $this->messenger_username = $messengerUsername;
+            $this->allow_register = $allowRegister;
+
+            $saved = $this->save();
+
+            if ($saved) {
+                unset($_SESSION['company']);
+            }
+
+            return $saved;
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
+
+    private function normalizeHost(string $host): string
+    {
+        $normalized = strtolower(trim($host));
+        $normalized = preg_replace('/:\d+$/', '', $normalized);
+        $normalized = rtrim($normalized, '.');
+
+        if (str_starts_with($normalized, 'www.')) {
+            return substr($normalized, 4);
+        }
+
+        return $normalized;
     }
 
 }

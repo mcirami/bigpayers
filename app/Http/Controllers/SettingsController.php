@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Company;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
-use LeadMax\TrackYourStats\System\Company;
 
 class SettingsController extends Controller
 {
@@ -46,7 +46,7 @@ class SettingsController extends Controller
 
     public function update(Request $request)
     {
-        $company = Company::loadFromSession();
+        $company = $this->currentCompany();
 
         $validated = $request->validate([
             'shortHand' => 'required|string|max:255',
@@ -77,7 +77,7 @@ class SettingsController extends Controller
             self::STORAGE_COLOR_ORDER
         ));
 
-        $updated = $company->updateCompany(
+        $updated = $company->updateSettings(
             $validated['shortHand'],
             $colorString,
             $validated['email'] ?? '',
@@ -104,17 +104,21 @@ class SettingsController extends Controller
 
     public function uploadLogo(Request $request)
     {
+        $company = $this->currentCompany();
+
         $request->validate([
             'file1' => 'required|file|mimes:png|max:16384',
         ]);
 
-        $this->storeUploadedBrandAsset($request->file('file1'), 'logo.png');
+        $this->storeUploadedBrandAsset($company, $request->file('file1'), 'logo.png');
 
         return response('logo.png upload is complete');
     }
 
     public function uploadFavicon(Request $request)
     {
+        $company = $this->currentCompany();
+
         $request->validate([
             'file2' => 'required|file|max:16384',
         ]);
@@ -126,18 +130,18 @@ class SettingsController extends Controller
             ]);
         }
 
-        $this->storeUploadedBrandAsset($request->file('file2'), 'favicon.ico');
+        $this->storeUploadedBrandAsset($company, $request->file('file2'), 'favicon.ico');
 
         return response('favicon.ico upload is complete');
     }
 
     private function buildViewData(): array
     {
-        $company = Company::loadFromSession();
+        $company = $this->currentCompany();
         $colors = $company->getColors();
         $availableLoginThemes = $this->availableLoginThemes();
         $savedLoginTheme = $company->login_theme ?: (array_key_first($availableLoginThemes) ?: '');
-        $subDomain = Company::getCustomSub();
+        $subDomain = $company->getSubDomain();
         $logoPath = public_path("images/{$subDomain}/logo.png");
         $faviconPath = public_path("images/{$subDomain}/favicon.ico");
 
@@ -209,15 +213,24 @@ class SettingsController extends Controller
             return;
         }
 
-        $this->storeUploadedBrandAsset($request->file($field), $filename);
+        $this->storeUploadedBrandAsset($this->currentCompany(), $request->file($field), $filename);
     }
 
-    private function storeUploadedBrandAsset($file, string $filename): void
+    private function storeUploadedBrandAsset(Company $company, $file, string $filename): void
     {
-        $directory = public_path('images/' . Company::getCustomSub());
+        $directory = public_path('images/' . $company->getSubDomain());
         File::ensureDirectoryExists($directory);
 
         $file->move($directory, $filename);
+    }
+
+    private function currentCompany(): Company
+    {
+        $company = Company::instance()->first();
+
+        abort_unless($company, 404, 'Company install not found.');
+
+        return $company;
     }
 
     private function availableLoginThemes(): array

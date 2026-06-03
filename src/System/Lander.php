@@ -10,7 +10,7 @@ class Lander
     public $landerFile = "";
     public $customFileLoaded = false;
 
-    public function __construct(Company $company)
+    public function __construct($company)
     {
 
         $this->company = $company;

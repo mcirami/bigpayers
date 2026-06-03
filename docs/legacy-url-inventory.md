@@ -341,6 +341,12 @@ Remaining cleanup is mostly archival and hardening:
 - dashboard/master/error/contact/PDF branding surfaces and chat-log sale-log
   paths now read company presentation/subdomain data through the Laravel company
   model instead of loading the legacy company object from session
+- settings, index/landing/postback entry, and offer URL management now use the
+  Laravel company model for current-company reads and writes; the Laravel model
+  resolves the current install subdomain without calling the legacy company class
+- sale-log upload helpers and welcome-email branding no longer load the legacy
+  company object from session; runtime `Company::loadFromSession()` references
+  have been retired outside source-test guard assertions
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

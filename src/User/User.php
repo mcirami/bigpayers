@@ -16,9 +16,9 @@ namespace LeadMax\TrackYourStats\User;
 //include '../modifiedPreorderTreeTraversalfiedPreorderTreeTraversal.php';
 //include '../Permissions.php';
 
+use App\Company;
 use App\Privilege;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Mail;
 use LeadMax\TrackYourStats\System\Session;
 use PDO;
@@ -102,7 +102,11 @@ class User extends Login
         $email = $result["email"];
         $firstName = $result["first_name"];
 
-        $company = Company::loadFromSession();
+        $company = Company::instance()->first();
+        if (!$company) {
+            return false;
+        }
+
         $companyShortHand = $company->getShortHand();
         $loginUrl = $company->getLoginURL();
         $title = "Welcome to {$companyShortHand}!";

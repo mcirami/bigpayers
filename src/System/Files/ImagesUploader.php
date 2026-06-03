@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\System\Files;
 
 
-use LeadMax\TrackYourStats\System\Company;
+use App\Company;
 
 class ImagesUploader
 {
@@ -41,7 +41,7 @@ class ImagesUploader
 
     public function doesCompanySubDomainFolderExist()
     {
-        $dir = env('SALE_LOG_DIRECTORY').'/'.Company::loadFromSession()->getSubDomain();
+        $dir = env('SALE_LOG_DIRECTORY').'/'.Company::currentSubDomain();
         if (file_exists($dir) == false) {
             return mkdir($dir);
         } else {

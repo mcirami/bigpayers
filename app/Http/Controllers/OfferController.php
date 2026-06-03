@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Campaign;
+use App\Company;
 use App\Offer;
 use App\OfferURL;
 use App\PredefinedOfferRule;
@@ -20,8 +21,6 @@ use Illuminate\Support\Facades\Request as InputRequest;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule as ValidationRule;
 use LeadMax\TrackYourStats\Offer\Campaigns;
-use LeadMax\TrackYourStats\Offer\URLs;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\Table\Paginate;
 
 class OfferController extends Controller
@@ -804,15 +803,18 @@ class OfferController extends Controller
 
 	public function showOfferURLs()
 	{
-		$offerURLs = new URLs(Company::loadFromSession());
-		$urls = $offerURLs->getOfferUrls()->fetchAll(\PDO::FETCH_ASSOC);
+		$urls = OfferURL::query()
+			->where('company_id', $this->currentCompany()->getID())
+			->get()
+			->toArray();
+
 		return view('offer.urls', compact('urls'));
 	}
 
 	public function showCreateOfferUrl()
 	{
 		$activeUrls = OfferURL::query()
-		                     ->where('company_id', Company::loadFromSession()->getID())
+		                     ->where('company_id', $this->currentCompany()->getID())
 		                     ->where('status', 1)
 		                     ->count();
 
@@ -835,7 +837,7 @@ class OfferController extends Controller
 		OfferURL::query()->create([
 			'url' => $request->input('url'),
 			'status' => (int) $request->input('status'),
-			'company_id' => Company::loadFromSession()->getID(),
+			'company_id' => $this->currentCompany()->getID(),
 			'timestamp' => Carbon::now('UTC')->format('Y-m-d H:i:s'),
 		]);
 
@@ -844,12 +846,13 @@ class OfferController extends Controller
 
 	public function showEditOfferUrl($id)
 	{
+		$companyId = $this->currentCompany()->getID();
 		$offerUrl = OfferURL::query()
-		                   ->where('company_id', Company::loadFromSession()->getID())
+		                   ->where('company_id', $companyId)
 		                   ->findOrFail($id);
 
 		$activeUrls = OfferURL::query()
-		                     ->where('company_id', Company::loadFromSession()->getID())
+		                     ->where('company_id', $companyId)
 		                     ->where('status', 1)
 		                     ->count();
 
@@ -870,7 +873,7 @@ class OfferController extends Controller
 		]);
 
 		$offerUrl = OfferURL::query()
-		                   ->where('company_id', Company::loadFromSession()->getID())
+		                   ->where('company_id', $this->currentCompany()->getID())
 		                   ->findOrFail($id);
 
 		$offerUrl->url = $request->input('url');
@@ -878,6 +881,15 @@ class OfferController extends Controller
 		$offerUrl->save();
 
 		return redirect('/offer/urls')->with('message', 'Offer URL updated successfully.');
+	}
+
+	private function currentCompany(): Company
+	{
+		$company = Company::instance()->first();
+
+		abort_unless($company, 404, 'Company install not found.');
+
+		return $company;
 	}
 
 	public function massAssign(Request $request)

@@ -88,6 +88,7 @@ class PublicCompatibilityRoutesTest extends TestCase
     public function test_laravel_company_model_exposes_auth_view_presentation_helpers(): void
     {
         $company = new Company();
+        $company->id = 123;
         $company->shortHand = 'Acme Affiliates';
         $company->subDomain = 'acme';
         $company->colors = '#abc;123456';
@@ -96,18 +97,43 @@ class PublicCompatibilityRoutesTest extends TestCase
         $company->skype = 'acme-support';
         $company->email = 'support@example.test';
         $company->uid = 'acme-uid';
+        $company->login_url = 'login.example.test';
+        $company->landing_page = 'landing.example.test';
         $company->allow_register = true;
 
         $this->assertSame(['#abc', '123456'], $company->getColors());
+        $this->assertSame(123, $company->getID());
         $this->assertSame('Acme Affiliates', $company->getShortHand());
         $this->assertSame('acme', $company->getSubDomain());
         $this->assertSame('images/acme', $company->getImgDir());
         $this->assertSame('/images/acme/logo.png', $company->getBrandAssetUrl('logo.png'));
         $this->assertSame('Telegram', $company->getMessengerType());
         $this->assertSame('acme-support', $company->getMessengerUsername());
+        $this->assertSame('acme-support', $company->getSkype());
         $this->assertSame('support@example.test', $company->getEmail());
         $this->assertSame('acme-uid', $company->getUID());
+        $this->assertSame('login.example.test', $company->getLoginURL());
+        $this->assertSame('landing.example.test', $company->getLandingPage());
         $this->assertTrue($company->allowsRegister());
+    }
+
+    public function test_laravel_company_model_resolves_current_subdomain_without_legacy_company_class(): void
+    {
+        $originalSubDomain = $_SESSION['COMPANY_SUBDOMAIN'] ?? null;
+
+        try {
+            $_SESSION['COMPANY_SUBDOMAIN'] = 'tenant-a';
+            $this->assertSame('tenant-a', Company::currentSubDomain());
+
+            unset($_SESSION['COMPANY_SUBDOMAIN']);
+            $this->assertSame((string) env('DB_DATABASE'), Company::currentSubDomain());
+        } finally {
+            if ($originalSubDomain === null) {
+                unset($_SESSION['COMPANY_SUBDOMAIN']);
+            } else {
+                $_SESSION['COMPANY_SUBDOMAIN'] = $originalSubDomain;
+            }
+        }
     }
 
     public function test_laravel_company_model_resolves_login_theme_css_url(): void
@@ -198,6 +224,28 @@ class PublicCompatibilityRoutesTest extends TestCase
     public function test_chat_log_controller_does_not_load_legacy_company_from_session(): void
     {
         $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
+        $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
+    }
+
+    public function test_legacy_helper_classes_do_not_load_legacy_company_from_session(): void
+    {
+        foreach ([
+            base_path('src/System/Files/ImagesUploader.php'),
+            base_path('src/Offer/SaleLog.php'),
+            base_path('src/User/User.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $contents);
+            $this->assertStringNotContainsString('Company::loadFromSession()', $contents);
+        }
+    }
+
+    public function test_index_controller_does_not_load_legacy_company_from_session(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/IndexController.php'));
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
         $this->assertStringNotContainsString('Company::loadFromSession()', $controller);

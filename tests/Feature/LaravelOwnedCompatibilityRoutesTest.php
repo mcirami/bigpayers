@@ -8,11 +8,13 @@ use App\Http\Controllers\ClickIdToolController;
 use App\Http\Controllers\CompanySetupController;
 use App\Http\Controllers\DatabaseUpdateController;
 use App\Http\Controllers\IPBlacklistController;
+use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ReportPermissionController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SignupController;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use ReflectionClass;
 use Tests\TestCase;
@@ -56,6 +58,23 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertRouteAction('/admin/setup', 'POST', CompanySetupController::class . '@store');
         $this->assertRouteAction('/admin/database-updates', 'GET', DatabaseUpdateController::class . '@index');
         $this->assertRouteAction('/admin/database-updates', 'POST', DatabaseUpdateController::class . '@run');
+    }
+
+    public function test_settings_controller_does_not_load_legacy_company_from_session(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/SettingsController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
+        $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
+    }
+
+    public function test_offer_controller_does_not_load_legacy_company_for_offer_url_management(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/OfferController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
+        $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\URLs', $controller);
     }
 
     public function test_legacy_post_compatibility_urls_keep_csrf_exceptions(): void
