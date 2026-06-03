@@ -347,6 +347,8 @@ Remaining cleanup is mostly archival and hardening:
 - sale-log upload helpers and welcome-email branding no longer load the legacy
   company object from session; runtime `Company::loadFromSession()` references
   have been retired outside source-test guard assertions
+- legacy offer-domain helpers no longer import the legacy company class for
+  offer URL dropdown/query support
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

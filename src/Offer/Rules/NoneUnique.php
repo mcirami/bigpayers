@@ -11,7 +11,6 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 use LeadMax\TrackYourStats\Clicks\Cookie;
 use LeadMax\TrackYourStats\Clicks\TrackingParameters;
-use LeadMax\TrackYourStats\System\Company;
 
 class NoneUnique implements Rule
 {

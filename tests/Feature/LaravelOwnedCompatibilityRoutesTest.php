@@ -77,6 +77,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\URLs', $controller);
     }
 
+    public function test_legacy_offer_domain_helpers_do_not_import_legacy_company_class(): void
+    {
+        foreach ([
+            base_path('src/Offer/View.php'),
+            base_path('src/Offer/URLs.php'),
+            base_path('src/Offer/Rules/NoneUnique.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $contents);
+        }
+    }
+
     public function test_legacy_post_compatibility_urls_keep_csrf_exceptions(): void
     {
         $middleware = app(VerifyCsrfToken::class);

@@ -8,10 +8,11 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
+use App\Company;
 use App\Conversion;
+use App\OfferURL;
 use App\Privilege;
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\System\Company;
 use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\Table\Paginate;
@@ -54,7 +55,15 @@ class View
             echo "<label class=\"value_span9\">Offer URLS: </label>
                       <select  onchange='handleSelect(this);'  class=\"form - control input - sm \" id=\"offer_url\" name=\"offer_url\">";
 
-            $this->urls = Company::getOfferUrls();
+            $company = Company::instance()->first();
+            $this->urls = $company
+                ? OfferURL::query()
+                    ->where('company_id', $company->getID())
+                    ->where('status', 1)
+                    ->pluck('url')
+                    ->map(fn ($url) => [(string) $url])
+                    ->all()
+                : [];
 
             if (count($this->urls) == 0) {
                 array_push($this->urls, array($_SERVER["HTTP_HOST"]));

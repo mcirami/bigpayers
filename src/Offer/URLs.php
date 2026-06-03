@@ -2,8 +2,8 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
+use App\Company;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
-use LeadMax\TrackYourStats\System\Company;
 
 /**
  * Author: Dean
