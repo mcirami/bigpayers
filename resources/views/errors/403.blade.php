@@ -1,7 +1,7 @@
 @php
     /** @var \App\Company|null $company */
-    $company = \App\Company::instance()->first();
-    $userId = \LeadMax\TrackYourStats\System\Session::userID();
+    $company = $company ?? \App\Company::instance()->first();
+    $userId = $currentUserId ?? null;
     $logoPath = $company ? $company->getBrandAssetUrl('logo.png') : asset('images/logo.png');
     $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('favicon.ico');
     $companyName = $company ? ($company->getShortHand() ?: 'BigPayers') : 'BigPayers';

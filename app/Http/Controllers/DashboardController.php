@@ -14,14 +14,16 @@ class DashboardController extends Controller
     {
         $company = Company::instance()->first();
         abort_unless($company, 404, 'Company install not found.');
+        $currentUser = Session::userData();
 
         $with = [
             'canViewPostback' => Session::permissions()->can(Permissions::VIEW_POSTBACK),
             'company' => $company,
+            'currentUser' => $currentUser,
             'postBackURL' => getWebRoot()."?uid=".$company->getUID()."&clickid=",
             'userId' => Session::userID(),
-            'firstName' => Session::userData()->first_name,
-            'email' => Session::userData()->email,
+            'firstName' => $currentUser->first_name,
+            'email' => $currentUser->email,
 	        'userType' => Session::userType(),
 	        'domain' => request()->getSchemeAndHttpHost() . "/signup?mid=",
         ];

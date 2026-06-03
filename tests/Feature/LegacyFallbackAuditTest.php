@@ -44,6 +44,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Allowed public PHP entrypoints exist and have documented reasons.',
             $output
         );
+        $this->assertStringContainsString(
+            'Runtime code does not reference the retired legacy company session loader.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -286,6 +290,7 @@ class LegacyFallbackAuditTest extends TestCase
             'frontControllerFallbackErrors',
             'legacyBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
+            'retiredCompanySessionDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
             'allowedNonLegacyPhpRouteInventoryErrors',
@@ -337,6 +342,31 @@ class LegacyFallbackAuditTest extends TestCase
         );
     }
 
+    public function test_retired_company_session_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'retiredCompanySessionDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Company;',
+                'src/BadHelper.php' => '$company = Company::loadFromSession();',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Company;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Company instead of the legacy company class.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadHelper.php: Use App\\Company current-company helpers instead of the legacy session company loader.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -345,6 +375,7 @@ class LegacyFallbackAuditTest extends TestCase
             'frontControllerForbiddenPatterns',
             'legacyBootstrapRequiredPatterns',
             'legacyBootstrapForbiddenPatterns',
+            'retiredCompanySessionForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 

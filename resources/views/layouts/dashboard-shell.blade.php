@@ -1,6 +1,6 @@
 @php
     /** @var \App\Company $company */
-    $user = \LeadMax\TrackYourStats\System\Session::userData();
+    $user = $currentUser;
     $isAdminLogin = request()->has('adminLogin');
     $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];
     $logoPath = $company->getBrandAssetUrl('logo.png');

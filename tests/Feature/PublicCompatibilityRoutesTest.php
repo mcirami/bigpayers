@@ -221,6 +221,22 @@ class PublicCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_dashboard_shell_and_error_views_do_not_read_legacy_session_directly(): void
+    {
+        foreach ([
+            resource_path('views/home.blade.php'),
+            resource_path('views/layouts/dashboard-shell.blade.php'),
+            resource_path('views/layouts/master.blade.php'),
+            resource_path('views/errors/403.blade.php'),
+            resource_path('views/errors/404.blade.php'),
+            resource_path('views/errors/500.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
+        }
+    }
+
     public function test_chat_log_controller_does_not_load_legacy_company_from_session(): void
     {
         $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));

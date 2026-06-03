@@ -67,6 +67,11 @@ class AuditLegacyFallbackCoverage extends Command
         'include __DIR__. "/../vendor/autoload.php";' => 'bootstrap/legacy_loader.php must not include Composer repeatedly.',
     ];
 
+    private array $retiredCompanySessionForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\Company' => 'Use App\\Company instead of the legacy company class.',
+        'Company::loadFromSession()' => 'Use App\\Company current-company helpers instead of the legacy session company loader.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = $this->legacyPhpFiles();
@@ -170,6 +175,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $retiredCompanySessionDependencyErrors = $this->retiredCompanySessionDependencyErrors();
+
+        if ($retiredCompanySessionDependencyErrors->isNotEmpty()) {
+            $this->error('Runtime code still references retired legacy company session dependencies:');
+            $retiredCompanySessionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
@@ -196,6 +210,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Legacy POST compatibility routes have CSRF exceptions.');
         $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
+        $this->info('Runtime code does not reference the retired legacy company session loader.');
 
         return self::SUCCESS;
     }
@@ -402,6 +417,58 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         return $errors;
+    }
+
+    private function retiredCompanySessionDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+            'src',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->retiredCompanySessionDependencyErrorsFor($sourceFiles);
+    }
+
+    private function retiredCompanySessionDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->retiredCompanySessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
     }
 
     private function legacyPostCsrfExceptionErrors()

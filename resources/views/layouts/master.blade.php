@@ -4,6 +4,8 @@
 ?>
 @php
     /** @var \App\Company $company */
+    $currentUser = $currentUser ?? null;
+    $currentUserId = $currentUser->idrep ?? null;
     $companyName = $company->getShortHand();
     $logoPath = $company->getBrandAssetUrl('logo.png');
     $faviconPath = $company->getBrandAssetUrl('favicon.ico');
@@ -130,30 +132,27 @@
     <ul>
             <li>
                 <h2 class="label value_span2">Name</h2>
-                <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->first_name; ?> <?php echo \LeadMax\TrackYourStats\System\Session::userData()->last_name; ?></h3>
+                <h3 class="value_span5 username">{{ trim(($currentUser->first_name ?? '') . ' ' . ($currentUser->last_name ?? '')) }}</h3>
             </li>
             <li>
                 <h2 class="label value_span2">Username</h2>
-                <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->user_name; ?></h3>
+                <h3 class="value_span5 username">{{ $currentUser->user_name ?? '' }}</h3>
             </li>
             <li>
                 <h2 class="label value_span2">Email</h2>
-                <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->email; ?></h3>
+                <h3 class="value_span5 username">{{ $currentUser->email ?? '' }}</h3>
             </li>
             <li>
                 <h2 class="label value_span2">Phone No</h2>
-                <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->cell_phone; ?></h3>
+                <h3 class="value_span5 username">{{ $currentUser->cell_phone ?? '' }}</h3>
             </li>
             <li>
                 <h2 class="label value_span2">Telegram</h2>
-                <h3 class="value_span5 username"><?php echo \LeadMax\TrackYourStats\System\Session::userData()->skype; ?></h3>
+                <h3 class="value_span5 username">{{ $currentUser->skype ?? '' }}</h3>
             </li>
-        <?php
-        $userId = \LeadMax\TrackYourStats\System\Session::userData()->idrep;
-        ?>
             <li>
                 <h2 class="label value_span2">Password</h2>
-                <a href="/user/{{$userId}}/edit" class="value_span5 username">Change Password</a>
+                <a href="/user/{{$currentUserId}}/edit" class="value_span5 username">Change Password</a>
             </li>
         </ul>
     </div><!--left_panel-->

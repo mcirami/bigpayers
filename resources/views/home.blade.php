@@ -5,7 +5,7 @@
 @section('content')
     @php
         /** @var \App\Company $company */
-        $user = \LeadMax\TrackYourStats\System\Session::userData();
+        $user = $currentUser;
         $roleLabels = [
             0 => 'God',
             1 => 'Admin',
@@ -15,8 +15,8 @@
         $roleLabel = $roleLabels[$userType] ?? 'Team Member';
         $dashboardNavBar = isset($navBar) && method_exists($navBar, 'getVisibleMenu')
             ? $navBar
-            : new \LeadMax\TrackYourStats\System\NavBar($userType, \LeadMax\TrackYourStats\System\Session::permissions());
-        $menuSections = $dashboardNavBar->getVisibleMenu();
+            : null;
+        $menuSections = $dashboardNavBar ? $dashboardNavBar->getVisibleMenu() : [];
         $workspaceSectionCount = count($menuSections);
         $signupLink = $userType == 2 ? $domain . $userId : null;
     @endphp

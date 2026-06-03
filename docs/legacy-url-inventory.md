@@ -349,6 +349,11 @@ Remaining cleanup is mostly archival and hardening:
   have been retired outside source-test guard assertions
 - legacy offer-domain helpers no longer import the legacy company class for
   offer URL dropdown/query support
+- the fallback audit now fails if runtime code reintroduces the retired legacy
+  company class import or `Company::loadFromSession()` dependency
+- dashboard shell, legacy master, home, and branded error views now receive
+  current user/session values from Laravel view data instead of reading the
+  legacy session class directly in Blade
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

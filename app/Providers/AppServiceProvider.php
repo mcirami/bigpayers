@@ -30,13 +30,27 @@ class AppServiceProvider extends ServiceProvider
             'affiliateTypeLabelPlural' => config('branding.affiliate.plural'),
         ]);
         view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
-            $navBar = new NavBar(Session::userType(), Session::permissions());
-            $notifications = new Notifications(Session::userID());
+            $currentUser = Session::userData();
+            $currentUserId = Session::userID();
+            $currentUserType = Session::userType();
+            $currentPermissions = Session::permissions();
+            $navBar = new NavBar($currentUserType, $currentPermissions);
+            $notifications = new Notifications($currentUserId);
             $notifications->fetchUsersNotifications();
             $view->with([
                 'company' => Company::instance()->first(),
+                'currentPermissions' => $currentPermissions,
+                'currentUser' => $currentUser,
+                'currentUserId' => $currentUserId,
+                'currentUserType' => $currentUserType,
                 'navBar' => $navBar,
                 'notifications' => $notifications,
+            ]);
+        });
+        view()->composer(['errors.403', 'errors.404', 'errors.500'], function (\Illuminate\View\View $view) {
+            $view->with([
+                'company' => Company::instance()->first(),
+                'currentUserId' => Session::userID(),
             ]);
         });
         User::observe(UserObserver::class);
