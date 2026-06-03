@@ -1,8 +1,6 @@
 @php
-    use LeadMax\TrackYourStats\System\Session;
     use App\Privilege;
 	use Maatwebsite\Excel\Facades\Excel;
-	$userType = Session::userType();
 @endphp
 
 @extends('report.template')
@@ -14,7 +12,7 @@
 @section('table-options')
 
     @include('report.options.dates')
-    @if ($userType == 0 || $userType == 1)
+    @if ($sessionUserType == Privilege::ROLE_GOD || $sessionUserType == Privilege::ROLE_ADMIN)
         <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
             <a class="bp-button-primary" href="/report/geo/clicks-in-country/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}&country={{$geoCode}}">
                 Export Data

@@ -107,7 +107,7 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
                     </div>
                 @else
                     <form method="POST" action="{{route('contact.send')}}" id="contact_us_form">
-                        <input type="hidden" name="_token" id="csrf-token" value="{{ Session::token() }}" />
+                        <input type="hidden" name="_token" id="csrf-token" value="{{ csrf_token() }}" />
                         <div class = "heading_holder">
                             <h3>Contact Us</h3>
                             <p>Submit the form below to let us know about your group, experience, type of traffic and current sales volume.</p>

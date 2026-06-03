@@ -32,7 +32,7 @@
     <div class="form-group">
 
         <label class="label label-default">Affiliate:</label>
-        <span>{{\LeadMax\TrackYourStats\System\Session::user()->user_name}}</span>
+        <span>{{ $affiliateUserName }}</span>
 
     </div>
     <div class="form-group">

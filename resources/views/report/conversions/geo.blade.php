@@ -1,8 +1,3 @@
-@php
-    use LeadMax\TrackYourStats\System\Session;
-    use App\Privilege;
-@endphp
-
 @extends('report.template')
 
 @section('report-title')
@@ -11,7 +6,7 @@
 
 @section('table-options')
 
-    @if(Session::userType() != Privilege::ROLE_AFFILIATE)
+    @if(!$isAffiliate)
         @php
             $data = array(
                 'd_from' 		=> $startDate,
@@ -42,7 +37,7 @@
             <tr role="row">
                 <td>{{$key}}</td>
                 <td>
-                    @if ($row['total_clicks'] > 0 && (Session::userType() == Privilege::ROLE_GOD || Session::userType() == Privilege::ROLE_ADMIN))
+                    @if ($row['total_clicks'] > 0 && ($isGod || $isAdmin))
                         <a class='load_click' href="/report/geo/clicks-in-country?{{$params}}&country={{$key}}">{{$row['total_clicks']}}</a>
                     @else
                         {{$row['total_clicks']}}
@@ -52,7 +47,7 @@
                     {{$row['unique_clicks']}}
                 </td>
                 <td>
-                    @if ($row['total_conversions'] > 0 && (Session::userType() == Privilege::ROLE_GOD || Session::userType() == Privilege::ROLE_ADMIN))
+                    @if ($row['total_conversions'] > 0 && ($isGod || $isAdmin))
                         <a href="/report/geo-by-offer?{{$params}}&country={{$key}}">{{$row['total_conversions']}}</a>
                     @else
                         {{$row['total_conversions']}}

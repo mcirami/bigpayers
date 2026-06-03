@@ -1,8 +1,3 @@
-@php
-    use LeadMax\TrackYourStats\System\Session;
-    use App\Privilege;
-@endphp
-
 @extends('report.template')
 
 @section('report-title')
@@ -11,7 +6,7 @@
 
 @section('table-options')
 
-    @if(Session::userType() != Privilege::ROLE_AFFILIATE)
+    @if(!$isAffiliate)
         @php
             $data = array(
                 'd_from' 		=> $startDate,

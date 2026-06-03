@@ -12,7 +12,7 @@
         <table class="table table-bordered table_01 tablesorter" id="mainTable">
             <thead>
             <tr>
-                @if(\LeadMax\TrackYourStats\System\Session::userType() !== \App\Privilege::ROLE_AFFILIATE)
+                @if($sessionUserType !== \App\Privilege::ROLE_AFFILIATE)
                     <th class="value_span9">Conversion ID</th>
                 @endif
                 <th class="value_span9">Offer Name</th>
@@ -44,5 +44,4 @@
                 });
             </script>
 @endsection
-
 

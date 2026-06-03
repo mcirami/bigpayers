@@ -47,9 +47,10 @@ class PayoutReportController extends ReportController
 
         $offerReport = $offerReporter->fetchReport($dates['startDate'], $dates['endDate']);
         $payoutReport = $this->reportPayout();
-        $title = strtoupper(Session::user()->user_name) . '_' . $dates['startDate'] . '_THROUGH_' . $dates['endDate'];
+        $affiliateUserName = Session::user()->user_name;
+        $title = strtoupper($affiliateUserName) . '_' . $dates['startDate'] . '_THROUGH_' . $dates['endDate'];
 
-        return \PDF::loadView('pdf.payout-log', compact('offerReport', 'dates', 'payoutReport', 'title'))->download($title . '.pdf');
+        return \PDF::loadView('pdf.payout-log', compact('affiliateUserName', 'offerReport', 'dates', 'payoutReport', 'title'))->download($title . '.pdf');
     }
 
 

@@ -1,6 +1,5 @@
 @php
     use App\Privilege;
-	use LeadMax\TrackYourStats\System\Session;
 @endphp
 
 @extends('report.template')
@@ -70,7 +69,7 @@
 		</form>
 	</div>--}}
 	<div class="form-group searchDiv">
-		@if (Session::permissions()->can("view_fraud_data"))
+		@if ($canViewFraudData)
 			<form action="/offer/{{$offer->idoffer}}/search-clicks" method="GET">
 				<input id="searchBox"
 					   class="form-control"
@@ -92,16 +91,16 @@
 			<table id="clicks" class="table table-striped table-bordered table_01 tablesorter">
 				<thead>
 				<tr>
-					@if (Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<th class="value_span9">Click ID</th>
 					@endif
-					@if (Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<th class="value_span9">Encoded ID</th>
 					@endif
 					<th class="value_span9"><br>Click Time</th>
 					<th class="value_span9">Conv Time</th>
-                    @if(Session::userType() == Privilege::ROLE_GOD ||
-                        (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") )
+                    @if($sessionUserType == Privilege::ROLE_GOD ||
+                        ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts)
                     )
                         <th class="value_span9">Paid</th>
                     @endif
@@ -112,10 +111,10 @@
 					<th class="value_span9">Sub 5</th> --}}
 					<th class="value_span9">Affiliate</th>
 					<th class="value_span9">Offer</th>
-                    @if (Session::permissions()->can("view_fraud_data"))
+                    @if ($canViewFraudData)
                         <th class="value_span9">Referer Url</th>
                     @endif
-					@if (Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<th class="value_span9">Ip Address</th>
 						<th class="value_span9">Sub Division</th>
 						<th class="value_span9">City</th>
@@ -138,16 +137,16 @@
 						}
 					@endphp
 					<tr>
-						@if (Session::permissions()->can("view_fraud_data"))
+						@if ($canViewFraudData)
 							<td>{{$row['id']}}</td>
 						@endif
-                        @if (Session::permissions()->can("view_fraud_data"))
+                        @if ($canViewFraudData)
                             <td>{{$row['encoded']}}</td>
                         @endif
 						<td>{{$timestamp}}</td>
 						<td>{{$convertionTimeStamp}}</td>
-                        @if ( Session::permissions()->can("view_fraud_data") ||
-                            (Session::userType() == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts") ))
+                        @if ($canViewFraudData ||
+                            ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts))
                             <td>{{$row['paid']}}</td>
                         @endif
 						@for($i = 1; $i <= 3; $i++)
@@ -155,7 +154,7 @@
 						@endfor
 						<td>{{$row['affiliate_id']}}</td>
 						<td>{{$row['offer_id']}}</td>
-						@if (Session::permissions()->can("view_fraud_data"))
+						@if ($canViewFraudData)
                                 <td>{{$row['referer']}}</td>
                                 <td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
                                 <td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>

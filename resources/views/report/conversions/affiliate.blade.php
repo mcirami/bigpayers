@@ -21,7 +21,7 @@
 
 @section('table')
 	<div class="form-group searchDiv">
-		@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+		@if ($canViewFraudData)
 			<form action="/user/{{$user->idrep}}/search-clicks" method="GET">
 				<input id="searchBox"
 					   class="form-control"
@@ -40,7 +40,7 @@
 		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
 			<tr>
-				@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+				@if ($canViewFraudData)
 					<th class="value_span9">Click ID</th>
 				@endif
 				<th class="value_span9">Offer Name</th>
@@ -64,7 +64,7 @@
 					
 				@endphp
 				<tr role="row">
-					@if (\LeadMax\TrackYourStats\System\Session::permissions()->can("view_fraud_data"))
+					@if ($canViewFraudData)
 						<td>{{$row->idclicks}}</td>
 					@endif
 					<td>{{$row->offer_name}}</td>

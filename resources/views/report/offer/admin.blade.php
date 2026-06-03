@@ -1,9 +1,7 @@
 @php
     use App\Privilege;
-	use LeadMax\TrackYourStats\System\Session;
-	$userType = Session::userType();
-    $showRevenueColumns = in_array($userType, [Privilege::ROLE_GOD, Privilege::ROLE_MANAGER], true)
-        || ($userType == Privilege::ROLE_ADMIN && Session::permissions()->can("view_payouts"));
+    $showRevenueColumns = in_array($sessionUserType, [Privilege::ROLE_GOD, Privilege::ROLE_MANAGER], true)
+        || ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts);
 @endphp
 
 @extends('report.template')
@@ -14,7 +12,7 @@
 
 @section('table-options')
     @include('report.options.dates')
-    @if ($userType == 0 || $userType == 1)
+    @if ($sessionUserType == Privilege::ROLE_GOD || $sessionUserType == Privilege::ROLE_ADMIN)
         <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
             <a class="bp-button-primary" href="/report/offer-data/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
                 Export Data

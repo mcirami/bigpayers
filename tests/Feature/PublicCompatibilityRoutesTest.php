@@ -237,21 +237,17 @@ class PublicCompatibilityRoutesTest extends TestCase
         }
     }
 
-    public function test_user_account_views_do_not_read_legacy_session_directly(): void
+    public function test_blade_views_do_not_read_legacy_session_directly(): void
     {
-        foreach ([
-            resource_path('views/offer/manage.blade.php'),
-            resource_path('views/offer/show.blade.php'),
-            resource_path('views/notifications/index.blade.php'),
-            resource_path('views/user/partials/account-actions.blade.php'),
-            resource_path('views/user/form.blade.php'),
-            resource_path('views/user/manage.blade.php'),
-            resource_path('views/user/offers.blade.php'),
-            resource_path('views/user/pending-activate.blade.php'),
-        ] as $path) {
+        foreach (File::allFiles(resource_path('views')) as $file) {
+            $path = $file->getPathname();
             $contents = File::get($path);
 
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
+            $this->assertStringNotContainsString(
+                'LeadMax\\TrackYourStats\\System\\Session',
+                $contents,
+                "{$path} reads the legacy session class directly."
+            );
         }
     }
 
