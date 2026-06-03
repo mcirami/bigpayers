@@ -12,7 +12,6 @@
 
 @section('content')
     @php
-        $hasReferralAccess = \LeadMax\TrackYourStats\System\Session::permissions()->can(\LeadMax\TrackYourStats\User\Permissions::EDIT_REFERRALS);
         $requestedAt = $user->rep_timestamp ? \Carbon\Carbon::parse($user->rep_timestamp)->toFormattedDateString() : 'Unknown';
     @endphp
 

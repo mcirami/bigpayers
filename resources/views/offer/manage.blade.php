@@ -12,16 +12,6 @@
 
 @section('content')
     @php
-        $sessionUserType = \LeadMax\TrackYourStats\System\Session::userType();
-        $permissions = \LeadMax\TrackYourStats\System\Session::permissions();
-		$canCreateOffers = $permissions->can('create_offers');
-        $canEditAffiliates = $permissions->can('edit_affiliates');
-        $canEditOfferRules = $permissions->can('edit_offer_rules');
-        $canViewPayouts = $permissions->can('view_payouts');
-        $isAffiliate = $sessionUserType == \App\Privilege::ROLE_AFFILIATE;
-        $isManager = $sessionUserType == \App\Privilege::ROLE_MANAGER;
-		$isGod = $sessionUserType == \App\Privilege::ROLE_GOD;
-        $showPayoutColumn = $isGod || $canViewPayouts || $isManager;
         $offerTypeLabels = [
             \App\Offer::TYPE_PPS => 'PPS',
             \App\Offer::TYPE_PPC => 'PPC',
@@ -230,7 +220,7 @@
             const canEditOfferRules = @json($canEditOfferRules);
             const canViewPayouts = @json($canViewPayouts);
             const showPayoutColumn = @json($showPayoutColumn);
-            const sessionUser = {{ (int) \LeadMax\TrackYourStats\System\Session::userID() }};
+            const sessionUser = @json($sessionUserId);
             const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? request()->getHttpHost());
             const offers = @json($offers);
             const offerTypeLabels = @json($offerTypeLabels);

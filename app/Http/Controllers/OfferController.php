@@ -252,16 +252,29 @@ class OfferController extends Controller
 		$data['urls'] = $urls;
 
 
+		$sessionUser = \LeadMax\TrackYourStats\System\Session::user();
+		$sessionUserId = (int) \LeadMax\TrackYourStats\System\Session::userID();
+		$sessionUserType = \LeadMax\TrackYourStats\System\Session::userType();
+		$permissions = \LeadMax\TrackYourStats\System\Session::permissions();
+		$canCreateOffers = $permissions->can('create_offers');
+		$canEditAffiliates = $permissions->can('edit_affiliates');
+		$canEditOfferRules = $permissions->can('edit_offer_rules');
+		$canViewPayouts = $permissions->can('view_payouts');
+		$isAffiliate = $sessionUserType == Privilege::ROLE_AFFILIATE;
+		$isManager = $sessionUserType == Privilege::ROLE_MANAGER;
+		$isGod = $sessionUserType == Privilege::ROLE_GOD;
+		$showPayoutColumn = $isGod || $canViewPayouts || $isManager;
+
 		$status = request('showInactive', 0) == 1 ? 0 : 1;
-		$offers = \LeadMax\TrackYourStats\System\Session::user()->offers()
+		$offers = $sessionUser->offers()
 		                                                        ->where('offer.status','=', $status)
 		                                                        ->leftJoin('campaigns', 'offer.campaign_id', '=', 'campaigns.id')
 		                                                        ->select('offer.*', 'campaigns.name as campaign_name');
 
-		if (\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_AFFILIATE) {
+		if ($isAffiliate) {
 			$offers = $offers->leftJoin('bonus_offers', 'bonus_offers.offer_id', '=', 'offer.idoffer')->get();
 			$data['requestableOffers'] = Offer::where('is_public', \LeadMax\TrackYourStats\Offer\Offer::VISIBILITY_REQUESTABLE)
-			                                  ->whereRaw('offer.idoffer NOT IN (SELECT offer_idoffer FROM rep_has_offer WHERE rep_has_offer.rep_idrep = ' . \LeadMax\TrackYourStats\System\Session::userID() . ')')->get();
+			                                  ->whereRaw('offer.idoffer NOT IN (SELECT offer_idoffer FROM rep_has_offer WHERE rep_has_offer.rep_idrep = ' . $sessionUserId . ')')->get();
 		} else {
 			$offers = $offers->get();
 		}
@@ -270,7 +283,19 @@ class OfferController extends Controller
 			$offer["offer_name"] = htmlspecialchars($offer["offer_name"]);
 		}
 
-		$data = array_merge(compact('offers'), $data);
+		$data = array_merge(compact(
+			'canCreateOffers',
+			'canEditAffiliates',
+			'canEditOfferRules',
+			'canViewPayouts',
+			'isAffiliate',
+			'isGod',
+			'isManager',
+			'offers',
+			'sessionUserId',
+			'sessionUserType',
+			'showPayoutColumn'
+		), $data);
 		return view('offer.manage', $data)->with(['data' => $data]);
 	}
 
@@ -330,9 +355,13 @@ class OfferController extends Controller
 			->where('idoffer', '=', $id)
 			->firstOrFail();
 
+		$permissions = \LeadMax\TrackYourStats\System\Session::permissions();
+
 		return view('offer.show', [
 			'offer' => $offer,
 			'assignedUsers' => $offer->affiliates,
+			'canCreateOffers' => $permissions->can('create_offers'),
+			'canEditOfferRules' => $permissions->can('edit_offer_rules'),
 		]);
 	}
 

@@ -32,11 +32,11 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">
-                    @if(\LeadMax\TrackYourStats\System\Session::permissions()->can('create_offers'))
+                    @if($canCreateOffers)
                         <a href="/offer/edit/{{ $offer->idoffer }}" class="bp-button-primary">Edit offer</a>
                     @endif
 
-                    @if(\LeadMax\TrackYourStats\System\Session::permissions()->can('edit_offer_rules'))
+                    @if($canEditOfferRules)
                         <a href="/offer/rules/{{ $offer->idoffer }}" class="bp-button-secondary">Manage rules</a>
                     @endif
                 </div>

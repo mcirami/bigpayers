@@ -470,11 +470,12 @@ class UserController extends Controller
     {
         $user = $this->findPendingAffiliateOrFail($id);
         $assignableManagers = $this->getAssignableManagersForPendingAffiliate();
-        $referralOptions = Session::permissions()->can(Permissions::EDIT_REFERRALS)
+        $hasReferralAccess = Session::permissions()->can(Permissions::EDIT_REFERRALS);
+        $referralOptions = $hasReferralAccess
             ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('user_name')->get(['rep.idrep', 'rep.user_name'])
             : collect();
 
-        return view('user.pending-activate', compact('user', 'assignableManagers', 'referralOptions'));
+        return view('user.pending-activate', compact('user', 'assignableManagers', 'referralOptions', 'hasReferralAccess'));
     }
 
     public function activatePendingUser(Request $request, $id)
