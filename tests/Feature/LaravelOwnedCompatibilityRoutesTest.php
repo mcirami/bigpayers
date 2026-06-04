@@ -134,9 +134,69 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_laravel_session_boundaries_use_current_session_boundary(): void
     {
         foreach ([
+            app_path('Click.php'),
+            app_path('Http/Controllers/LegacyCompatibilityController.php'),
             app_path('Http/Middleware/LegacyAccountTypeMiddleware.php'),
             app_path('Http/Middleware/LegacyPermissionMiddleware.php'),
             app_path('Providers/AppServiceProvider.php'),
+            app_path('Services/Repositories/Offer/OfferAffiliateClicksRepository.php'),
+            app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
+            app_path('Services/SMS/Text69.php'),
+            app_path('User.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
+        }
+    }
+
+    public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
+    {
+        foreach ([
+            base_path('src/Report/Affiliate.php'),
+            base_path('src/Report/Employee.php'),
+            base_path('src/Report/Formats/HTML.php'),
+            base_path('src/Report/ID/Clicks.php'),
+            base_path('src/Report/Offer.php'),
+            base_path('src/Report/Repositories/BannedUsersRepository.php'),
+            base_path('src/Report/Repositories/Employee/AdminEmployeeRepository.php'),
+            base_path('src/Report/Repositories/Employee/GodEmployeeRepository.php'),
+            base_path('src/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
+            base_path('src/Report/Repositories/Offer/AdminOfferRepository.php'),
+            base_path('src/Report/Repositories/Offer/GodOfferRepository.php'),
+            base_path('src/Report/Repositories/Offer/ManagerOfferRepository.php'),
+            base_path('src/Report/Repositories/SaleLogRepository.php'),
+            base_path('src/Report/Repositories/SubVarRepository.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
+        }
+    }
+
+    public function test_legacy_user_offer_click_and_notification_helpers_use_current_session_boundary(): void
+    {
+        foreach ([
+            base_path('src/Clicks/Conversion.php'),
+            base_path('src/Offer/Campaigns.php'),
+            base_path('src/Offer/Create.php'),
+            base_path('src/Offer/Offer.php'),
+            base_path('src/Offer/RepHasOffer.php'),
+            base_path('src/Offer/SaleLog.php'),
+            base_path('src/Offer/Update.php'),
+            base_path('src/Offer/View.php'),
+            base_path('src/System/Notifications.php'),
+            base_path('src/Table/ReportBase.php'),
+            base_path('src/User/Bonus.php'),
+            base_path('src/User/Create.php'),
+            base_path('src/User/Login.php'),
+            base_path('src/User/Permissions.php'),
+            base_path('src/User/Referrals.php'),
+            base_path('src/User/Salary.php'),
+            base_path('src/User/Update.php'),
+            base_path('src/User/User.php'),
         ] as $path) {
             $contents = File::get($path);
 

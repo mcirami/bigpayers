@@ -10,7 +10,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use PDO;
 
 define('ACCOUNT_TYPE', config('branding.account.singular'));
@@ -212,7 +212,7 @@ class Permissions
         }
 
 
-        if (isset($this->permissions[$permission]) == false || Session::permissions()->can($permission) == false) {
+        if (isset($this->permissions[$permission]) == false || CurrentUserSession::permissions()->can($permission) == false) {
             return false;
         }
 
@@ -221,7 +221,7 @@ class Permissions
 
         if (isset($permissionDetails["allowed_user_types"])) {
             //check editing user
-            if (in_array(Session::userType(), $permissionDetails["allowed_user_types"]) == false) {
+            if (in_array(CurrentUserSession::type(), $permissionDetails["allowed_user_types"]) == false) {
                 return false;
             }
 
@@ -235,7 +235,7 @@ class Permissions
 
         if (isset($permissionDetails["required_permissions"])) {
             foreach ($permissionDetails["required_permissions"] as $per) {
-                if (Session::permissions()->can($per) == false) {
+                if (CurrentUserSession::permissions()->can($per) == false) {
                     return false;
                 }
             }

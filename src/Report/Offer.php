@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Report;
 
 use LeadMax\TrackYourStats\Offer\Payouts;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\ReportBase;
 
 // Offer Report
@@ -301,8 +301,8 @@ class Offer extends ReportBase
         $stmt = $db->prepare($sql);
 
 
-        $stmt->bindValue(":referrer_repid", Session::userID());
-        $stmt->bindValue(":referrer_repid2", Session::userID());
+        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
+        $stmt->bindValue(":referrer_repid2", CurrentUserSession::id());
 
 
         if ($d_from != false && $d_to != false) {

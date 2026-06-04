@@ -8,7 +8,7 @@ use App\Privilege;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use Termwind\Components\Raw;
 
@@ -124,8 +124,8 @@ class AdminEmployeeRepository extends Repository
 
         $prep = $db->prepare($sql);
 
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
 
         $prep->execute();
 
@@ -244,7 +244,7 @@ class AdminEmployeeRepository extends Repository
     private function getConversions($dateFrom, $dateTo)
     {
         
-        $adminUserID = Session::userID();
+        $adminUserID = CurrentUserSession::id();
         $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
         $revenueExpression = Payouts::sqlForRole(Privilege::ROLE_ADMIN, 'offer', 'rep_has_offer');
 
@@ -286,7 +286,7 @@ class AdminEmployeeRepository extends Repository
     private function getClicks($dateFrom, $dateTo)
     {
 
-        $adminUserID = Session::userID();
+        $adminUserID = CurrentUserSession::id();
         $managers = DB::table('rep')->where('referrer_repid', '=', $adminUserID)->get()->pluck('idrep')->toArray();
 
         $result = DB::table('clicks')

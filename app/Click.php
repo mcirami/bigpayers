@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
 use LeadMax\TrackYourStats\Offer\Payouts;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 /**
  * App\Click
@@ -187,7 +187,7 @@ class Click extends Model
 		string $endDate,
 		?string $geoCode = null
 	): Builder {
-        $resolvedPaid = self::resolvedPaidExpressionForRole(Session::userType());
+        $resolvedPaid = self::resolvedPaidExpressionForRole(CurrentUserSession::type());
 		return $query
 			->leftJoin('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
 			->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')

@@ -6,7 +6,7 @@ namespace LeadMax\TrackYourStats\Clicks;
 use App\Privilege;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use LeadMax\TrackYourStats\Offer\Payouts;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\User\Bonus;
 use LeadMax\TrackYourStats\User\ReferralRegister;
 use LeadMax\TrackYourStats\User\Referrals;
@@ -51,16 +51,16 @@ class Conversion
 
     public static function doesLoggedInUserOwnConversion($conversionId)
     {
-        switch (Session::userType()) {
+        switch (CurrentUserSession::type()) {
             case \App\Privilege::ROLE_GOD:
                 return true;
 
             case \App\Privilege::ROLE_ADMIN:
             case \App\Privilege::ROLE_MANAGER:
-                return self::doesManagerOwnConversion(Session::userID(), $conversionId);
+                return self::doesManagerOwnConversion(CurrentUserSession::id(), $conversionId);
 
             case \App\Privilege::ROLE_AFFILIATE:
-                return self::doesUserOwnConversion(Session::userID(), $conversionId);
+                return self::doesUserOwnConversion(CurrentUserSession::id(), $conversionId);
 
             default:
                 return false;

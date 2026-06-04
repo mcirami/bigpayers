@@ -4,7 +4,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 use App\BonusOffer;
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Assignments;
 use LeadMax\TrackYourStats\User\Tree;
 use \LeadMax\TrackYourStats\User\User;
@@ -105,7 +105,7 @@ class Update
         if ($this->userType == \App\Privilege::ROLE_MANAGER && !$per->can("create_managers")) {
 
 
-            $userID = Session::userID();
+            $userID = CurrentUserSession::id();
             $this->allAffiliates = $new_replist->selectAllManagerAffiliates($userID)->fetchALL(PDO::FETCH_ASSOC);
 
 
@@ -375,18 +375,18 @@ class Update
 
                 $is_public = post('selectPublic');
 
-                if (Session::userType() == \App\Privilege::ROLE_GOD) {
+                if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
                     $campaign_id = post('campaign');
                 }
 
 
-                if (Session::userType() == \App\Privilege::ROLE_GOD) {
+                if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
                     $url = post('url');
                     $status = post('status');
                 }
 
 
-                if (Session::userType() == \App\Privilege::ROLE_GOD) {
+                if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
                     $sql = " UPDATE offer SET  offer_name =:offer_name,description =:description,url =:url,payout =:payout,status =:status, offer_type = :offer_type, is_public = :is_public, campaign_id = :campaign_id WHERE idoffer = :id ";
                 } else {
                     $sql = " UPDATE offer SET  offer_name =:offer_name,description =:description,payout =:payout, is_public = :is_public WHERE idoffer = :id";
@@ -395,7 +395,7 @@ class Update
                 $stmt = $db->prepare($sql);
 
 
-                if (Session::userType() == \App\Privilege::ROLE_GOD) {
+                if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
                     $stmt->bindparam(":url", $url);
                     $stmt->bindparam(":status", $status);
                     $stmt->bindparam(":offer_type", $offer_type);
@@ -419,7 +419,7 @@ class Update
                 $lastOfferId = $id;
                 $sql = "SELECT * FROM rep_has_offer WHERE offer_idoffer = :idoffer";
 
-                $userID = Session::userID();
+                $userID = CurrentUserSession::id();
 
                 if ($this->userType == \App\Privilege::ROLE_MANAGER) {
                     $allAssigned = $this->RepHasOffer->selectAllAssignedManagerAffiliates($id,

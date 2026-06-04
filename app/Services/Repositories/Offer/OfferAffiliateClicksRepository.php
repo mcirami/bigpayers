@@ -14,7 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 /**
  * Reporting repository for Offers clicks, organized by affiliates.
@@ -51,15 +51,15 @@ class OfferAffiliateClicksRepository implements Repository
      */
     public function query(Carbon $start, Carbon $end): Builder
     {
-	    if( Session::userType() == Privilege::ROLE_ADMIN) {
-		    $report = Session::permissions()->can('view_all_users') ?
+	    if( CurrentUserSession::type() == Privilege::ROLE_ADMIN) {
+		    $report = CurrentUserSession::permissions()->can('view_all_users') ?
 			    $this->getOfferConversionsForGod($start, $end)
 			    :
 			    $this->getOfferConversionsForAdmin($start, $end);
 
-	    } else if( Session::userType() == Privilege::ROLE_MANAGER) {
+	    } else if( CurrentUserSession::type() == Privilege::ROLE_MANAGER) {
             $report = $this->getOfferConversionsForManager($start, $end);
-	    } else if( Session::userType() == Privilege::ROLE_AFFILIATE) {
+	    } else if( CurrentUserSession::type() == Privilege::ROLE_AFFILIATE) {
             $report = $this->getOfferConversionsForAgent($start, $end);
         } else {
             $report = $this->getOfferConversionsForGod($start, $end);

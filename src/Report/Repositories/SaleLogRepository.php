@@ -3,7 +3,7 @@
 namespace LeadMax\TrackYourStats\Report\Repositories;
 
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class SaleLogRepository extends Repository
 {
@@ -30,8 +30,8 @@ class SaleLogRepository extends Repository
                 ";
 
         $prep = $db->prepare($sql);
-        $left = Session::userData()->lft;
-        $right = Session::userData()->rgt;
+        $left = CurrentUserSession::data()->lft;
+        $right = CurrentUserSession::data()->rgt;
         $prep->bindParam(":left", $left);
         $prep->bindParam(":right", $right);
 

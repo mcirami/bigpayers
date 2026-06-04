@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use PDO;
 
 
@@ -91,7 +91,7 @@ class Create
         echo "  <p class='value_span10'>";
 
 
-        switch (Session::userType()) {
+        switch (CurrentUserSession::type()) {
             case \App\Privilege::ROLE_GOD:
                 echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">" . config('branding.affiliate.singular') . "
                     <input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . config('branding.account.singular') .
@@ -101,7 +101,7 @@ class Create
             case \App\Privilege::ROLE_ADMIN:
                 echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">" . config('branding.affiliate.singular') . "
                     <input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . config('branding.account.singular');
-                if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_admins")) {
+                if (CurrentUserSession::permissions()->can("create_admins")) {
                     echo "<input {$this->type["is_admin"]} onclick=\"god();appendAdmin();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".Privilege::ROLE_ADMIN."\">Admin";
                 }
 
@@ -109,10 +109,10 @@ class Create
 
             case \App\Privilege::ROLE_MANAGER:
 
-                if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_affiliates")) {
+                if (CurrentUserSession::permissions()->can("create_affiliates")) {
                     echo "<input {$this->type["is_rep"]} onclick=\"manager();appendAffiliate();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_AFFILIATE."\">" . config('branding.affiliate.singular') . " ";
                 }
-                if (\LeadMax\TrackYourStats\System\Session::permissions()->can("create_managers")) {
+                if (CurrentUserSession::permissions()->can("create_managers")) {
                     echo "<input {$this->type["is_manager"]} onclick=\"admin();appendManager();\" class=\"fixCheckBox\" type=\"radio\" name=\"priv\" value=\"".\App\Privilege::ROLE_MANAGER."\">" . config('branding.account.singular');
                 }
                 break;
@@ -126,7 +126,7 @@ class Create
     // Wrapper
     public function dumpPermissionsToJavascript()
     {
-        Session::permissions()->dumpPermissionsToJavascript();
+        CurrentUserSession::permissions()->dumpPermissionsToJavascript();
     }
 
 
@@ -134,7 +134,7 @@ class Create
     {
         $this->getAssignables();
 
-        switch (Session::userType()) {
+        switch (CurrentUserSession::type()) {
             case \App\Privilege::ROLE_GOD:
                 $this->dumpGods();
                 $this->dumpAdmins();
@@ -142,7 +142,7 @@ class Create
                 break;
 
             case \App\Privilege::ROLE_ADMIN:
-                if (Session::permissions()->can("create_admins")) {
+                if (CurrentUserSession::permissions()->can("create_admins")) {
                     $this->dumpGods();
                 }
                 $this->dumpAdmins();
@@ -152,11 +152,11 @@ class Create
 
             case \App\Privilege::ROLE_MANAGER:
 
-                if (Session::permissions()->can("create_managers")) {
+                if (CurrentUserSession::permissions()->can("create_managers")) {
                     $this->dumpAdmins();
                 }
 
-                if (Session::permissions()->can("create_affiliates")) {
+                if (CurrentUserSession::permissions()->can("create_affiliates")) {
                     $this->dumpManagers();
                 }
 
@@ -179,13 +179,13 @@ class Create
     public function dumpAdmins()
     {
 
-        if(Session::userType() == \App\Privilege::ROLE_ADMIN) {
-            $id = Session::userID();
+        if(CurrentUserSession::type() == \App\Privilege::ROLE_ADMIN) {
+            $id = CurrentUserSession::id();
 			$username = \App\User::where('idrep', $id)->first()->user_name;
 			$this->listAdmin = [$id.';'.$username];
         }
 
-		if (Session::userType() == \App\Privilege::ROLE_GOD) {
+		if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
 			$usernames = \App\Privilege::where('is_admin', 1)->join('rep', 'rep.idrep', '=', 'privileges.rep_idrep')->get();
 			$usernameArray = array();
 			foreach ($usernames as $username) {
@@ -210,8 +210,8 @@ class Create
 
     private function filterManagerAssignables()
     {
-        $per = Session::permissions();
-        $userData = Session::userData();
+        $per = CurrentUserSession::permissions();
+        $userData = CurrentUserSession::data();
 
         foreach ($this->assignTos as $key => $val) {
             if ($val["is_admin"] == 1) {
@@ -238,21 +238,21 @@ class Create
     public function getAssignables()
     {
         $new_replist = new User();
-        $new_replist->user_id = Session::userID();
+        $new_replist->user_id = CurrentUserSession::id();
 
-        if (Session::userType() == \App\Privilege::ROLE_ADMIN) {
+        if (CurrentUserSession::type() == \App\Privilege::ROLE_ADMIN) {
             $this->assignTos = $new_replist->selectOwnedManagers()->fetchALL(PDO::FETCH_ASSOC);
-        } else if (Session::userType() == \App\Privilege::ROLE_GOD) {
+        } else if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
 	        $this->assignTos = $new_replist->select_all_managers();
         } else {
             $this->assignTos = $new_replist->selectAssignablesManager();
         }
 
-        if (Session::userType() == \App\Privilege::ROLE_MANAGER) {
+        if (CurrentUserSession::type() == \App\Privilege::ROLE_MANAGER) {
             $this->filterManagerAssignables();
         }
 
-		if(Session::permissions()->can("create_admins")) {
+		if(CurrentUserSession::permissions()->can("create_admins")) {
 			$db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
 			$sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_god = 1";
 			$stmt = $db->prepare($sql);
@@ -280,13 +280,13 @@ class Create
             if ($value["is_admin"] == 1) {
                 $this->listAdmin[] = $idrep.";".$user_name;
 
-               /*  if ($idrep == Session::userID()) {
+               /*  if ($idrep == CurrentUserSession::id()) {
                     $this->listAdmin[] = $idrep.";".$user_name;
                 } */
             }
             if ($value["is_manager"] == 1) {
                 $this->listManager[] = $idrep.";".$user_name;
-              /*   if ($value['referrer_repid'] == Session::userID()) {
+              /*   if ($value['referrer_repid'] == CurrentUserSession::id()) {
                     $this->listManager[] = $idrep.";".$user_name;
                 } */
             }

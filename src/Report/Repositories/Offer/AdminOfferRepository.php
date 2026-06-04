@@ -7,7 +7,7 @@ use App\User;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class AdminOfferRepository extends Repository
 {
@@ -47,7 +47,7 @@ class AdminOfferRepository extends Repository
     private function getClicks($dateFrom, $dateTo)
     {
 
-        $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
+        $managers = User::where('referrer_repid', CurrentUserSession::user()->idrep)->pluck('idrep')->toArray();
 
         $result = DB::table('offer')
             ->leftJoin('clicks as rawClicks', 'rawClicks.offer_idoffer', 'offer.idoffer')
@@ -73,7 +73,7 @@ class AdminOfferRepository extends Repository
 
     private function getConversions($dateFrom, $dateTo)
     {
-        $managers = User::where('referrer_repid', Session::user()->idrep)->pluck('idrep')->toArray();
+        $managers = User::where('referrer_repid', CurrentUserSession::user()->idrep)->pluck('idrep')->toArray();
         $revenueExpression = Payouts::sqlForRole(Privilege::ROLE_ADMIN, 'offer', 'rep_has_offer');
         $result = DB::table('offer')
             ->leftJoin('clicks as rawClicks', 'rawClicks.offer_idoffer', 'offer.idoffer')

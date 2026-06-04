@@ -5,7 +5,7 @@ namespace LeadMax\TrackYourStats\Report;
 // Affiliate Level Report (the report a logged in affiliate will see)
 // Reports->Report (nav bar)
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use LeadMax\TrackYourStats\User\ReportPermissions;
@@ -41,7 +41,7 @@ class Affiliate extends ReportBase
 
     private function loadReportPermissions()
     {
-        $this->reportPermissions = new ReportPermissions(Session::userID());
+        $this->reportPermissions = new ReportPermissions(CurrentUserSession::id());
     }
 
     // wrapper for ReportPermissions class
@@ -112,7 +112,7 @@ class Affiliate extends ReportBase
         $sql = "SELECT payout, reason, salary.timestamp FROM salary_log INNER JOIN salary ON salary.id = salary_log.salary_id AND salary.user_id = :affiliate_id WHERE salary_log.timestamp >= :dateFrom and salary_log.timestamp <= :dateTo";
         $prep = $db->prepare($sql);
 
-        $userID = Session::userID();
+        $userID = CurrentUserSession::id();
         $prep->bindParam(":affiliate_id", $userID);
 
         $dateFromU = Carbon::createFromFormat("Y-m-d", $dateFrom)->format("U");
@@ -153,7 +153,7 @@ class Affiliate extends ReportBase
         $dateFrom = Date::convertTimestampToEpoch($dateFrom);
         $dateTo = Date::convertTimestampToEpoch($dateTo);
 
-        $userID = Session::userID();
+        $userID = CurrentUserSession::id();
         $prep->bindParam(":user_id", $userID);
         $prep->bindParam(":startDate", $dateFrom);
         $prep->bindParam(":endDate", $dateTo);
@@ -272,7 +272,7 @@ class Affiliate extends ReportBase
 
 
         $stmt = $db->prepare($sql);
-        $userID = Session::userID();
+        $userID = CurrentUserSession::id();
 
         $stmt->bindParam(":repID", $userID);
         $stmt->bindParam(":repID2", $userID);

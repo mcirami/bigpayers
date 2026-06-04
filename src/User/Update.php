@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use PDO;
 
 
@@ -56,9 +56,9 @@ class Update
 
 
         //if logged in user is an aff, they can only edit themself.
-        $userType = Session::userType();
+        $userType = CurrentUserSession::type();
         if ($userType == Privilege::ROLE_AFFILIATE) {
-            $this->affid = Session::userID();
+            $this->affid = CurrentUserSession::id();
         }
 
         $this->userType = $userType;

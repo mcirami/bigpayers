@@ -13,9 +13,9 @@ use Illuminate\Support\Collection;
 use LaravelIdea\Helper\App\_IH_Click_C;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Offer\Payouts;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
+use App\Support\CurrentUserSession;
 
 /**
  * Reporting Repository for an Offers clicks.
@@ -62,9 +62,9 @@ class OfferClicksRepository implements Repository
 	 * @return _IH_Click_C|array|LengthAwarePaginator
 	 */
     public function query(Carbon $start, Carbon $end): _IH_Click_C|array|LengthAwarePaginator {
-        $resolvedPaid = Session::userType() === \App\Privilege::ROLE_AFFILIATE
+        $resolvedPaid = CurrentUserSession::type() === \App\Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
         $select = [];
         if ($this->showFraudData) {
             $select[] = 'clicks.idclicks as id';
@@ -85,7 +85,7 @@ class OfferClicksRepository implements Repository
 	        'clicks.ip_address as ip_address',
 	        'clicks.country_code as isoCode'
         ]);
-	    if(Session::permissions()->can('view_all_users')) {
+	    if(CurrentUserSession::permissions()->can('view_all_users')) {
 		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
 		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
                         ->leftJoin('offer', 'offer.idoffer', 'clicks.offer_idoffer')

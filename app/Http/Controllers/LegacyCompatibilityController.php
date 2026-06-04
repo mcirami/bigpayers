@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LeadMax\TrackYourStats\System\Mail;
-use LeadMax\TrackYourStats\System\Session as LegacySession;
 use LeadMax\TrackYourStats\User\User;
 
 class LegacyCompatibilityController extends Controller
@@ -492,7 +492,7 @@ class LegacyCompatibilityController extends Controller
         if ($notificationId > 0 && $action === 'mark') {
             DB::table('user_has_notification')
                 ->where('notification_id', '=', $notificationId)
-                ->where('user_id', '=', LegacySession::userID())
+                ->where('user_id', '=', CurrentUserSession::id())
                 ->update(['seen' => 1]);
 
             return redirect("/notifications/{$notificationId}")->with('message', 'Notification marked as read.');
@@ -501,7 +501,7 @@ class LegacyCompatibilityController extends Controller
         if ($notificationId > 0 && $action === 'delete') {
             DB::table('user_has_notification')
                 ->where('notification_id', '=', $notificationId)
-                ->where('user_id', '=', LegacySession::userID())
+                ->where('user_id', '=', CurrentUserSession::id())
                 ->update(['deleted' => 1]);
 
             return redirect('/notifications')->with('message', 'Notification deleted.');

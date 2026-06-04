@@ -358,9 +358,11 @@ Remaining cleanup is mostly archival and hardening:
   values through Laravel controller/view-composer data instead of reading the
   legacy session class directly in templates
 - low-risk modern controller, report-controller, offer, user-management,
-  middleware, and view-composer batches now read current user id/type,
-  permissions, and user data through `App\Support\CurrentUserSession` instead
-  of importing the legacy session class directly
+  middleware, view-composer, app-model, repository, and SMS-service batches now
+  read current user id/type, permissions, and user data through
+  `App\Support\CurrentUserSession` instead of importing the legacy session class
+  directly, including the older `src/Report`, `src/User`, `src/Offer`,
+  `src/Clicks`, `src/Table`, and notification helper layers
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

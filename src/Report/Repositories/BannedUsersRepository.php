@@ -4,7 +4,7 @@ namespace LeadMax\TrackYourStats\Report\Repositories;
 
 
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class BannedUsersRepository extends Repository
 {
@@ -18,8 +18,8 @@ class BannedUsersRepository extends Repository
 				  
 				  ";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
 
         $prep->execute();
 

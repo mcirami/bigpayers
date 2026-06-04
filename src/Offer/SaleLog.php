@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use LeadMax\TrackYourStats\Clicks\Conversion;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use \LeadMax\TrackYourStats\User\User;
 
 class SaleLog
@@ -38,16 +38,16 @@ class SaleLog
 
     public function verifyLoggedInUserOwnsSaleLog($saleLogId)
     {
-        switch (Session::userType()) {
+        switch (CurrentUserSession::type()) {
             case \App\Privilege::ROLE_GOD:
                 return true;
 
             case \App\Privilege::ROLE_ADMIN:
             case \App\Privilege::ROLE_MANAGER:
-                return $this->verifyManagerOwnsSaleLog(Session::userID(), $saleLogId);
+                return $this->verifyManagerOwnsSaleLog(CurrentUserSession::id(), $saleLogId);
 
             case \App\Privilege::ROLE_AFFILIATE:
-                return $this->verifyAffiliateOwnsSaleLog(Session::userID(), $saleLogId);
+                return $this->verifyAffiliateOwnsSaleLog(CurrentUserSession::id(), $saleLogId);
         }
     }
 

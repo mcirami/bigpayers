@@ -7,6 +7,7 @@
  * Time: 10:47 AM
  */
 
+use App\Support\CurrentUserSession;
 use PDO;
 
 
@@ -107,7 +108,7 @@ class Notifications
         $sql = "UPDATE user_has_notification SET deleted = 1 WHERE notification_id = :id AND user_id = :user_id ";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
-        $prep->bindParam(":user_id", Session::userData()->idrep);
+        $prep->bindParam(":user_id", CurrentUserSession::data()->idrep);
         $prep->execute();
     }
 
@@ -124,7 +125,7 @@ class Notifications
         $sql = "UPDATE user_has_notification SET seen = 1 WHERE notification_id = :id AND user_id = :user_id ";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
-        $prep->bindParam(":user_id", Session::userData()->idrep);
+        $prep->bindParam(":user_id", CurrentUserSession::data()->idrep);
         $prep->execute();
 
     }
@@ -189,7 +190,7 @@ class Notifications
 
         $this->newNotification["title"] = $title;
         $this->newNotification["body"] = $body;
-        $this->newNotification["user_name"] = Session::userData()->user_name;
+        $this->newNotification["user_name"] = CurrentUserSession::data()->user_name;
 
 
         $sql = "INSERT INTO notifications (title, body, timestamp, author) VALUES(:title, :body, :timestamp, :author)";

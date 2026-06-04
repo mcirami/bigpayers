@@ -20,7 +20,7 @@ use App\Company;
 use App\Privilege;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\System\Mail;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use PDO;
 
 //Begin class
@@ -331,8 +331,8 @@ class User extends Login
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_manager = 1 WHERE lft > :left AND rgt < :right";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         $prep->execute();
 
         return $prep;
@@ -343,8 +343,8 @@ class User extends Login
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_admin = 1 WHERE lft > :left AND rgt < :right";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         $prep->execute();
 
         return $prep;
@@ -432,8 +432,8 @@ class User extends Login
 
         $sql .= " = 1 WHERE rep.lft > :left AND rep.rgt < :right";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         $prep->execute();
 
         return $prep;
@@ -466,7 +466,7 @@ class User extends Login
 
         $prep = $db->prepare($sql);
 
-        $userData = Session::userData();
+        $userData = CurrentUserSession::data();
 
         $prep->bindParam(":left", $userData->lft);
         $prep->bindParam(":right", $userData->rgt);
@@ -692,7 +692,7 @@ class User extends Login
         $prep->execute();
         $rep = $prep->fetch(PDO::FETCH_ASSOC);
 
-        $currentrep = User::SelectOne(Session::userID());
+        $currentrep = User::SelectOne(CurrentUserSession::id());
 
 
         if ($rep["lft"] > $currentrep->lft && $rep["rgt"] < $currentrep->rgt) {
@@ -832,7 +832,7 @@ class User extends Login
                 $sql = " UPDATE rep SET  first_name =:first_name,last_name =:last_name,cell_phone =:cell_phone,user_name =:user_name,status =:status, email = :email, skype = :skype, company_name = :company_name ";
             }
 
-            if (Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN) {
+            if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD || CurrentUserSession::type() == \App\Privilege::ROLE_ADMIN) {
                 $sql .= ",referrer_repid =:referrer_repid";
             }
 
@@ -853,7 +853,7 @@ class User extends Login
             $stmt->bindParam(':company_name', $company_name);
 
             $stmt->bindParam(':status', $status);
-            if (Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN) {
+            if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD || CurrentUserSession::type() == \App\Privilege::ROLE_ADMIN) {
                 $stmt->bindParam(':referrer_repid', $referrer_repid);
             }
 

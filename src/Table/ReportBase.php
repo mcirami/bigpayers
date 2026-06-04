@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Table;
 // original report base class, has epc functions, created another 'BaseReport' class because wanted to change some stuff
 
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class ReportBase
 {
@@ -32,7 +32,7 @@ class ReportBase
             "<a href=\"#\" data-toggle=\"popover\" data-trigger=\"focus\"
                 placement=\"top\" data-html=\"true\"
                 data-content=\"";
-        if (session::permissions()->can("create_affiliates")) {
+        if (CurrentUserSession::permissions()->can("create_affiliates")) {
             $returnstr .= "
             {$logintouser}{$edituser}";
         }

@@ -5,7 +5,7 @@ namespace App\Services\SMS;
 
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class Text69 implements ShortMessageServiceInterface
 {
@@ -14,13 +14,19 @@ class Text69 implements ShortMessageServiceInterface
 
     public function __construct()
     {
-        if (is_null(Session::user())) {
+        $currentUser = CurrentUserSession::user();
+
+        if (is_null($currentUser)) {
             return;
         }
-        if (is_null(Session::user()->smsClients()->first())) {
+
+        $smsClient = $currentUser->smsClients()->first();
+
+        if (is_null($smsClient)) {
             abort(400, "User doesn't have a SMS Client");
         }
-        $response = (new Client())->get(env('SMS_URL') . '/user/' . Session::user()->smsClients()->first()->sms_user_id . "/token");
+
+        $response = (new Client())->get(env('SMS_URL') . '/user/' . $smsClient->sms_user_id . "/token");
 
         $this->accessToken = json_decode($response->getBody())->accessToken;
     }

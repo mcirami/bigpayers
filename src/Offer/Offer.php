@@ -15,7 +15,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\User\Privileges;
 use PDO;
 
@@ -105,7 +105,7 @@ class Offer
         }
 
         $new_privileges = new Privileges();
-        $repType = Session::userType();
+        $repType = CurrentUserSession::type();
         if ($repType == \App\Privilege::ROLE_GOD) {
             $sql = "SELECT
                         offer.idoffer,
@@ -129,7 +129,7 @@ class Offer
 
         $prep = $dbc->prepare($sql);
         if ($repType != \App\Privilege::ROLE_GOD) {
-            $userID = Session::userID();
+            $userID = CurrentUserSession::id();
             $prep->bindParam(":repid", $userID);
         }
 
@@ -151,7 +151,7 @@ class Offer
         $date = date("Y-m-d H:m:s");
 
         $offerName = $dupe->offer_name." - Copy";
-        $user_id = Session::userID();
+        $user_id = CurrentUserSession::id();
 
         $prep->bindParam(":offer_name", $offerName);
         $prep->bindParam(":description", $dupe->description);
@@ -281,11 +281,11 @@ class Offer
         $prep = $db->prepare($sql);
 
         if ($userType == \App\Privilege::ROLE_MANAGER) {
-            $prep->bindParam(":left", Session::userData()->lft);
-            $prep->bindParam(":right", Session::userData()->rgt);
+            $prep->bindParam(":left", CurrentUserSession::data()->lft);
+            $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         }
 
-        $userId = Session::userID();
+        $userId = CurrentUserSession::id();
         $prep->bindParam(":user_id", $userId);
         $prep->execute();
 

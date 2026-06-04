@@ -1,6 +1,6 @@
 <?php namespace LeadMax\TrackYourStats\User;
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 /**
  * Author: Dean
@@ -173,8 +173,8 @@ class Referrals
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN privileges ON privileges.is_rep = 1 AND privileges.rep_idrep = rep.idrep WHERE rep.lft > :left AND rep.rgt < :right";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
 
         if ($prep->execute()) {
             $referrer_user_id = self::findReferrer($user_id);

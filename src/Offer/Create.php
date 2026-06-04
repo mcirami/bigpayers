@@ -13,7 +13,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\User\Permissions;
 use \LeadMax\TrackYourStats\User\User;
 
@@ -61,7 +61,7 @@ class Create
     {
         $new_replist = new User();
 
-        $per = Session::permissions();
+        $per = CurrentUserSession::permissions();
 
         if ($this->assign->get("ast") == 0 && $per->can("create_managers")) {
             $result = $new_replist->select_all_reps();
@@ -69,7 +69,7 @@ class Create
             if ($per->can("create_managers")) {
                 $result = $new_replist->select_all_managers();
             } else {
-                $result = $new_replist->selectAllManagerAffiliates(Session::userID())->fetchAll(\PDO::FETCH_ASSOC);
+                $result = $new_replist->selectAllManagerAffiliates(CurrentUserSession::id())->fetchAll(\PDO::FETCH_ASSOC);
             }
         }
 

@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Clicks\ClickVars;
 use LeadMax\TrackYourStats\Offer\Payouts;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use LeadMax\TrackYourStats\User\Permissions;
 use PDO;
@@ -85,7 +85,7 @@ class Clicks extends ReportBase
                ";
 
 
-        if ($this->assign->has("blacklist") && $this->assign->get("blacklist") == 1 && Session::userType() == \App\Privilege::ROLE_GOD) {
+        if ($this->assign->has("blacklist") && $this->assign->get("blacklist") == 1 && CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
             $sql .= " AND clicks.click_type = 2";
         } else {
             $sql .= " AND clicks.click_type != 2";
@@ -155,7 +155,7 @@ class Clicks extends ReportBase
         }
 
 
-        if ($this->assign->has("blacklist") && $this->assign->get("blacklist") == 1 && Session::userType() == \App\Privilege::ROLE_GOD) {
+        if ($this->assign->has("blacklist") && $this->assign->get("blacklist") == 1 && CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
             $sql .= " AND clicks.click_type = 2";
         } else {
             $sql .= " AND clicks.click_type != 2 ";

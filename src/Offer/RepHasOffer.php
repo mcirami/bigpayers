@@ -17,7 +17,7 @@ namespace LeadMax\TrackYourStats\Offer;
 use App\BonusOffer;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use LeadMax\TrackYourStats\System\Notifications;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\User\Permissions;
 use LeadMax\TrackYourStats\User\Tree;
 use \LeadMax\TrackYourStats\User\User;
@@ -62,7 +62,7 @@ class RepHasOffer
 
         $toSend = array();
 
-        if (Session::userType() == \App\Privilege::ROLE_AFFILIATE) {
+        if (CurrentUserSession::type() == \App\Privilege::ROLE_AFFILIATE) {
             $managerPermission = new Permissions($user->referrer_repid);
             if ($managerPermission->can("approve_offer_requests")) {
                 $toSend[] = $user->referrer_repid;
@@ -79,7 +79,7 @@ class RepHasOffer
 
         }
 
-        if (Session::userType() == \App\Privilege::ROLE_MANAGER) {
+        if (CurrentUserSession::type() == \App\Privilege::ROLE_MANAGER) {
             $adminPermission = new Permissions($user->referrer_repid);
             if ($adminPermission->can("approve_offer_requests")) {
                 $toSend[] = $user->referrer_repid;
@@ -255,8 +255,8 @@ class RepHasOffer
         $sql = "SELECT * FROM rep INNER JOIN rep_has_offer ON rep_has_offer.rep_idrep = rep.idrep AND rep_has_offer.offer_idoffer = :id WHERE rep.lft > :left AND rep.rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         $prep->execute();
 
         return $prep;
@@ -292,7 +292,7 @@ class RepHasOffer
     static function noneRepOwnOffer($id, $userID)
     {
         //TODO: Does this effect the system ?
-        if (Session::userType() == \App\Privilege::ROLE_GOD || Session::userType() == \App\Privilege::ROLE_ADMIN) {
+        if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD || CurrentUserSession::type() == \App\Privilege::ROLE_ADMIN) {
             return true;
         }
 
@@ -379,7 +379,7 @@ class RepHasOffer
         $prep->bindParam(":postback_url", $url);
 
 
-        $userID = System\Session::userID();
+        $userID = CurrentUserSession::id();
         $prep->bindParam(":repid", $userID);
 
         $prep->bindParam(":offid", $offid);
@@ -763,7 +763,7 @@ class RepHasOffer
                 $is_public = post('selectPublic');
 
 
-                if (Session::userType() == \App\Privilege::ROLE_GOD) {
+                if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
                     $campaign_id = post('campaign');
                 } else {
                     $campaign_id = Campaigns::getDefaultCampaignId();
@@ -784,7 +784,7 @@ class RepHasOffer
                 $stmt->bindparam(":offer_type", $offer_type);
                 $stmt->bindparam(":offer_timestamp", $offer_timestamp);
                 $stmt->bindParam(":is_public", $is_public);
-                $userID = Session::userID();
+                $userID = CurrentUserSession::id();
                 $stmt->bindparam(":created_by", $userID);
                 $stmt->execute();
                 $lastOfferId = $db->lastInsertId();

@@ -19,7 +19,7 @@
     ----------------
 */
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use PDO;
 
@@ -47,7 +47,7 @@ class Bonus
         if ($userID) {
             $this->userID = $userID;
 
-            if (Session::userType() == \App\Privilege::ROLE_GOD && $editing) {
+            if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD && $editing) {
 
                 $this->bonuses = $this->querySelectAllBonuses()->fetchAll(PDO::FETCH_ASSOC);
             } else {
@@ -112,8 +112,8 @@ class Bonus
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN user_has_bonus ON user_id = idrep AND bonus_id = :id WHERE lft > :left AND rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
-        $left = Session::userData()->lft;
-        $right = Session::userData()->rgt;
+        $left = CurrentUserSession::data()->lft;
+        $right = CurrentUserSession::data()->rgt;
         $prep->bindParam(":left", $left);
         $prep->bindParam(":right", $right);
         $prep->execute();
@@ -135,7 +135,7 @@ class Bonus
     public static function querySelectOne($id)
     {
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
-        if (Session::userType() == \App\Privilege::ROLE_GOD) {
+        if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
             $sql = "SELECT * FROM bonus WHERE id = :id";
         } else {
             $sql = "SELECT * FROM bonus INNER JOIN user_has_bonus ON bonus_id = :bonus_id AND user_id = :user_id WHERE id = :id";
@@ -144,10 +144,10 @@ class Bonus
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
 
-        if (Session::userType() != \App\Privilege::ROLE_GOD) {
+        if (CurrentUserSession::type() != \App\Privilege::ROLE_GOD) {
             $prep->bindParam(":bonus_id", $id);
 
-            $userID = Session::userID();
+            $userID = CurrentUserSession::id();
             $prep->bindParam(":user_id", $userID);
         }
 
@@ -322,7 +322,7 @@ class Bonus
 
         $prep->bindParam(":inheritable", $inheritable);
 
-        $userID = Session::userID();
+        $userID = CurrentUserSession::id();
         $prep->bindParam(":author", $userID);
 
         if ($prep->execute()) {

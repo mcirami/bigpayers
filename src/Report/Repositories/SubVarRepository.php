@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Report\Repositories;
 
 
 use LeadMax\TrackYourStats\Clicks\Click;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class SubVarRepository extends Repository
 {
@@ -103,7 +103,7 @@ class SubVarRepository extends Repository
         $prep->bindParam(":dateFrom", $dateFrom);
         $prep->bindParam(":dateTo", $dateTo);
 
-        $userId = Session::userID();
+        $userId = CurrentUserSession::id();
         $prep->bindParam(":user_id", $userId);
 
 
@@ -143,7 +143,7 @@ WHERE clicks.click_type != 2 AND clicks.rep_idrep = :user_id AND clicks.first_ti
 
 
         $prep = $db->prepare($sql);
-        $user_id = Session::userID();
+        $user_id = CurrentUserSession::id();
 
         $prep->bindParam(":user_id", $user_id);
         $prep->bindParam(":dateFrom", $dateFrom);

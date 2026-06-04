@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\User\Permissions;
 use Termwind\Components\Raw;
@@ -120,16 +120,16 @@ class GodEmployeeRepository extends Repository
 				
 				INNER JOIN privileges p on rep.idrep = p.rep_idrep AND  " . $this->returnQueryBasedOnUserType($userType);
 
-	    if(!Session::permissions()->can('view_all_users')) {
+	    if(!CurrentUserSession::permissions()->can('view_all_users')) {
 		    $sql .= " WHERE rep.lft > :left AND rep.rgt < :right";
 	    }
 
 
         $prep = $db->prepare($sql);
 
-	    if(!Session::permissions()->can('view_all_users')) {
-		    $prep->bindParam( ":left", Session::userData()->lft );
-		    $prep->bindParam( ":right", Session::userData()->rgt );
+	    if(!CurrentUserSession::permissions()->can('view_all_users')) {
+		    $prep->bindParam( ":left", CurrentUserSession::data()->lft );
+		    $prep->bindParam( ":right", CurrentUserSession::data()->rgt );
 	    }
 
         $prep->execute();
@@ -245,7 +245,7 @@ class GodEmployeeRepository extends Repository
 
     private function getConversions($dateFrom, $dateTo): array {
         $db = $this->getDB();
-        $revenueExpression = Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
+        $revenueExpression = Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
         $sql = "
 				SELECT
 					rep.idrep,

@@ -6,7 +6,7 @@ use App\User;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 class GodOfferRepository extends Repository
 {

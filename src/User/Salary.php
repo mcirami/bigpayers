@@ -7,7 +7,7 @@
  * Time: 11:21 AM
  */
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use PDO;
 
@@ -56,8 +56,8 @@ class Salary
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name, salary.id, salary.status, salary.last_update, salary FROM salary RIGHT JOIN rep ON rep.idrep = salary.user_id AND rep.lft > :left AND rep.rgt < :right INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1 ";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         $prep->execute();
 
         return $prep;
@@ -157,8 +157,8 @@ AND salary_log.timestamp >= :monday AND salary_log.timestamp <= :sunday
         $date = Date::getSalesWeekEpoch();
         $prep->bindParam(":monday", $date["start"]);
         $prep->bindParam(":sunday", $date["end"]);
-        $prep->bindParam(":left", Session::userData()->lft);
-        $prep->bindParam(":right", Session::userData()->rgt);
+        $prep->bindParam(":left", CurrentUserSession::data()->lft);
+        $prep->bindParam(":right", CurrentUserSession::data()->rgt);
         $prep->execute();
 
         return $prep;

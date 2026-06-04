@@ -6,7 +6,7 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
 use App\Privilege;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 
 class ManagerEmployeeRepository extends Repository
@@ -75,7 +75,7 @@ class ManagerEmployeeRepository extends Repository
 
         $stmt = $db->prepare($sql);
 
-        $stmt->bindValue(":referrer_repid", Session::userID());
+        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
 
         $stmt->bindParam(":dateFrom", $dateFrom);
         $stmt->bindParam(":dateTo", $dateTo);
@@ -117,7 +117,7 @@ class ManagerEmployeeRepository extends Repository
         $stmt = $db->prepare($sql);
 
 
-        $stmt->bindValue(":referrer_repid", Session::userID());
+        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
 
         $unixFrom = Date::convertTimestampToEpoch($dateFrom);
         $unixTo = Date::convertTimestampToEpoch($dateTo);
@@ -164,7 +164,7 @@ class ManagerEmployeeRepository extends Repository
 
         $stmt = $db->prepare($sql);
 
-        $stmt->bindValue(":referrer_repid", Session::userID());
+        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
 
         $stmt->bindParam(":dateFrom", $dateFrom);
         $stmt->bindParam(":dateTo", $dateTo);
@@ -219,7 +219,7 @@ class ManagerEmployeeRepository extends Repository
         $stmt = $db->prepare($sql);
 
 
-        $stmt->bindValue(":referrer_repid", Session::userID());
+        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
 
         $stmt->bindParam(":dateFrom", $dateFrom);
         $stmt->bindParam(":dateTo", $dateTo);

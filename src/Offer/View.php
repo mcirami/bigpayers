@@ -13,7 +13,7 @@ use App\Conversion;
 use App\OfferURL;
 use App\Privilege;
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\Table\Paginate;
 use \LeadMax\TrackYourStats\User\User;
@@ -133,7 +133,7 @@ class View
 
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
             $salesWeek = Date::getSalesWeek();
-            $sales = Conversion::where('user_id', '=', Session::userID())->whereBetween('timestamp',
+            $sales = Conversion::where('user_id', '=', CurrentUserSession::id())->whereBetween('timestamp',
                 [$salesWeek['start'], $salesWeek['end']])->count();
         }
 
@@ -171,7 +171,7 @@ class View
                     <td class=\"value_span10\">".Offer::offerTypeAsString($rows->offer_type)."</td>
                    ";
             if ($this->userType == Privilege::ROLE_AFFILIATE) {
-                echo "<p style='display:none;' id=\"url_{$rows->idoffer}\">http://{$this->urls[$this->url][0]}/?rid=".Session::userID()."&oid={$rows->idoffer}&s1=</p>";
+                echo "<p style='display:none;' id=\"url_{$rows->idoffer}\">http://{$this->urls[$this->url][0]}/?rid=".CurrentUserSession::id()."&oid={$rows->idoffer}&s1=</p>";
 
                 echo "<td class=\"value_span10\">
                         <button data-toggle=\"tooltip\" title=\"Copy Offer URL\" onclick=\"copyToClipboard(getElementById('url_{$rows->idoffer}'));\" class=\"btn btn-default\">
@@ -180,13 +180,13 @@ class View
                       </td> ";
             }
 
-            if (Session::permissions()->can("create_offers")) {
+            if (CurrentUserSession::permissions()->can("create_offers")) {
                 echo "<td class=\"value_span10\">
 							<a target='_blank' class='btn btn-sm btn-default' href='/offer/{$rows->idoffer}/access'>Affiliate Access</a>
 						</td>";
             }
 
-            if (Session::userType() !== \App\Privilege::ROLE_MANAGER) {
+            if (CurrentUserSession::type() !== \App\Privilege::ROLE_MANAGER) {
                 echo "<td class=\"value_span10\">$ {$rows->payout}</td>";
             }
 
@@ -213,7 +213,7 @@ class View
                     $rows->offer_timestamp)->toFormattedDateString();
                 echo "<td class=\"value_span10\">{$formatedTimestamp} </td>";
             }
-            $per = Session::permissions();
+            $per = CurrentUserSession::permissions();
 
             if ($this->userType != Privilege::ROLE_AFFILIATE && $this->userType != \App\Privilege::ROLE_UNKNOWN) {
                 if ($per->can("create_offers")) {
@@ -235,7 +235,7 @@ class View
                                                     
                                               </td>     </td>";
 
-                if (Session::userType() == \App\Privilege::ROLE_GOD) {
+                if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
                     echo " <td class=\"value_span10\" >
                                                          <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Duplicate Offer\"  href=\"/offer/".$rows->idoffer."/dupe\"> Duplicate </a>
                                                     
@@ -265,7 +265,7 @@ class View
     {
 
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
-            $result = $this->querySelectRequestableOffers(Session::userID())->fetchAll(\PDO::FETCH_OBJ);
+            $result = $this->querySelectRequestableOffers(CurrentUserSession::id())->fetchAll(\PDO::FETCH_OBJ);
         } else {
             return;
         }
@@ -371,8 +371,8 @@ class View
 
         $stmt = $db->prepare($sql);
 
-        $userID = Session::userID();
-        $userData = User::SelectOne(Session::userID());
+        $userID = CurrentUserSession::id();
+        $userData = User::SelectOne(CurrentUserSession::id());
 
 
         $stmt->bindParam(':left', $userData->lft);
@@ -422,7 +422,7 @@ class View
         $stmt = $db->prepare($sql);
 
         $user = new User();
-        $userData = User::SelectOne(Session::userID());
+        $userData = User::SelectOne(CurrentUserSession::id());
 
 
         /*
@@ -481,7 +481,7 @@ class View
 
 
         $stmt = $db->prepare($sql);
-        $userID = Session::userID();
+        $userID = CurrentUserSession::id();
         $stmt->bindParam(':repid', $userID);
 
         $stmt->execute();

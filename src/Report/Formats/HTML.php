@@ -1,5 +1,5 @@
 <?php namespace LeadMax\TrackYourStats\Report\Formats;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use App\Privilege;
 /**
  * Author: Dean
@@ -70,14 +70,14 @@ class HTML implements Format
 
                     if (isset($row[$toPrint])) {
 						if($toPrint == "offer_name") {
-                            if (isset($row['idoffer']) && Session::permissions()->can('create_offers')) {
+                            if (isset($row['idoffer']) && CurrentUserSession::permissions()->can('create_offers')) {
 								echo "<td><a class='bp-report-link' href='/offer/edit/" . $row['idoffer'] . "'>$row[$toPrint]</a></td>";
                             } else {
 								echo "<td>$row[$toPrint]</td>";
                             }
 						} elseif ($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idoffer', $row) && $row["idoffer"] != "TOTAL") ) {
-                            if(Session::userType() == Privilege::ROLE_AFFILIATE) {
-                                $userId = Session::userID();
+                            if(CurrentUserSession::type() == Privilege::ROLE_AFFILIATE) {
+                                $userId = CurrentUserSession::id();
                                 echo "<td><a class='bp-report-link' href='/user/{$userId}/{$row['idoffer']}/conversions-by-country?{$params}'>$row[$toPrint]</a></td>";
                             } else {
                                 echo "<td><a class='bp-report-link' href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";

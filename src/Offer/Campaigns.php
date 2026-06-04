@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use PDO;
 
 class Campaigns
@@ -73,8 +73,8 @@ class Campaigns
         $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
         $sql = "SELECT offer_idoffer FROM rep_has_offer INNER JOIN rep ON rep.lft > :left AND rep.rgt < :right GROUP BY offer_idoffer";
         $prep = $db->prepare($sql);
-        $left = Session::userData()->lft;
-        $right = Session::userData()->rgt;
+        $left = CurrentUserSession::data()->lft;
+        $right = CurrentUserSession::data()->rgt;
         $prep->bindParam(":left", $left);
         $prep->bindParam(":right", $right);
         $prep->execute();

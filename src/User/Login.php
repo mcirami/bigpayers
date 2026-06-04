@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use PDO;
 
 // class Login
@@ -87,7 +87,7 @@ class Login
 
 					//$clientIP = $this->getClientIPv4();
 			        //Log::info("Login attempt from IP: " . $clientIP);
-			        if(Session::userType() == \App\Privilege::ROLE_GOD &&
+			        if(CurrentUserSession::type() == \App\Privilege::ROLE_GOD &&
 			           !in_array($_SERVER["REMOTE_ADDR"], $whiteListIPs)
 			           && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
 			           && $repid != 1708
@@ -101,7 +101,7 @@ class Login
 
 			        $_SESSION["salt"] = $this->generateSalt( 32 );
 
-			        if ( Session::userType() != \App\Privilege::ROLE_GOD ) {
+			        if ( CurrentUserSession::type() != \App\Privilege::ROLE_GOD ) {
 				        $this->clearPreviousLoginAttempts( $user_row["user_name"] );
 			        }
 

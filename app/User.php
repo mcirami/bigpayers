@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 
 /**
  * App\User
@@ -87,7 +87,7 @@ class User extends Authenticatable
 
     public function scopeMyUsers(Builder $query)
     {
-        return $query->where('lft', '>', Session::user()->lft)->where('rgt', '<', Session::user()->rgt);
+        return $query->where('lft', '>', CurrentUserSession::user()->lft)->where('rgt', '<', CurrentUserSession::user()->rgt);
     }
 
     public function scopeWithRole(Builder $query, $role)

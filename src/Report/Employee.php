@@ -15,7 +15,7 @@ namespace LeadMax\TrackYourStats\Report;
 
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\Table\ReportBase;
 
@@ -390,7 +390,7 @@ class Employee extends ReportBase
         $stmt = $db->prepare($sql);
 
 
-        $userData = Session::userData();
+        $userData = CurrentUserSession::data();
 
         $stmt->bindParam(":left", $userData->lft);
         $stmt->bindParam(":right", $userData->rgt);
@@ -516,7 +516,7 @@ class Employee extends ReportBase
         $stmt = $db->prepare($sql);
 
 
-        $userData = Session::userData();
+        $userData = CurrentUserSession::data();
 
 
         $stmt->bindParam(":left", $userData->lft);
