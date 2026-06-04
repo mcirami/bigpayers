@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use LeadMax\TrackYourStats\System\Session;
 
 class ReportPermissionController extends Controller
 {
@@ -41,7 +41,7 @@ class ReportPermissionController extends Controller
     private function buildViewData(): array
     {
         $permissionColumns = $this->permissionColumns();
-        $bounds = Session::userData();
+        $bounds = CurrentUserSession::data();
 
         $affiliates = DB::table('rep')
             ->join('privileges', function ($join) {

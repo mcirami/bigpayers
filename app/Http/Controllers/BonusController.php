@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Bonus as LegacyBonus;
 use LeadMax\TrackYourStats\User\Permissions;
 use LeadMax\TrackYourStats\User\User as LegacyUser;
@@ -16,19 +16,19 @@ class BonusController extends Controller
     {
         abort_unless($this->canManageBonuses(), 403);
 
-        $bonuses = collect((new LegacyBonus(Session::userID(), true))->bonuses);
+        $bonuses = collect((new LegacyBonus(CurrentUserSession::id(), true))->bonuses);
 
         return view('bonus.index', [
             'bonuses' => $bonuses,
-            'canCreateBonuses' => Session::permissions()->can(Permissions::CREATE_BONUSES),
-            'canAssignBonuses' => Session::permissions()->can(Permissions::ASSIGN_BONUSES),
-            'canProcessBonuses' => Session::userType() === Privilege::ROLE_GOD,
+            'canCreateBonuses' => CurrentUserSession::can(Permissions::CREATE_BONUSES),
+            'canAssignBonuses' => CurrentUserSession::can(Permissions::ASSIGN_BONUSES),
+            'canProcessBonuses' => CurrentUserSession::type() === Privilege::ROLE_GOD,
         ]);
     }
 
     public function create()
     {
-        abort_unless(Session::permissions()->can(Permissions::CREATE_BONUSES), 403);
+        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
 
         return view('bonus.form', [
             'mode' => 'create',
@@ -40,7 +40,7 @@ class BonusController extends Controller
 
     public function store(Request $request)
     {
-        abort_unless(Session::permissions()->can(Permissions::CREATE_BONUSES), 403);
+        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
 
         $payload = $this->validateBonus($request);
 
@@ -61,7 +61,7 @@ class BonusController extends Controller
 
     public function edit($bonus)
     {
-        abort_unless(Session::permissions()->can(Permissions::CREATE_BONUSES), 403);
+        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
 
@@ -75,7 +75,7 @@ class BonusController extends Controller
 
     public function update(Request $request, $bonus)
     {
-        abort_unless(Session::permissions()->can(Permissions::CREATE_BONUSES), 403);
+        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
         $payload = $this->validateBonus($request);
@@ -96,7 +96,7 @@ class BonusController extends Controller
 
     public function assign($bonus)
     {
-        abort_unless(Session::permissions()->can(Permissions::ASSIGN_BONUSES), 403);
+        abort_unless(CurrentUserSession::can(Permissions::ASSIGN_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
 
@@ -108,7 +108,7 @@ class BonusController extends Controller
 
     public function updateAssignment(Request $request, $bonus)
     {
-        abort_unless(Session::permissions()->can(Permissions::ASSIGN_BONUSES), 403);
+        abort_unless(CurrentUserSession::can(Permissions::ASSIGN_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
 
@@ -119,7 +119,7 @@ class BonusController extends Controller
 
     public function process()
     {
-        abort_unless(Session::userType() === Privilege::ROLE_GOD, 403);
+        abort_unless(CurrentUserSession::type() === Privilege::ROLE_GOD, 403);
 
         $affiliates = LegacyUser::selectAllAffiliateIDs()->fetchAll(\PDO::FETCH_OBJ);
 
@@ -161,15 +161,15 @@ class BonusController extends Controller
 
         $groups = [];
 
-        if (Session::permissions()->can(Permissions::CREATE_ADMINS)) {
+        if (CurrentUserSession::can(Permissions::CREATE_ADMINS)) {
             $groups[] = $this->userGroup('Admins', LegacyUser::selectAdmins()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
-        if (Session::permissions()->can(Permissions::CREATE_MANAGERS)) {
+        if (CurrentUserSession::can(Permissions::CREATE_MANAGERS)) {
             $groups[] = $this->userGroup('Managers', LegacyUser::selectOwnedManagers()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
-        if (Session::permissions()->can(Permissions::CREATE_AFFILIATES)) {
+        if (CurrentUserSession::can(Permissions::CREATE_AFFILIATES)) {
             $groups[] = $this->userGroup('Affiliates', LegacyUser::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
@@ -224,7 +224,7 @@ class BonusController extends Controller
 
     private function canManageBonuses(): bool
     {
-        return Session::permissions()->can(Permissions::ASSIGN_BONUSES)
-            || Session::permissions()->can(Permissions::CREATE_BONUSES);
+        return CurrentUserSession::can(Permissions::ASSIGN_BONUSES)
+            || CurrentUserSession::can(Permissions::CREATE_BONUSES);
     }
 }

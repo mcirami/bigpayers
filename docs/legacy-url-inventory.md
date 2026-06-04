@@ -357,9 +357,9 @@ Remaining cleanup is mostly archival and hardening:
 - all Blade views now receive legacy session-derived user, permission, and role
   values through Laravel controller/view-composer data instead of reading the
   legacy session class directly in templates
-- the first low-risk modern controller batch now reads current user id/type,
-  permissions, and user data through `App\Support\CurrentUserSession` instead
-  of importing the legacy session class directly
+- low-risk modern controller batches now read current user id/type, permissions,
+  and user data through `App\Support\CurrentUserSession` instead of importing the
+  legacy session class directly
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

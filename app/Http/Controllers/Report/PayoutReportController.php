@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Report;
 
+use App\Support\CurrentUserSession;
 use App\Http\Controllers\Controller;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
@@ -14,7 +15,6 @@ use LeadMax\TrackYourStats\Report\Filters\Total;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\PayoutLogRepository;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Report\Filters;
 
 class PayoutReportController extends ReportController
@@ -37,7 +37,7 @@ class PayoutReportController extends ReportController
     {
         $dates = static::getDates();
         $repo = new AffiliateOfferRepository(\DB::getPdo());
-        $repo->setAffiliateId(Session::userID());
+        $repo->setAffiliateId(CurrentUserSession::id());
         $offerReporter = new Reporter($repo);
         $offerReporter
             ->addFilter(new Filters\DeductionColumnFilter())
@@ -47,7 +47,7 @@ class PayoutReportController extends ReportController
 
         $offerReport = $offerReporter->fetchReport($dates['startDate'], $dates['endDate']);
         $payoutReport = $this->reportPayout();
-        $affiliateUserName = Session::user()->user_name;
+        $affiliateUserName = CurrentUserSession::user()->user_name;
         $title = strtoupper($affiliateUserName) . '_' . $dates['startDate'] . '_THROUGH_' . $dates['endDate'];
 
         return \PDF::loadView('pdf.payout-log', compact('affiliateUserName', 'offerReport', 'dates', 'payoutReport', 'title'))->download($title . '.pdf');
@@ -59,7 +59,7 @@ class PayoutReportController extends ReportController
         $dates = self::getDates();
 
         $payoutRepository = new PayoutLogRepository(\DB::getPdo());
-        $payoutRepository->setUserId(Session::userID());
+        $payoutRepository->setUserId(CurrentUserSession::id());
 
         $reporter = new Reporter($payoutRepository);
 
@@ -90,7 +90,7 @@ class PayoutReportController extends ReportController
     private function reportPayout()
     {
         $dates = static::getDates();
-        $report = new  AffiliatePayout(Session::userID(), $dates['startDate'], $dates['endDate']);
+        $report = new  AffiliatePayout(CurrentUserSession::id(), $dates['startDate'], $dates['endDate']);
 
         $report->fetchReports();
         $report->processReports();

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LeadMax\TrackYourStats\System\Mail;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 
 class NotificationController extends Controller
@@ -19,7 +19,7 @@ class NotificationController extends Controller
         $notifications = $this->notificationsQuery()->get();
 
         return view('notifications.index', [
-            'canCreateNotifications' => Session::permissions()->can(Permissions::CREATE_NOTIFICATIONS),
+            'canCreateNotifications' => CurrentUserSession::can(Permissions::CREATE_NOTIFICATIONS),
             'notificationsList' => $notifications,
             'unreadCount' => $notifications->where('seen', 0)->count(),
             'readCount' => $notifications->where('seen', 1)->count(),
@@ -41,7 +41,7 @@ class NotificationController extends Controller
 
         DB::table('user_has_notification')
             ->where('notification_id', '=', $id)
-            ->where('user_id', '=', Session::userID())
+            ->where('user_id', '=', CurrentUserSession::id())
             ->update(['seen' => 1]);
 
         return redirect("/notifications/{$id}")->with('message', 'Notification marked as read.');
@@ -53,7 +53,7 @@ class NotificationController extends Controller
 
         DB::table('user_has_notification')
             ->where('notification_id', '=', $id)
-            ->where('user_id', '=', Session::userID())
+            ->where('user_id', '=', CurrentUserSession::id())
             ->update(['deleted' => 1]);
 
         return redirect('/notifications')->with('message', 'Notification deleted.');
@@ -91,7 +91,7 @@ class NotificationController extends Controller
                 'title' => trim($validated['title']),
                 'body' => trim($validated['body']),
                 'timestamp' => date('U'),
-                'author' => Session::userID(),
+                'author' => CurrentUserSession::id(),
             ]);
 
             $rows = $requestedRecipientIds->map(fn ($userId) => [
@@ -120,7 +120,7 @@ class NotificationController extends Controller
         return DB::table('user_has_notification')
             ->join('notifications', 'notifications.id', '=', 'user_has_notification.notification_id')
             ->join('rep as author', 'author.idrep', '=', 'notifications.author')
-            ->where('user_has_notification.user_id', '=', Session::userID())
+            ->where('user_has_notification.user_id', '=', CurrentUserSession::id())
             ->where('user_has_notification.deleted', '=', 0)
             ->orderByDesc('notifications.timestamp')
             ->select([
@@ -144,14 +144,14 @@ class NotificationController extends Controller
 
     private function authorizeCreateNotifications(): void
     {
-        abort_unless(Session::permissions()->can(Permissions::CREATE_NOTIFICATIONS), 403);
+        abort_unless(CurrentUserSession::can(Permissions::CREATE_NOTIFICATIONS), 403);
     }
 
     private function buildCreateViewData(): array
     {
         $recipientGroups = [];
 
-        if (Session::permissions()->can(Permissions::CREATE_ADMINS)) {
+        if (CurrentUserSession::can(Permissions::CREATE_ADMINS)) {
             $recipientGroups[] = [
                 'label' => 'Admins',
                 'type' => 'Admin',
@@ -162,7 +162,7 @@ class NotificationController extends Controller
             ];
         }
 
-        if (Session::permissions()->can(Permissions::CREATE_MANAGERS)) {
+        if (CurrentUserSession::can(Permissions::CREATE_MANAGERS)) {
             $recipientGroups[] = [
                 'label' => config('branding.account.plural'),
                 'type' => config('branding.account.singular'),
@@ -216,7 +216,7 @@ class NotificationController extends Controller
             ->unique()
             ->values();
 
-        $author = Session::userData()->user_name;
+        $author = CurrentUserSession::data()->user_name;
         $host = request()->getHost();
         $htmlBody = "<html><h3>Notification from {$author} @ {$host}</h3><br/>" . nl2br(e($body)) . '</html>';
 

@@ -5,12 +5,12 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Report\ReportController;
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Offer\AdjustmentsLog;
 use LeadMax\TrackYourStats\Report\Filters\DollarSign;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\AdjustmentsLogRepository;
-use LeadMax\TrackYourStats\System\Session;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -22,8 +22,8 @@ class AdjustmentsReportController extends ReportController
         $repo = new AdjustmentsLogRepository(\DB::getPdo());
         $repo->setAction(AdjustmentsLog::ACTION_CREATE_SALE);
 
-        if (Session::userType() == Privilege::ROLE_ADMIN) {
-            $repo->showOnlyWithThisSaleLogUserId(Session::userID());
+        if (CurrentUserSession::type() == Privilege::ROLE_ADMIN) {
+            $repo->showOnlyWithThisSaleLogUserId(CurrentUserSession::id());
         }
 
         $reporter = new Reporter($repo);

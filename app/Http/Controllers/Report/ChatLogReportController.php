@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Report;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use App\User;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Repositories\AffiliateChatLogRepository;
 use LeadMax\TrackYourStats\Report\Repositories\SaleLogRepository;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Paginate;
 
 class ChatLogReportController extends ReportController
@@ -17,7 +17,7 @@ class ChatLogReportController extends ReportController
     {
         $dates = self::getDates();
 
-        if ($id != Session::userID()) {
+        if ($id != CurrentUserSession::id()) {
             if ( ! User::myUsers()->findOrFail($id)->exists) {
                 abort(403);
             }
@@ -27,7 +27,7 @@ class ChatLogReportController extends ReportController
         $repo->setShowOption(request()->query('show', 'all'));
         $repo->setUserId($id);
 
-        if (Session::userType() == Privilege::ROLE_AFFILIATE) {
+        if (CurrentUserSession::type() == Privilege::ROLE_AFFILIATE) {
             $repo->hideConversionId();
         }
 
@@ -44,7 +44,7 @@ class ChatLogReportController extends ReportController
 
     public function affiliate()
     {
-        return view('report.chat-log-affiliate', $this->report_affiliate(Session::userID()));
+        return view('report.chat-log-affiliate', $this->report_affiliate(CurrentUserSession::id()));
     }
 
     public function admin($userId)

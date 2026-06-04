@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Sms;
 
 use App\Http\Controllers\Controller;
 use App\SMSClient;
+use App\Support\CurrentUserSession;
 use App\User;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\System\Session;
 
 class SmsClientController extends Controller
 {
@@ -73,7 +73,7 @@ class SmsClientController extends Controller
      */
     public function getUsersClient()
     {
-        $smsClient = Session::user()->smsClients()->first();
+        $smsClient = CurrentUserSession::user()->smsClients()->first();
         if (is_null($smsClient)) {
             return ["User doesn't have a SMSClient"];
         }
@@ -107,7 +107,7 @@ class SmsClientController extends Controller
         $client = new SMSClient();
 
 
-        $client->user_id = Session::userID();
+        $client->user_id = CurrentUserSession::id();
         $client->client_id = $request->client_id;
         $client->client_secret = $request->client_secret;
 
@@ -126,7 +126,7 @@ class SmsClientController extends Controller
      */
     public function edit()
     {
-        $smsClient = Session::user()->smsClients()->first();
+        $smsClient = CurrentUserSession::user()->smsClients()->first();
 
         return view('sms.client-edit', compact('smsClient'));
     }

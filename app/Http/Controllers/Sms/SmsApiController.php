@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Services\SMS\ShortMessageServiceInterface;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\System\Session;
 
 class SmsApiController extends Controller
 {

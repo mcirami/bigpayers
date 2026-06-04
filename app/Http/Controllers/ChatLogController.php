@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use App\Offer;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Clicks\Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\PendingConversion;
 use LeadMax\TrackYourStats\Offer\SaleLog;
 use LeadMax\TrackYourStats\System\Files\ImagesUploader;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Permissions;
 
 class ChatLogController extends Controller
@@ -47,7 +47,7 @@ class ChatLogController extends Controller
                 if ($saleLog->save()) {
                     $imageUploader->uploadDirectory = env("SALE_LOG_DIRECTORY")."/".$this->companySubDomain()."/{$saleLog->id}";
                     if ($imageUploader->uploadFiles('images')) {
-                        if (Session::userType() == \App\Privilege::ROLE_AFFILIATE) {
+                        if (CurrentUserSession::type() == \App\Privilege::ROLE_AFFILIATE) {
                             return redirect("/report/sale-log");
                         } else {
                             return redirect("/report/sale-log?uid={$conversion->user_id}");

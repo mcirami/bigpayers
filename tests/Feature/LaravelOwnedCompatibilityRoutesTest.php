@@ -95,12 +95,21 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AdjustmentsController.php'),
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
+            app_path('Http/Controllers/BonusController.php'),
+            app_path('Http/Controllers/ChatLogController.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
             app_path('Http/Controllers/DashboardController.php'),
             app_path('Http/Controllers/EmailPoolController.php'),
             app_path('Http/Controllers/GlobalPostbackController.php'),
             app_path('Http/Controllers/IPBlacklistController.php'),
+            app_path('Http/Controllers/NotificationController.php'),
+            app_path('Http/Controllers/ReportPermissionController.php'),
+            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
+            app_path('Http/Controllers/Report/AggregateReportController.php'),
+            app_path('Http/Controllers/Report/ChatLogReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
             app_path('Http/Controllers/SalaryController.php'),
+            app_path('Http/Controllers/Sms/SmsClientController.php'),
             app_path('Http/Controllers/Sms/SmsController.php'),
             app_path('Http/Controllers/SmsOrderController.php'),
         ] as $path) {
@@ -109,6 +118,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
         }
+
+        $smsApiController = File::get(app_path('Http/Controllers/Sms/SmsApiController.php'));
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $smsApiController);
     }
 
     public function test_legacy_post_compatibility_urls_keep_csrf_exceptions(): void
