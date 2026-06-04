@@ -4,13 +4,13 @@ namespace App\Providers;
 
 use App\Company;
 use App\Observers\UserObserver;
+use App\Support\CurrentUserSession;
 use App\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use LeadMax\TrackYourStats\System\NavBar;
 use LeadMax\TrackYourStats\System\Notifications;
-use LeadMax\TrackYourStats\System\Session;
 use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,10 +30,10 @@ class AppServiceProvider extends ServiceProvider
             'affiliateTypeLabelPlural' => config('branding.affiliate.plural'),
         ]);
         view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
-            $currentUser = Session::userData();
-            $currentUserId = Session::userID();
-            $currentUserType = Session::userType();
-            $currentPermissions = Session::permissions();
+            $currentUser = CurrentUserSession::data();
+            $currentUserId = CurrentUserSession::id();
+            $currentUserType = CurrentUserSession::type();
+            $currentPermissions = CurrentUserSession::permissions();
             $navBar = new NavBar($currentUserType, $currentPermissions);
             $notifications = new Notifications($currentUserId);
             $notifications->fetchUsersNotifications();
@@ -48,8 +48,8 @@ class AppServiceProvider extends ServiceProvider
             ]);
         });
         view()->composer('report.*', function (\Illuminate\View\View $view) {
-            $sessionUserType = (int) Session::userType();
-            $permissions = Session::permissions();
+            $sessionUserType = CurrentUserSession::type();
+            $permissions = CurrentUserSession::permissions();
 
             $view->with([
                 'canCreateManagers' => $permissions->can('create_managers'),
@@ -65,7 +65,7 @@ class AppServiceProvider extends ServiceProvider
         view()->composer(['errors.403', 'errors.404', 'errors.500'], function (\Illuminate\View\View $view) {
             $view->with([
                 'company' => Company::instance()->first(),
-                'currentUserId' => Session::userID(),
+                'currentUserId' => CurrentUserSession::id(),
             ]);
         });
         User::observe(UserObserver::class);

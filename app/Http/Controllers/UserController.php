@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use \LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Paginate;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Table\Date;
@@ -44,8 +44,8 @@ class UserController extends Controller
     public function viewManageUsers()
     {
 
-	    $userType = Session::userType();
-	    $permissions = Session::permissions();
+	    $userType = CurrentUserSession::type();
+	    $permissions = CurrentUserSession::permissions();
 	    $canViewUsers = $permissions->can('view_all_users');
 
         $this->validate(request(), [
@@ -64,8 +64,8 @@ class UserController extends Controller
             $users->where('status', 1);
         }
 /*
-		if (Session::userType() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
-			$userId = Session::userID();
+		if (CurrentUserSession::type() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
+			$userId = CurrentUserSession::id();
 			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
 			$users->whereIn('referrer_repid', $managers);
 		}
@@ -173,7 +173,7 @@ class UserController extends Controller
         }
 
         if (
-            Session::permissions()->can(Permissions::EDIT_REFERRALS) &&
+            CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS) &&
             $request->boolean('enable_referral') &&
             !empty($validated['referral_user_id']) &&
             !empty($validated['start_date']) &&
@@ -225,7 +225,7 @@ class UserController extends Controller
             'telegram' => 'nullable|string|max:255',
             'skype' => 'nullable|string|max:255',
             'user_name' => [
-                Rule::requiredIf(Session::userType() === Privilege::ROLE_GOD),
+                Rule::requiredIf(CurrentUserSession::type() === Privilege::ROLE_GOD),
                 'nullable',
                 'string',
                 'max:155',
@@ -253,7 +253,7 @@ class UserController extends Controller
             return back()->withErrors(['priv' => 'This user cannot be upgraded while referral structures are attached to the account.'])->withInput();
         }
 
-        if ((Session::userType() === Privilege::ROLE_GOD || Session::userType() === Privilege::ROLE_ADMIN) && $user->getRole() !== Privilege::ROLE_GOD) {
+        if ((CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN) && $user->getRole() !== Privilege::ROLE_GOD) {
             $ownerOptions = $this->getOwnerOptionsForEdit($targetRole);
             $requestedOwner = (int) ($validated['referrer_repid'] ?? $user->referrer_repid);
             if (!$ownerOptions->pluck('idrep')->map(fn ($value) => (int) $value)->contains($requestedOwner)) {
@@ -279,11 +279,11 @@ class UserController extends Controller
                 'company_name' => $validated['company_name'] ?? '',
             ];
 
-            if (Session::userType() === Privilege::ROLE_GOD) {
+            if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
                 $updatePayload['user_name'] = $validated['user_name'] ?: $user->user_name;
             }
 
-            if ((Session::userType() === Privilege::ROLE_GOD || Session::userType() === Privilege::ROLE_ADMIN) && $user->getRole() !== Privilege::ROLE_GOD) {
+            if ((CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN) && $user->getRole() !== Privilege::ROLE_GOD) {
                 $updatePayload['referrer_repid'] = (int) ($validated['referrer_repid'] ?? $user->referrer_repid);
             }
 
@@ -403,8 +403,8 @@ class UserController extends Controller
                 $join->on('privileges.rep_idrep', '=', 'rep.idrep')
                     ->where('privileges.is_rep', 1);
             })
-            ->where('rep.lft', '>', Session::userData()->lft)
-            ->where('rep.rgt', '<', Session::userData()->rgt)
+            ->where('rep.lft', '>', CurrentUserSession::data()->lft)
+            ->where('rep.rgt', '<', CurrentUserSession::data()->rgt)
             ->where('rep.idrep', '!=', $referrer->idrep)
             ->whereNotIn('rep.idrep', function ($query) {
                 $query->select('aff_id')->from('referrals');
@@ -434,8 +434,8 @@ class UserController extends Controller
                 $join->on('privileges.rep_idrep', '=', 'rep.idrep')
                     ->where('privileges.is_rep', 1);
             })
-            ->where('rep.lft', '>', Session::userData()->lft)
-            ->where('rep.rgt', '<', Session::userData()->rgt)
+            ->where('rep.lft', '>', CurrentUserSession::data()->lft)
+            ->where('rep.rgt', '<', CurrentUserSession::data()->rgt)
             ->where('rep.idrep', '!=', $referrer->idrep)
             ->whereNotIn('rep.idrep', function ($query) {
                 $query->select('aff_id')->from('referrals');
@@ -470,7 +470,7 @@ class UserController extends Controller
     {
         $user = $this->findPendingAffiliateOrFail($id);
         $assignableManagers = $this->getAssignableManagersForPendingAffiliate();
-        $hasReferralAccess = Session::permissions()->can(Permissions::EDIT_REFERRALS);
+        $hasReferralAccess = CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS);
         $referralOptions = $hasReferralAccess
             ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('user_name')->get(['rep.idrep', 'rep.user_name'])
             : collect();
@@ -522,7 +522,7 @@ class UserController extends Controller
         RepHasOffer::assignAffiliateToPublicOffers($user->idrep);
 
         if (
-            Session::permissions()->can(Permissions::EDIT_REFERRALS) &&
+            CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS) &&
             $request->boolean('enable_referral') &&
             !empty($validated['referral_user_id']) &&
             !empty($validated['start_date']) &&
@@ -544,7 +544,7 @@ class UserController extends Controller
 
     public function viewBannedUsers()
     {
-        $bounds = Session::userData();
+        $bounds = CurrentUserSession::data();
 
         $bans = DB::table('banned_users')
             ->join('rep', 'rep.idrep', '=', 'banned_users.user_id')
@@ -693,7 +693,7 @@ class UserController extends Controller
 
 		// TODO: check if already has access or not.
 
-		if(\LeadMax\TrackYourStats\System\Session::userType() != Privilege::ROLE_AFFILIATE) {
+		if(CurrentUserSession::type() != Privilege::ROLE_AFFILIATE) {
 
 			$offerAccess = DB::table('rep_has_offer')
 			                 ->where('rep_idrep', '=', $userID)
@@ -724,7 +724,7 @@ class UserController extends Controller
 		$access = $request->access;
 		$message = "";
 
-		if(\LeadMax\TrackYourStats\System\Session::userType() != Privilege::ROLE_AFFILIATE) {
+		if(CurrentUserSession::type() != Privilege::ROLE_AFFILIATE) {
 
 			if ($access) {
 				DB::table('rep_has_offer')->insert([
@@ -791,11 +791,11 @@ class UserController extends Controller
             'offers' => $offers,
             'name' => $userFName,
             'managedUser' => $user,
-            'canEditAffiliatePayout' => Session::permissions()->can('edit_aff_payout'),
-            'canManageOfferCaps' => Session::userType() === Privilege::ROLE_GOD,
-            'canManageOffers' => Session::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canManageSubIds' => Session::userType() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canLoginAsUser' => Session::userType() !== Privilege::ROLE_AFFILIATE && $user->idrep !== Session::userID(),
+            'canEditAffiliatePayout' => CurrentUserSession::permissions()->can('edit_aff_payout'),
+            'canManageOfferCaps' => CurrentUserSession::type() === Privilege::ROLE_GOD,
+            'canManageOffers' => CurrentUserSession::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canManageSubIds' => CurrentUserSession::type() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canLoginAsUser' => CurrentUserSession::type() !== Privilege::ROLE_AFFILIATE && $user->idrep !== CurrentUserSession::id(),
         ]);
 	}
 
@@ -805,7 +805,7 @@ class UserController extends Controller
 		$status = $request->status;
 		$message = "";
 
-		if(\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_GOD) {
+		if(CurrentUserSession::type() == Privilege::ROLE_GOD) {
 			$userOfferCap = DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->first();
 
 			if($userOfferCap) {
@@ -836,7 +836,7 @@ class UserController extends Controller
 		$offer = $request->offer_id;
 		$cap = $request->cap;
 		$message = "";
-		if(\LeadMax\TrackYourStats\System\Session::userType() == Privilege::ROLE_GOD) {
+		if(CurrentUserSession::type() == Privilege::ROLE_GOD) {
 			$userOfferCap = DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->first();
 			if($userOfferCap) {
 				DB::table('user_offer_caps')->where("rep_idrep", $userID)->where('offer_idoffer', $offer)->update( [
@@ -874,7 +874,7 @@ class UserController extends Controller
 
     private function authorizeUserCreation()
     {
-        if (Session::userType() === Privilege::ROLE_AFFILIATE || Session::userType() === Privilege::ROLE_UNKNOWN) {
+        if (CurrentUserSession::type() === Privilege::ROLE_AFFILIATE || CurrentUserSession::type() === Privilege::ROLE_UNKNOWN) {
             abort(403);
         }
 
@@ -885,26 +885,26 @@ class UserController extends Controller
 
     private function authorizeUserEdit(User $user)
     {
-        $sessionUserId = (int) Session::userID();
+        $sessionUserId = (int) CurrentUserSession::id();
         $targetUserId = (int) $user->idrep;
 
-        if (Session::userType() === Privilege::ROLE_AFFILIATE) {
+        if (CurrentUserSession::type() === Privilege::ROLE_AFFILIATE) {
             abort_unless($targetUserId === $sessionUserId, 403);
             return;
         }
 
-        if ($targetUserId !== $sessionUserId && !Session::permissions()->can(Permissions::EDIT_AFFILIATES)) {
+        if ($targetUserId !== $sessionUserId && !CurrentUserSession::permissions()->can(Permissions::EDIT_AFFILIATES)) {
             abort(403);
         }
 
-        if (Session::userType() === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
+        if (CurrentUserSession::type() === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
             abort(403);
         }
     }
 
     private function authorizeReferralEdit(User $user)
     {
-        abort_unless(Session::permissions()->can(Permissions::EDIT_REFERRALS), 403);
+        abort_unless(CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS), 403);
         abort_unless(LegacyUser::hasAffiliate($user->idrep), 403);
     }
 
@@ -935,14 +935,14 @@ class UserController extends Controller
             'permissionOptionsByRole' => $permissionOptionsByRole,
             'selectedPermissions' => $selectedPermissions,
             'canManageRoles' => $canManageRoles,
-            'canEditUsername' => !$isEdit || Session::userType() === Privilege::ROLE_GOD,
-            'canEditOwner' => !$isEdit || (Session::userType() === Privilege::ROLE_GOD || Session::userType() === Privilege::ROLE_ADMIN),
-            'canLoginAsUser' => $isEdit && Session::userType() !== Privilege::ROLE_AFFILIATE && $user->idrep !== Session::userID(),
-            'canManageOffers' => $isEdit && Session::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canManageSubIds' => $isEdit && Session::userType() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canCreateReferrals' => !$isEdit && Session::permissions()->can(Permissions::EDIT_REFERRALS),
-            'canEditReferrals' => $isEdit && Session::permissions()->can(Permissions::EDIT_REFERRALS) && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'referralOptions' => Session::permissions()->can(Permissions::EDIT_REFERRALS)
+            'canEditUsername' => !$isEdit || CurrentUserSession::type() === Privilege::ROLE_GOD,
+            'canEditOwner' => !$isEdit || (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN),
+            'canLoginAsUser' => $isEdit && CurrentUserSession::type() !== Privilege::ROLE_AFFILIATE && $user->idrep !== CurrentUserSession::id(),
+            'canManageOffers' => $isEdit && CurrentUserSession::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canManageSubIds' => $isEdit && CurrentUserSession::type() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canCreateReferrals' => !$isEdit && CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS),
+            'canEditReferrals' => $isEdit && CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'referralOptions' => CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS)
                 ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('rep.user_name')->get(['rep.idrep', 'rep.user_name'])
                 : collect(),
             'currentReferralUserId' => $currentReferralUserId,
@@ -956,15 +956,15 @@ class UserController extends Controller
     {
         $options = [];
 
-        if (Session::userType() === Privilege::ROLE_GOD || Session::permissions()->can(Permissions::CREATE_ADMINS)) {
+        if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_ADMINS)) {
             $options[Privilege::ROLE_ADMIN] = 'Admin';
         }
 
-        if (Session::userType() === Privilege::ROLE_GOD || Session::permissions()->can(Permissions::CREATE_MANAGERS)) {
+        if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_MANAGERS)) {
             $options[Privilege::ROLE_MANAGER] = config('branding.account.singular');
         }
 
-        if (Session::userType() === Privilege::ROLE_GOD || Session::permissions()->can(Permissions::CREATE_AFFILIATES)) {
+        if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_AFFILIATES)) {
             $options[Privilege::ROLE_AFFILIATE] = config('branding.affiliate.singular');
         }
 
@@ -996,7 +996,7 @@ class UserController extends Controller
 
     private function getOwnerOptionsForEdit(int $targetRole)
     {
-        if (!(Session::userType() === Privilege::ROLE_GOD || Session::userType() === Privilege::ROLE_ADMIN)) {
+        if (!(CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN)) {
             return collect();
         }
 
@@ -1015,25 +1015,25 @@ class UserController extends Controller
 
     private function getAdminOwnersForCreate()
     {
-        if (Session::userType() === Privilege::ROLE_GOD) {
+        if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
             return $this->getOwnersByPrivilegeColumn('is_admin');
         }
 
-        if (Session::userType() === Privilege::ROLE_ADMIN) {
-            return collect([(object) ['idrep' => Session::userID(), 'user_name' => Session::userData()->user_name]]);
+        if (CurrentUserSession::type() === Privilege::ROLE_ADMIN) {
+            return collect([(object) ['idrep' => CurrentUserSession::id(), 'user_name' => CurrentUserSession::data()->user_name]]);
         }
 
-        $parentAdmin = User::query()->find(Session::userData()->referrer_repid);
+        $parentAdmin = User::query()->find(CurrentUserSession::data()->referrer_repid);
         return $parentAdmin ? collect([(object) ['idrep' => $parentAdmin->idrep, 'user_name' => $parentAdmin->user_name]]) : collect();
     }
 
     private function getManagerOwnersForCreate()
     {
-        if (Session::userType() === Privilege::ROLE_GOD) {
+        if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
             return $this->getOwnersByPrivilegeColumn('is_manager');
         }
 
-        if (Session::userType() === Privilege::ROLE_ADMIN) {
+        if (CurrentUserSession::type() === Privilege::ROLE_ADMIN) {
             return User::query()
                 ->withRole(Privilege::ROLE_MANAGER)
                 ->myUsers()
@@ -1042,7 +1042,7 @@ class UserController extends Controller
                 ->get(['rep.idrep', 'rep.user_name']);
         }
 
-        return collect([(object) ['idrep' => Session::userID(), 'user_name' => Session::userData()->user_name]]);
+        return collect([(object) ['idrep' => CurrentUserSession::id(), 'user_name' => CurrentUserSession::data()->user_name]]);
     }
 
     private function getOwnersByPrivilegeColumn(string $column)
@@ -1057,7 +1057,7 @@ class UserController extends Controller
 
     private function getPermissionOptionsForRole(int $role): array
     {
-        $sessionPermissions = Session::permissions();
+        $sessionPermissions = CurrentUserSession::permissions();
         $options = [];
 
         foreach (Permissions::$permissionsArray as $permission => $details) {
@@ -1075,7 +1075,7 @@ class UserController extends Controller
             }
 
             if (isset($details['allowed_user_types'])) {
-                if (!in_array(Session::userType(), $details['allowed_user_types'], true)) {
+                if (!in_array(CurrentUserSession::type(), $details['allowed_user_types'], true)) {
                     continue;
                 }
                 if (!in_array($role, $details['allowed_user_types'], true)) {
@@ -1134,7 +1134,7 @@ class UserController extends Controller
 
     private function canManageUserRoles(User $user): bool
     {
-        return in_array(Session::userType(), [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true)
+        return in_array(CurrentUserSession::type(), [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true)
             && $user->getRole() !== Privilege::ROLE_GOD
             && !empty($this->getRoleOptionsForCurrentUser());
     }
@@ -1179,7 +1179,7 @@ class UserController extends Controller
     {
         $user = User::query()->findOrFail($id);
 
-        if (!LegacyUser::userOwnsUser(Session::userID(), $user->idrep)) {
+        if (!LegacyUser::userOwnsUser(CurrentUserSession::id(), $user->idrep)) {
             abort(403);
         }
 
@@ -1188,7 +1188,7 @@ class UserController extends Controller
 
     private function getAssignableManagersForPendingAffiliate()
     {
-        if (Session::userType() === Privilege::ROLE_GOD) {
+        if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
             return User::query()
                 ->withRole(Privilege::ROLE_MANAGER)
                 ->where('rep.status', 1)
@@ -1196,7 +1196,7 @@ class UserController extends Controller
                 ->get(['rep.idrep', 'rep.user_name']);
         }
 
-        if (Session::userType() === Privilege::ROLE_ADMIN) {
+        if (CurrentUserSession::type() === Privilege::ROLE_ADMIN) {
             return User::query()
                 ->withRole(Privilege::ROLE_MANAGER)
                 ->myUsers()
@@ -1207,8 +1207,8 @@ class UserController extends Controller
 
         return collect([
             (object) [
-                'idrep' => Session::userID(),
-                'user_name' => Session::userData()->user_name,
+                'idrep' => CurrentUserSession::id(),
+                'user_name' => CurrentUserSession::data()->user_name,
             ],
         ]);
     }

@@ -8,13 +8,13 @@ use App\Services\CountryReportBuilderService;
 use App\User;
 use App\Conversion;
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\SubVarRepository;
 use LeadMax\TrackYourStats\Report\Filters;
-use LeadMax\TrackYourStats\System\Session;
 use App\Http\Traits\ClickTraits;
 
 class SubReportController extends ReportController
@@ -45,9 +45,9 @@ class SubReportController extends ReportController
 
 		$subID = $request->get('subid');
 		$dates = self::getDates();
-        $resolvedPaid = Session::userType() === Privilege::ROLE_AFFILIATE
+        $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
 
 		$subReport = DB::table('click_vars')
 		  ->where('sub1', '=', $subID)
@@ -104,9 +104,9 @@ class SubReportController extends ReportController
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$subId = request()->query('subId');
-        $resolvedPaid = Session::userType() === Privilege::ROLE_AFFILIATE
+        $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
 
 	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
 					->where('clicks.offer_idoffer', '=', $offer->idoffer)
@@ -247,9 +247,9 @@ class SubReportController extends ReportController
 		$country = request()->query('country');
 		$userId = $user->idrep;
 		$offerId = $offer->idoffer;
-        $resolvedPaid = Session::userType() === Privilege::ROLE_AFFILIATE
+        $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(Session::userType(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
 
 		$ipAddresses = Click::where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)

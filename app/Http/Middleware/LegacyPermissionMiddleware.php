@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\CurrentUserSession;
 use Closure;
-use LeadMax\TrackYourStats\System\Session;
 
 class LegacyPermissionMiddleware
 {
@@ -17,7 +17,7 @@ class LegacyPermissionMiddleware
     public function handle($request, Closure $next, ...$permissions)
     {
         foreach ($permissions as $permission) {
-            if (Session::permissions()->can($permission) == false) {
+            if (CurrentUserSession::permissions()->can($permission) == false) {
                 return redirect('/dashboard');
             }
         }

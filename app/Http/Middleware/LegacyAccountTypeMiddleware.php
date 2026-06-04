@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\CurrentUserSession;
 use Closure;
-use LeadMax\TrackYourStats\System\Session;
 
 class LegacyAccountTypeMiddleware
 {
@@ -16,7 +16,7 @@ class LegacyAccountTypeMiddleware
      */
     public function handle($request, Closure $next, ...$userTypes)
     {
-        if (!in_array(Session::userType(), $userTypes)) {
+        if (!in_array(CurrentUserSession::type(), $userTypes)) {
             abort(403, "Incorrect user type");
         }
 

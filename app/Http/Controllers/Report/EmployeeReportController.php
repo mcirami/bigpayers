@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Report;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Report\Filters;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\AdminEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\ManagerEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
-use LeadMax\TrackYourStats\System\Session;
 
 class EmployeeReportController extends ReportController
 {
@@ -18,8 +18,8 @@ class EmployeeReportController extends ReportController
     private function report(Repository $repository, Request $request)
     {
         $repository->SHOW_AFF_TYPE = $request->query('role', 3);
-        $isGodUser = Session::userType() === Privilege::ROLE_GOD;
-	    $SmsStatsPermission = Session::permissions()->can('view_sms_stats');
+        $isGodUser = CurrentUserSession::type() === Privilege::ROLE_GOD;
+	    $SmsStatsPermission = CurrentUserSession::can('view_sms_stats');
 
         $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repository);
 
@@ -78,12 +78,12 @@ class EmployeeReportController extends ReportController
 
     public function show(Request $request)
     {
-        switch (Session::userType()) {
+        switch (CurrentUserSession::type()) {
             case Privilege::ROLE_GOD:
                 $repository = new GodEmployeeRepository(\DB::getPdo());
                 break;
             case Privilege::ROLE_ADMIN:
-	            $repository = Session::permissions()->can('view_all_users') ?
+	            $repository = CurrentUserSession::can('view_all_users') ?
 		            new GodEmployeeRepository(\DB::getPdo())
 		            :
 		            new AdminEmployeeRepository(\DB::getPdo());

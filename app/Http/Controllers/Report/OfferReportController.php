@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Offer;
+use App\Support\CurrentUserSession;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
@@ -12,7 +13,6 @@ use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AdminOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\ManagerOfferRepository;
-use LeadMax\TrackYourStats\System\Session;
 
 use LeadMax\TrackYourStats\Report\Filters;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
@@ -45,7 +45,7 @@ class OfferReportController extends ReportController
     public function admin()
     {
         $dates = self::getDates();
-	    $repo = Session::permissions()->can('view_all_users') ?
+	    $repo = CurrentUserSession::can('view_all_users') ?
 		    new GodOfferRepository(\DB::getPdo())
 		    :
 		    new AdminOfferRepository(\DB::getPdo());
@@ -78,7 +78,7 @@ class OfferReportController extends ReportController
         $report->fetchBonuses($dates['startDate'], $dates['endDate']);
 
         $repo = new AffiliateOfferRepository(\DB::getPdo());
-        $repo->setAffiliateId(Session::userID());
+        $repo->setAffiliateId(CurrentUserSession::id());
 
         $reporter = new Reporter($repo);
 
@@ -93,7 +93,7 @@ class OfferReportController extends ReportController
 
     public function show()
     {
-        switch (Session::userType()) {
+        switch (CurrentUserSession::type()) {
             case Privilege::ROLE_GOD:
                 return $this->god();
                 
@@ -119,7 +119,7 @@ class OfferReportController extends ReportController
 		$start = Carbon::parse($dates['startDate'], 'America/New_York');
 		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
-		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, Session::user());
+		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, CurrentUserSession::user());
 		$affiliateReport = $affiliateRepo->between($start, $end);
 
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
@@ -132,7 +132,7 @@ class OfferReportController extends ReportController
 		$start = Carbon::parse($dates['startDate'], 'America/New_York');
 		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
-		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, Session::user());
+		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, CurrentUserSession::user());
 		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry($countryReportBuilderService, $start, $end);
 
 		return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));

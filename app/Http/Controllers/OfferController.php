@@ -9,6 +9,7 @@ use App\Offer;
 use App\OfferURL;
 use App\PredefinedOfferRule;
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use App\User;
 use App\UserOffer;
 use Carbon\Carbon;
@@ -28,7 +29,7 @@ class OfferController extends Controller
 
 	public function requestOffer($id)
 	{
-		$result = \LeadMax\TrackYourStats\Offer\RepHasOffer::requestOffer($id, \LeadMax\TrackYourStats\System\Session::userID());
+		$result = \LeadMax\TrackYourStats\Offer\RepHasOffer::requestOffer($id, CurrentUserSession::id());
 		return response()->json($result);
 	}
 
@@ -62,7 +63,7 @@ class OfferController extends Controller
     public function showPostback($id)
     {
         $offer = $this->findAffiliateOfferOrFail((int) $id);
-        $userId = \LeadMax\TrackYourStats\System\Session::userID();
+        $userId = CurrentUserSession::id();
 
         return view('offer.postback', [
             'offer' => $offer,
@@ -75,7 +76,7 @@ class OfferController extends Controller
     public function updatePostback(Request $request, $id)
     {
         $offer = $this->findAffiliateOfferOrFail((int) $id);
-        $userId = \LeadMax\TrackYourStats\System\Session::userID();
+        $userId = CurrentUserSession::id();
 
         $validated = $request->validate([
             'postback_url' => 'nullable|string|max:255',
@@ -252,10 +253,10 @@ class OfferController extends Controller
 		$data['urls'] = $urls;
 
 
-		$sessionUser = \LeadMax\TrackYourStats\System\Session::user();
-		$sessionUserId = (int) \LeadMax\TrackYourStats\System\Session::userID();
-		$sessionUserType = \LeadMax\TrackYourStats\System\Session::userType();
-		$permissions = \LeadMax\TrackYourStats\System\Session::permissions();
+		$sessionUser = CurrentUserSession::user();
+		$sessionUserId = CurrentUserSession::id();
+		$sessionUserType = CurrentUserSession::type();
+		$permissions = CurrentUserSession::permissions();
 		$canCreateOffers = $permissions->can('create_offers');
 		$canEditAffiliates = $permissions->can('edit_affiliates');
 		$canEditOfferRules = $permissions->can('edit_offer_rules');
@@ -355,7 +356,7 @@ class OfferController extends Controller
 			->where('idoffer', '=', $id)
 			->firstOrFail();
 
-		$permissions = \LeadMax\TrackYourStats\System\Session::permissions();
+		$permissions = CurrentUserSession::permissions();
 
 		return view('offer.show', [
 			'offer' => $offer,
@@ -369,7 +370,7 @@ class OfferController extends Controller
 	{
 		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
 		$rules = new \LeadMax\TrackYourStats\Offer\Rules($offer->idoffer);
-		$offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
+		$offerView = new \LeadMax\TrackYourStats\Offer\View(CurrentUserSession::type());
 		$activeCap = false;
 		$capAmount = 0;
 		$geoRules = [];
@@ -702,7 +703,7 @@ class OfferController extends Controller
 
     private function redirectOfferOptionsForRules(int $excludeOfferId): array
     {
-        $offerView = new \LeadMax\TrackYourStats\Offer\View(\LeadMax\TrackYourStats\System\Session::userType());
+        $offerView = new \LeadMax\TrackYourStats\Offer\View(CurrentUserSession::type());
 
         return collect($offerView->getUsersQuery()->fetchAll(\PDO::FETCH_OBJ))
             ->filter(fn ($offer) => (int) $offer->idoffer !== $excludeOfferId)
@@ -714,17 +715,17 @@ class OfferController extends Controller
     {
         return \LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer(
             $offerId,
-            \LeadMax\TrackYourStats\System\Session::userID()
+            CurrentUserSession::id()
         );
     }
 
     private function findAffiliateOfferOrFail(int $offerId): Offer
     {
-        abort_unless(\LeadMax\TrackYourStats\System\Session::userType() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+        abort_unless(CurrentUserSession::type() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
 
         $offer = Offer::query()->findOrFail($offerId);
         $hasOffer = UserOffer::query()
-            ->where('rep_idrep', '=', \LeadMax\TrackYourStats\System\Session::userID())
+            ->where('rep_idrep', '=', CurrentUserSession::id())
             ->where('offer_idoffer', '=', $offerId)
             ->exists();
 
@@ -788,7 +789,7 @@ class OfferController extends Controller
 				$offer->campaign_id = Campaigns::getDefaultCampaignId();
 			}
 			$offer->offer_timestamp = Carbon::now('UTC')->format('Y-m-d H:i:s');
-			$offer->created_by = \LeadMax\TrackYourStats\System\Session::user()->idrep;
+			$offer->created_by = CurrentUserSession::user()->idrep;
 			$offer->save();
 
 			$userIds = User::query()
@@ -982,7 +983,7 @@ class OfferController extends Controller
 	{
 		$users = User::myUsers()->withRole(request('role', 3))->get();
 
-		$offers = \LeadMax\TrackYourStats\System\Session::user()->offers()->get();
+		$offers = CurrentUserSession::user()->offers()->get();
 
 		return view('offer.mass-assign', compact('users', 'offers'));
 	}

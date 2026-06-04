@@ -7,12 +7,12 @@ use App\User;
 use App\Click;
 use App\Offer;
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;
-use LeadMax\TrackYourStats\System\Session;
 
 class ConversionReportController extends ReportController
 {
@@ -22,7 +22,7 @@ class ConversionReportController extends ReportController
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$offerId = request()->query('offer');
-        $selectedRole = (int) request()->query('role', Session::userType());
+        $selectedRole = (int) request()->query('role', CurrentUserSession::type());
         $resolvedPaid = $selectedRole === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
             : Payouts::sqlForRole($selectedRole, 'offer', 'rep_has_offer');

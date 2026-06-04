@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Click;
 use App\Offer;
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\User;
@@ -13,7 +14,6 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\Table\Assignments;
 use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Traits\ClickTraits;
@@ -42,8 +42,8 @@ class ClickReportController extends ReportController
 	    $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
 	    $end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
 
-	    $repo          = new OfferClicksRepository( $id, Session::user(),
-		    Session::permissions()->can( Permissions::VIEW_FRAUD_DATA ) );
+	    $repo          = new OfferClicksRepository( $id, CurrentUserSession::user(),
+		    CurrentUserSession::can( Permissions::VIEW_FRAUD_DATA ) );
 	    $reportCollection      = $repo->between( $start, $end );
 		$report                = $reportCollection->items();
 
@@ -156,7 +156,7 @@ class ClickReportController extends ReportController
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$searchType = request()->query('searchType');
-        $selectedRole = (int) request()->query('role', Session::userType());
+        $selectedRole = (int) request()->query('role', CurrentUserSession::type());
         $resolvedPaid = Payouts::sqlForRole($selectedRole, 'offer', 'rep_has_offer');
 		$user = null;
 		$offer = null;
