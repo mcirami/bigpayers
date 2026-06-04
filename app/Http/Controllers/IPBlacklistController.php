@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use LeadMax\TrackYourStats\System\IPBlackList;
-use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
 class IPBlacklistController extends Controller
@@ -114,7 +114,7 @@ class IPBlacklistController extends Controller
 
     private function ensureGodAccess(): void
     {
-        abort_unless(Session::userType() === Privilege::ROLE_GOD, 403, 'Incorrect user type');
+        abort_unless(CurrentUserSession::type() === Privilege::ROLE_GOD, 403, 'Incorrect user type');
     }
 
     private function validateRange(Request $request): array

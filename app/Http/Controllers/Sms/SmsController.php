@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Sms;
 
 use App\Http\Controllers\Controller;
+use App\Support\CurrentUserSession;
 use Illuminate\Support\ViewErrorBag;
-use LeadMax\TrackYourStats\System\Session;
 
 class SmsController extends Controller
 {
 
     public function getChattingPage()
     {
-        $smsClient = Session::user()->smsClients()->first();
+        $smsClient = CurrentUserSession::user()->smsClients()->first();
 
 
         if (is_null($smsClient)) {
@@ -19,6 +19,6 @@ class SmsController extends Controller
         }
 
 
-        return view('sms.main')->with(['userId' => Session::userID()]);
+        return view('sms.main')->with(['userId' => CurrentUserSession::id()]);
     }
 }

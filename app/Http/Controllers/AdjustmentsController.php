@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Clicks\Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Offer\AdjustmentsLog;
-use LeadMax\TrackYourStats\System\Session;
 
 class AdjustmentsController extends Controller
 {
@@ -25,7 +25,7 @@ class AdjustmentsController extends Controller
 
     public function getAffiliates()
     {
-        return Session::user()
+        return CurrentUserSession::user()
             ->users()
             ->withRole(Privilege::ROLE_AFFILIATE)
             ->select('idrep as id', 'user_name as name')
@@ -77,7 +77,7 @@ class AdjustmentsController extends Controller
 
         $conversion->registerSale();
 
-        $log = new AdjustmentsLog($conversion->id, Session::userID());
+        $log = new AdjustmentsLog($conversion->id, CurrentUserSession::id());
         $log->setAction(AdjustmentsLog::ACTION_CREATE_SALE);
         $log->log();
 

@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use App\EmailPool;
 use App\User;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\System\Session;
 
 class EmailPoolController extends Controller
 {
 
     public function showAffiliateEmailPools()
     {
-        $affiliate = User::find(Session::userID());
+        $affiliate = User::find(CurrentUserSession::id());
 
 
         $availablePools = EmailPool::availablePools()->get();
@@ -30,7 +30,7 @@ class EmailPoolController extends Controller
             abort(404);
         }
 
-        $user = User::find(Session::userID());
+        $user = User::find(CurrentUserSession::id());
 
 
         if ($pool->canAffiliateClaimPool($user->idrep)) {
@@ -46,7 +46,7 @@ class EmailPoolController extends Controller
     {
         $pool = EmailPool::where('id', '=', $id)->with('emails')->first();
 
-        $affiliate = User::find(Session::userID());
+        $affiliate = User::find(CurrentUserSession::id());
 
         if (!$affiliate->emailPools()->find($pool->id)) {
             abort(403, 'You do not own this pool!');

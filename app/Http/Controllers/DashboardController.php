@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Company;
-use LeadMax\TrackYourStats\System\Session;
+use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\User\Permissions;
 
 class DashboardController extends Controller
@@ -14,17 +14,17 @@ class DashboardController extends Controller
     {
         $company = Company::instance()->first();
         abort_unless($company, 404, 'Company install not found.');
-        $currentUser = Session::userData();
+        $currentUser = CurrentUserSession::data();
 
         $with = [
-            'canViewPostback' => Session::permissions()->can(Permissions::VIEW_POSTBACK),
+            'canViewPostback' => CurrentUserSession::can(Permissions::VIEW_POSTBACK),
             'company' => $company,
             'currentUser' => $currentUser,
             'postBackURL' => getWebRoot()."?uid=".$company->getUID()."&clickid=",
-            'userId' => Session::userID(),
+            'userId' => CurrentUserSession::id(),
             'firstName' => $currentUser->first_name,
             'email' => $currentUser->email,
-	        'userType' => Session::userType(),
+	        'userType' => CurrentUserSession::type(),
 	        'domain' => request()->getSchemeAndHttpHost() . "/signup?mid=",
         ];
 

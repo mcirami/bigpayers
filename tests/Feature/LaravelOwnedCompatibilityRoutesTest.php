@@ -90,6 +90,27 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_low_risk_modern_controllers_use_current_session_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/AdjustmentsController.php'),
+            app_path('Http/Controllers/AffiliateMassPostbackController.php'),
+            app_path('Http/Controllers/ClickSearchController.php'),
+            app_path('Http/Controllers/DashboardController.php'),
+            app_path('Http/Controllers/EmailPoolController.php'),
+            app_path('Http/Controllers/GlobalPostbackController.php'),
+            app_path('Http/Controllers/IPBlacklistController.php'),
+            app_path('Http/Controllers/SalaryController.php'),
+            app_path('Http/Controllers/Sms/SmsController.php'),
+            app_path('Http/Controllers/SmsOrderController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
+        }
+    }
+
     public function test_legacy_post_compatibility_urls_keep_csrf_exceptions(): void
     {
         $middleware = app(VerifyCsrfToken::class);

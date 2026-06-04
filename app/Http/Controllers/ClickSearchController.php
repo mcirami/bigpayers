@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Clicks\ClickSearcher;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\UID;
-use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
 class ClickSearchController extends Controller
@@ -61,7 +61,7 @@ class ClickSearchController extends Controller
 
     private function ensureGodAccess(): void
     {
-        abort_unless(Session::userType() === Privilege::ROLE_GOD, 403, 'Incorrect user type');
+        abort_unless(CurrentUserSession::type() === Privilege::ROLE_GOD, 403, 'Incorrect user type');
     }
 
     private function formatClickData(?array $clickRow): array

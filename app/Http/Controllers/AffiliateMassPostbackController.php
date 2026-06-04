@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Offer\Offer as LegacyOffer;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
-use LeadMax\TrackYourStats\System\Session;
 use PDO;
 
 class AffiliateMassPostbackController extends Controller
@@ -45,7 +45,7 @@ class AffiliateMassPostbackController extends Controller
 
         $updated = RepHasOffer::assignPostBackToAffiliatesOffers(
             trim((string) ($validated['postback_url'] ?? '')),
-            Session::userID(),
+            CurrentUserSession::id(),
             $offerIds
         );
 
@@ -61,12 +61,12 @@ class AffiliateMassPostbackController extends Controller
     private function ownedOffers()
     {
         return collect(
-            LegacyOffer::selectOwnedOffers(Session::userType())->fetchAll(PDO::FETCH_OBJ)
+            LegacyOffer::selectOwnedOffers(CurrentUserSession::type())->fetchAll(PDO::FETCH_OBJ)
         )->values();
     }
 
     private function ensureAffiliateAccess(): void
     {
-        abort_unless(Session::userType() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+        abort_unless(CurrentUserSession::type() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
     }
 }

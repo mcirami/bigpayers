@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Salary;
 use App\User;
+use App\Support\CurrentUserSession;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\Salary as LegacySalary;
 
 class SalaryController extends Controller
@@ -31,8 +31,8 @@ class SalaryController extends Controller
             'affiliates' => $affiliates,
             'paidCount' => $paidCount,
             'unpaidCount' => $affiliates->count() - $paidCount,
-            'canEditSalaries' => Session::permissions()->can('edit_salaries'),
-            'canPaySalaries' => Session::permissions()->can('pay_salaries'),
+            'canEditSalaries' => CurrentUserSession::can('edit_salaries'),
+            'canPaySalaries' => CurrentUserSession::can('pay_salaries'),
         ]);
     }
 

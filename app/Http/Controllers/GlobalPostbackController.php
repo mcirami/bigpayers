@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\System\Session;
 use LeadMax\TrackYourStats\User\PostBackUrl;
 
 class GlobalPostbackController extends Controller
@@ -13,7 +13,7 @@ class GlobalPostbackController extends Controller
     {
         $this->ensureAffiliateAccess();
 
-        $postbackUrl = new PostBackUrl(Session::userID());
+        $postbackUrl = new PostBackUrl(CurrentUserSession::id());
 
         return view('account.global-postback', [
             'postbackUrl' => old('postback_url', (string) $postbackUrl->getGlobalPostBackURL(PostBackUrl::GLOBAL_CONVERSION_URL)),
@@ -29,7 +29,7 @@ class GlobalPostbackController extends Controller
         ]);
 
         PostBackUrl::updateUserPostBacks(
-            Session::userID(),
+            CurrentUserSession::id(),
             trim((string) ($validated['postback_url'] ?? ''))
         );
 
@@ -38,6 +38,6 @@ class GlobalPostbackController extends Controller
 
     private function ensureAffiliateAccess(): void
     {
-        abort_unless(Session::userType() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+        abort_unless(CurrentUserSession::type() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
     }
 }

@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\SmsOrder;
 use App\Services\SmsPoolService;
+use App\Support\CurrentUserSession;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use LeadMax\TrackYourStats\System\Session;
 use Throwable;
 
 class SmsOrderController extends Controller
@@ -21,7 +21,7 @@ class SmsOrderController extends Controller
 			'client_reference' => ['nullable', 'string', 'max:255'],
 		]);
 
-		$repId = Session::userID();
+		$repId = CurrentUserSession::id();
 		if (! $repId) {
 			return response()->json([
 				'message' => 'Unauthorized: rep not found in session.',
