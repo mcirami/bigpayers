@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use LeadMax\TrackYourStats\Table\Assignments;
-use LeadMax\TrackYourStats\User\Permissions;
+use App\Support\LegacyPermissions as Permissions;
 use App\Http\Traits\ClickTraits;
 use App\Services\ClickGeoCacheService;
 

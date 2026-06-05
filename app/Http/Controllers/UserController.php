@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Table\Date;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\User\Bonus;
-use LeadMax\TrackYourStats\User\Permissions;
+use App\Support\LegacyPermissions as Permissions;
 use LeadMax\TrackYourStats\User\Privileges;
 use LeadMax\TrackYourStats\User\Referrals;
 use LeadMax\TrackYourStats\User\ReportPermissions;

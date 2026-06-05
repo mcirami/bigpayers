@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LeadMax\TrackYourStats\System\Mail;
-use LeadMax\TrackYourStats\User\Permissions;
+use App\Support\LegacyPermissions as Permissions;
 
 class NotificationController extends Controller
 {

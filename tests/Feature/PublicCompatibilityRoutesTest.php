@@ -49,6 +49,14 @@ class PublicCompatibilityRoutesTest extends TestCase
         $this->assertStringEndsWith('/login', $publicController->redirectLoginTheme()->getTargetUrl());
     }
 
+    public function test_public_php_compatibility_routes_run_matched_route_actions(): void
+    {
+        $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('login.php'), '/login');
+        $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('logout.php'), '/logout');
+        $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('css/company.php'), '/css/company.css');
+        $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('login_themes/default/index.php'), '/login');
+    }
+
     public function test_company_css_sanitizes_theme_colors_before_rendering(): void
     {
         $controller = app(CompanyCssController::class);
@@ -307,5 +315,26 @@ class PublicCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('background: #888888 ;', $css);
         $this->assertStringContainsString('background: #BBBBBB;', $css);
         $this->assertStringNotContainsString('<?php', $css);
+    }
+
+    private function runMatchedRouteAction(string $uri, string $method = 'GET', array $payload = [])
+    {
+        $request = Request::create($uri, $method, $payload);
+        $this->app->instance('request', $request);
+        $route = Route::getRoutes()->match($request);
+
+        $request->setRouteResolver(fn () => $route);
+        $route->bind($request);
+
+        return $route->run();
+    }
+
+    private function assertRouteActionRedirectPath($response, string $expectedPath): void
+    {
+        $this->assertContains($response->getStatusCode(), [201, 301, 302, 303, 307, 308]);
+
+        $target = parse_url($response->headers->get('Location'));
+
+        $this->assertStringEndsWith($expectedPath, $target['path'] ?? '');
     }
 }

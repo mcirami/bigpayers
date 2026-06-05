@@ -13,8 +13,8 @@
 
 use App\Http\Controllers\ExportDataController;
 use App\Privilege;
+use App\Support\LegacyPermissions as Permissions;
 use Illuminate\Support\Facades\Route;
-use LeadMax\TrackYourStats\User\Permissions;
 use App\Http\Controllers\AffiliateMassPostbackController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\CompanyCssController;

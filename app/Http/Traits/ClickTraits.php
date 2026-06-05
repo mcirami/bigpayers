@@ -3,8 +3,8 @@
 namespace App\Http\Traits;
 
 use App\ClickGeoCache;
+use App\Support\LegacyPermissions as Permissions;
 use LeadMax\TrackYourStats\Clicks\ClickGeo;
-use LeadMax\TrackYourStats\User\Permissions;
 
 trait ClickTraits {
 

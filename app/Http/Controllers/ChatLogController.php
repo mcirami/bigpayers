@@ -11,7 +11,7 @@ use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\PendingConversion;
 use LeadMax\TrackYourStats\Offer\SaleLog;
 use LeadMax\TrackYourStats\System\Files\ImagesUploader;
-use LeadMax\TrackYourStats\User\Permissions;
+use App\Support\LegacyPermissions as Permissions;
 
 class ChatLogController extends Controller
 {

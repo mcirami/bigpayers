@@ -151,6 +151,31 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_modern_permission_reads_use_legacy_permissions_boundary(): void
+    {
+        foreach ([
+            base_path('routes/web.php'),
+            app_path('Http/Controllers/BonusController.php'),
+            app_path('Http/Controllers/ChatLogController.php'),
+            app_path('Http/Controllers/DashboardController.php'),
+            app_path('Http/Controllers/NotificationController.php'),
+            app_path('Http/Controllers/Report/ClickReportController.php'),
+            app_path('Http/Controllers/UserController.php'),
+            app_path('Http/Traits/ClickTraits.php'),
+            app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyPermissions as Permissions', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Permissions', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\Permissions',
+            File::get(app_path('Support/LegacyPermissions.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([

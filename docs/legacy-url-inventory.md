@@ -323,6 +323,8 @@ Remaining cleanup is mostly archival and hardening:
   URLs redirect to `/login`
 - compatibility redirects use controller actions so the web route table remains
   cacheable
+- representative public and authenticated compatibility redirects are covered
+  through matched-route action tests, not only controller-method tests
 - legacy `.php` POST compatibility routes are exempted from Laravel CSRF checks
   and audited so old forms reach their bridge/controller instead of failing with
   a 419 response
@@ -365,10 +367,12 @@ Remaining cleanup is mostly archival and hardening:
   `App\Support\CurrentUserSession` instead of importing the legacy session class
   directly, including the older `src/Report`, `src/User`, `src/Offer`,
   `src/Clicks`, `src/Table`, and notification helper layers
+- modern routes/controllers and the offer-click repository now read legacy
+  permission constants/static helpers through `App\Support\LegacyPermissions`
+  instead of importing the legacy permission class directly
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable
 - continue replacing legacy class dependencies inside modern controllers
-- add integration tests around the explicit compatibility routes
 - run `php vendor/bin/phpunit` for the initial audit and public compatibility
   route regression tests

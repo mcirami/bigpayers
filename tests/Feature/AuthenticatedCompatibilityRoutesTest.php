@@ -362,6 +362,41 @@ class AuthenticatedCompatibilityRoutesTest extends TestCase
         $this->assertRedirectPathAndQuery($logSale, '/chat-log/upload', ['pendingConversionId' => '123']);
     }
 
+    public function test_representative_legacy_compatibility_routes_run_matched_route_actions(): void
+    {
+        $this->assertRouteActionRedirectPathAndQuery($this->runMatchedRouteAction('home.php'), '/dashboard');
+        $this->assertRouteActionRedirectPathAndQuery(
+            $this->runMatchedRouteAction('aff_update.php?idrep=17&adminLogin=1'),
+            '/user/17/edit',
+            ['adminLogin' => '1']
+        );
+        $this->assertRouteActionRedirectPathAndQuery(
+            $this->runMatchedRouteAction('offer_update.php?idoffer=42&tab=details'),
+            '/offer/edit/42',
+            ['tab' => 'details']
+        );
+
+        $createNoneUnique = $this->runMatchedRouteAction('create_none_unique.php?id=42&source=rules', 'POST');
+        $this->assertSame(307, $createNoneUnique->getStatusCode());
+        $this->assertRouteActionRedirectPathAndQuery(
+            $createNoneUnique,
+            '/offer/rules/42/none-unique/create',
+            ['source' => 'rules']
+        );
+
+        $logSale = $this->runMatchedRouteAction('log_sale.php', 'POST', ['pendingConversionId' => 123]);
+        $this->assertSame(307, $logSale->getStatusCode());
+        $this->assertRouteActionRedirectPathAndQuery(
+            $logSale,
+            '/chat-log/upload',
+            ['pendingConversionId' => '123']
+        );
+
+        $geoIp = $this->runMatchedRouteAction('scripts/update_geoip.php');
+        $this->assertSame(410, $geoIp->getStatusCode());
+        $this->assertStringContainsString('GeoIP web updater is retired', $geoIp->getContent());
+    }
+
     public function test_retired_geoip_script_returns_gone_response(): void
     {
         $response = app(LegacyCompatibilityController::class)->retiredGeoIpUpdater();
@@ -419,12 +454,38 @@ class AuthenticatedCompatibilityRoutesTest extends TestCase
         return Request::create($uri, 'POST', $payload);
     }
 
+    private function runMatchedRouteAction(string $uri, string $method = 'GET', array $payload = [])
+    {
+        $request = Request::create($uri, $method, $payload);
+        $this->app->instance('request', $request);
+        $route = Route::getRoutes()->match($request);
+
+        $request->setRouteResolver(fn () => $route);
+        $route->bind($request);
+
+        return $route->run();
+    }
+
     private function assertRedirectPathAndQuery(
         RedirectResponse $response,
         string $expectedPath,
         array $expectedQuery = []
     ): void {
         $target = parse_url($response->getTargetUrl());
+        parse_str($target['query'] ?? '', $query);
+
+        $this->assertStringEndsWith($expectedPath, $target['path'] ?? '');
+        $this->assertSame($expectedQuery, $query);
+    }
+
+    private function assertRouteActionRedirectPathAndQuery(
+        $response,
+        string $expectedPath,
+        array $expectedQuery = []
+    ): void {
+        $this->assertContains($response->getStatusCode(), [201, 301, 302, 303, 307, 308]);
+
+        $target = parse_url($response->headers->get('Location'));
         parse_str($target['query'] ?? '', $query);
 
         $this->assertStringEndsWith($expectedPath, $target['path'] ?? '');
