@@ -104,12 +104,28 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyUid.php' => 'The dedicated boundary around the legacy UID class.',
     ];
 
+    private array $legacyTrackingParametersForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters' => 'Use App\\Support\\LegacyTrackingParameters instead of importing the legacy tracking parameters class directly.',
+    ];
+
+    private array $legacyTrackingParametersAllowedFiles = [
+        'app/Support/LegacyTrackingParameters.php' => 'The dedicated boundary around the legacy tracking parameters class.',
+    ];
+
     private array $legacyLanderForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Lander' => 'Use App\\Support\\LegacyLander instead of importing the legacy lander class directly.',
     ];
 
     private array $legacyLanderAllowedFiles = [
         'app/Support/LegacyLander.php' => 'The dedicated boundary around the legacy lander class.',
+    ];
+
+    private array $legacyIpBlackListForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\IPBlackList' => 'Use App\\Support\\LegacyIPBlackList instead of importing the legacy IP blacklist class directly.',
+    ];
+
+    private array $legacyIpBlackListAllowedFiles = [
+        'app/Support/LegacyIPBlackList.php' => 'The dedicated boundary around the legacy IP blacklist class.',
     ];
 
     private array $legacyPayoutsForbiddenPatterns = [
@@ -126,6 +142,14 @@ class AuditLegacyFallbackCoverage extends Command
 
     private array $legacyDateAllowedFiles = [
         'app/Support/LegacyDate.php' => 'The dedicated boundary around the legacy date class.',
+    ];
+
+    private array $legacyPaginateForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Table\\Paginate' => 'Use App\\Support\\LegacyPaginate instead of importing the legacy paginate class directly.',
+    ];
+
+    private array $legacyPaginateAllowedFiles = [
+        'app/Support/LegacyPaginate.php' => 'The dedicated boundary around the legacy paginate class.',
     ];
 
     private array $legacyMailForbiddenPatterns = [
@@ -284,11 +308,29 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyTrackingParametersDependencyErrors = $this->legacyTrackingParametersDependencyErrors();
+
+        if ($legacyTrackingParametersDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy tracking parameters class directly:');
+            $legacyTrackingParametersDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyLanderDependencyErrors = $this->legacyLanderDependencyErrors();
 
         if ($legacyLanderDependencyErrors->isNotEmpty()) {
             $this->error('Modern Laravel code still imports the legacy lander class directly:');
             $legacyLanderDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyIpBlackListDependencyErrors = $this->legacyIpBlackListDependencyErrors();
+
+        if ($legacyIpBlackListDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy IP blacklist class directly:');
+            $legacyIpBlackListDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -307,6 +349,15 @@ class AuditLegacyFallbackCoverage extends Command
         if ($legacyDateDependencyErrors->isNotEmpty()) {
             $this->error('Modern Laravel code still imports the legacy date class directly:');
             $legacyDateDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyPaginateDependencyErrors = $this->legacyPaginateDependencyErrors();
+
+        if ($legacyPaginateDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy paginate class directly:');
+            $legacyPaginateDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -351,9 +402,12 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
+        $this->info('Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
+        $this->info('Modern Laravel code manages IP blacklist records through LegacyIPBlackList.');
         $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
         $this->info('Modern Laravel code resolves legacy date helpers through LegacyDate.');
+        $this->info('Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
@@ -876,6 +930,58 @@ class AuditLegacyFallbackCoverage extends Command
             ->values();
     }
 
+    private function legacyTrackingParametersDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyTrackingParametersDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyTrackingParametersDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyTrackingParametersAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyTrackingParametersForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
     private function legacyLanderDependencyErrors()
     {
         $sourceFiles = collect();
@@ -918,6 +1024,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyLanderForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyIpBlackListDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyIpBlackListDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyIpBlackListDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyIpBlackListAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyIpBlackListForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }
@@ -1022,6 +1180,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyDateForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyPaginateDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyPaginateDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyPaginateDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPaginateAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyPaginateForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

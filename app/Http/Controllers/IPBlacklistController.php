@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyIPBlackList as IPBlackList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use LeadMax\TrackYourStats\System\IPBlackList;
 use PDO;
 
 class IPBlacklistController extends Controller

@@ -7,6 +7,7 @@ use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\ClickIdToolController;
 use App\Http\Controllers\CompanySetupController;
 use App\Http\Controllers\DatabaseUpdateController;
+use App\Http\Controllers\IndexController;
 use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\OfferController;
 use App\Http\Controllers\ReportPermissionController;
@@ -316,6 +317,58 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Table\\Date',
             File::get(app_path('Support/LegacyDate.php'))
+        );
+    }
+
+    public function test_modern_paginate_reads_use_legacy_paginate_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/Report/ChatLogReportController.php'),
+            app_path('Http/Controllers/UserController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyPaginate as Paginate', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Paginate', $contents);
+        }
+
+        $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Paginate', $offerController);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Table\\Paginate',
+            File::get(app_path('Support/LegacyPaginate.php'))
+        );
+    }
+
+    public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
+    {
+        $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());
+
+        $this->assertStringContainsString('App\\Support\\LegacyTrackingParameters as TrackingParameters', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\TrackingParameters', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters',
+            File::get(app_path('Support/LegacyTrackingParameters.php'))
+        );
+    }
+
+    public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void
+    {
+        foreach ([
+            (new ReflectionClass(IndexController::class))->getFileName(),
+            (new ReflectionClass(IPBlacklistController::class))->getFileName(),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyIPBlackList as IPBlackList', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\IPBlackList', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\IPBlackList',
+            File::get(app_path('Support/LegacyIPBlackList.php'))
         );
     }
 

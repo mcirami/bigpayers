@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyPaginate as Paginate;
 use App\User;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Repositories\AffiliateChatLogRepository;
 use LeadMax\TrackYourStats\Report\Repositories\SaleLogRepository;
-use LeadMax\TrackYourStats\Table\Paginate;
 
 class ChatLogReportController extends ReportController
 {
@@ -60,7 +60,7 @@ class ChatLogReportController extends ReportController
 
 
         // Doesn't look like it was being used in legacy page
-        //paginate = new \LeadMax\TrackYourStats\Table\Paginate($rpp, $repo->count($d_from, $d_to));
+        // Pagination was not used in the legacy page.
 
 
         $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repo);

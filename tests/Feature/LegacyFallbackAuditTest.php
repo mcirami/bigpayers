@@ -65,7 +65,15 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code loads legacy landers through LegacyLander.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code manages IP blacklist records through LegacyIPBlackList.',
             $output
         );
         $this->assertStringContainsString(
@@ -74,6 +82,10 @@ class LegacyFallbackAuditTest extends TestCase
         );
         $this->assertStringContainsString(
             'Modern Laravel code resolves legacy date helpers through LegacyDate.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.',
             $output
         );
     }
@@ -322,9 +334,12 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyUidDependencyErrors',
+            'legacyTrackingParametersDependencyErrors',
             'legacyLanderDependencyErrors',
+            'legacyIpBlackListDependencyErrors',
             'legacyPayoutsDependencyErrors',
             'legacyDateDependencyErrors',
+            'legacyPaginateDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -512,6 +527,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_tracking_parameters_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyTrackingParametersDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\TrackingParameters;',
+                'app/Support/LegacyTrackingParameters.php' => 'use LeadMax\\TrackYourStats\\Clicks\\TrackingParameters;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyTrackingParameters as TrackingParameters;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyTrackingParameters instead of importing the legacy tracking parameters class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_lander_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -528,6 +564,27 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyLander instead of importing the legacy lander class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_ip_blacklist_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyIpBlackListDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\IPBlackList;',
+                'app/Support/LegacyIPBlackList.php' => 'use LeadMax\\TrackYourStats\\System\\IPBlackList;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyIPBlackList as IPBlackList;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyIPBlackList instead of importing the legacy IP blacklist class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -580,6 +637,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
+    public function test_legacy_paginate_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyPaginateDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Paginate;',
+                'app/Support/LegacyPaginate.php' => 'use LeadMax\\TrackYourStats\\Table\\Paginate;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPaginate as Paginate;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPaginate instead of importing the legacy paginate class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -593,9 +671,12 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyUidForbiddenPatterns',
+            'legacyTrackingParametersForbiddenPatterns',
             'legacyLanderForbiddenPatterns',
+            'legacyIpBlackListForbiddenPatterns',
             'legacyPayoutsForbiddenPatterns',
             'legacyDateForbiddenPatterns',
+            'legacyPaginateForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

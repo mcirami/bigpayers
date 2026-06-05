@@ -22,7 +22,6 @@ use Illuminate\Support\Facades\Request as InputRequest;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule as ValidationRule;
 use LeadMax\TrackYourStats\Offer\Campaigns;
-use LeadMax\TrackYourStats\Table\Paginate;
 
 class OfferController extends Controller
 {

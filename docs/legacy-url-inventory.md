@@ -380,9 +380,16 @@ Remaining cleanup is mostly archival and hardening:
   through `App\Support\LegacyUid`; unused legacy UID imports were removed from
   registration-event exceptions, and the fallback audit fails on new direct
   Laravel-side UID imports outside the boundary
+- modern tracking query normalization now resolves the legacy
+  `TrackingParameters` helper through `App\Support\LegacyTrackingParameters`;
+  the fallback audit fails on new direct Laravel-side tracking-parameter imports
+  outside the boundary
 - modern landing-page and lander-asset controllers now resolve the legacy
   `Lander` helper through `App\Support\LegacyLander`; the fallback audit fails
   on new direct Laravel-side lander imports outside the boundary
+- modern IP blacklist controllers now resolve the legacy `IPBlackList` helper
+  through `App\Support\LegacyIPBlackList`; the fallback audit fails on new
+  direct Laravel-side IP blacklist imports outside the boundary
 - modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
   through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
   Laravel-side payout imports outside the boundary
@@ -390,6 +397,10 @@ Remaining cleanup is mostly archival and hardening:
   resolve the legacy `Date` helper through `App\Support\LegacyDate`; the
   fallback audit fails on new direct Laravel-side date imports outside the
   boundary
+- modern pagination helper callers now resolve the legacy `Paginate` helper
+  through `App\Support\LegacyPaginate`; stale direct imports/comments were
+  removed, and the fallback audit fails on new direct Laravel-side paginate
+  imports outside the boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

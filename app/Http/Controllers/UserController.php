@@ -12,7 +12,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\Paginate;
+use App\Support\LegacyPaginate as Paginate;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\User\Bonus;
