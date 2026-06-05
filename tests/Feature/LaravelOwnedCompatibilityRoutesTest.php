@@ -194,6 +194,30 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_click_geo_reads_use_legacy_click_geo_boundary(): void
+    {
+        foreach ([
+            app_path('Console/Commands/BackfillClicksGeoFromIp.php'),
+            app_path('Http/Controllers/ClickSearchController.php'),
+            app_path('Http/Controllers/ExportDataController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
+            app_path('Http/Traits/ClickTraits.php'),
+            app_path('Services/ClickGeoCacheService.php'),
+            app_path('Services/CountryReportBuilderService.php'),
+            app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyClickGeo as ClickGeo', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\ClickGeo', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\ClickGeo',
+            File::get(app_path('Support/LegacyClickGeo.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([

@@ -373,6 +373,9 @@ Remaining cleanup is mostly archival and hardening:
 - the fallback audit now fails if modern Laravel code imports the legacy
   permission class directly outside the `App\Support\LegacyPermissions`
   boundary
+- modern Laravel geo lookup callers now resolve the legacy `ClickGeo` helper
+  through `App\Support\LegacyClickGeo`; the fallback audit fails if Laravel-side
+  code imports the legacy `ClickGeo` class directly outside that boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

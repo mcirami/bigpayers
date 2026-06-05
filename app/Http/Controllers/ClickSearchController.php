@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyClickGeo as ClickGeo;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 use LeadMax\TrackYourStats\Clicks\ClickSearcher;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\UID;

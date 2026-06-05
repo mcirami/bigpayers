@@ -56,6 +56,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern Laravel code reads legacy permission metadata through LegacyPermissions.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -300,6 +304,7 @@ class LegacyFallbackAuditTest extends TestCase
             'modernRetiredScriptReferenceErrors',
             'retiredCompanySessionDependencyErrors',
             'legacyPermissionsDependencyErrors',
+            'legacyClickGeoDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -445,6 +450,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_click_geo_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyClickGeoDependencyErrorsFor',
+            [[
+                'app/Services/BadService.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
+                'app/Support/LegacyClickGeo.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickGeo as ClickGeo;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Services/BadService.php: Use App\\Support\\LegacyClickGeo instead of importing the legacy ClickGeo class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -456,6 +482,7 @@ class LegacyFallbackAuditTest extends TestCase
             'retiredCompanySessionForbiddenPatterns',
             'legacySessionForbiddenPatterns',
             'legacyPermissionsForbiddenPatterns',
+            'legacyClickGeoForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

@@ -9,6 +9,7 @@ use App\User;
 use App\Conversion;
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyClickGeo as ClickGeo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\Offer\Payouts;

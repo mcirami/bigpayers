@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\ClickGeoCache;
+use App\Support\LegacyClickGeo as ClickGeo;
 use Illuminate\Support\Collection;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
 
 class ClickGeoCacheService {
 	/**
