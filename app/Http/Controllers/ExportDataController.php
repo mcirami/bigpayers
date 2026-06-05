@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Click;
-use App\ClickGeoCache;
 use App\Exports\ClicksExport;
 use App\Exports\OfferDataExport;
 use App\Exports\AffDataExport;
 use App\Exports\CountryClicksExport;
 use App\Privilege;
 use App\Http\Controllers\Report\ReportController;
-use App\Support\LegacyClickGeo as ClickGeo;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Traits\ClickTraits;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;

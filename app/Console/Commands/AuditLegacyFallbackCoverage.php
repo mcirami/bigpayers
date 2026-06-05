@@ -104,6 +104,14 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyUid.php' => 'The dedicated boundary around the legacy UID class.',
     ];
 
+    private array $legacyLanderForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\Lander' => 'Use App\\Support\\LegacyLander instead of importing the legacy lander class directly.',
+    ];
+
+    private array $legacyLanderAllowedFiles = [
+        'app/Support/LegacyLander.php' => 'The dedicated boundary around the legacy lander class.',
+    ];
+
     private array $legacyMailForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
     ];
@@ -260,6 +268,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyLanderDependencyErrors = $this->legacyLanderDependencyErrors();
+
+        if ($legacyLanderDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy lander class directly:');
+            $legacyLanderDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyMailDependencyErrors = $this->legacyMailDependencyErrors();
 
         if ($legacyMailDependencyErrors->isNotEmpty()) {
@@ -300,6 +317,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
+        $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
@@ -812,6 +830,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyUidForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyLanderDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyLanderDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyLanderDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyLanderAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyLanderForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

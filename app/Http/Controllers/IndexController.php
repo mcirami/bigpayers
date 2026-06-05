@@ -10,7 +10,7 @@ use LeadMax\TrackYourStats\Clicks\PostBackURLEventHandler;
 use LeadMax\TrackYourStats\Clicks\TrackingParameters;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
 use LeadMax\TrackYourStats\System\IPBlackList;
-use LeadMax\TrackYourStats\System\Lander;
+use App\Support\LegacyLander as Lander;
 
 class IndexController extends Controller
 {

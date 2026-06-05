@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\LegacyLander as Lander;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\File;
-use LeadMax\TrackYourStats\System\Lander;
 
 class LanderController extends Controller
 {

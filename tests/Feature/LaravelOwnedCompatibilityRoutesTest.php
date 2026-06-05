@@ -199,12 +199,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Console/Commands/BackfillClicksGeoFromIp.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
-            app_path('Http/Controllers/ExportDataController.php'),
             app_path('Http/Controllers/Report/SubReportController.php'),
             app_path('Http/Traits/ClickTraits.php'),
             app_path('Services/ClickGeoCacheService.php'),
             app_path('Services/CountryReportBuilderService.php'),
-            app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -243,6 +241,24 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Clicks\\UID',
             File::get(app_path('Support/LegacyUid.php'))
+        );
+    }
+
+    public function test_modern_lander_reads_use_legacy_lander_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/IndexController.php'),
+            app_path('Http/Controllers/LanderController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyLander as Lander', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Lander', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\Lander',
+            File::get(app_path('Support/LegacyLander.php'))
         );
     }
 

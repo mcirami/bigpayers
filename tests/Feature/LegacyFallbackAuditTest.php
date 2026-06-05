@@ -64,6 +64,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern Laravel code encodes legacy click IDs through LegacyUid.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code loads legacy landers through LegacyLander.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -310,6 +314,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyUidDependencyErrors',
+            'legacyLanderDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -497,6 +502,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_lander_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyLanderDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Lander;',
+                'app/Support/LegacyLander.php' => 'use LeadMax\\TrackYourStats\\System\\Lander;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyLander as Lander;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyLander instead of importing the legacy lander class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -510,6 +536,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyUidForbiddenPatterns',
+            'legacyLanderForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

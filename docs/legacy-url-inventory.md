@@ -380,6 +380,9 @@ Remaining cleanup is mostly archival and hardening:
   through `App\Support\LegacyUid`; unused legacy UID imports were removed from
   registration-event exceptions, and the fallback audit fails on new direct
   Laravel-side UID imports outside the boundary
+- modern landing-page and lander-asset controllers now resolve the legacy
+  `Lander` helper through `App\Support\LegacyLander`; the fallback audit fails
+  on new direct Laravel-side lander imports outside the boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers
