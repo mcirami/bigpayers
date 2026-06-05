@@ -367,6 +367,32 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
+    public function test_legacy_session_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacySessionDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Session;',
+                'src/BadHelper.php' => '\\LeadMax\\TrackYourStats\\System\\Session::userID();',
+                'app/Support/CurrentUserSession.php' => 'use LeadMax\\TrackYourStats\\System\\Session;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\CurrentUserSession;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\CurrentUserSession instead of importing the legacy session class directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadHelper.php: Use App\\Support\\CurrentUserSession instead of importing the legacy session class directly.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -376,6 +402,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapRequiredPatterns',
             'legacyBootstrapForbiddenPatterns',
             'retiredCompanySessionForbiddenPatterns',
+            'legacySessionForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 

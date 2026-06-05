@@ -72,6 +72,14 @@ class AuditLegacyFallbackCoverage extends Command
         'Company::loadFromSession()' => 'Use App\\Company current-company helpers instead of the legacy session company loader.',
     ];
 
+    private array $legacySessionForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\Session' => 'Use App\\Support\\CurrentUserSession instead of importing the legacy session class directly.',
+    ];
+
+    private array $legacySessionAllowedFiles = [
+        'app/Support/CurrentUserSession.php' => 'The dedicated boundary around the legacy session class.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = $this->legacyPhpFiles();
@@ -184,6 +192,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacySessionDependencyErrors = $this->legacySessionDependencyErrors();
+
+        if ($legacySessionDependencyErrors->isNotEmpty()) {
+            $this->error('Runtime code still imports the legacy session class directly:');
+            $legacySessionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
@@ -211,6 +228,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');
+        $this->info('Runtime code reads current user/session state through CurrentUserSession.');
 
         return self::SUCCESS;
     }
@@ -461,6 +479,59 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->retiredCompanySessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacySessionDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+            'src',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacySessionDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacySessionDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacySessionAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacySessionForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

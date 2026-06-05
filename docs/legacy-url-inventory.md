@@ -351,6 +351,8 @@ Remaining cleanup is mostly archival and hardening:
   offer URL dropdown/query support
 - the fallback audit now fails if runtime code reintroduces the retired legacy
   company class import or `Company::loadFromSession()` dependency
+- the fallback audit now fails if runtime code imports the legacy session class
+  directly outside the `App\Support\CurrentUserSession` boundary
 - dashboard shell, legacy master, home, and branded error views now receive
   current user/session values from Laravel view data instead of reading the
   legacy session class directly in Blade
