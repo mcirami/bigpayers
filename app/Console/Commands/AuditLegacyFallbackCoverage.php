@@ -80,6 +80,22 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/CurrentUserSession.php' => 'The dedicated boundary around the legacy session class.',
     ];
 
+    private array $legacyPermissionsForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\User\\Permissions' => 'Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
+    ];
+
+    private array $legacyPermissionsAllowedFiles = [
+        'app/Support/LegacyPermissions.php' => 'The dedicated boundary around the legacy permissions class.',
+    ];
+
+    private array $legacyMailForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
+    ];
+
+    private array $legacyMailAllowedFiles = [
+        'app/Support/LegacyMail.php' => 'The dedicated boundary around the legacy mail class.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = $this->legacyPhpFiles();
@@ -201,6 +217,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyPermissionsDependencyErrors = $this->legacyPermissionsDependencyErrors();
+
+        if ($legacyPermissionsDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy permissions class directly:');
+            $legacyPermissionsDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyMailDependencyErrors = $this->legacyMailDependencyErrors();
+
+        if ($legacyMailDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy mail class directly:');
+            $legacyMailDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
@@ -229,6 +263,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
+        $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
+        $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
     }
@@ -532,6 +568,110 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacySessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyMailDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyMailDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyMailDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyMailAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyMailForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyPermissionsDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyPermissionsDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyPermissionsDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPermissionsAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyPermissionsForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

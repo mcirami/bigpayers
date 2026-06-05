@@ -370,6 +370,14 @@ Remaining cleanup is mostly archival and hardening:
 - modern routes/controllers and the offer-click repository now read legacy
   permission constants/static helpers through `App\Support\LegacyPermissions`
   instead of importing the legacy permission class directly
+- the fallback audit now fails if modern Laravel code imports the legacy
+  permission class directly outside the `App\Support\LegacyPermissions`
+  boundary
+- notification and forgot-password mail sends now construct the legacy mailer
+  through `App\Support\LegacyMail` instead of importing the legacy mail class
+  directly in controllers
+- the fallback audit now fails if modern Laravel code imports the legacy mailer
+  directly outside the `App\Support\LegacyMail` boundary
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

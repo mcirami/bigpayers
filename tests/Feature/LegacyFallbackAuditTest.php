@@ -48,6 +48,14 @@ class LegacyFallbackAuditTest extends TestCase
             'Runtime code does not reference the retired legacy company session loader.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code sends legacy mail through LegacyMail.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code reads legacy permission metadata through LegacyPermissions.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -291,6 +299,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
             'retiredCompanySessionDependencyErrors',
+            'legacyPermissionsDependencyErrors',
+            'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
             'allowedNonLegacyPhpRouteInventoryErrors',
@@ -393,6 +403,48 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
+    public function test_legacy_mail_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyMailDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Mail;',
+                'app/Support/LegacyMail.php' => 'use LeadMax\\TrackYourStats\\System\\Mail;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyMail as Mail;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_permissions_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyPermissionsDependencyErrorsFor',
+            [[
+                'routes/web.php' => 'use LeadMax\\TrackYourStats\\User\\Permissions;',
+                'app/Support/LegacyPermissions.php' => 'use LeadMax\\TrackYourStats\\User\\Permissions;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPermissions as Permissions;',
+            ]]
+        );
+
+        $this->assertContains(
+            'routes/web.php: Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -403,6 +455,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapForbiddenPatterns',
             'retiredCompanySessionForbiddenPatterns',
             'legacySessionForbiddenPatterns',
+            'legacyPermissionsForbiddenPatterns',
+            'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 

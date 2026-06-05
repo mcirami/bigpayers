@@ -176,6 +176,24 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_mail_reads_use_legacy_mail_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/LegacyCompatibilityController.php'),
+            app_path('Http/Controllers/NotificationController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyMail as Mail', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Mail', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\Mail',
+            File::get(app_path('Support/LegacyMail.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([

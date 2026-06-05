@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use LeadMax\TrackYourStats\System\Mail;
+use App\Support\LegacyMail as Mail;
 use App\Support\LegacyPermissions as Permissions;
 
 class NotificationController extends Controller
