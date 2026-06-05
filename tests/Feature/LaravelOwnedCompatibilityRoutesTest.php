@@ -218,6 +218,34 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_click_id_reads_use_legacy_uid_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/ClickIdToolController.php'),
+            app_path('Http/Controllers/ClickSearchController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyUid as UID', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\UID', $contents);
+        }
+
+        foreach ([
+            app_path('Exceptions/RegistrationEventExceptions/ClickConvertedException.php'),
+            app_path('Exceptions/RegistrationEventExceptions/InvalidClickException.php'),
+        ] as $path) {
+            $this->assertStringNotContainsString(
+                'LeadMax\\TrackYourStats\\Clicks\\UID',
+                File::get($path)
+            );
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\UID',
+            File::get(app_path('Support/LegacyUid.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([

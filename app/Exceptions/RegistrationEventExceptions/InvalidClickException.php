@@ -3,8 +3,6 @@
 namespace App\Exceptions\RegistrationEventExceptions;
 
 use Exception;
-use LeadMax\TrackYourStats\Clicks\UID;
-use Throwable;
 
 class InvalidClickException extends Exception
 {

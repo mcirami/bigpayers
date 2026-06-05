@@ -60,6 +60,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code encodes legacy click IDs through LegacyUid.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -305,6 +309,7 @@ class LegacyFallbackAuditTest extends TestCase
             'retiredCompanySessionDependencyErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
+            'legacyUidDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -471,6 +476,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_uid_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyUidDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\UID;',
+                'app/Support/LegacyUid.php' => 'use LeadMax\\TrackYourStats\\Clicks\\UID;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyUid as UID;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyUid instead of importing the legacy UID class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -483,6 +509,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacySessionForbiddenPatterns',
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
+            'legacyUidForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

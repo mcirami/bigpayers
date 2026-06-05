@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\LegacyUid as UID;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Clicks\UID;
 
 class ClickIdToolController extends Controller
 {
