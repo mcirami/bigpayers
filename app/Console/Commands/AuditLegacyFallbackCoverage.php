@@ -112,6 +112,14 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyLander.php' => 'The dedicated boundary around the legacy lander class.',
     ];
 
+    private array $legacyPayoutsForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\Payouts' => 'Use App\\Support\\LegacyPayouts instead of importing the legacy payouts class directly.',
+    ];
+
+    private array $legacyPayoutsAllowedFiles = [
+        'app/Support/LegacyPayouts.php' => 'The dedicated boundary around the legacy payouts class.',
+    ];
+
     private array $legacyMailForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
     ];
@@ -277,6 +285,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyPayoutsDependencyErrors = $this->legacyPayoutsDependencyErrors();
+
+        if ($legacyPayoutsDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy payouts class directly:');
+            $legacyPayoutsDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyMailDependencyErrors = $this->legacyMailDependencyErrors();
 
         if ($legacyMailDependencyErrors->isNotEmpty()) {
@@ -318,6 +335,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
+        $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
@@ -882,6 +900,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyLanderForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyPayoutsDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyPayoutsDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyPayoutsDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPayoutsAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyPayoutsForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

@@ -12,7 +12,7 @@ use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 
 class ConversionReportController extends ReportController
 {

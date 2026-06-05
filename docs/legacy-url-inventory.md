@@ -383,6 +383,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern landing-page and lander-asset controllers now resolve the legacy
   `Lander` helper through `App\Support\LegacyLander`; the fallback audit fails
   on new direct Laravel-side lander imports outside the boundary
+- modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
+  through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
+  Laravel-side payout imports outside the boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

@@ -68,6 +68,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern Laravel code loads legacy landers through LegacyLander.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy payout helpers through LegacyPayouts.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -315,6 +319,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyClickGeoDependencyErrors',
             'legacyUidDependencyErrors',
             'legacyLanderDependencyErrors',
+            'legacyPayoutsDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -523,6 +528,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_payouts_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyPayoutsDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\Payouts;',
+                'app/Support/LegacyPayouts.php' => 'use LeadMax\\TrackYourStats\\Offer\\Payouts;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPayouts as Payouts;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPayouts instead of importing the legacy payouts class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -537,6 +563,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyClickGeoForbiddenPatterns',
             'legacyUidForbiddenPatterns',
             'legacyLanderForbiddenPatterns',
+            'legacyPayoutsForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

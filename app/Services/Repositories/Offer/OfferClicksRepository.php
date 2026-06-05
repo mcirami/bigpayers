@@ -12,7 +12,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use LaravelIdea\Helper\App\_IH_Click_C;
 use App\Support\LegacyPermissions as Permissions;
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 use App\Http\Traits\ClickTraits;
 use App\Support\CurrentUserSession;
 

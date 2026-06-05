@@ -262,6 +262,27 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_payout_reads_use_legacy_payouts_boundary(): void
+    {
+        foreach ([
+            app_path('Click.php'),
+            app_path('Http/Controllers/Report/ClickReportController.php'),
+            app_path('Http/Controllers/Report/ConversionReportController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
+            app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyPayouts as Payouts', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Payouts', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\Payouts',
+            File::get(app_path('Support/LegacyPayouts.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([

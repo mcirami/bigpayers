@@ -6,7 +6,7 @@ use App\Click;
 use App\Offer;
 use App\Privilege;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\User;
 use Carbon\Carbon;

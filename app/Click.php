@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
 
 /**
