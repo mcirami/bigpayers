@@ -72,6 +72,10 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern Laravel code resolves legacy payout helpers through LegacyPayouts.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy date helpers through LegacyDate.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -320,6 +324,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyUidDependencyErrors',
             'legacyLanderDependencyErrors',
             'legacyPayoutsDependencyErrors',
+            'legacyDateDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -549,6 +554,32 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_date_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyDateDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Date;',
+                'resources/views/report/bad.blade.php' => 'new LeadMax\\TrackYourStats\\Table\\Date;',
+                'app/Support/LegacyDate.php' => 'use LeadMax\\TrackYourStats\\Table\\Date;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyDate as Date;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'resources/views/report/bad.blade.php: Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -564,6 +595,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyUidForbiddenPatterns',
             'legacyLanderForbiddenPatterns',
             'legacyPayoutsForbiddenPatterns',
+            'legacyDateForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

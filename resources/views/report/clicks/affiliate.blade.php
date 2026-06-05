@@ -67,7 +67,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			@php $myReport = new LeadMax\TrackYourStats\Table\Date;  @endphp
+			@php $myReport = new \App\Support\LegacyDate;  @endphp
 			@foreach($report as $row)
 				@php 
 					$timestamp = $myReport->convertToEST($row->timestamp);

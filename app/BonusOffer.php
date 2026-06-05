@@ -2,8 +2,8 @@
 
 namespace App;
 
+use App\Support\LegacyDate as Date;
 use Illuminate\Database\Eloquent\Model;
-use LeadMax\TrackYourStats\Table\Date;
 
 /**
  * App\BonusOffer

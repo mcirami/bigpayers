@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Report;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
-use LeadMax\TrackYourStats\Table\Date;
+use App\Support\LegacyDate as Date;
 
 class ReportController extends Controller
 {

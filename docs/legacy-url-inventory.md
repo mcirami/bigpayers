@@ -386,6 +386,10 @@ Remaining cleanup is mostly archival and hardening:
 - modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
   through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
   Laravel-side payout imports outside the boundary
+- modern report date helpers and report Blade date helper instantiations now
+  resolve the legacy `Date` helper through `App\Support\LegacyDate`; the
+  fallback audit fails on new direct Laravel-side date imports outside the
+  boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

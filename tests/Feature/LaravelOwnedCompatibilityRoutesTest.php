@@ -283,6 +283,42 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_date_reads_use_legacy_date_boundary(): void
+    {
+        foreach ([
+            app_path('BonusOffer.php'),
+            app_path('Console/Commands/AggregateReportData.php'),
+            app_path('Console/Commands/PayoutLogsRun.php'),
+            app_path('Http/Controllers/Report/ReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDate as Date', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Date', $contents);
+        }
+
+        $userController = File::get(app_path('Http/Controllers/UserController.php'));
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Date', $userController);
+
+        foreach ([
+            resource_path('views/report/clicks/affiliate.blade.php'),
+            resource_path('views/report/clicks/offer.blade.php'),
+            resource_path('views/report/clicks/subid.blade.php'),
+            resource_path('views/report/clicks/subid-in-country.blade.php'),
+            resource_path('views/report/conversions/affiliate.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDate', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Date', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Table\\Date',
+            File::get(app_path('Support/LegacyDate.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([
