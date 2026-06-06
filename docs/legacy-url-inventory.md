@@ -390,6 +390,13 @@ Remaining cleanup is mostly archival and hardening:
 - modern IP blacklist controllers now resolve the legacy `IPBlackList` helper
   through `App\Support\LegacyIPBlackList`; the fallback audit fails on new
   direct Laravel-side IP blacklist imports outside the boundary
+- modern sale-log image uploads now resolve the legacy `ImagesUploader` helper
+  through `App\Support\LegacyImagesUploader`; the fallback audit fails on new
+  direct Laravel-side image uploader imports outside the boundary
+- modern notification view composers and offer-approval notifications now
+  resolve the legacy `Notifications` helper through
+  `App\Support\LegacyNotifications`; the fallback audit fails on new direct
+  Laravel-side notifications imports outside the boundary
 - modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
   through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
   Laravel-side payout imports outside the boundary

@@ -10,6 +10,7 @@ use App\OfferURL;
 use App\PredefinedOfferRule;
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyNotifications as Notifications;
 use App\User;
 use App\UserOffer;
 use Carbon\Carbon;
@@ -49,7 +50,7 @@ class OfferController extends Controller
             return redirect('/notifications')->withErrors(['offer' => 'Error assigning user to offer.']);
         }
 
-        \LeadMax\TrackYourStats\System\Notifications::sendNotification(
+        Notifications::sendNotification(
             $userId,
             1,
             "Offer '{$offer->offer_name}' approved.",

@@ -77,6 +77,14 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code uploads sale-log images through LegacyImagesUploader.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code reads and sends notifications through LegacyNotifications.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code resolves legacy payout helpers through LegacyPayouts.',
             $output
         );
@@ -337,6 +345,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyTrackingParametersDependencyErrors',
             'legacyLanderDependencyErrors',
             'legacyIpBlackListDependencyErrors',
+            'legacyImagesUploaderDependencyErrors',
+            'legacyNotificationsDependencyErrors',
             'legacyPayoutsDependencyErrors',
             'legacyDateDependencyErrors',
             'legacyPaginateDependencyErrors',
@@ -590,6 +600,48 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_images_uploader_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyImagesUploaderDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader;',
+                'app/Support/LegacyImagesUploader.php' => 'use LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyImagesUploader as ImagesUploader;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyImagesUploader instead of importing the legacy image uploader class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_notifications_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyNotificationsDependencyErrorsFor',
+            [[
+                'app/Providers/BadProvider.php' => 'use LeadMax\\TrackYourStats\\System\\Notifications;',
+                'app/Support/LegacyNotifications.php' => 'use LeadMax\\TrackYourStats\\System\\Notifications;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyNotifications as Notifications;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Providers/BadProvider.php: Use App\\Support\\LegacyNotifications instead of importing the legacy notifications class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_payouts_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -674,6 +726,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyTrackingParametersForbiddenPatterns',
             'legacyLanderForbiddenPatterns',
             'legacyIpBlackListForbiddenPatterns',
+            'legacyImagesUploaderForbiddenPatterns',
+            'legacyNotificationsForbiddenPatterns',
             'legacyPayoutsForbiddenPatterns',
             'legacyDateForbiddenPatterns',
             'legacyPaginateForbiddenPatterns',

@@ -14,6 +14,7 @@ use App\Http\Controllers\ReportPermissionController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SignupController;
 use App\Http\Middleware\VerifyCsrfToken;
+use App\Providers\AppServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -369,6 +370,37 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\System\\IPBlackList',
             File::get(app_path('Support/LegacyIPBlackList.php'))
+        );
+    }
+
+    public function test_modern_sale_log_image_uploads_use_legacy_images_uploader_boundary(): void
+    {
+        $controller = File::get((new ReflectionClass(ChatLogController::class))->getFileName());
+
+        $this->assertStringContainsString('App\\Support\\LegacyImagesUploader as ImagesUploader', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader',
+            File::get(app_path('Support/LegacyImagesUploader.php'))
+        );
+    }
+
+    public function test_modern_notification_reads_use_legacy_notifications_boundary(): void
+    {
+        foreach ([
+            (new ReflectionClass(AppServiceProvider::class))->getFileName(),
+            (new ReflectionClass(OfferController::class))->getFileName(),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyNotifications as Notifications', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Notifications', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\Notifications',
+            File::get(app_path('Support/LegacyNotifications.php'))
         );
     }
 

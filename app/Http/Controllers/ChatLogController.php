@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Offer;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyImagesUploader as ImagesUploader;
 use Illuminate\Http\Request;
 use LeadMax\TrackYourStats\Clicks\Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\PendingConversion;
 use LeadMax\TrackYourStats\Offer\SaleLog;
-use LeadMax\TrackYourStats\System\Files\ImagesUploader;
 use App\Support\LegacyPermissions as Permissions;
 
 class ChatLogController extends Controller
