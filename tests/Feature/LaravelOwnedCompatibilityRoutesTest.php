@@ -231,6 +231,25 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_conversion_reads_use_legacy_conversion_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/AdjustmentsController.php'),
+            app_path('Http/Controllers/ChatLogController.php'),
+            app_path('Http/Controllers/ClickSearchController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyConversion as Conversion', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\Conversion', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\Conversion',
+            File::get(app_path('Support/LegacyConversion.php'))
+        );
+    }
+
     public function test_modern_click_id_reads_use_legacy_uid_boundary(): void
     {
         foreach ([

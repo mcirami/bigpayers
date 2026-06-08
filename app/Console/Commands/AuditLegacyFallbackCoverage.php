@@ -104,6 +104,14 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyClickSearcher.php' => 'The dedicated boundary around the legacy click searcher class.',
     ];
 
+    private array $legacyConversionForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Clicks\\Conversion' => 'Use App\\Support\\LegacyConversion instead of importing the legacy conversion class directly.',
+    ];
+
+    private array $legacyConversionAllowedFiles = [
+        'app/Support/LegacyConversion.php' => 'The dedicated boundary around the legacy conversion class.',
+    ];
+
     private array $legacyPostBackUrlEventHandlerForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler' => 'Use App\\Support\\LegacyPostBackURLEventHandler instead of importing the legacy postback URL event handler directly.',
     ];
@@ -364,6 +372,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyConversionDependencyErrors = $this->legacyConversionDependencyErrors();
+
+        if ($legacyConversionDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy conversion class directly:');
+            $legacyConversionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyPostBackUrlEventHandlerDependencyErrors = $this->legacyPostBackUrlEventHandlerDependencyErrors();
 
         if ($legacyPostBackUrlEventHandlerDependencyErrors->isNotEmpty()) {
@@ -521,6 +538,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.');
+        $this->info('Modern Laravel code resolves legacy conversion helpers through LegacyConversion.');
         $this->info('Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.');
         $this->info('Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.');
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
@@ -1046,6 +1064,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyClickSearcherForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyConversionDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyConversionDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyConversionDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyConversionAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyConversionForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

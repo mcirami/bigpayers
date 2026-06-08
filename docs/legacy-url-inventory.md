@@ -379,6 +379,10 @@ Remaining cleanup is mostly archival and hardening:
 - modern click-search lookup queries now resolve the legacy `ClickSearcher`
   helper through `App\Support\LegacyClickSearcher`; the fallback audit fails on
   new direct Laravel-side click searcher imports outside the boundary
+- modern click-search, adjustment, and chat-log conversion reads now resolve the
+  legacy `Conversion` helper through `App\Support\LegacyConversion`; the
+  fallback audit fails on new direct Laravel-side conversion imports outside the
+  boundary
 - modern landing-page postback and click-registration entrypoints now resolve
   the legacy `PostBackURLEventHandler` and `ClickRegistrationEvent` classes
   through `App\Support` boundaries; the fallback audit fails on new direct

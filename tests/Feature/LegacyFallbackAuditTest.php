@@ -65,6 +65,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy conversion helpers through LegacyConversion.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.',
             $output
         );
@@ -362,6 +366,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickSearcherDependencyErrors',
+            'legacyConversionDependencyErrors',
             'legacyPostBackUrlEventHandlerDependencyErrors',
             'legacyClickRegistrationEventDependencyErrors',
             'legacyUidDependencyErrors',
@@ -557,6 +562,27 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickSearcher instead of importing the legacy click searcher class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_conversion_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyConversionDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Conversion;',
+                'app/Support/LegacyConversion.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Conversion;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyConversion as Conversion;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyConversion instead of importing the legacy conversion class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -853,6 +879,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyClickSearcherForbiddenPatterns',
+            'legacyConversionForbiddenPatterns',
             'legacyPostBackUrlEventHandlerForbiddenPatterns',
             'legacyClickRegistrationEventForbiddenPatterns',
             'legacyUidForbiddenPatterns',
