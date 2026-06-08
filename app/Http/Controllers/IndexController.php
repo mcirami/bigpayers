@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
 use App\Support\LegacyIPBlackList as IPBlackList;
 use App\Support\LegacyLander as Lander;
+use App\Support\LegacyPostBackURLEventHandler as PostBackURLEventHandler;
 use App\Support\LegacyTrackingParameters as TrackingParameters;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Clicks\PostBackURLEventHandler;
-use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
 
 class IndexController extends Controller
 {

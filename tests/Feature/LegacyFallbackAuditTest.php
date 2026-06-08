@@ -65,6 +65,14 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code encodes legacy click IDs through LegacyUid.',
             $output
         );
@@ -354,6 +362,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickSearcherDependencyErrors',
+            'legacyPostBackUrlEventHandlerDependencyErrors',
+            'legacyClickRegistrationEventDependencyErrors',
             'legacyUidDependencyErrors',
             'legacyTrackingParametersDependencyErrors',
             'legacyLanderDependencyErrors',
@@ -547,6 +557,48 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickSearcher instead of importing the legacy click searcher class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_postback_url_event_handler_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyPostBackUrlEventHandlerDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler;',
+                'app/Support/LegacyPostBackURLEventHandler.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPostBackURLEventHandler instead of importing the legacy postback URL event handler directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_click_registration_event_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyClickRegistrationEventDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent;',
+                'app/Support/LegacyClickRegistrationEvent.php' => 'use LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickRegistrationEvent instead of importing the legacy click registration event directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -801,6 +853,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyClickSearcherForbiddenPatterns',
+            'legacyPostBackUrlEventHandlerForbiddenPatterns',
+            'legacyClickRegistrationEventForbiddenPatterns',
             'legacyUidForbiddenPatterns',
             'legacyTrackingParametersForbiddenPatterns',
             'legacyLanderForbiddenPatterns',

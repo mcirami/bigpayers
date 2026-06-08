@@ -104,6 +104,22 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyClickSearcher.php' => 'The dedicated boundary around the legacy click searcher class.',
     ];
 
+    private array $legacyPostBackUrlEventHandlerForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler' => 'Use App\\Support\\LegacyPostBackURLEventHandler instead of importing the legacy postback URL event handler directly.',
+    ];
+
+    private array $legacyPostBackUrlEventHandlerAllowedFiles = [
+        'app/Support/LegacyPostBackURLEventHandler.php' => 'The dedicated boundary around the legacy postback URL event handler.',
+    ];
+
+    private array $legacyClickRegistrationEventForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent' => 'Use App\\Support\\LegacyClickRegistrationEvent instead of importing the legacy click registration event directly.',
+    ];
+
+    private array $legacyClickRegistrationEventAllowedFiles = [
+        'app/Support/LegacyClickRegistrationEvent.php' => 'The dedicated boundary around the legacy click registration event.',
+    ];
+
     private array $legacyUidForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Clicks\\UID' => 'Use App\\Support\\LegacyUid instead of importing the legacy UID class directly.',
     ];
@@ -348,6 +364,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyPostBackUrlEventHandlerDependencyErrors = $this->legacyPostBackUrlEventHandlerDependencyErrors();
+
+        if ($legacyPostBackUrlEventHandlerDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy postback URL event handler directly:');
+            $legacyPostBackUrlEventHandlerDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyClickRegistrationEventDependencyErrors = $this->legacyClickRegistrationEventDependencyErrors();
+
+        if ($legacyClickRegistrationEventDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy click registration event directly:');
+            $legacyClickRegistrationEventDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyUidDependencyErrors = $this->legacyUidDependencyErrors();
 
         if ($legacyUidDependencyErrors->isNotEmpty()) {
@@ -487,6 +521,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.');
+        $this->info('Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.');
+        $this->info('Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.');
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
         $this->info('Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
@@ -1010,6 +1046,110 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyClickSearcherForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyPostBackUrlEventHandlerDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyPostBackUrlEventHandlerDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyPostBackUrlEventHandlerDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPostBackUrlEventHandlerAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyPostBackUrlEventHandlerForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyClickRegistrationEventDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyClickRegistrationEventDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyClickRegistrationEventDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickRegistrationEventAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyClickRegistrationEventForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

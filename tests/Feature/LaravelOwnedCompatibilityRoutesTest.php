@@ -381,6 +381,25 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_index_click_registration_uses_legacy_event_boundaries(): void
+    {
+        $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());
+
+        $this->assertStringContainsString('App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler', $controller);
+        $this->assertStringContainsString('App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler',
+            File::get(app_path('Support/LegacyPostBackURLEventHandler.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent',
+            File::get(app_path('Support/LegacyClickRegistrationEvent.php'))
+        );
+    }
+
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void
     {
         foreach ([

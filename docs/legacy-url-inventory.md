@@ -379,6 +379,10 @@ Remaining cleanup is mostly archival and hardening:
 - modern click-search lookup queries now resolve the legacy `ClickSearcher`
   helper through `App\Support\LegacyClickSearcher`; the fallback audit fails on
   new direct Laravel-side click searcher imports outside the boundary
+- modern landing-page postback and click-registration entrypoints now resolve
+  the legacy `PostBackURLEventHandler` and `ClickRegistrationEvent` classes
+  through `App\Support` boundaries; the fallback audit fails on new direct
+  Laravel-side imports outside those boundaries
 - modern click ID encode/decode callers now resolve the legacy `UID` helper
   through `App\Support\LegacyUid`; unused legacy UID imports were removed from
   registration-event exceptions, and the fallback audit fails on new direct
