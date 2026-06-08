@@ -5,12 +5,12 @@ namespace App\Providers;
 use App\Company;
 use App\Observers\UserObserver;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyNavBar as NavBar;
 use App\Support\LegacyNotifications as Notifications;
 use App\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use LeadMax\TrackYourStats\System\NavBar;
 use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider

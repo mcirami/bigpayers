@@ -387,6 +387,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern landing-page and lander-asset controllers now resolve the legacy
   `Lander` helper through `App\Support\LegacyLander`; the fallback audit fails
   on new direct Laravel-side lander imports outside the boundary
+- modern dashboard navigation composition now resolves the legacy `NavBar`
+  helper through `App\Support\LegacyNavBar`; the fallback audit fails on new
+  direct Laravel-side navigation imports outside the boundary
 - modern IP blacklist controllers now resolve the legacy `IPBlackList` helper
   through `App\Support\LegacyIPBlackList`; the fallback audit fails on new
   direct Laravel-side IP blacklist imports outside the boundary

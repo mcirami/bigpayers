@@ -120,6 +120,14 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyLander.php' => 'The dedicated boundary around the legacy lander class.',
     ];
 
+    private array $legacyNavBarForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\NavBar' => 'Use App\\Support\\LegacyNavBar instead of importing the legacy navigation class directly.',
+    ];
+
+    private array $legacyNavBarAllowedFiles = [
+        'app/Support/LegacyNavBar.php' => 'The dedicated boundary around the legacy navigation class.',
+    ];
+
     private array $legacyIpBlackListForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\IPBlackList' => 'Use App\\Support\\LegacyIPBlackList instead of importing the legacy IP blacklist class directly.',
     ];
@@ -342,6 +350,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyNavBarDependencyErrors = $this->legacyNavBarDependencyErrors();
+
+        if ($legacyNavBarDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy navigation class directly:');
+            $legacyNavBarDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyIpBlackListDependencyErrors = $this->legacyIpBlackListDependencyErrors();
 
         if ($legacyIpBlackListDependencyErrors->isNotEmpty()) {
@@ -438,6 +455,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
         $this->info('Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
+        $this->info('Modern Laravel code builds dashboard navigation through LegacyNavBar.');
         $this->info('Modern Laravel code manages IP blacklist records through LegacyIPBlackList.');
         $this->info('Modern Laravel code uploads sale-log images through LegacyImagesUploader.');
         $this->info('Modern Laravel code reads and sends notifications through LegacyNotifications.');
@@ -1060,6 +1078,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyLanderForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyNavBarDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyNavBarDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyNavBarDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyNavBarAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyNavBarForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

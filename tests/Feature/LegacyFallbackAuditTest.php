@@ -73,6 +73,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code builds dashboard navigation through LegacyNavBar.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code manages IP blacklist records through LegacyIPBlackList.',
             $output
         );
@@ -344,6 +348,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyUidDependencyErrors',
             'legacyTrackingParametersDependencyErrors',
             'legacyLanderDependencyErrors',
+            'legacyNavBarDependencyErrors',
             'legacyIpBlackListDependencyErrors',
             'legacyImagesUploaderDependencyErrors',
             'legacyNotificationsDependencyErrors',
@@ -600,6 +605,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_navbar_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyNavBarDependencyErrorsFor',
+            [[
+                'app/Providers/BadProvider.php' => 'use LeadMax\\TrackYourStats\\System\\NavBar;',
+                'app/Support/LegacyNavBar.php' => 'use LeadMax\\TrackYourStats\\System\\NavBar;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyNavBar as NavBar;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Providers/BadProvider.php: Use App\\Support\\LegacyNavBar instead of importing the legacy navigation class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_images_uploader_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -725,6 +751,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyUidForbiddenPatterns',
             'legacyTrackingParametersForbiddenPatterns',
             'legacyLanderForbiddenPatterns',
+            'legacyNavBarForbiddenPatterns',
             'legacyIpBlackListForbiddenPatterns',
             'legacyImagesUploaderForbiddenPatterns',
             'legacyNotificationsForbiddenPatterns',

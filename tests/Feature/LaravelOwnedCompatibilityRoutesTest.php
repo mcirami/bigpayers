@@ -404,6 +404,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_dashboard_navigation_uses_legacy_navbar_boundary(): void
+    {
+        $provider = File::get((new ReflectionClass(AppServiceProvider::class))->getFileName());
+
+        $this->assertStringContainsString('App\\Support\\LegacyNavBar as NavBar', $provider);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\NavBar', $provider);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\NavBar',
+            File::get(app_path('Support/LegacyNavBar.php'))
+        );
+    }
+
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([
