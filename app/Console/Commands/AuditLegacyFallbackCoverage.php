@@ -96,6 +96,14 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyClickGeo.php' => 'The dedicated boundary around the legacy ClickGeo class.',
     ];
 
+    private array $legacyClickSearcherForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Clicks\\ClickSearcher' => 'Use App\\Support\\LegacyClickSearcher instead of importing the legacy click searcher class directly.',
+    ];
+
+    private array $legacyClickSearcherAllowedFiles = [
+        'app/Support/LegacyClickSearcher.php' => 'The dedicated boundary around the legacy click searcher class.',
+    ];
+
     private array $legacyUidForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Clicks\\UID' => 'Use App\\Support\\LegacyUid instead of importing the legacy UID class directly.',
     ];
@@ -174,6 +182,14 @@ class AuditLegacyFallbackCoverage extends Command
 
     private array $legacyPaginateAllowedFiles = [
         'app/Support/LegacyPaginate.php' => 'The dedicated boundary around the legacy paginate class.',
+    ];
+
+    private array $legacyAssignmentsForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Table\\Assignments' => 'Use App\\Support\\LegacyAssignments instead of importing the legacy assignments class directly.',
+    ];
+
+    private array $legacyAssignmentsAllowedFiles = [
+        'app/Support/LegacyAssignments.php' => 'The dedicated boundary around the legacy assignments class.',
     ];
 
     private array $legacyMailForbiddenPatterns = [
@@ -323,6 +339,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyClickSearcherDependencyErrors = $this->legacyClickSearcherDependencyErrors();
+
+        if ($legacyClickSearcherDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy click searcher class directly:');
+            $legacyClickSearcherDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyUidDependencyErrors = $this->legacyUidDependencyErrors();
 
         if ($legacyUidDependencyErrors->isNotEmpty()) {
@@ -413,6 +438,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyAssignmentsDependencyErrors = $this->legacyAssignmentsDependencyErrors();
+
+        if ($legacyAssignmentsDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy assignments class directly:');
+            $legacyAssignmentsDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyMailDependencyErrors = $this->legacyMailDependencyErrors();
 
         if ($legacyMailDependencyErrors->isNotEmpty()) {
@@ -452,6 +486,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
+        $this->info('Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.');
         $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
         $this->info('Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
@@ -462,6 +497,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
         $this->info('Modern Laravel code resolves legacy date helpers through LegacyDate.');
         $this->info('Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.');
+        $this->info('Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
@@ -922,6 +958,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyClickGeoForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyClickSearcherDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyClickSearcherDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyClickSearcherDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickSearcherAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyClickSearcherForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }
@@ -1442,6 +1530,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyPaginateForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyAssignmentsDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyAssignmentsDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyAssignmentsDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyAssignmentsAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyAssignmentsForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

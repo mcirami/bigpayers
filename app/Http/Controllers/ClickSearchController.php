@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyClickGeo as ClickGeo;
+use App\Support\LegacyClickSearcher as ClickSearcher;
 use App\Support\LegacyUid as UID;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Clicks\ClickSearcher;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use PDO;
 

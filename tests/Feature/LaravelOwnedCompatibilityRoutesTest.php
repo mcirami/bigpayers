@@ -218,6 +218,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/ClickSearchController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyClickSearcher as ClickSearcher', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\ClickSearcher', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\ClickSearcher',
+            File::get(app_path('Support/LegacyClickSearcher.php'))
+        );
+    }
+
     public function test_modern_click_id_reads_use_legacy_uid_boundary(): void
     {
         foreach ([
@@ -339,6 +352,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Table\\Paginate',
             File::get(app_path('Support/LegacyPaginate.php'))
+        );
+    }
+
+    public function test_modern_assignments_reads_use_legacy_assignments_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/Report/ClickReportController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyAssignments as Assignments', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Assignments', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Table\\Assignments',
+            File::get(app_path('Support/LegacyAssignments.php'))
         );
     }
 

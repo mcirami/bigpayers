@@ -5,19 +5,19 @@ namespace App\Http\Controllers\Report;
 use App\Click;
 use App\Offer;
 use App\Privilege;
-use App\Support\CurrentUserSession;
-use App\Support\LegacyPayouts as Payouts;
+use App\Http\Traits\ClickTraits;
+use App\Services\ClickGeoCacheService;
 use App\Services\Repositories\Offer\OfferClicksRepository;
+use App\Support\CurrentUserSession;
+use App\Support\LegacyAssignments as Assignments;
+use App\Support\LegacyPermissions as Permissions;
+use App\Support\LegacyPayouts as Payouts;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
-use LeadMax\TrackYourStats\Table\Assignments;
-use App\Support\LegacyPermissions as Permissions;
-use App\Http\Traits\ClickTraits;
-use App\Services\ClickGeoCacheService;
 
 class ClickReportController extends ReportController
 {

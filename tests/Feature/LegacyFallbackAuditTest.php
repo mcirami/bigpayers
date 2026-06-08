@@ -61,6 +61,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code encodes legacy click IDs through LegacyUid.',
             $output
         );
@@ -98,6 +102,10 @@ class LegacyFallbackAuditTest extends TestCase
         );
         $this->assertStringContainsString(
             'Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.',
             $output
         );
     }
@@ -345,6 +353,7 @@ class LegacyFallbackAuditTest extends TestCase
             'retiredCompanySessionDependencyErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
+            'legacyClickSearcherDependencyErrors',
             'legacyUidDependencyErrors',
             'legacyTrackingParametersDependencyErrors',
             'legacyLanderDependencyErrors',
@@ -355,6 +364,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPayoutsDependencyErrors',
             'legacyDateDependencyErrors',
             'legacyPaginateDependencyErrors',
+            'legacyAssignmentsDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -516,6 +526,27 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Services/BadService.php: Use App\\Support\\LegacyClickGeo instead of importing the legacy ClickGeo class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_click_searcher_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyClickSearcherDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickSearcher;',
+                'app/Support/LegacyClickSearcher.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickSearcher;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickSearcher as ClickSearcher;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickSearcher instead of importing the legacy click searcher class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -736,6 +767,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_assignments_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyAssignmentsDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Assignments;',
+                'app/Support/LegacyAssignments.php' => 'use LeadMax\\TrackYourStats\\Table\\Assignments;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAssignments as Assignments;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAssignments instead of importing the legacy assignments class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -748,6 +800,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacySessionForbiddenPatterns',
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
+            'legacyClickSearcherForbiddenPatterns',
             'legacyUidForbiddenPatterns',
             'legacyTrackingParametersForbiddenPatterns',
             'legacyLanderForbiddenPatterns',
@@ -758,6 +811,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPayoutsForbiddenPatterns',
             'legacyDateForbiddenPatterns',
             'legacyPaginateForbiddenPatterns',
+            'legacyAssignmentsForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
