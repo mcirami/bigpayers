@@ -9,10 +9,10 @@ use App\Exports\AffDataExport;
 use App\Exports\CountryClicksExport;
 use App\Privilege;
 use App\Http\Controllers\Report\ReportController;
+use App\Support\LegacyGodEmployeeRepository as GodEmployeeRepository;
+use App\Support\LegacyGodOfferRepository as GodOfferRepository;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Traits\ClickTraits;
-use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
-use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 use PhpOffice\PhpSpreadsheet\Exception;
 use App\Services\ClickGeoCacheService;
 class ExportDataController extends ReportController

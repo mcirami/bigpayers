@@ -646,6 +646,98 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_offer_report_repositories_use_legacy_boundaries(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/ExportDataController.php'),
+            app_path('Http/Controllers/Report/OfferReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Offer', $contents);
+        }
+
+        foreach ([
+            app_path('Support/LegacyAdminOfferRepository.php'),
+            app_path('Support/LegacyAffiliateOfferRepository.php'),
+            app_path('Support/LegacyGodOfferRepository.php'),
+            app_path('Support/LegacyManagerOfferRepository.php'),
+        ] as $path) {
+            $this->assertStringContainsString(
+                'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer',
+                File::get($path)
+            );
+        }
+    }
+
+    public function test_modern_employee_report_repositories_use_legacy_boundaries(): void
+    {
+        foreach ([
+            app_path('Console/Commands/AggregateReportData.php'),
+            app_path('Console/Commands/PayoutLogsRun.php'),
+            app_path('Http/Controllers/ExportDataController.php'),
+            app_path('Http/Controllers/Report/EmployeeReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\GodEmployeeRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\ManagerEmployeeRepository', $contents);
+        }
+
+        foreach ([
+            app_path('Support/LegacyAdminEmployeeRepository.php'),
+            app_path('Support/LegacyGodEmployeeRepository.php'),
+            app_path('Support/LegacyManagerEmployeeRepository.php'),
+        ] as $path) {
+            $this->assertStringContainsString(
+                'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee',
+                File::get($path)
+            );
+        }
+    }
+
+    public function test_modern_misc_report_repositories_use_legacy_boundaries(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
+            app_path('Http/Controllers/Report/AdvertiserReportController.php'),
+            app_path('Http/Controllers/Report/AggregateReportController.php'),
+            app_path('Http/Controllers/Report/ChatLogReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AdjustmentsLogRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AdvertiserRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AffiliateChatLogRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository', $contents);
+        }
+
+        foreach ([
+            app_path('Support/LegacyAdjustmentsLogRepository.php'),
+            app_path('Support/LegacyAdvertiserRepository.php'),
+            app_path('Support/LegacyAffiliateChatLogRepository.php'),
+            app_path('Support/LegacyAggregateReportRepository.php'),
+            app_path('Support/LegacyPayoutLogRepository.php'),
+            app_path('Support/LegacySaleLogRepository.php'),
+            app_path('Support/LegacySubVarRepository.php'),
+        ] as $path) {
+            $this->assertStringContainsString(
+                'LeadMax\\TrackYourStats\\Report\\Repositories',
+                File::get($path)
+            );
+        }
+    }
+
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
     {
         $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());

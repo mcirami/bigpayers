@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\Company;
 use App\PayoutLog;
+use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
 use App\Support\LegacyDate as Date;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
-use LeadMax\TrackYourStats\Report\Repositories\Employee\AdminEmployeeRepository;
 
 class PayoutLogsRun extends Command
 {

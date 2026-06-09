@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Support\LegacyReporter as Reporter;
 use Illuminate\Http\Request;
 use App\Support\LegacyTotalFilter as Total;
-use LeadMax\TrackYourStats\Report\Repositories\AdvertiserRepository;
+use App\Support\LegacyAdvertiserRepository as AdvertiserRepository;
 
 class AdvertiserReportController extends ReportController
 {

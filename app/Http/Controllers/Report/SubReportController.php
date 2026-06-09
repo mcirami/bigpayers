@@ -12,10 +12,10 @@ use App\Support\CurrentUserSession;
 use App\Support\LegacyClickGeo as ClickGeo;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\LegacyReporter as Reporter;
+use App\Support\LegacySubVarRepository as SubVarRepository;
 use App\Support\LegacyTotalFilter as Total;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Report\Repositories\SubVarRepository;
 use App\Http\Traits\ClickTraits;
 
 class SubReportController extends ReportController

@@ -8,14 +8,14 @@ use App\Support\LegacyAffiliatePayoutReport as AffiliatePayout;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\LegacyAffiliateOfferRepository as AffiliateOfferRepository;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
-use LeadMax\TrackYourStats\Report\Repositories\PayoutLogRepository;
+use App\Support\LegacyPayoutLogRepository as PayoutLogRepository;
 
 class PayoutReportController extends ReportController
 {

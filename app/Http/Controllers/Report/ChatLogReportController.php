@@ -4,12 +4,12 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyAffiliateChatLogRepository as AffiliateChatLogRepository;
 use App\Support\LegacyPaginate as Paginate;
 use App\Support\LegacyReporter as Reporter;
+use App\Support\LegacySaleLogRepository as SaleLogRepository;
 use App\User;
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\Report\Repositories\AffiliateChatLogRepository;
-use LeadMax\TrackYourStats\Report\Repositories\SaleLogRepository;
 
 class ChatLogReportController extends ReportController
 {

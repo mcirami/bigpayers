@@ -469,6 +469,16 @@ Remaining cleanup is mostly archival and hardening:
 - modern report controllers now resolve the legacy database singleton through
   `App\Support\LegacyDatabaseConnection`; the fallback audit fails on new direct
   Laravel-side database connection imports outside that boundary
+- modern offer report controllers and exports now resolve legacy offer report
+  repositories through `App\Support` wrappers; the fallback audit fails on new
+  direct Laravel-side offer report repository imports outside those boundaries
+- modern employee report controllers, exports, and aggregate/payout commands now
+  resolve legacy employee report repositories through `App\Support` wrappers;
+  the fallback audit fails on new direct Laravel-side employee report repository
+  imports outside those boundaries
+- modern report controllers now resolve remaining legacy report repositories
+  through `App\Support` wrappers; the fallback audit fails on new direct
+  Laravel-side report repository imports outside those boundaries
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

@@ -4,16 +4,16 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\LegacyGodEmployeeRepository as GodEmployeeRepository;
+use App\Support\LegacyManagerEmployeeRepository as ManagerEmployeeRepository;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
 use App\Support\LegacyUserToolTipFilter as UserToolTip;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
-use LeadMax\TrackYourStats\Report\Repositories\Employee\AdminEmployeeRepository;
-use LeadMax\TrackYourStats\Report\Repositories\Employee\ManagerEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 
 class EmployeeReportController extends ReportController

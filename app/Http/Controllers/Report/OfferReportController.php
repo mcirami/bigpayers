@@ -11,16 +11,15 @@ use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
 use App\Support\LegacyAffiliateReport as Affiliate;
+use App\Support\LegacyAdminOfferRepository as AdminOfferRepository;
+use App\Support\LegacyAffiliateOfferRepository as AffiliateOfferRepository;
+use App\Support\LegacyGodOfferRepository as GodOfferRepository;
+use App\Support\LegacyManagerOfferRepository as ManagerOfferRepository;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\Report\Repositories\Offer\AdminOfferRepository;
-use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
-use LeadMax\TrackYourStats\Report\Repositories\Offer\ManagerOfferRepository;
-
-use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 
 class OfferReportController extends ReportController
 {

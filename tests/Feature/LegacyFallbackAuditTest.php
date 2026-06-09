@@ -176,6 +176,18 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern offer report controllers resolve legacy offer repositories through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern report controllers resolve remaining legacy report repositories through App\Support boundaries.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -450,6 +462,9 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyReportFiltersDependencyErrors',
             'legacyReportObjectsDependencyErrors',
             'legacyDatabaseConnectionDependencyErrors',
+            'legacyOfferReportRepositoriesDependencyErrors',
+            'legacyEmployeeReportRepositoriesDependencyErrors',
+            'legacyMiscReportRepositoriesDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -1231,6 +1246,69 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_offer_report_repositories_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyOfferReportRepositoriesDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\GodOfferRepository;',
+                'app/Support/LegacyGodOfferRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\GodOfferRepository;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyGodOfferRepository as GodOfferRepository;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyGodOfferRepository instead of importing the legacy god offer repository directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_employee_report_repositories_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyEmployeeReportRepositoriesDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
+                'app/Support/LegacyAdminEmployeeRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAdminEmployeeRepository as AdminEmployeeRepository;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAdminEmployeeRepository instead of importing the legacy admin employee repository directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_misc_report_repositories_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyMiscReportRepositoriesDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository;',
+                'app/Support/LegacyPayoutLogRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPayoutLogRepository as PayoutLogRepository;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPayoutLogRepository instead of importing the legacy payout-log repository directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1272,6 +1350,9 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyReportFiltersForbiddenPatterns',
             'legacyReportObjectsForbiddenPatterns',
             'legacyDatabaseConnectionForbiddenPatterns',
+            'legacyOfferReportRepositoriesForbiddenPatterns',
+            'legacyEmployeeReportRepositoriesForbiddenPatterns',
+            'legacyMiscReportRepositoriesForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

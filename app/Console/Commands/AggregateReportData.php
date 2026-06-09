@@ -4,10 +4,10 @@ namespace App\Console\Commands;
 
 use App\AggregateReport;
 use App\Company;
+use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
 use App\Support\LegacyDate as Date;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
-use LeadMax\TrackYourStats\Report\Repositories\Employee\AdminEmployeeRepository;
 
 class AggregateReportData extends Command
 {
