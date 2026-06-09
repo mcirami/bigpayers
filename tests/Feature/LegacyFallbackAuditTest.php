@@ -136,6 +136,22 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern Laravel code rebuilds user trees through LegacyTree.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern layout assets append admin-login scripts through LegacyAdminLogin.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern layouts render legacy notifications through LegacyNotify.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern database update screens run through LegacyCompanyUpdater.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -400,6 +416,10 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyDateDependencyErrors',
             'legacyPaginateDependencyErrors',
             'legacyAssignmentsDependencyErrors',
+            'legacyTreeDependencyErrors',
+            'legacyAdminLoginDependencyErrors',
+            'legacyNotifyDependencyErrors',
+            'legacyCompanyUpdaterDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -971,6 +991,90 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_tree_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyTreeDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\Tree;',
+                'app/Support/LegacyTree.php' => 'use LeadMax\\TrackYourStats\\User\\Tree;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyTree as Tree;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyTree instead of importing the legacy tree class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_admin_login_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyAdminLoginDependencyErrorsFor',
+            [[
+                'resources/views/layouts/bad.blade.php' => 'new \\LeadMax\\TrackYourStats\\User\\AdminLogin();',
+                'app/Support/LegacyAdminLogin.php' => 'use LeadMax\\TrackYourStats\\User\\AdminLogin;',
+                'resources/views/layouts/clean.blade.php' => 'new \\App\\Support\\LegacyAdminLogin();',
+            ]]
+        );
+
+        $this->assertContains(
+            'resources/views/layouts/bad.blade.php: Use App\\Support\\LegacyAdminLogin instead of importing the legacy admin-login class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_notify_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyNotifyDependencyErrorsFor',
+            [[
+                'resources/views/layouts/bad.blade.php' => '\\LeadMax\\TrackYourStats\\System\\Notify::info($message, \'\');',
+                'app/Support/LegacyNotify.php' => 'use LeadMax\\TrackYourStats\\System\\Notify;',
+                'resources/views/layouts/clean.blade.php' => '\\App\\Support\\LegacyNotify::info($message, \'\');',
+            ]]
+        );
+
+        $this->assertContains(
+            'resources/views/layouts/bad.blade.php: Use App\\Support\\LegacyNotify instead of importing the legacy notify class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_company_updater_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyCompanyUpdaterDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Database\\CompanyUpdater;',
+                'app/Support/LegacyCompanyUpdater.php' => 'use LeadMax\\TrackYourStats\\Database\\CompanyUpdater;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyCompanyUpdater as CompanyUpdater;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyCompanyUpdater instead of importing the legacy company updater class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1002,6 +1106,10 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyDateForbiddenPatterns',
             'legacyPaginateForbiddenPatterns',
             'legacyAssignmentsForbiddenPatterns',
+            'legacyTreeForbiddenPatterns',
+            'legacyAdminLoginForbiddenPatterns',
+            'legacyNotifyForbiddenPatterns',
+            'legacyCompanyUpdaterForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

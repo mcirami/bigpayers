@@ -62,6 +62,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertRouteAction('/admin/database-updates', 'POST', DatabaseUpdateController::class . '@run');
     }
 
+    public function test_modern_database_updates_use_legacy_company_updater_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/DatabaseUpdateController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyCompanyUpdater as CompanyUpdater', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\CompanyUpdater', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Database\\CompanyUpdater',
+            File::get(app_path('Support/LegacyCompanyUpdater.php'))
+        );
+    }
+
     public function test_settings_controller_does_not_load_legacy_company_from_session(): void
     {
         $controller = File::get(app_path('Http/Controllers/SettingsController.php'));
@@ -446,6 +459,55 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Table\\Assignments',
             File::get(app_path('Support/LegacyAssignments.php'))
+        );
+    }
+
+    public function test_modern_tree_reads_use_legacy_tree_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/UserController.php'),
+            app_path('Observers/UserObserver.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyTree as Tree', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Tree', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\Tree',
+            File::get(app_path('Support/LegacyTree.php'))
+        );
+    }
+
+    public function test_modern_admin_login_scripts_use_legacy_admin_login_boundary(): void
+    {
+        foreach ([
+            resource_path('views/layouts/footer.blade.php'),
+            resource_path('views/layouts/partials/report-script-assets.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyAdminLogin', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\AdminLogin', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\AdminLogin',
+            File::get(app_path('Support/LegacyAdminLogin.php'))
+        );
+    }
+
+    public function test_modern_notification_layouts_use_legacy_notify_boundary(): void
+    {
+        $layout = File::get(resource_path('views/layouts/master.blade.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyNotify::info', $layout);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Notify', $layout);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\Notify',
+            File::get(app_path('Support/LegacyNotify.php'))
         );
     }
 

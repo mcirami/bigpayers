@@ -165,12 +165,12 @@
     </div>
     @yield('content')
     @if(isset($notify))
-        <?php \LeadMax\TrackYourStats\System\Notify::info($notify, ''); ?>
+        <?php \App\Support\LegacyNotify::info($notify, ''); ?>
     @endif
 
 
     @if(isset($message))
-        <?php \LeadMax\TrackYourStats\System\Notify::info($message, ''); ?>
+        <?php \App\Support\LegacyNotify::info($message, ''); ?>
     @endif
 
 </div> <!-- close panels_wrap from header -->

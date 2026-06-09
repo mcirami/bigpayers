@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPaginate as Paginate;
+use App\Support\LegacyTree as Tree;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\User\Bonus;
@@ -20,7 +21,6 @@ use App\Support\LegacyPermissions as Permissions;
 use LeadMax\TrackYourStats\User\Privileges;
 use LeadMax\TrackYourStats\User\Referrals;
 use LeadMax\TrackYourStats\User\ReportPermissions;
-use LeadMax\TrackYourStats\User\Tree;
 use LeadMax\TrackYourStats\User\User as LegacyUser;
 
 class UserController extends Controller

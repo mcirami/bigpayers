@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Support\LegacyCompanyUpdater as CompanyUpdater;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Database\CompanyUpdater;
 use Throwable;
 
 class DatabaseUpdateController extends Controller

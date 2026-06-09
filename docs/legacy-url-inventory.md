@@ -439,6 +439,18 @@ Remaining cleanup is mostly archival and hardening:
 - modern click-report assignment handling now resolves the legacy `Assignments`
   helper through `App\Support\LegacyAssignments`; the fallback audit fails on
   new direct Laravel-side assignments imports outside the boundary
+- modern user-controller and observer tree rebuild/read calls now resolve the
+  legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
+  fails on new direct Laravel-side tree imports outside the boundary
+- modern layout footer/report script partials now append legacy admin-login
+  JavaScript through `App\Support\LegacyAdminLogin`; the fallback audit fails on
+  new direct Laravel-side admin-login imports outside the boundary
+- modern dashboard layouts now render legacy flash notifications through
+  `App\Support\LegacyNotify`; the fallback audit fails on new direct
+  Laravel-side notify imports outside the boundary
+- modern database-update screens now run the legacy company database updater
+  through `App\Support\LegacyCompanyUpdater`; the fallback audit fails on new
+  direct Laravel-side company-updater imports outside the boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

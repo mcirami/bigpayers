@@ -249,6 +249,38 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyAssignments.php' => 'The dedicated boundary around the legacy assignments class.',
     ];
 
+    private array $legacyTreeForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\User\\Tree' => 'Use App\\Support\\LegacyTree instead of importing the legacy tree class directly.',
+    ];
+
+    private array $legacyTreeAllowedFiles = [
+        'app/Support/LegacyTree.php' => 'The dedicated boundary around the legacy tree class.',
+    ];
+
+    private array $legacyAdminLoginForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\User\\AdminLogin' => 'Use App\\Support\\LegacyAdminLogin instead of importing the legacy admin-login class directly.',
+    ];
+
+    private array $legacyAdminLoginAllowedFiles = [
+        'app/Support/LegacyAdminLogin.php' => 'The dedicated boundary around the legacy admin-login class.',
+    ];
+
+    private array $legacyNotifyForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\Notify' => 'Use App\\Support\\LegacyNotify instead of importing the legacy notify class directly.',
+    ];
+
+    private array $legacyNotifyAllowedFiles = [
+        'app/Support/LegacyNotify.php' => 'The dedicated boundary around the legacy notify class.',
+    ];
+
+    private array $legacyCompanyUpdaterForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Database\\CompanyUpdater' => 'Use App\\Support\\LegacyCompanyUpdater instead of importing the legacy company updater class directly.',
+    ];
+
+    private array $legacyCompanyUpdaterAllowedFiles = [
+        'app/Support/LegacyCompanyUpdater.php' => 'The dedicated boundary around the legacy company updater class.',
+    ];
+
     private array $legacyMailForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
     ];
@@ -567,6 +599,42 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyTreeDependencyErrors = $this->legacyTreeDependencyErrors();
+
+        if ($legacyTreeDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy tree class directly:');
+            $legacyTreeDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyAdminLoginDependencyErrors = $this->legacyAdminLoginDependencyErrors();
+
+        if ($legacyAdminLoginDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy admin-login class directly:');
+            $legacyAdminLoginDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyNotifyDependencyErrors = $this->legacyNotifyDependencyErrors();
+
+        if ($legacyNotifyDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy notify class directly:');
+            $legacyNotifyDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyCompanyUpdaterDependencyErrors = $this->legacyCompanyUpdaterDependencyErrors();
+
+        if ($legacyCompanyUpdaterDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy company updater class directly:');
+            $legacyCompanyUpdaterDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyMailDependencyErrors = $this->legacyMailDependencyErrors();
 
         if ($legacyMailDependencyErrors->isNotEmpty()) {
@@ -625,6 +693,10 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code resolves legacy date helpers through LegacyDate.');
         $this->info('Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.');
         $this->info('Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.');
+        $this->info('Modern Laravel code rebuilds user trees through LegacyTree.');
+        $this->info('Modern layout assets append admin-login scripts through LegacyAdminLogin.');
+        $this->info('Modern layouts render legacy notifications through LegacyNotify.');
+        $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
@@ -2073,6 +2145,214 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyAssignmentsForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyTreeDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyTreeDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyTreeDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyTreeAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyTreeForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyAdminLoginDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyAdminLoginDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyAdminLoginDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyAdminLoginAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyAdminLoginForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyNotifyDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyNotifyDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyNotifyDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyNotifyAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyNotifyForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyCompanyUpdaterDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyCompanyUpdaterDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyCompanyUpdaterDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyCompanyUpdaterAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyCompanyUpdaterForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

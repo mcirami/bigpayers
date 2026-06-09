@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\User;
-use LeadMax\TrackYourStats\User\Tree;
+use App\Support\LegacyTree as Tree;
 
 class UserObserver
 {

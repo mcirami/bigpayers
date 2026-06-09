@@ -19,6 +19,6 @@
 </script>
 
 @php
-    $adminLogin = new \LeadMax\TrackYourStats\User\AdminLogin();
+    $adminLogin = new \App\Support\LegacyAdminLogin();
     $adminLogin->appendJavascript();
 @endphp
