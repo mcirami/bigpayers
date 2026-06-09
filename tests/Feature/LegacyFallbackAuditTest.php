@@ -61,11 +61,19 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy click writes through LegacyClick.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.',
             $output
         );
         $this->assertStringContainsString(
             'Modern Laravel code resolves legacy conversion helpers through LegacyConversion.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy pending conversion activation through LegacyPendingConversion.',
             $output
         );
         $this->assertStringContainsString(
@@ -365,8 +373,10 @@ class LegacyFallbackAuditTest extends TestCase
             'retiredCompanySessionDependencyErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
+            'legacyClickDependencyErrors',
             'legacyClickSearcherDependencyErrors',
             'legacyConversionDependencyErrors',
+            'legacyPendingConversionDependencyErrors',
             'legacyPostBackUrlEventHandlerDependencyErrors',
             'legacyClickRegistrationEventDependencyErrors',
             'legacyUidDependencyErrors',
@@ -546,6 +556,28 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_click_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyClickDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Click;',
+                'app/Support/LegacyClick.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Click;',
+                'app/Support/LegacyClickGeo.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClick as Click;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_click_searcher_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -583,6 +615,27 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyConversion instead of importing the legacy conversion class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_pending_conversion_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyPendingConversionDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PendingConversion;',
+                'app/Support/LegacyPendingConversion.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PendingConversion;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPendingConversion as PendingConversion;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPendingConversion instead of importing the legacy pending conversion class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -878,8 +931,10 @@ class LegacyFallbackAuditTest extends TestCase
             'legacySessionForbiddenPatterns',
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
+            'legacyClickForbiddenPatterns',
             'legacyClickSearcherForbiddenPatterns',
             'legacyConversionForbiddenPatterns',
+            'legacyPendingConversionForbiddenPatterns',
             'legacyPostBackUrlEventHandlerForbiddenPatterns',
             'legacyClickRegistrationEventForbiddenPatterns',
             'legacyUidForbiddenPatterns',

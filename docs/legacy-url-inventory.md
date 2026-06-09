@@ -376,6 +376,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern Laravel geo lookup callers now resolve the legacy `ClickGeo` helper
   through `App\Support\LegacyClickGeo`; the fallback audit fails if Laravel-side
   code imports the legacy `ClickGeo` class directly outside that boundary
+- modern adjustment and chat-log click writes now resolve the legacy `Click`
+  helper through `App\Support\LegacyClick`; the fallback audit fails on new
+  direct Laravel-side click imports outside the boundary
 - modern click-search lookup queries now resolve the legacy `ClickSearcher`
   helper through `App\Support\LegacyClickSearcher`; the fallback audit fails on
   new direct Laravel-side click searcher imports outside the boundary
@@ -383,6 +386,10 @@ Remaining cleanup is mostly archival and hardening:
   legacy `Conversion` helper through `App\Support\LegacyConversion`; the
   fallback audit fails on new direct Laravel-side conversion imports outside the
   boundary
+- modern chat-log pending conversion activation now resolves the legacy
+  `PendingConversion` helper through `App\Support\LegacyPendingConversion`; the
+  fallback audit fails on new direct Laravel-side pending conversion imports
+  outside the boundary
 - modern landing-page postback and click-registration entrypoints now resolve
   the legacy `PostBackURLEventHandler` and `ClickRegistrationEvent` classes
   through `App\Support` boundaries; the fallback audit fails on new direct

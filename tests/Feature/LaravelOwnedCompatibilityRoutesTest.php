@@ -218,6 +218,24 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_click_writes_use_legacy_click_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/AdjustmentsController.php'),
+            app_path('Http/Controllers/ChatLogController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyClick as Click', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\Click;', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\Click',
+            File::get(app_path('Support/LegacyClick.php'))
+        );
+    }
+
     public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void
     {
         $controller = File::get(app_path('Http/Controllers/ClickSearchController.php'));
@@ -247,6 +265,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Clicks\\Conversion',
             File::get(app_path('Support/LegacyConversion.php'))
+        );
+    }
+
+    public function test_modern_pending_conversion_reads_use_legacy_pending_conversion_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyPendingConversion as PendingConversion', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PendingConversion', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\PendingConversion',
+            File::get(app_path('Support/LegacyPendingConversion.php'))
         );
     }
 
