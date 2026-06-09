@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyOffer;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Offer\Offer as LegacyOffer;
-use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use PDO;
 
 class AffiliateMassPostbackController extends Controller

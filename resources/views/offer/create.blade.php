@@ -24,9 +24,9 @@
         ];
 
         $visibilityOptions = [
-            \LeadMax\TrackYourStats\Offer\Offer::VISIBILITY_PUBLIC => 'Public',
-            \LeadMax\TrackYourStats\Offer\Offer::VISIBILITY_PRIVATE => 'Private',
-            \LeadMax\TrackYourStats\Offer\Offer::VISIBILITY_REQUESTABLE => 'Requestable',
+            \App\Support\LegacyOffer::VISIBILITY_PUBLIC => 'Public',
+            \App\Support\LegacyOffer::VISIBILITY_PRIVATE => 'Private',
+            \App\Support\LegacyOffer::VISIBILITY_REQUESTABLE => 'Requestable',
         ];
 
         $statusOptions = [
@@ -95,7 +95,7 @@
                         <span class="bp-form-label">Visibility</span>
                         <select class="bp-form-input" name="is_public" id="is_public">
                             @foreach($visibilityOptions as $value => $label)
-                                <option value="{{ $value }}" @selected((int) old('is_public', $offer->is_public ?? \LeadMax\TrackYourStats\Offer\Offer::VISIBILITY_PUBLIC) === $value)>{{ $label }}</option>
+                                <option value="{{ $value }}" @selected((int) old('is_public', $offer->is_public ?? \App\Support\LegacyOffer::VISIBILITY_PUBLIC) === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
                     </label>

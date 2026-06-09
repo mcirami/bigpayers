@@ -209,6 +209,16 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyPayouts.php' => 'The dedicated boundary around the legacy payouts class.',
     ];
 
+    private array $legacyOfferDomainForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\Offer' => 'Use App\\Support\\LegacyOffer instead of importing the legacy offer class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\RepHasOffer' => 'Use App\\Support\\LegacyRepHasOffer instead of importing the legacy offer-assignment class directly.',
+    ];
+
+    private array $legacyOfferDomainAllowedFiles = [
+        'app/Support/LegacyOffer.php' => 'The dedicated boundary around the legacy offer class.',
+        'app/Support/LegacyRepHasOffer.php' => 'The dedicated boundary around the legacy offer-assignment class.',
+    ];
+
     private array $legacyAdjustmentsLogForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog' => 'Use App\\Support\\LegacyAdjustmentsLog instead of importing the legacy adjustments log class directly.',
     ];
@@ -297,6 +307,18 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyPrivileges.php' => 'The dedicated boundary around the legacy privileges class.',
         'app/Support/LegacyReferrals.php' => 'The dedicated boundary around the legacy referrals class.',
         'app/Support/LegacyReportPermissions.php' => 'The dedicated boundary around the legacy report permissions class.',
+    ];
+
+    private array $legacyOfferPostBackUrlForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL' => 'Use App\\Support\\LegacyConversionPostBackURL instead of referencing the legacy conversion postback URL class directly.',
+        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\FreePostBackURL' => 'Use App\\Support\\LegacyFreePostBackURL instead of referencing the legacy free-signup postback URL class directly.',
+        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\DeductionPostBackURL' => 'Use App\\Support\\LegacyDeductionPostBackURL instead of referencing the legacy deduction postback URL class directly.',
+    ];
+
+    private array $legacyOfferPostBackUrlAllowedFiles = [
+        'app/Support/LegacyConversionPostBackURL.php' => 'The dedicated boundary around the legacy conversion postback URL class.',
+        'app/Support/LegacyFreePostBackURL.php' => 'The dedicated boundary around the legacy free-signup postback URL class.',
+        'app/Support/LegacyDeductionPostBackURL.php' => 'The dedicated boundary around the legacy deduction postback URL class.',
     ];
 
     private array $legacyAdminLoginForbiddenPatterns = [
@@ -692,6 +714,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyOfferDomainDependencyErrors = $this->legacyOfferDomainDependencyErrors();
+
+        if ($legacyOfferDomainDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports legacy offer-domain helpers directly:');
+            $legacyOfferDomainDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyPayoutsDependencyErrors = $this->legacyPayoutsDependencyErrors();
 
         if ($legacyPayoutsDependencyErrors->isNotEmpty()) {
@@ -787,6 +818,15 @@ class AuditLegacyFallbackCoverage extends Command
         if ($legacyUserDomainDependencyErrors->isNotEmpty()) {
             $this->error('Modern Laravel code still imports legacy user-domain helpers directly:');
             $legacyUserDomainDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyOfferPostBackUrlDependencyErrors = $this->legacyOfferPostBackUrlDependencyErrors();
+
+        if ($legacyOfferPostBackUrlDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still references legacy offer postback URL classes directly:');
+            $legacyOfferPostBackUrlDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -951,6 +991,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code manages IP blacklist records through LegacyIPBlackList.');
         $this->info('Modern Laravel code uploads sale-log images through LegacyImagesUploader.');
         $this->info('Modern Laravel code reads and sends notifications through LegacyNotifications.');
+        $this->info('Modern Laravel code resolves legacy offer-domain helpers through App\Support boundaries.');
         $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
         $this->info('Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.');
         $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
@@ -962,6 +1003,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern login flows use LegacyLogin for legacy login constants.');
         $this->info('Modern signup flows use LegacyAffiliateSignUp.');
         $this->info('Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.');
+        $this->info('Modern offer postback URL flows use App\Support boundaries.');
         $this->info('Modern layout assets append admin-login scripts through LegacyAdminLogin.');
         $this->info('Modern layouts render legacy notifications through LegacyNotify.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
@@ -2172,6 +2214,58 @@ class AuditLegacyFallbackCoverage extends Command
             ->values();
     }
 
+    private function legacyOfferDomainDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyOfferDomainDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyOfferDomainDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferDomainAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyOfferDomainForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
     private function legacyAdjustmentsLogDependencyErrors()
     {
         $sourceFiles = collect();
@@ -2682,6 +2776,58 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyUserDomainForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyOfferPostBackUrlDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyOfferPostBackUrlDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyOfferPostBackUrlDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferPostBackUrlAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyOfferPostBackUrlForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

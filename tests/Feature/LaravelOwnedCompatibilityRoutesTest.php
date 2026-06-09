@@ -141,6 +141,66 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_modern_offer_domain_helpers_use_legacy_boundaries(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/AffiliateMassPostbackController.php'),
+            app_path('Http/Controllers/OfferController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyOffer', $contents);
+            $this->assertStringContainsString('App\\Support\\LegacyRepHasOffer', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Offer', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\RepHasOffer', $contents);
+        }
+
+        $userController = File::get(app_path('Http/Controllers/UserController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyRepHasOffer as RepHasOffer', $userController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\RepHasOffer', $userController);
+
+        $offerCreateView = File::get(resource_path('views/offer/create.blade.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyOffer', $offerCreateView);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Offer', $offerCreateView);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\Offer',
+            File::get(app_path('Support/LegacyOffer.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\RepHasOffer',
+            File::get(app_path('Support/LegacyRepHasOffer.php'))
+        );
+    }
+
+    public function test_modern_offer_postback_urls_use_legacy_boundaries(): void
+    {
+        $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+
+        foreach ([
+            'App\\Support\\LegacyConversionPostBackURL',
+            'App\\Support\\LegacyFreePostBackURL',
+            'App\\Support\\LegacyDeductionPostBackURL',
+        ] as $expectedImport) {
+            $this->assertStringContainsString($expectedImport, $offerController);
+        }
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\PostBackURLs', $offerController);
+
+        foreach ([
+            'LegacyConversionPostBackURL.php' => 'LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL',
+            'LegacyFreePostBackURL.php' => 'LeadMax\\TrackYourStats\\User\\PostBackURLs\\FreePostBackURL',
+            'LegacyDeductionPostBackURL.php' => 'LeadMax\\TrackYourStats\\User\\PostBackURLs\\DeductionPostBackURL',
+        ] as $wrapper => $legacyClass) {
+            $this->assertStringContainsString(
+                $legacyClass,
+                File::get(app_path("Support/{$wrapper}"))
+            );
+        }
+    }
+
     public function test_admin_legacy_php_urls_route_to_laravel_controllers(): void
     {
         $routes = [

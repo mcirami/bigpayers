@@ -10,7 +10,12 @@ use App\OfferURL;
 use App\PredefinedOfferRule;
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyConversionPostBackURL;
+use App\Support\LegacyDeductionPostBackURL;
+use App\Support\LegacyFreePostBackURL;
+use App\Support\LegacyOffer as LegacyOffer;
 use App\Support\LegacyNotifications as Notifications;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser;
 use App\User;
 use App\UserOffer;
@@ -30,7 +35,7 @@ class OfferController extends Controller
 
 	public function requestOffer($id)
 	{
-		$result = \LeadMax\TrackYourStats\Offer\RepHasOffer::requestOffer($id, CurrentUserSession::id());
+		$result = RepHasOffer::requestOffer($id, CurrentUserSession::id());
 		return response()->json($result);
 	}
 
@@ -47,7 +52,7 @@ class OfferController extends Controller
             return redirect('/notifications')->with('message', 'That user already has access to this offer.');
         }
 
-        if (!\LeadMax\TrackYourStats\Offer\RepHasOffer::assignAffiliateToOffer($offerId, $userId)) {
+        if (!RepHasOffer::assignAffiliateToOffer($offerId, $userId)) {
             return redirect('/notifications')->withErrors(['offer' => 'Error assigning user to offer.']);
         }
 
@@ -68,9 +73,9 @@ class OfferController extends Controller
 
         return view('offer.postback', [
             'offer' => $offer,
-            'conversionPostback' => old('postback_url', (string) (new \LeadMax\TrackYourStats\User\PostBackURLs\ConversionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
-            'freeSignUpPostback' => old('free_sign_up_url', (string) (new \LeadMax\TrackYourStats\User\PostBackURLs\FreePostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
-            'deductionPostback' => old('deduction_url', (string) (new \LeadMax\TrackYourStats\User\PostBackURLs\DeductionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'conversionPostback' => old('postback_url', (string) (new LegacyConversionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'freeSignUpPostback' => old('free_sign_up_url', (string) (new LegacyFreePostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'deductionPostback' => old('deduction_url', (string) (new LegacyDeductionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
         ]);
     }
 
@@ -85,13 +90,13 @@ class OfferController extends Controller
             'deduction_url' => 'nullable|string|max:255',
         ]);
 
-        (new \LeadMax\TrackYourStats\User\PostBackURLs\ConversionPostBackURL($userId, $offer->idoffer))
+        (new LegacyConversionPostBackURL($userId, $offer->idoffer))
             ->updateOfferURL(trim((string) ($validated['postback_url'] ?? '')));
 
-        (new \LeadMax\TrackYourStats\User\PostBackURLs\FreePostBackURL($userId, $offer->idoffer))
+        (new LegacyFreePostBackURL($userId, $offer->idoffer))
             ->updateOfferURL(trim((string) ($validated['free_sign_up_url'] ?? '')));
 
-        (new \LeadMax\TrackYourStats\User\PostBackURLs\DeductionPostBackURL($userId, $offer->idoffer))
+        (new LegacyDeductionPostBackURL($userId, $offer->idoffer))
             ->updateOfferURL(trim((string) ($validated['deduction_url'] ?? '')));
 
         return redirect("/offer/{$offer->idoffer}/postback")->with('message', 'Offer postbacks updated successfully.');
@@ -219,7 +224,7 @@ class OfferController extends Controller
 
 	public function dupe($id)
 	{
-		if (\LeadMax\TrackYourStats\Offer\Offer::duplicateOffer($id)) {
+		if (LegacyOffer::duplicateOffer($id)) {
 			$message = 'Success!';
 		} else {
 			$message = 'Oh noes!';
@@ -230,7 +235,7 @@ class OfferController extends Controller
 
 	public function delete($id)
 	{
-		\LeadMax\TrackYourStats\Offer\Offer::deleteOffer($id);
+		LegacyOffer::deleteOffer($id);
 
 		return back();
 	}
@@ -275,7 +280,7 @@ class OfferController extends Controller
 
 		if ($isAffiliate) {
 			$offers = $offers->leftJoin('bonus_offers', 'bonus_offers.offer_id', '=', 'offer.idoffer')->get();
-			$data['requestableOffers'] = Offer::where('is_public', \LeadMax\TrackYourStats\Offer\Offer::VISIBILITY_REQUESTABLE)
+			$data['requestableOffers'] = Offer::where('is_public', LegacyOffer::VISIBILITY_REQUESTABLE)
 			                                  ->whereRaw('offer.idoffer NOT IN (SELECT offer_idoffer FROM rep_has_offer WHERE rep_has_offer.rep_idrep = ' . $sessionUserId . ')')->get();
 		} else {
 			$offers = $offers->get();
@@ -714,7 +719,7 @@ class OfferController extends Controller
 
     private function userCanManageOfferRules(int $offerId): bool
     {
-        return \LeadMax\TrackYourStats\Offer\RepHasOffer::noneRepOwnOffer(
+        return RepHasOffer::noneRepOwnOffer(
             $offerId,
             CurrentUserSession::id()
         );
@@ -929,11 +934,11 @@ class OfferController extends Controller
 			'users' => 'required|array',
 			'offers' => 'required|array'
 		]);
-		\LeadMax\TrackYourStats\Offer\RepHasOffer::massAssignUsers($request->post('users'), $request->post('offers'),
+		RepHasOffer::massAssignUsers($request->post('users'), $request->post('offers'),
 			request('role', 3));
 
 		if (request()->has("updatePayouts")) {
-			\LeadMax\TrackYourStats\Offer\RepHasOffer::massUpdateOfferPayouts($request->post('offers'));
+			RepHasOffer::massUpdateOfferPayouts($request->post('offers'));
 		}
 
 		return back()->with('message', 'Success!');
@@ -970,11 +975,11 @@ class OfferController extends Controller
         $unassignedUserIds = array_values(array_diff($assignedUserIds, $selectedUserIds));
 
         if (!empty($selectedUserIds)) {
-            \LeadMax\TrackYourStats\Offer\RepHasOffer::massAssignAffiliates($selectedUserIds, [(int) $offer->idoffer]);
+            RepHasOffer::massAssignAffiliates($selectedUserIds, [(int) $offer->idoffer]);
         }
 
         if (!empty($unassignedUserIds)) {
-            \LeadMax\TrackYourStats\Offer\RepHasOffer::unAssignAffiliates($unassignedUserIds, (int) $offer->idoffer);
+            RepHasOffer::unAssignAffiliates($unassignedUserIds, (int) $offer->idoffer);
         }
 
         return redirect("/offer/{$offer->idoffer}/access")->with('message', 'Offer access updated successfully.');
@@ -1002,7 +1007,7 @@ class OfferController extends Controller
     private function ownedAffiliateAccessRows(int $offerId)
     {
         $assignedAffiliateIds = collect(
-            \LeadMax\TrackYourStats\Offer\RepHasOffer::queryGetAffiliatesAssignedToOffer($offerId)->fetchAll(\PDO::FETCH_OBJ)
+            RepHasOffer::queryGetAffiliatesAssignedToOffer($offerId)->fetchAll(\PDO::FETCH_OBJ)
         )
             ->pluck('idrep')
             ->map(fn ($userId) => (int) $userId)

@@ -358,7 +358,12 @@ Remaining cleanup is mostly archival and hardening:
   company object from session; runtime `Company::loadFromSession()` references
   have been retired outside source-test guard assertions
 - legacy offer-domain helpers no longer import the legacy company class for
-  offer URL dropdown/query support
+  offer URL dropdown/query support; modern offer assignment, mass-postback, and
+  offer visibility flows now resolve legacy offer helpers through `App\Support`
+  wrappers, and the fallback audit blocks new direct Laravel-side imports
+- offer-specific conversion, free-signup, and deduction postback URL flows now
+  instantiate legacy postback URL helpers through `App\Support` wrappers; the
+  fallback audit blocks direct Laravel-side references to those legacy classes
 - the fallback audit now fails if runtime code reintroduces the retired legacy
   company class import or `Company::loadFromSession()` dependency
 - the fallback audit now fails if runtime code imports the legacy session class

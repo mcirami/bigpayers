@@ -113,6 +113,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy offer-domain helpers through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code resolves legacy payout helpers through LegacyPayouts.',
             $output
         );
@@ -154,6 +158,10 @@ class LegacyFallbackAuditTest extends TestCase
         );
         $this->assertStringContainsString(
             'Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern offer postback URL flows use App\Support boundaries.',
             $output
         );
         $this->assertStringContainsString(
@@ -462,6 +470,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyIpBlackListDependencyErrors',
             'legacyImagesUploaderDependencyErrors',
             'legacyNotificationsDependencyErrors',
+            'legacyOfferDomainDependencyErrors',
             'legacyPayoutsDependencyErrors',
             'legacyAdjustmentsLogDependencyErrors',
             'legacySaleLogDependencyErrors',
@@ -473,6 +482,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyLoginDependencyErrors',
             'legacyAffiliateSignUpDependencyErrors',
             'legacyUserDomainDependencyErrors',
+            'legacyOfferPostBackUrlDependencyErrors',
             'legacyAdminLoginDependencyErrors',
             'legacyNotifyDependencyErrors',
             'legacyCompanyUpdaterDependencyErrors',
@@ -925,6 +935,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_offer_domain_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyOfferDomainDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\RepHasOffer;',
+                'app/Support/LegacyRepHasOffer.php' => 'use LeadMax\\TrackYourStats\\Offer\\RepHasOffer;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyRepHasOffer as RepHasOffer;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyRepHasOffer instead of importing the legacy offer-assignment class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_payouts_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1156,6 +1187,27 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyBonus instead of importing the legacy bonus class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_offer_postback_url_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyOfferPostBackUrlDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL($userId, $offerId);',
+                'app/Support/LegacyConversionPostBackURL.php' => 'use LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL;',
+                'app/Http/Controllers/CleanController.php' => 'new \\App\\Support\\LegacyConversionPostBackURL($userId, $offerId);',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyConversionPostBackURL instead of referencing the legacy conversion postback URL class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1438,6 +1490,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyIpBlackListForbiddenPatterns',
             'legacyImagesUploaderForbiddenPatterns',
             'legacyNotificationsForbiddenPatterns',
+            'legacyOfferDomainForbiddenPatterns',
             'legacyPayoutsForbiddenPatterns',
             'legacyAdjustmentsLogForbiddenPatterns',
             'legacySaleLogForbiddenPatterns',
@@ -1449,6 +1502,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyLoginForbiddenPatterns',
             'legacyAffiliateSignUpForbiddenPatterns',
             'legacyUserDomainForbiddenPatterns',
+            'legacyOfferPostBackUrlForbiddenPatterns',
             'legacyAdminLoginForbiddenPatterns',
             'legacyNotifyForbiddenPatterns',
             'legacyCompanyUpdaterForbiddenPatterns',
