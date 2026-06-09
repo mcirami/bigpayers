@@ -1,5 +1,5 @@
 @php
-    use LeadMax\TrackYourStats\Report\Formats\HTML;
+    use App\Support\LegacyReportHtml as HTML;
 	use App\Privilege;
     $showRevenueColumns = in_array($sessionUserType, [Privilege::ROLE_GOD, Privilege::ROLE_MANAGER], true)
         || ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts);

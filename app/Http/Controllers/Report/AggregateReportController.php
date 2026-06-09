@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\AggregateServiceProvider;
 use LeadMax\TrackYourStats\Report\Filters\DollarSign;
-use LeadMax\TrackYourStats\Report\Formats\HTML;
 use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\AggregateReportRepository;
 

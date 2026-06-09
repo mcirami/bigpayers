@@ -451,6 +451,12 @@ Remaining cleanup is mostly archival and hardening:
 - modern database-update screens now run the legacy company database updater
   through `App\Support\LegacyCompanyUpdater`; the fallback audit fails on new
   direct Laravel-side company-updater imports outside the boundary
+- modern report Blade views now render legacy report HTML formatters through
+  `App\Support\LegacyReportHtml`; the fallback audit fails on new direct
+  Laravel-side report HTML formatter imports outside the boundary
+- modern click offer reports now build legacy report-ID offer reports through
+  `App\Support\LegacyReportIdOffer`; the fallback audit fails on new direct
+  Laravel-side report ID offer imports outside the boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

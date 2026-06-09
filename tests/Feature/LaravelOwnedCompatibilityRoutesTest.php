@@ -511,6 +511,46 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_report_views_use_legacy_report_html_boundary(): void
+    {
+        foreach ([
+            resource_path('views/report/adjustments.blade.php'),
+            resource_path('views/report/advertiser.blade.php'),
+            resource_path('views/report/chat-log-affiliate.blade.php'),
+            resource_path('views/report/chat-log.blade.php'),
+            resource_path('views/report/employee.blade.php'),
+            resource_path('views/report/offer/admin.blade.php'),
+            resource_path('views/report/offer/affiliate.blade.php'),
+            resource_path('views/report/sub.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyReportHtml', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Formats\\HTML', $contents);
+        }
+
+        $aggregateController = File::get(app_path('Http/Controllers/Report/AggregateReportController.php'));
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Formats\\HTML', $aggregateController);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Report\\Formats\\HTML',
+            File::get(app_path('Support/LegacyReportHtml.php'))
+        );
+    }
+
+    public function test_modern_click_offer_reports_use_legacy_report_id_offer_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/Report/ClickReportController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyReportIdOffer', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\ID\\Offer', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Report\\ID\\Offer',
+            File::get(app_path('Support/LegacyReportIdOffer.php'))
+        );
+    }
+
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
     {
         $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());

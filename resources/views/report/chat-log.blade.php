@@ -21,7 +21,7 @@
         </thead>
         <tbody>
         @php
-            $reporter->between($dates['startDate'], $dates['endDate'], new \LeadMax\TrackYourStats\Report\Formats\HTML());
+            $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\LegacyReportHtml());
         @endphp
         </tbody>
     </table>

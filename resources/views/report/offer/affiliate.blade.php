@@ -22,7 +22,7 @@
         </thead>
         <tbody>
         @php
-            $reporter->between($dates['startDate'], $dates['endDate'], new LeadMax\TrackYourStats\Report\Formats\HTML(true, [
+            $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\LegacyReportHtml(true, [
                 'idoffer',
                 'offer_name',
                 'Clicks',

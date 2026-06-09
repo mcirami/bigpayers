@@ -152,6 +152,14 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern database update screens run through LegacyCompanyUpdater.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern report views render through LegacyReportHtml.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern click offer reports build through LegacyReportIdOffer.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -420,6 +428,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyAdminLoginDependencyErrors',
             'legacyNotifyDependencyErrors',
             'legacyCompanyUpdaterDependencyErrors',
+            'legacyReportHtmlDependencyErrors',
+            'legacyReportIdOfferDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -1075,6 +1085,48 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_report_html_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyReportHtmlDependencyErrorsFor',
+            [[
+                'resources/views/report/bad.blade.php' => 'new \\LeadMax\\TrackYourStats\\Report\\Formats\\HTML();',
+                'app/Support/LegacyReportHtml.php' => 'use LeadMax\\TrackYourStats\\Report\\Formats\\HTML;',
+                'resources/views/report/clean.blade.php' => 'new \\App\\Support\\LegacyReportHtml();',
+            ]]
+        );
+
+        $this->assertContains(
+            'resources/views/report/bad.blade.php: Use App\\Support\\LegacyReportHtml instead of importing the legacy report HTML formatter directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_report_id_offer_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyReportIdOfferDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\Report\\ID\\Offer($assign);',
+                'app/Support/LegacyReportIdOffer.php' => 'use LeadMax\\TrackYourStats\\Report\\ID\\Offer;',
+                'app/Http/Controllers/CleanController.php' => 'new LegacyReportIdOffer($assign);',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyReportIdOffer instead of importing the legacy report ID offer class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1110,6 +1162,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyAdminLoginForbiddenPatterns',
             'legacyNotifyForbiddenPatterns',
             'legacyCompanyUpdaterForbiddenPatterns',
+            'legacyReportHtmlForbiddenPatterns',
+            'legacyReportIdOfferForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

@@ -45,7 +45,7 @@
 			}
 
 			$reporter->between($dates['startDate'], $dates['endDate'],
-			new LeadMax\TrackYourStats\Report\Formats\HTML(true,
+			new \App\Support\LegacyReportHtml(true,
 			$array,$dates));
         @endphp
 

@@ -12,6 +12,7 @@ use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
 use App\Support\LegacyPermissions as Permissions;
 use App\Support\LegacyPayouts as Payouts;
+use App\Support\LegacyReportIdOffer;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
@@ -77,7 +78,7 @@ class ClickReportController extends ReportController
         $assign = new Assignments($myAssignments);
 
         $assign->getAssignments();
-        $report = new \LeadMax\TrackYourStats\Report\ID\Offer($assign);
+        $report = new LegacyReportIdOffer($assign);
 
         $report->fetchReport($dates['startDate'], $dates['endDate']);
 
