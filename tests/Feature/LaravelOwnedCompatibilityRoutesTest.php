@@ -348,6 +348,37 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_adjustment_log_reads_use_legacy_adjustments_log_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/AdjustmentsController.php'),
+            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyAdjustmentsLog as AdjustmentsLog', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog',
+            File::get(app_path('Support/LegacyAdjustmentsLog.php'))
+        );
+    }
+
+    public function test_modern_sale_log_reads_use_legacy_sale_log_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacySaleLog as SaleLog', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\SaleLog', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\SaleLog',
+            File::get(app_path('Support/LegacySaleLog.php'))
+        );
+    }
+
     public function test_modern_date_reads_use_legacy_date_boundary(): void
     {
         foreach ([

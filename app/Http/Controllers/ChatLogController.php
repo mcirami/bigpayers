@@ -10,8 +10,8 @@ use App\Support\LegacyConversion as Conversion;
 use App\Support\LegacyImagesUploader as ImagesUploader;
 use App\Support\LegacyPendingConversion as PendingConversion;
 use App\Support\LegacyPermissions as Permissions;
+use App\Support\LegacySaleLog as SaleLog;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Offer\SaleLog;
 
 class ChatLogController extends Controller
 {

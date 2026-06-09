@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
 use App\Support\LegacyClick as Click;
 use App\Support\LegacyConversion as Conversion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use LeadMax\TrackYourStats\Offer\AdjustmentsLog;
 
 class AdjustmentsController extends Controller
 {

@@ -209,6 +209,22 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyPayouts.php' => 'The dedicated boundary around the legacy payouts class.',
     ];
 
+    private array $legacyAdjustmentsLogForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog' => 'Use App\\Support\\LegacyAdjustmentsLog instead of importing the legacy adjustments log class directly.',
+    ];
+
+    private array $legacyAdjustmentsLogAllowedFiles = [
+        'app/Support/LegacyAdjustmentsLog.php' => 'The dedicated boundary around the legacy adjustments log class.',
+    ];
+
+    private array $legacySaleLogForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\SaleLog' => 'Use App\\Support\\LegacySaleLog instead of importing the legacy sale log class directly.',
+    ];
+
+    private array $legacySaleLogAllowedFiles = [
+        'app/Support/LegacySaleLog.php' => 'The dedicated boundary around the legacy sale log class.',
+    ];
+
     private array $legacyDateForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Table\\Date' => 'Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
     ];
@@ -506,6 +522,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyAdjustmentsLogDependencyErrors = $this->legacyAdjustmentsLogDependencyErrors();
+
+        if ($legacyAdjustmentsLogDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy adjustments log class directly:');
+            $legacyAdjustmentsLogDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacySaleLogDependencyErrors = $this->legacySaleLogDependencyErrors();
+
+        if ($legacySaleLogDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy sale log class directly:');
+            $legacySaleLogDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyDateDependencyErrors = $this->legacyDateDependencyErrors();
 
         if ($legacyDateDependencyErrors->isNotEmpty()) {
@@ -586,6 +620,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code uploads sale-log images through LegacyImagesUploader.');
         $this->info('Modern Laravel code reads and sends notifications through LegacyNotifications.');
         $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
+        $this->info('Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.');
+        $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
         $this->info('Modern Laravel code resolves legacy date helpers through LegacyDate.');
         $this->info('Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.');
         $this->info('Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.');
@@ -1777,6 +1813,110 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyPayoutsForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyAdjustmentsLogDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyAdjustmentsLogDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyAdjustmentsLogDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyAdjustmentsLogAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyAdjustmentsLogForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacySaleLogDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacySaleLogDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacySaleLogDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacySaleLogAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacySaleLogForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

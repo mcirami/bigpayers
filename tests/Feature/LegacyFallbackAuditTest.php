@@ -117,6 +117,14 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code writes sale logs through LegacySaleLog.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code resolves legacy date helpers through LegacyDate.',
             $output
         );
@@ -387,6 +395,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyImagesUploaderDependencyErrors',
             'legacyNotificationsDependencyErrors',
             'legacyPayoutsDependencyErrors',
+            'legacyAdjustmentsLogDependencyErrors',
+            'legacySaleLogDependencyErrors',
             'legacyDateDependencyErrors',
             'legacyPaginateDependencyErrors',
             'legacyAssignmentsDependencyErrors',
@@ -851,6 +861,48 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_adjustments_log_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyAdjustmentsLogDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog;',
+                'app/Support/LegacyAdjustmentsLog.php' => 'use LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAdjustmentsLog as AdjustmentsLog;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAdjustmentsLog instead of importing the legacy adjustments log class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_sale_log_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacySaleLogDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\SaleLog;',
+                'app/Support/LegacySaleLog.php' => 'use LeadMax\\TrackYourStats\\Offer\\SaleLog;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacySaleLog as SaleLog;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacySaleLog instead of importing the legacy sale log class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_date_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -945,6 +997,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyImagesUploaderForbiddenPatterns',
             'legacyNotificationsForbiddenPatterns',
             'legacyPayoutsForbiddenPatterns',
+            'legacyAdjustmentsLogForbiddenPatterns',
+            'legacySaleLogForbiddenPatterns',
             'legacyDateForbiddenPatterns',
             'legacyPaginateForbiddenPatterns',
             'legacyAssignmentsForbiddenPatterns',

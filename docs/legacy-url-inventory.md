@@ -421,6 +421,13 @@ Remaining cleanup is mostly archival and hardening:
 - modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
   through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
   Laravel-side payout imports outside the boundary
+- modern adjustment creation and adjustment-report filtering now resolve the
+  legacy `AdjustmentsLog` helper through `App\Support\LegacyAdjustmentsLog`;
+  the fallback audit fails on new direct Laravel-side adjustments log imports
+  outside the boundary
+- modern chat-log sale-log writes now resolve the legacy `SaleLog` helper
+  through `App\Support\LegacySaleLog`; the fallback audit fails on new direct
+  Laravel-side sale log imports outside the boundary
 - modern report date helpers and report Blade date helper instantiations now
   resolve the legacy `Date` helper through `App\Support\LegacyDate`; the
   fallback audit fails on new direct Laravel-side date imports outside the
