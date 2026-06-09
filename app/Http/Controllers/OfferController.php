@@ -12,9 +12,16 @@ use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyConversionPostBackURL;
 use App\Support\LegacyDeductionPostBackURL;
+use App\Support\LegacyDeviceRuleHandler;
 use App\Support\LegacyFreePostBackURL;
+use App\Support\LegacyCampaigns as Campaigns;
+use App\Support\LegacyGeoRuleHandler;
+use App\Support\LegacyNoneUniqueRuleHandler;
 use App\Support\LegacyOffer as LegacyOffer;
 use App\Support\LegacyNotifications as Notifications;
+use App\Support\LegacyOfferRuleGeo;
+use App\Support\LegacyOfferRules;
+use App\Support\LegacyOfferView;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser;
 use App\User;
@@ -28,7 +35,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request as InputRequest;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule as ValidationRule;
-use LeadMax\TrackYourStats\Offer\Campaigns;
 
 class OfferController extends Controller
 {
@@ -115,7 +121,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one country before saving this rule.'], 422);
         }
 
-        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Geo($data))->createRule();
+        (new LegacyGeoRuleHandler($data))->createRule();
 
         return response()->json(['message' => 'Geo rule created.']);
     }
@@ -136,7 +142,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one country before saving this rule.'], 422);
         }
 
-        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Geo((string) $rule))->updateRule($ruleData, $countryList);
+        (new LegacyGeoRuleHandler((string) $rule))->updateRule($ruleData, $countryList);
 
         return response()->json(['message' => 'Geo rule updated.']);
     }
@@ -174,7 +180,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one device before saving this rule.'], 422);
         }
 
-        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Device($data))->createRule();
+        (new LegacyDeviceRuleHandler($data))->createRule();
 
         return response()->json(['message' => 'Device rule created.']);
     }
@@ -195,7 +201,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one device before saving this rule.'], 422);
         }
 
-        (new \LeadMax\TrackYourStats\Offer\Rules\Handlers\Device((string) $rule))->updateRule($ruleData, $deviceList);
+        (new LegacyDeviceRuleHandler((string) $rule))->updateRule($ruleData, $deviceList);
 
         return response()->json(['message' => 'Device rule updated.']);
     }
@@ -375,8 +381,8 @@ class OfferController extends Controller
 	public function showRules($id)
 	{
 		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
-		$rules = new \LeadMax\TrackYourStats\Offer\Rules($offer->idoffer);
-		$offerView = new \LeadMax\TrackYourStats\Offer\View(CurrentUserSession::type());
+		$rules = new LegacyOfferRules($offer->idoffer);
+		$offerView = new LegacyOfferView(CurrentUserSession::type());
 		$activeCap = false;
 		$capAmount = 0;
 		$geoRules = [];
@@ -491,7 +497,7 @@ class OfferController extends Controller
 		$rulesTableHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
 
 		ob_start();
-		\LeadMax\TrackYourStats\Offer\Rules\Geo::printCountriesAsTable();
+		LegacyOfferRuleGeo::printCountriesAsTable();
 		$countryRowsHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
 
 		ob_start();
@@ -506,7 +512,7 @@ class OfferController extends Controller
 			'offer' => $offer,
 			'rulesTableHtml' => $rulesTableHtml,
 			'countryRowsHtml' => $countryRowsHtml,
-			'countryMap' => \LeadMax\TrackYourStats\Offer\Rules\Geo::$countries,
+			'countryMap' => LegacyOfferRuleGeo::$countries,
 			'geoRules' => $geoRules,
 			'deviceRules' => $deviceRules,
 			'geoRedirectOfferSelect' => $geoRedirectOfferSelect,
@@ -542,7 +548,7 @@ class OfferController extends Controller
 
         $payload = $this->validateNoneUniqueRuleRequest($request, (int) $offer->idoffer);
 
-        $rule = new \LeadMax\TrackYourStats\Offer\Rules\Handlers\NoneUnique();
+        $rule = new LegacyNoneUniqueRuleHandler();
         $rule->name = trim($payload['name']);
         $rule->redirect_offer = (int) $payload['redirect_offer'];
         $rule->offer_idoffer = (int) $offer->idoffer;
@@ -562,7 +568,7 @@ class OfferController extends Controller
         return view('offer.none-unique-rule', [
             'mode' => 'edit',
             'offer' => $offer,
-            'rule' => \LeadMax\TrackYourStats\Offer\Rules\Handlers\NoneUnique::loadFromId((int) $rule),
+            'rule' => LegacyNoneUniqueRuleHandler::loadFromId((int) $rule),
             'redirectOffers' => $this->redirectOfferOptionsForRules((int) $offer->idoffer),
             'action' => "/offer/rules/none-unique/{$rule}/edit",
         ]);
@@ -575,7 +581,7 @@ class OfferController extends Controller
         abort_unless($this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer), 403, 'You do not have access to this offer.');
 
         $payload = $this->validateNoneUniqueRuleRequest($request, (int) $ruleRecord->offer_idoffer);
-        $noneUniqueRule = \LeadMax\TrackYourStats\Offer\Rules\Handlers\NoneUnique::loadFromId((int) $rule);
+        $noneUniqueRule = LegacyNoneUniqueRuleHandler::loadFromId((int) $rule);
         $noneUniqueRule->name = trim($payload['name']);
         $noneUniqueRule->redirect_offer = (int) $payload['redirect_offer'];
         $noneUniqueRule->is_active = (int) $payload['is_active'];
@@ -709,7 +715,7 @@ class OfferController extends Controller
 
     private function redirectOfferOptionsForRules(int $excludeOfferId): array
     {
-        $offerView = new \LeadMax\TrackYourStats\Offer\View(CurrentUserSession::type());
+        $offerView = new LegacyOfferView(CurrentUserSession::type());
 
         return collect($offerView->getUsersQuery()->fetchAll(\PDO::FETCH_OBJ))
             ->filter(fn ($offer) => (int) $offer->idoffer !== $excludeOfferId)

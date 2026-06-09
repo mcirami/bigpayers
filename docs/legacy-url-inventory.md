@@ -360,7 +360,9 @@ Remaining cleanup is mostly archival and hardening:
 - legacy offer-domain helpers no longer import the legacy company class for
   offer URL dropdown/query support; modern offer assignment, mass-postback, and
   offer visibility flows now resolve legacy offer helpers through `App\Support`
-  wrappers, and the fallback audit blocks new direct Laravel-side imports
+  wrappers; campaign defaults, offer redirect-option lookups, and offer rule
+  helpers do the same, and the fallback audit blocks new direct Laravel-side
+  imports
 - offer-specific conversion, free-signup, and deduction postback URL flows now
   instantiate legacy postback URL helpers through `App\Support` wrappers; the
   fallback audit blocks direct Laravel-side references to those legacy classes

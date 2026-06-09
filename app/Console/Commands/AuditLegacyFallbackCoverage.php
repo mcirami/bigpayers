@@ -219,6 +219,28 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyRepHasOffer.php' => 'The dedicated boundary around the legacy offer-assignment class.',
     ];
 
+    private array $legacyOfferSupportForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\Campaigns' => 'Use App\\Support\\LegacyCampaigns instead of importing the legacy campaigns class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\View' => 'Use App\\Support\\LegacyOfferView instead of referencing the legacy offer view class directly.',
+    ];
+
+    private array $legacyOfferSupportAllowedFiles = [
+        'app/Support/LegacyCampaigns.php' => 'The dedicated boundary around the legacy campaigns class.',
+        'app/Support/LegacyOfferView.php' => 'The dedicated boundary around the legacy offer view class.',
+    ];
+
+    private array $legacyOfferRulesForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\Rules' => 'Use App\\Support legacy offer-rule wrappers instead of referencing legacy offer-rule classes directly.',
+    ];
+
+    private array $legacyOfferRulesAllowedFiles = [
+        'app/Support/LegacyOfferRules.php' => 'The dedicated boundary around the legacy offer rules collection.',
+        'app/Support/LegacyOfferRuleGeo.php' => 'The dedicated boundary around the legacy offer geo-rule helper.',
+        'app/Support/LegacyGeoRuleHandler.php' => 'The dedicated boundary around the legacy geo-rule handler.',
+        'app/Support/LegacyDeviceRuleHandler.php' => 'The dedicated boundary around the legacy device-rule handler.',
+        'app/Support/LegacyNoneUniqueRuleHandler.php' => 'The dedicated boundary around the legacy none-unique-rule handler.',
+    ];
+
     private array $legacyAdjustmentsLogForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog' => 'Use App\\Support\\LegacyAdjustmentsLog instead of importing the legacy adjustments log class directly.',
     ];
@@ -723,6 +745,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyOfferSupportDependencyErrors = $this->legacyOfferSupportDependencyErrors();
+
+        if ($legacyOfferSupportDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports legacy offer support helpers directly:');
+            $legacyOfferSupportDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyOfferRulesDependencyErrors = $this->legacyOfferRulesDependencyErrors();
+
+        if ($legacyOfferRulesDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still references legacy offer-rule classes directly:');
+            $legacyOfferRulesDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyPayoutsDependencyErrors = $this->legacyPayoutsDependencyErrors();
 
         if ($legacyPayoutsDependencyErrors->isNotEmpty()) {
@@ -992,6 +1032,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code uploads sale-log images through LegacyImagesUploader.');
         $this->info('Modern Laravel code reads and sends notifications through LegacyNotifications.');
         $this->info('Modern Laravel code resolves legacy offer-domain helpers through App\Support boundaries.');
+        $this->info('Modern Laravel code resolves legacy offer support helpers through App\Support boundaries.');
+        $this->info('Modern Laravel code resolves legacy offer-rule helpers through App\Support boundaries.');
         $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
         $this->info('Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.');
         $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
@@ -2256,6 +2298,110 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyOfferDomainForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyOfferSupportDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyOfferSupportDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyOfferSupportDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferSupportAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyOfferSupportForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyOfferRulesDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyOfferRulesDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyOfferRulesDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferRulesAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyOfferRulesForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

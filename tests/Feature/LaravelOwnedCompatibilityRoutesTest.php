@@ -201,6 +201,55 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_modern_offer_support_helpers_use_legacy_boundaries(): void
+    {
+        $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $offerController);
+        $this->assertStringContainsString('App\\Support\\LegacyOfferView', $offerController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $offerController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\View', $offerController);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\Campaigns',
+            File::get(app_path('Support/LegacyCampaigns.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\View',
+            File::get(app_path('Support/LegacyOfferView.php'))
+        );
+    }
+
+    public function test_modern_offer_rule_helpers_use_legacy_boundaries(): void
+    {
+        $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+
+        foreach ([
+            'App\\Support\\LegacyDeviceRuleHandler',
+            'App\\Support\\LegacyGeoRuleHandler',
+            'App\\Support\\LegacyNoneUniqueRuleHandler',
+            'App\\Support\\LegacyOfferRuleGeo',
+            'App\\Support\\LegacyOfferRules',
+        ] as $expectedImport) {
+            $this->assertStringContainsString($expectedImport, $offerController);
+        }
+
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Rules', $offerController);
+
+        foreach ([
+            'LegacyOfferRules.php' => 'LeadMax\\TrackYourStats\\Offer\\Rules',
+            'LegacyOfferRuleGeo.php' => 'LeadMax\\TrackYourStats\\Offer\\Rules\\Geo',
+            'LegacyGeoRuleHandler.php' => 'LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\Geo',
+            'LegacyDeviceRuleHandler.php' => 'LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\Device',
+            'LegacyNoneUniqueRuleHandler.php' => 'LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\NoneUnique',
+        ] as $wrapper => $legacyClass) {
+            $this->assertStringContainsString(
+                $legacyClass,
+                File::get(app_path("Support/{$wrapper}"))
+            );
+        }
+    }
+
     public function test_admin_legacy_php_urls_route_to_laravel_controllers(): void
     {
         $routes = [

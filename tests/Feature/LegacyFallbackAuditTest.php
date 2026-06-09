@@ -117,6 +117,14 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy offer support helpers through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy offer-rule helpers through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code resolves legacy payout helpers through LegacyPayouts.',
             $output
         );
@@ -471,6 +479,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyImagesUploaderDependencyErrors',
             'legacyNotificationsDependencyErrors',
             'legacyOfferDomainDependencyErrors',
+            'legacyOfferSupportDependencyErrors',
+            'legacyOfferRulesDependencyErrors',
             'legacyPayoutsDependencyErrors',
             'legacyAdjustmentsLogDependencyErrors',
             'legacySaleLogDependencyErrors',
@@ -951,6 +961,48 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyRepHasOffer instead of importing the legacy offer-assignment class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_offer_support_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyOfferSupportDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\Campaigns;',
+                'app/Support/LegacyCampaigns.php' => 'use LeadMax\\TrackYourStats\\Offer\\Campaigns;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyCampaigns as Campaigns;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyCampaigns instead of importing the legacy campaigns class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_offer_rules_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyOfferRulesDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\Geo($data);',
+                'app/Support/LegacyGeoRuleHandler.php' => 'use LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\Geo;',
+                'app/Http/Controllers/CleanController.php' => 'new \\App\\Support\\LegacyGeoRuleHandler($data);',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support legacy offer-rule wrappers instead of referencing legacy offer-rule classes directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1491,6 +1543,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyImagesUploaderForbiddenPatterns',
             'legacyNotificationsForbiddenPatterns',
             'legacyOfferDomainForbiddenPatterns',
+            'legacyOfferSupportForbiddenPatterns',
+            'legacyOfferRulesForbiddenPatterns',
             'legacyPayoutsForbiddenPatterns',
             'legacyAdjustmentsLogForbiddenPatterns',
             'legacySaleLogForbiddenPatterns',
