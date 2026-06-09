@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers\Report;
 
+use App\Support\LegacyDollarSignFilter as DollarSign;
+use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
 use Carbon\Carbon;
+use App\Support\LegacyReporter as Reporter;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Report\Filters\DollarSign;
-use LeadMax\TrackYourStats\Report\Filters\EarningPerClick;
-use LeadMax\TrackYourStats\Report\Filters\Total;
-use LeadMax\TrackYourStats\Report\Reporter;
+use App\Support\LegacyTotalFilter as Total;
 use LeadMax\TrackYourStats\Report\Repositories\AdvertiserRepository;
 
 class AdvertiserReportController extends ReportController

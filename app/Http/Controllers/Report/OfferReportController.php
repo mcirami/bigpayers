@@ -5,16 +5,20 @@ namespace App\Http\Controllers\Report;
 use App\Privilege;
 use App\Offer;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyClickLinkFilter as ClickLink;
+use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
+use App\Support\LegacyDollarSignFilter as DollarSign;
+use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\LegacyReporter as Reporter;
+use App\Support\LegacyTotalFilter as Total;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Affiliate;
-use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AdminOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\ManagerOfferRepository;
 
-use LeadMax\TrackYourStats\Report\Filters;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\GodOfferRepository;
 
 class OfferReportController extends ReportController
@@ -140,21 +144,21 @@ class OfferReportController extends ReportController
 
 	private function applyAdminStyleOfferFilters(Reporter $reporter): void {
 		$reporter
-			->addFilter( new Filters\DeductionColumnFilter() )
-			->addFilter( new Filters\Total( self::OFFER_TOTAL_COLUMNS ) )
-			->addFilter( new Filters\EarningPerClick( 'UniqueClicks', 'Revenue' ) )
-			->addFilter( new Filters\DollarSign( [ 'Revenue', 'Deductions', 'EPC' ] ) )
-			->addFilter( new Filters\ClickLink( request() ) );
+			->addFilter( new DeductionColumnFilter() )
+			->addFilter( new Total( self::OFFER_TOTAL_COLUMNS ) )
+			->addFilter( new EarningPerClick( 'UniqueClicks', 'Revenue' ) )
+			->addFilter( new DollarSign( [ 'Revenue', 'Deductions', 'EPC' ] ) )
+			->addFilter( new ClickLink( request() ) );
 	}
 
 	private function applyAffiliateOfferFilters(Reporter $reporter): void {
 		$reporter
-			->addFilter( new Filters\DeductionColumnFilter() )
-			->addFilter( new Filters\Total(
+			->addFilter( new DeductionColumnFilter() )
+			->addFilter( new Total(
 				array_merge( self::OFFER_TOTAL_COLUMNS, [ 'TOTAL' ] ),
 				[ 'Revenue', 'Deductions' ]
 			) )
-			->addFilter( new Filters\EarningPerClick( 'UniqueClicks', 'Revenue' ) )
-			->addFilter( new Filters\DollarSign( [ 'Revenue', 'Deductions', 'EPC', 'TOTAL' ] ) );
+			->addFilter( new EarningPerClick( 'UniqueClicks', 'Revenue' ) )
+			->addFilter( new DollarSign( [ 'Revenue', 'Deductions', 'EPC', 'TOTAL' ] ) );
 	}
 }

@@ -11,11 +11,11 @@ use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyClickGeo as ClickGeo;
 use App\Support\LegacyPayouts as Payouts;
+use App\Support\LegacyReporter as Reporter;
+use App\Support\LegacyTotalFilter as Total;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\SubVarRepository;
-use LeadMax\TrackYourStats\Report\Filters;
 use App\Http\Traits\ClickTraits;
 
 class SubReportController extends ReportController
@@ -35,7 +35,7 @@ class SubReportController extends ReportController
         $reporter = new Reporter($repo);
 
         $reporter
-            ->addFilter(new Filters\Total(['clicks','unique','conversions']));
+            ->addFilter(new Total(['clicks','unique','conversions']));
             //->addFilter(new Filters\EarningPerClick('unique', 'revenue'))
             //->addFilter(new Filters\DollarSign(['EPC', 'revenue', 'TOTAL', 'Total']));
 

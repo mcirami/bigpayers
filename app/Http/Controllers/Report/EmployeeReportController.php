@@ -4,8 +4,13 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
+use App\Support\LegacyDollarSignFilter as DollarSign;
+use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\LegacyReporter as Reporter;
+use App\Support\LegacyTotalFilter as Total;
+use App\Support\LegacyUserToolTipFilter as UserToolTip;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Report\Filters;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\GodEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\AdminEmployeeRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Employee\ManagerEmployeeRepository;
@@ -21,7 +26,7 @@ class EmployeeReportController extends ReportController
         $isGodUser = CurrentUserSession::type() === Privilege::ROLE_GOD;
 	    $SmsStatsPermission = CurrentUserSession::can('view_sms_stats');
 
-        $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repository);
+        $reporter = new Reporter($repository);
 
         $totals = [
             'Clicks',
@@ -54,14 +59,14 @@ class EmployeeReportController extends ReportController
         }
 
         $reporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total(
+            ->addFilter(new DeductionColumnFilter())
+            ->addFilter(new Total(
                 $totals,
                 ['Revenue', 'Deductions', 'BonusRevenue', 'ReferralRevenue']
             ))
-            ->addFilter(new Filters\EarningPerClick())
-            ->addFilter(new Filters\DollarSign($currencyColumns))
-            ->addFilter(new Filters\UserToolTip())->addFilter(function ($data) {
+            ->addFilter(new EarningPerClick())
+            ->addFilter(new DollarSign($currencyColumns))
+            ->addFilter(new UserToolTip())->addFilter(function ($data) {
                 foreach ($data as $key => &$row) {
                     if (isset($row['Clicks']) && is_numeric($row['idrep'])) {
                         $queryString = http_build_query(request()->query());

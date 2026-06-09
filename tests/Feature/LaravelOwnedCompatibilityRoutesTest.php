@@ -551,6 +551,62 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_report_controllers_use_legacy_reporter_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
+            app_path('Http/Controllers/Report/AdvertiserReportController.php'),
+            app_path('Http/Controllers/Report/AggregateReportController.php'),
+            app_path('Http/Controllers/Report/ChatLogReportController.php'),
+            app_path('Http/Controllers/Report/EmployeeReportController.php'),
+            app_path('Http/Controllers/Report/OfferReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyReporter as Reporter', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Reporter', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Report\\Reporter',
+            File::get(app_path('Support/LegacyReporter.php'))
+        );
+    }
+
+    public function test_modern_report_controllers_use_legacy_report_filter_boundaries(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
+            app_path('Http/Controllers/Report/AdvertiserReportController.php'),
+            app_path('Http/Controllers/Report/AggregateReportController.php'),
+            app_path('Http/Controllers/Report/EmployeeReportController.php'),
+            app_path('Http/Controllers/Report/OfferReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Filters', $contents);
+        }
+
+        foreach ([
+            app_path('Support/LegacyClickLinkFilter.php'),
+            app_path('Support/LegacyDeductionColumnFilter.php'),
+            app_path('Support/LegacyDollarSignFilter.php'),
+            app_path('Support/LegacyEarningPerClickFilter.php'),
+            app_path('Support/LegacyTotalFilter.php'),
+            app_path('Support/LegacyUserToolTipFilter.php'),
+        ] as $path) {
+            $this->assertStringContainsString(
+                'LeadMax\\TrackYourStats\\Report\\Filters',
+                File::get($path)
+            );
+        }
+    }
+
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
     {
         $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());

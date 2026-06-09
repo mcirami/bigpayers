@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPaginate as Paginate;
+use App\Support\LegacyReporter as Reporter;
 use App\User;
 use Carbon\Carbon;
 use LeadMax\TrackYourStats\Report\Repositories\AffiliateChatLogRepository;
@@ -37,7 +38,7 @@ class ChatLogReportController extends ReportController
         $repo->setLimit(\request()->query('rpp', 10));
         $repo->setOffset($paginate->offset());
 
-        $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repo);
+        $reporter = new Reporter($repo);
 
         return compact('reporter', 'paginate', 'dates');
     }
@@ -63,7 +64,7 @@ class ChatLogReportController extends ReportController
         // Pagination was not used in the legacy page.
 
 
-        $reporter = new \LeadMax\TrackYourStats\Report\Reporter($repo);
+        $reporter = new Reporter($repo);
 
         $reporter->addFilter(function ($data) {
             $dates = [

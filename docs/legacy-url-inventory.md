@@ -457,6 +457,12 @@ Remaining cleanup is mostly archival and hardening:
 - modern click offer reports now build legacy report-ID offer reports through
   `App\Support\LegacyReportIdOffer`; the fallback audit fails on new direct
   Laravel-side report ID offer imports outside the boundary
+- modern report controllers now coordinate report repositories through
+  `App\Support\LegacyReporter`; the fallback audit fails on new direct
+  Laravel-side reporter imports outside the boundary
+- modern report controllers now format report rows through `App\Support`
+  wrappers for legacy report filters; the fallback audit fails on new direct
+  Laravel-side report filter imports outside those boundaries
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

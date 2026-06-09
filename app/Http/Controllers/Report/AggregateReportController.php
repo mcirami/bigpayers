@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Report;
 
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDollarSignFilter as DollarSign;
+use App\Support\LegacyReporter as Reporter;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\AggregateServiceProvider;
-use LeadMax\TrackYourStats\Report\Filters\DollarSign;
-use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\AggregateReportRepository;
 
 class AggregateReportController extends ReportController

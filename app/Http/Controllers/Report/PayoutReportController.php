@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Support\CurrentUserSession;
 use App\Http\Controllers\Controller;
+use App\Support\CurrentUserSession;
+use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
+use App\Support\LegacyDollarSignFilter as DollarSign;
+use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\LegacyReporter as Reporter;
+use App\Support\LegacyTotalFilter as Total;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use LeadMax\TrackYourStats\Report\AffiliatePayout;
-use LeadMax\TrackYourStats\Report\Filters\DeductionColumnFilter;
-use LeadMax\TrackYourStats\Report\Filters\DollarSign;
-use LeadMax\TrackYourStats\Report\Filters\Total;
-use LeadMax\TrackYourStats\Report\Reporter;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\PayoutLogRepository;
-use LeadMax\TrackYourStats\Report\Filters;
 
 class PayoutReportController extends ReportController
 {
@@ -40,10 +40,10 @@ class PayoutReportController extends ReportController
         $repo->setAffiliateId(CurrentUserSession::id());
         $offerReporter = new Reporter($repo);
         $offerReporter
-            ->addFilter(new Filters\DeductionColumnFilter())
-            ->addFilter(new Filters\Total(['Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'TOTAL'], ['Revenue', 'Deductions']))
-            ->addFilter(new Filters\EarningPerClick('UniqueClicks', 'Revenue'))
-            ->addFilter(new Filters\DollarSign(['Revenue', 'Deductions', 'EPC', 'TOTAL']));
+            ->addFilter(new DeductionColumnFilter())
+            ->addFilter(new Total(['Clicks', 'UniqueClicks', 'FreeSignUps', 'PendingConversions', 'Conversions', 'Revenue', 'Deductions', 'TOTAL'], ['Revenue', 'Deductions']))
+            ->addFilter(new EarningPerClick('UniqueClicks', 'Revenue'))
+            ->addFilter(new DollarSign(['Revenue', 'Deductions', 'EPC', 'TOTAL']));
 
         $offerReport = $offerReporter->fetchReport($dates['startDate'], $dates['endDate']);
         $payoutReport = $this->reportPayout();
