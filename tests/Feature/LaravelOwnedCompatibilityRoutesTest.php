@@ -89,6 +89,58 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_user_domain_helpers_use_legacy_boundaries(): void
+    {
+        $bonusController = File::get(app_path('Http/Controllers/BonusController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyBonus', $bonusController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Bonus', $bonusController);
+
+        $salaryController = File::get(app_path('Http/Controllers/SalaryController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacySalary', $salaryController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Salary', $salaryController);
+
+        $globalPostbackController = File::get(app_path('Http/Controllers/GlobalPostbackController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyPostBackUrl as PostBackUrl', $globalPostbackController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\PostBackUrl', $globalPostbackController);
+
+        $userController = File::get(app_path('Http/Controllers/UserController.php'));
+
+        foreach ([
+            'App\\Support\\LegacyBonus as Bonus',
+            'App\\Support\\LegacyPrivileges as Privileges',
+            'App\\Support\\LegacyReferrals as Referrals',
+            'App\\Support\\LegacyReportPermissions as ReportPermissions',
+        ] as $expectedImport) {
+            $this->assertStringContainsString($expectedImport, $userController);
+        }
+
+        foreach ([
+            'LeadMax\\TrackYourStats\\User\\Bonus',
+            'LeadMax\\TrackYourStats\\User\\Privileges',
+            'LeadMax\\TrackYourStats\\User\\Referrals',
+            'LeadMax\\TrackYourStats\\User\\ReportPermissions',
+        ] as $forbiddenImport) {
+            $this->assertStringNotContainsString($forbiddenImport, $userController);
+        }
+
+        foreach ([
+            'LegacyBonus.php' => 'LeadMax\\TrackYourStats\\User\\Bonus',
+            'LegacySalary.php' => 'LeadMax\\TrackYourStats\\User\\Salary',
+            'LegacyPostBackUrl.php' => 'LeadMax\\TrackYourStats\\User\\PostBackUrl',
+            'LegacyPrivileges.php' => 'LeadMax\\TrackYourStats\\User\\Privileges',
+            'LegacyReferrals.php' => 'LeadMax\\TrackYourStats\\User\\Referrals',
+            'LegacyReportPermissions.php' => 'LeadMax\\TrackYourStats\\User\\ReportPermissions',
+        ] as $wrapper => $legacyClass) {
+            $this->assertStringContainsString(
+                $legacyClass,
+                File::get(app_path("Support/{$wrapper}"))
+            );
+        }
+    }
+
     public function test_admin_legacy_php_urls_route_to_laravel_controllers(): void
     {
         $routes = [

@@ -6,9 +6,9 @@ use App\Privilege;
 use App\Salary;
 use App\User;
 use App\Support\CurrentUserSession;
+use App\Support\LegacySalary;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\User\Salary as LegacySalary;
 
 class SalaryController extends Controller
 {

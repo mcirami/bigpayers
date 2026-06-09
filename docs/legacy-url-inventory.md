@@ -344,6 +344,10 @@ Remaining cleanup is mostly archival and hardening:
   signup, and user classes through `App\Support` wrappers; the fallback audit now
   blocks new direct Laravel-side `User`, `Login`, and `AffiliateSignUp` imports
   outside those boundaries
+- modern bonus, salary, global-postback, referral, privilege, and report
+  permission flows now resolve legacy user-domain helpers through `App\Support`
+  wrappers; the fallback audit blocks new direct Laravel-side imports outside
+  those boundaries
 - dashboard/master/error/contact/PDF branding surfaces and chat-log sale-log
   paths now read company presentation/subdomain data through the Laravel company
   model instead of loading the legacy company object from session

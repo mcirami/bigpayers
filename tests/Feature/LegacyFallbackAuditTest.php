@@ -153,6 +153,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern layout assets append admin-login scripts through LegacyAdminLogin.',
             $output
         );
@@ -468,6 +472,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyUserDependencyErrors',
             'legacyLoginDependencyErrors',
             'legacyAffiliateSignUpDependencyErrors',
+            'legacyUserDomainDependencyErrors',
             'legacyAdminLoginDependencyErrors',
             'legacyNotifyDependencyErrors',
             'legacyCompanyUpdaterDependencyErrors',
@@ -1135,6 +1140,27 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_user_domain_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyUserDomainDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\Bonus;',
+                'app/Support/LegacyBonus.php' => 'use LeadMax\\TrackYourStats\\User\\Bonus;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyBonus;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyBonus instead of importing the legacy bonus class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_admin_login_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1422,6 +1448,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyUserForbiddenPatterns',
             'legacyLoginForbiddenPatterns',
             'legacyAffiliateSignUpForbiddenPatterns',
+            'legacyUserDomainForbiddenPatterns',
             'legacyAdminLoginForbiddenPatterns',
             'legacyNotifyForbiddenPatterns',
             'legacyCompanyUpdaterForbiddenPatterns',

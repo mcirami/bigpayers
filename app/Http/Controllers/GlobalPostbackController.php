@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyPostBackUrl as PostBackUrl;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\User\PostBackUrl;
 
 class GlobalPostbackController extends Controller
 {

@@ -12,16 +12,16 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyBonus as Bonus;
 use App\Support\LegacyPaginate as Paginate;
 use App\Support\LegacyTree as Tree;
 use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
-use LeadMax\TrackYourStats\User\Bonus;
 use App\Support\LegacyPermissions as Permissions;
+use App\Support\LegacyPrivileges as Privileges;
+use App\Support\LegacyReferrals as Referrals;
+use App\Support\LegacyReportPermissions as ReportPermissions;
 use App\Support\LegacyUser;
-use LeadMax\TrackYourStats\User\Privileges;
-use LeadMax\TrackYourStats\User\Referrals;
-use LeadMax\TrackYourStats\User\ReportPermissions;
 
 class UserController extends Controller
 {
