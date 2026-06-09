@@ -607,6 +607,45 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_modern_report_controllers_use_legacy_report_object_boundaries(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/Report/BlackListReportController.php'),
+            app_path('Http/Controllers/Report/OfferReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Affiliate;', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\AffiliatePayout', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\BlackList', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository', $contents);
+        }
+
+        foreach ([
+            app_path('Support/LegacyAffiliateReport.php') => 'LeadMax\\TrackYourStats\\Report\\Affiliate',
+            app_path('Support/LegacyAffiliatePayoutReport.php') => 'LeadMax\\TrackYourStats\\Report\\AffiliatePayout',
+            app_path('Support/LegacyBlackListReport.php') => 'LeadMax\\TrackYourStats\\Report\\BlackList',
+            app_path('Support/LegacyBlackListRepository.php') => 'LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository',
+        ] as $path => $legacyClass) {
+            $this->assertStringContainsString($legacyClass, File::get($path));
+        }
+    }
+
+    public function test_modern_report_controllers_use_legacy_database_connection_boundary(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/Report/OfferReportController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $controller);
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Database\\DatabaseConnection',
+            File::get(app_path('Support/LegacyDatabaseConnection.php'))
+        );
+    }
+
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
     {
         $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());

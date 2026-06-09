@@ -463,6 +463,12 @@ Remaining cleanup is mostly archival and hardening:
 - modern report controllers now format report rows through `App\Support`
   wrappers for legacy report filters; the fallback audit fails on new direct
   Laravel-side report filter imports outside those boundaries
+- modern affiliate, payout, and blacklist report objects now resolve through
+  `App\Support` wrappers; the fallback audit fails on new direct Laravel-side
+  report object imports outside those boundaries
+- modern report controllers now resolve the legacy database singleton through
+  `App\Support\LegacyDatabaseConnection`; the fallback audit fails on new direct
+  Laravel-side database connection imports outside that boundary
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

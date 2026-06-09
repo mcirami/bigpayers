@@ -168,6 +168,14 @@ class LegacyFallbackAuditTest extends TestCase
             'Modern report controllers format reports through legacy report filter wrappers.',
             $output
         );
+        $this->assertStringContainsString(
+            'Modern report controllers build affiliate and blacklist reports through legacy report object wrappers.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.',
+            $output
+        );
     }
 
     public function test_audit_summary_uses_current_inventory_counts(): void
@@ -440,6 +448,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyReportIdOfferDependencyErrors',
             'legacyReporterDependencyErrors',
             'legacyReportFiltersDependencyErrors',
+            'legacyReportObjectsDependencyErrors',
+            'legacyDatabaseConnectionDependencyErrors',
             'legacyMailDependencyErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
@@ -1179,6 +1189,48 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_report_objects_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyReportObjectsDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\AffiliatePayout;',
+                'app/Support/LegacyAffiliatePayoutReport.php' => 'use LeadMax\\TrackYourStats\\Report\\AffiliatePayout;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAffiliatePayoutReport as AffiliatePayout;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAffiliatePayoutReport instead of importing the legacy affiliate payout report directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_database_connection_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyDatabaseConnectionDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => '\\LeadMax\\TrackYourStats\\Database\\DatabaseConnection::getInstance();',
+                'app/Support/LegacyDatabaseConnection.php' => 'use LeadMax\\TrackYourStats\\Database\\DatabaseConnection;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyDatabaseConnection as DatabaseConnection;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyDatabaseConnection instead of referencing the legacy database connection class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_audit_hardening_pattern_lists_have_documented_messages(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1218,6 +1270,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyReportIdOfferForbiddenPatterns',
             'legacyReporterForbiddenPatterns',
             'legacyReportFiltersForbiddenPatterns',
+            'legacyReportObjectsForbiddenPatterns',
+            'legacyDatabaseConnectionForbiddenPatterns',
             'legacyMailForbiddenPatterns',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);

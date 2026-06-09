@@ -318,6 +318,28 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyUserToolTipFilter.php' => 'The dedicated boundary around the legacy user-tooltip report filter.',
     ];
 
+    private array $legacyReportObjectsForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Report\\Affiliate;' => 'Use App\\Support\\LegacyAffiliateReport instead of importing the legacy affiliate report directly.',
+        'LeadMax\\TrackYourStats\\Report\\AffiliatePayout' => 'Use App\\Support\\LegacyAffiliatePayoutReport instead of importing the legacy affiliate payout report directly.',
+        'LeadMax\\TrackYourStats\\Report\\BlackList' => 'Use App\\Support\\LegacyBlackListReport instead of referencing the legacy blacklist report directly.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository' => 'Use App\\Support\\LegacyBlackListRepository instead of referencing the legacy blacklist repository directly.',
+    ];
+
+    private array $legacyReportObjectsAllowedFiles = [
+        'app/Support/LegacyAffiliateReport.php' => 'The dedicated boundary around the legacy affiliate report.',
+        'app/Support/LegacyAffiliatePayoutReport.php' => 'The dedicated boundary around the legacy affiliate payout report.',
+        'app/Support/LegacyBlackListReport.php' => 'The dedicated boundary around the legacy blacklist report.',
+        'app/Support/LegacyBlackListRepository.php' => 'The dedicated boundary around the legacy blacklist repository.',
+    ];
+
+    private array $legacyDatabaseConnectionForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Database\\DatabaseConnection' => 'Use App\\Support\\LegacyDatabaseConnection instead of referencing the legacy database connection class directly.',
+    ];
+
+    private array $legacyDatabaseConnectionAllowedFiles = [
+        'app/Support/LegacyDatabaseConnection.php' => 'The dedicated boundary around the legacy database connection class.',
+    ];
+
     private array $legacyMailForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
     ];
@@ -708,6 +730,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyReportObjectsDependencyErrors = $this->legacyReportObjectsDependencyErrors();
+
+        if ($legacyReportObjectsDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports legacy report objects directly:');
+            $legacyReportObjectsDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacyDatabaseConnectionDependencyErrors = $this->legacyDatabaseConnectionDependencyErrors();
+
+        if ($legacyDatabaseConnectionDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy database connection class directly:');
+            $legacyDatabaseConnectionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyMailDependencyErrors = $this->legacyMailDependencyErrors();
 
         if ($legacyMailDependencyErrors->isNotEmpty()) {
@@ -774,6 +814,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern click offer reports build through LegacyReportIdOffer.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
         $this->info('Modern report controllers format reports through legacy report filter wrappers.');
+        $this->info('Modern report controllers build affiliate and blacklist reports through legacy report object wrappers.');
+        $this->info('Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
 
         return self::SUCCESS;
@@ -2638,6 +2680,110 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyReportFiltersForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyReportObjectsDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyReportObjectsDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyReportObjectsDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyReportObjectsAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyReportObjectsForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyDatabaseConnectionDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyDatabaseConnectionDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyDatabaseConnectionDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyDatabaseConnectionAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyDatabaseConnectionForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

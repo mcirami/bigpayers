@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyAffiliatePayoutReport as AffiliatePayout;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
@@ -13,7 +14,6 @@ use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use LeadMax\TrackYourStats\Report\AffiliatePayout;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\PayoutLogRepository;
 

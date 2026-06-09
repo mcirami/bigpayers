@@ -7,14 +7,15 @@ use App\Offer;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyClickLinkFilter as ClickLink;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\LegacyAffiliateReport as Affiliate;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\Report\Affiliate;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AdminOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\AffiliateOfferRepository;
 use LeadMax\TrackYourStats\Report\Repositories\Offer\ManagerOfferRepository;
@@ -66,7 +67,7 @@ class OfferReportController extends ReportController
     public function manager()
     {
         $dates = self::getDates();
-        $repo = new ManagerOfferRepository(\LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance());
+        $repo = new ManagerOfferRepository(DatabaseConnection::getInstance());
 
         $reporter = new Reporter($repo);
 
