@@ -30,6 +30,65 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertRouteAction('/signup_success.php', 'GET', SignupController::class . '@success');
     }
 
+    public function test_public_auth_flows_use_legacy_auth_boundaries(): void
+    {
+        $loginController = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyLogin as Login', $loginController);
+        $this->assertStringContainsString('App\\Support\\LegacyUser as User', $loginController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Login', $loginController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $loginController);
+
+        $signupController = File::get(app_path('Http/Controllers/SignupController.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyAffiliateSignUp as AffiliateSignUp', $signupController);
+        $this->assertStringContainsString('App\\Support\\LegacyUser as User', $signupController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\AffiliateSignUp', $signupController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $signupController);
+
+        foreach ([
+            app_path('Http/Controllers/LegacyCompatibilityController.php'),
+            app_path('Http/Middleware/LegacyUserAuth.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyUser as User', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\Login',
+            File::get(app_path('Support/LegacyLogin.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\AffiliateSignUp',
+            File::get(app_path('Support/LegacyAffiliateSignUp.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\User',
+            File::get(app_path('Support/LegacyUser.php'))
+        );
+    }
+
+    public function test_modern_user_reads_use_legacy_user_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/BonusController.php'),
+            app_path('Http/Controllers/OfferController.php'),
+            app_path('Http/Controllers/UserController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyUser', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\User\\User',
+            File::get(app_path('Support/LegacyUser.php'))
+        );
+    }
+
     public function test_admin_legacy_php_urls_route_to_laravel_controllers(): void
     {
         $routes = [

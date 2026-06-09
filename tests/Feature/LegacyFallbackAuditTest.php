@@ -141,6 +141,18 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy users through LegacyUser.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern login flows use LegacyLogin for legacy login constants.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern signup flows use LegacyAffiliateSignUp.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern layout assets append admin-login scripts through LegacyAdminLogin.',
             $output
         );
@@ -453,6 +465,9 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPaginateDependencyErrors',
             'legacyAssignmentsDependencyErrors',
             'legacyTreeDependencyErrors',
+            'legacyUserDependencyErrors',
+            'legacyLoginDependencyErrors',
+            'legacyAffiliateSignUpDependencyErrors',
             'legacyAdminLoginDependencyErrors',
             'legacyNotifyDependencyErrors',
             'legacyCompanyUpdaterDependencyErrors',
@@ -1057,6 +1072,69 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_user_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyUserDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
+                'app/Support/LegacyUser.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyUser;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyUser instead of importing the legacy user class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_login_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyLoginDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\Login;',
+                'app/Support/LegacyLogin.php' => 'use LeadMax\\TrackYourStats\\User\\Login;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyLogin as Login;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyLogin instead of importing the legacy login class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_affiliate_signup_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyAffiliateSignUpDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\AffiliateSignUp;',
+                'app/Support/LegacyAffiliateSignUp.php' => 'use LeadMax\\TrackYourStats\\User\\AffiliateSignUp;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAffiliateSignUp as AffiliateSignUp;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAffiliateSignUp instead of importing the legacy affiliate signup class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_admin_login_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -1341,6 +1419,9 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPaginateForbiddenPatterns',
             'legacyAssignmentsForbiddenPatterns',
             'legacyTreeForbiddenPatterns',
+            'legacyUserForbiddenPatterns',
+            'legacyLoginForbiddenPatterns',
+            'legacyAffiliateSignUpForbiddenPatterns',
             'legacyAdminLoginForbiddenPatterns',
             'legacyNotifyForbiddenPatterns',
             'legacyCompanyUpdaterForbiddenPatterns',

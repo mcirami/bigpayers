@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Support\LegacyAffiliateSignUp as AffiliateSignUp;
+use App\Support\LegacyUser as User;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\User\AffiliateSignUp;
-use LeadMax\TrackYourStats\User\User;
 
 class SignupController extends Controller
 {

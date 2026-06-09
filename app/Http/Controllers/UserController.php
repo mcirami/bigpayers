@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\Cache;
 use LeadMax\TrackYourStats\Offer\RepHasOffer;
 use LeadMax\TrackYourStats\User\Bonus;
 use App\Support\LegacyPermissions as Permissions;
+use App\Support\LegacyUser;
 use LeadMax\TrackYourStats\User\Privileges;
 use LeadMax\TrackYourStats\User\Referrals;
 use LeadMax\TrackYourStats\User\ReportPermissions;
-use LeadMax\TrackYourStats\User\User as LegacyUser;
 
 class UserController extends Controller
 {

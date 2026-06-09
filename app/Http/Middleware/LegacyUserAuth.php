@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\LegacyUser as User;
 use Closure;
-use LeadMax\TrackYourStats\User\User;
 
 class LegacyUserAuth
 {

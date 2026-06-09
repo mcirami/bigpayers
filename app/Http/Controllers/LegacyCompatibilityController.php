@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Support\LegacyMail as Mail;
-use LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 
 class LegacyCompatibilityController extends Controller
 {

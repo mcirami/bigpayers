@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use LeadMax\TrackYourStats\User\Bonus as LegacyBonus;
 use App\Support\LegacyPermissions as Permissions;
-use LeadMax\TrackYourStats\User\User as LegacyUser;
+use App\Support\LegacyUser;
 
 class BonusController extends Controller
 {

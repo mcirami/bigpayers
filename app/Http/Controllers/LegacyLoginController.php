@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Support\LegacyLogin as Login;
+use App\Support\LegacyUser as User;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\User\Login;
-use LeadMax\TrackYourStats\User\User;
 
 class LegacyLoginController extends Controller
 {
@@ -95,7 +95,7 @@ class LegacyLoginController extends Controller
         }
 
 
-        $user_logout = new \LeadMax\TrackYourStats\User\User();
+        $user_logout = new User();
 
         $user_logout->logout();
 

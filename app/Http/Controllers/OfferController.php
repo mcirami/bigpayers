@@ -11,6 +11,7 @@ use App\PredefinedOfferRule;
 use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyNotifications as Notifications;
+use App\Support\LegacyUser;
 use App\User;
 use App\UserOffer;
 use Carbon\Carbon;
@@ -38,7 +39,7 @@ class OfferController extends Controller
         $offerId = (int) $id;
         $userId = (int) $user;
 
-        abort_unless(\LeadMax\TrackYourStats\User\User::hasAffiliate($userId), 403, 'You do not have access to this user.');
+        abort_unless(LegacyUser::hasAffiliate($userId), 403, 'You do not have access to this user.');
 
         $offer = Offer::query()->findOrFail($offerId);
 
@@ -1007,7 +1008,7 @@ class OfferController extends Controller
             ->map(fn ($userId) => (int) $userId)
             ->all();
 
-        return collect(\LeadMax\TrackYourStats\User\User::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC))
+        return collect(LegacyUser::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC))
             ->map(function (array $user) use ($assignedAffiliateIds) {
                 $user['idrep'] = (int) $user['idrep'];
                 $user['has_offer'] = in_array($user['idrep'], $assignedAffiliateIds, true);
