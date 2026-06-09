@@ -14,13 +14,12 @@ use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
 use App\Support\LegacyUserToolTipFilter as UserToolTip;
 use Illuminate\Http\Request;
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
 
 class EmployeeReportController extends ReportController
 {
 
 
-    private function report(Repository $repository, Request $request)
+    private function report($repository, Request $request)
     {
         $repository->SHOW_AFF_TYPE = $request->query('role', 3);
         $isGodUser = CurrentUserSession::type() === Privilege::ROLE_GOD;

@@ -490,7 +490,8 @@ Remaining cleanup is mostly archival and hardening:
 - modern employee report controllers, exports, and aggregate/payout commands now
   resolve legacy employee report repositories through `App\Support` wrappers;
   the fallback audit fails on new direct Laravel-side employee report repository
-  imports outside those boundaries
+  imports outside those boundaries, including direct typehints against the legacy
+  base report repository
 - modern report controllers now resolve remaining legacy report repositories
   through `App\Support` wrappers; the fallback audit fails on new direct
   Laravel-side report repository imports outside those boundaries

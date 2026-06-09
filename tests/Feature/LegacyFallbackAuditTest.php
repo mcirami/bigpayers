@@ -1484,6 +1484,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyEmployeeReportRepositoriesDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
+                'app/Http/Controllers/BadBaseController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Repository;',
                 'app/Support/LegacyAdminEmployeeRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAdminEmployeeRepository as AdminEmployeeRepository;',
             ]]
@@ -1493,7 +1494,11 @@ class LegacyFallbackAuditTest extends TestCase
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAdminEmployeeRepository instead of importing the legacy admin employee repository directly.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadBaseController.php: Avoid typehinting the legacy base report repository directly in modern report controllers.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_misc_report_repositories_dependency_errors_report_forbidden_sources(): void

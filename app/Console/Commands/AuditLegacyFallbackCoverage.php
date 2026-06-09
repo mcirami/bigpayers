@@ -441,6 +441,7 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyEmployeeReportRepositoriesForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\Repository' => 'Avoid typehinting the legacy base report repository directly in modern report controllers.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository' => 'Use App\\Support\\LegacyAdminEmployeeRepository instead of importing the legacy admin employee repository directly.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\GodEmployeeRepository' => 'Use App\\Support\\LegacyGodEmployeeRepository instead of importing the legacy god employee repository directly.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\ManagerEmployeeRepository' => 'Use App\\Support\\LegacyManagerEmployeeRepository instead of importing the legacy manager employee repository directly.',
