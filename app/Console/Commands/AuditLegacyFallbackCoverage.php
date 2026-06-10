@@ -83,10 +83,14 @@ class AuditLegacyFallbackCoverage extends Command
     private array $nativeSessionForbiddenPatterns = [
         '$_SESSION' => 'Use App\\Support\\NativeSession instead of reading or writing the native session superglobal directly.',
         '$_GET' => 'Use Illuminate\\Http\\Request instead of reading query parameters from the native request superglobal directly.',
+        '$_POST' => 'Use App\\Support\\NativeRequest for explicit legacy POST bridges instead of writing the native request superglobal directly.',
+        '$_COOKIE' => 'Use Illuminate\\Http\\Request cookie helpers instead of reading cookies from the native request superglobal directly.',
+        '$_SERVER' => 'Use Illuminate\\Http\\Request server helpers instead of reading server values from the native request superglobal directly.',
     ];
 
     private array $nativeSessionAllowedFiles = [
         'app/Support/NativeSession.php' => 'The dedicated boundary around native PHP session superglobal access.',
+        'app/Support/NativeRequest.php' => 'The dedicated boundary around native PHP request superglobal bridges for legacy classes.',
     ];
 
     private array $legacyPermissionsForbiddenPatterns = [
@@ -1053,7 +1057,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
-        $this->info('Modern Laravel code reads native PHP session state through NativeSession or request boundaries.');
+        $this->info('Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');

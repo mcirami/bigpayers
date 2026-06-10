@@ -116,27 +116,21 @@ class IndexController extends Controller
 		    }
 	    }
 
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
-            if ( str_contains( $ip, ',' ) ) {
-                $ip = substr($ip, 0, strpos($ip, ","));
-            }
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            if ( str_contains( $ip, ',' ) ) {
-                $ip = substr($ip, 0, strpos($ip, ","));
-            }
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-            if ( str_contains( $ip, ',' ) ) {
-                $ip = substr($ip, 0, strpos($ip, ","));
-            }
-        }
+        $ip = $this->clientIp($request);
 
         $clickRegistrationEvent = new ClickRegistrationEvent($repId, $offerId, $trackingQuery, $ip);
         if ( ! $clickRegistrationEvent->fire()) {
             return redirect('404');
         }
+    }
+
+    private function clientIp(Request $request): string
+    {
+        $ip = $request->server('HTTP_CLIENT_IP')
+            ?: $request->server('HTTP_X_FORWARDED_FOR')
+            ?: $request->server('REMOTE_ADDR', $request->ip());
+
+        return explode(',', (string) $ip)[0];
     }
 
 }

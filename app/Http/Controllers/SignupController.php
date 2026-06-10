@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Support\LegacyAffiliateSignUp as AffiliateSignUp;
 use App\Support\LegacyUser as User;
+use App\Support\NativeRequest;
 use Illuminate\Http\Request;
 
 class SignupController extends Controller
@@ -35,7 +36,7 @@ class SignupController extends Controller
             return redirect('/login');
         }
 
-        $_POST = array_merge($_POST, $request->all());
+        NativeRequest::mergePost($request->all());
 
         $signup = new AffiliateSignUp();
         $result = trim((string) $signup->getResult());

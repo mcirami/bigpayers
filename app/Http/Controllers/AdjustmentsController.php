@@ -60,7 +60,7 @@ class AdjustmentsController extends Controller
         $click->rep_idrep = $request->get('affiliate');
         $click->offer_idoffer = $request->get('offer');
         $click->first_timestamp = $request->get('date');
-        $click->ip_address = $_SERVER["SERVER_ADDR"];
+        $click->ip_address = $request->server('SERVER_ADDR', $request->ip());
         $click->browser_agent = "TYS_GENERATED";
         $click->click_type = Click::TYPE_GENERATED;
         $click->save();

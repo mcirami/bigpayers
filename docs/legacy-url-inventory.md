@@ -379,8 +379,10 @@ Remaining cleanup is mostly archival and hardening:
   directly outside the `App\Support\CurrentUserSession` boundary
 - company subdomain lookup, company cache invalidation, and admin-login logout
   cleanup now use `App\Support\NativeSession` or Laravel request data instead
-  of reading `$_SESSION`/`$_GET` directly; the fallback audit blocks new direct
-  native superglobal reads in Laravel-owned code
+  of reading `$_SESSION`/`$_GET` directly; signup's legacy POST bridge now uses
+  `App\Support\NativeRequest`, and report/click flows read query, cookie, and
+  server values through Laravel request helpers. The fallback audit blocks new
+  direct native superglobal reads in Laravel-owned code
 - dashboard shell, legacy master, home, and branded error views now receive
   current user/session values from Laravel view data instead of reading the
   legacy session class directly in Blade

@@ -49,7 +49,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code reads native PHP session state through NativeSession or request boundaries.',
+            'Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.',
             $output
         );
         $this->assertStringContainsString(
@@ -628,7 +628,11 @@ class LegacyFallbackAuditTest extends TestCase
             [[
                 'app/Company.php' => 'return $_SESSION["COMPANY_SUBDOMAIN"] ?? null;',
                 'app/Http/Controllers/BadController.php' => 'if (isset($_GET["adminLogin"])) {}',
+                'app/Http/Controllers/BadSignupController.php' => '$_POST = array_merge($_POST, $request->all());',
+                'app/Http/Controllers/BadReportController.php' => 'return $_COOKIE["timezone"];',
+                'app/Http/Controllers/BadIndexController.php' => 'return $_SERVER["REMOTE_ADDR"];',
                 'app/Support/NativeSession.php' => 'return $_SESSION[$key] ?? $default;',
+                'app/Support/NativeRequest.php' => '$_POST = array_merge($_POST, $data);',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\NativeSession;',
             ]]
         );
@@ -641,7 +645,19 @@ class LegacyFallbackAuditTest extends TestCase
             'app/Http/Controllers/BadController.php: Use Illuminate\\Http\\Request instead of reading query parameters from the native request superglobal directly.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadSignupController.php: Use App\\Support\\NativeRequest for explicit legacy POST bridges instead of writing the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Http/Controllers/BadReportController.php: Use Illuminate\\Http\\Request cookie helpers instead of reading cookies from the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Http/Controllers/BadIndexController.php: Use Illuminate\\Http\\Request server helpers instead of reading server values from the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertCount(5, $errors);
     }
 
     public function test_legacy_mail_dependency_errors_report_forbidden_sources(): void
