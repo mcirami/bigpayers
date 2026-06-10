@@ -366,6 +366,9 @@ Remaining cleanup is mostly archival and hardening:
 - offer-specific conversion, free-signup, and deduction postback URL flows now
   instantiate legacy postback URL helpers through `App\Support` wrappers; the
   fallback audit blocks direct Laravel-side references to those legacy classes
+- the fallback audit now includes a broad boundary check: direct
+  `LeadMax\TrackYourStats` references in Laravel app, database, route, or view
+  code must live under `App\Support`
 - the fallback audit now fails if runtime code reintroduces the retired legacy
   company class import or `Company::loadFromSession()` dependency
 - the fallback audit now fails if runtime code imports the legacy session class

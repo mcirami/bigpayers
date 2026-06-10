@@ -481,6 +481,10 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyMail.php' => 'The dedicated boundary around the legacy mail class.',
     ];
 
+    private array $legacyBoundaryAllowedDirectories = [
+        'app/Support' => 'Dedicated wrappers around legacy classes.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = $this->legacyPhpFiles();
@@ -989,6 +993,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyBoundaryDependencyErrors = $this->legacyBoundaryDependencyErrors();
+
+        if ($legacyBoundaryDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still references legacy classes outside App\Support boundaries:');
+            $legacyBoundaryDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
@@ -1060,6 +1073,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.');
         $this->info('Modern report controllers resolve remaining legacy report repositories through App\Support boundaries.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
+        $this->info('Modern Laravel source keeps direct legacy class references inside App\Support boundaries.');
 
         return self::SUCCESS;
     }
@@ -1378,6 +1392,7 @@ class AuditLegacyFallbackCoverage extends Command
         $sourceFiles = collect();
         $directories = [
             'app',
+            'database',
             'resources/views',
             'routes',
         ];
@@ -1422,6 +1437,58 @@ class AuditLegacyFallbackCoverage extends Command
 
                 return $errors;
             })
+            ->values();
+    }
+
+    private function legacyBoundaryDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyBoundaryDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyBoundaryDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(function (string $contents, string $relativePath) {
+                foreach (array_keys($this->legacyBoundaryAllowedDirectories) as $allowedDirectory) {
+                    if (str_starts_with($relativePath, $allowedDirectory . '/')) {
+                        return true;
+                    }
+                }
+
+                return false;
+            })
+            ->filter(fn (string $contents) => str_contains($contents, 'LeadMax\\TrackYourStats'))
+            ->keys()
+            ->map(fn (string $relativePath) => "{$relativePath}: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.")
             ->values();
     }
 

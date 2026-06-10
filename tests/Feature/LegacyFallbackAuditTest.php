@@ -53,6 +53,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel source keeps direct legacy class references inside App\Support boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code reads legacy permission metadata through LegacyPermissions.',
             $output
         );
@@ -463,6 +467,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
             'retiredCompanySessionDependencyErrors',
+            'legacyBoundaryDependencyErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickDependencyErrors',
@@ -627,6 +632,32 @@ class LegacyFallbackAuditTest extends TestCase
             $errors->all()
         );
         $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_boundary_dependency_errors_report_forbidden_sources_outside_support(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyBoundaryDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
+                'database/seeds/BadSeeder.php' => 'LeadMax\\TrackYourStats\\Offer\\Offer::VISIBILITY_PRIVATE;',
+                'app/Support/LegacyUser.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
+                'resources/views/clean.blade.php' => 'App\\Support\\LegacyUser::selectAllOwnedAffiliates();',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'database/seeds/BadSeeder.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_permissions_dependency_errors_report_forbidden_sources(): void
@@ -1575,6 +1606,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyEmployeeReportRepositoriesForbiddenPatterns',
             'legacyMiscReportRepositoriesForbiddenPatterns',
             'legacyMailForbiddenPatterns',
+            'legacyBoundaryAllowedDirectories',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 

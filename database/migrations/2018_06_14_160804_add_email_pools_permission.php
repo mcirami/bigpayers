@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\Support\LegacyPermissions as Permissions;
 
 class AddEmailPoolsPermission extends Migration
 {
@@ -14,7 +15,7 @@ class AddEmailPoolsPermission extends Migration
     public function up()
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->tinyInteger(\LeadMax\TrackYourStats\User\Permissions::EMAIL_POOLS)->default(0);
+            $table->tinyInteger(Permissions::EMAIL_POOLS)->default(0);
         });
 
         DB::statement('UPDATE permissions SET email_pools = 1 WHERE aff_id = 1');
@@ -28,7 +29,7 @@ class AddEmailPoolsPermission extends Migration
     public function down()
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $table->dropColumn(\LeadMax\TrackYourStats\User\Permissions::EMAIL_POOLS);
+            $table->dropColumn(Permissions::EMAIL_POOLS);
         });
     }
 }
