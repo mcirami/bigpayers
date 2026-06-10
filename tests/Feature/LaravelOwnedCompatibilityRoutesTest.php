@@ -353,6 +353,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Sms/SmsClientController.php'),
             app_path('Http/Controllers/Sms/SmsController.php'),
             app_path('Http/Controllers/SmsOrderController.php'),
+            app_path('Http/Traits/ClickTraits.php'),
             app_path('Http/Controllers/UserController.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -396,7 +397,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/NotificationController.php'),
             app_path('Http/Controllers/Report/ClickReportController.php'),
             app_path('Http/Controllers/UserController.php'),
-            app_path('Http/Traits/ClickTraits.php'),
             app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
         ] as $path) {
             $contents = File::get($path);

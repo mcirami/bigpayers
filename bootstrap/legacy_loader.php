@@ -35,8 +35,6 @@ $dotEnv->load();
     $con = new \LeadMax\TrackYourStats\System\Connection();
     $con->setConnection();
 
-//	unset($_SESSION["company"]);
-
 // find company information
     $company = LeadMax\TrackYourStats\System\Company::loadFromSession();
     $company->setSession();

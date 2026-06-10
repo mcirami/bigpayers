@@ -1,6 +1,6 @@
 @php
 
-    $filterValue = isset($_GET['filter']) ? $_GET['filter'] : "subid";
+    $filterValue = request()->query('filter', "subid");
 
 @endphp
 <label class="bp-form-label flex flex-col gap-2">

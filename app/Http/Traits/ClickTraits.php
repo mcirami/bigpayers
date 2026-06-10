@@ -3,7 +3,7 @@
 namespace App\Http\Traits;
 
 use App\ClickGeoCache;
-use App\Support\LegacyPermissions as Permissions;
+use App\Support\CurrentUserSession;
 use App\Support\LegacyClickGeo as ClickGeo;
 
 trait ClickTraits {
@@ -16,7 +16,7 @@ trait ClickTraits {
 	 * @return object
 	 */
 	public function formatResults(object $results): object {
-		$per = Permissions::loadFromSession();
+		$per = CurrentUserSession::permissions();
 		$geoCacheByIp = $this->loadGeoCacheByIp($results);
 		$resolvedGeoByIp = [];
 

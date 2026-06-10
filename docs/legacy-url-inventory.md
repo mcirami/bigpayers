@@ -20,6 +20,9 @@ The legacy bootstrap is guarded so repeated includes in the same request do not
 restart the PHP session or re-run tenant setup. The fallback audit also checks
 that `public/index.php` does not regain a dynamic legacy file include path and
 that `bootstrap/legacy_loader.php` keeps its idempotency and session guards.
+That bootstrap loader is the one audited exception to the Laravel-side legacy
+boundary: it may touch `LeadMax\TrackYourStats` directly because it initializes
+the legacy runtime before Laravel-owned code handles the request.
 
 ## Implemented Compatibility Batch
 
@@ -367,12 +370,17 @@ Remaining cleanup is mostly archival and hardening:
   instantiate legacy postback URL helpers through `App\Support` wrappers; the
   fallback audit blocks direct Laravel-side references to those legacy classes
 - the fallback audit now includes a broad boundary check: direct
-  `LeadMax\TrackYourStats` references in Laravel app, database, route, or view
-  code must live under `App\Support`
+  `LeadMax\TrackYourStats` references in Laravel app, bootstrap, config,
+  database, public, route, or view code must live under `App\Support`, except
+  for the explicit `bootstrap/legacy_loader.php` runtime bootstrap
 - the fallback audit now fails if runtime code reintroduces the retired legacy
   company class import or `Company::loadFromSession()` dependency
 - the fallback audit now fails if runtime code imports the legacy session class
   directly outside the `App\Support\CurrentUserSession` boundary
+- company subdomain lookup, company cache invalidation, and admin-login logout
+  cleanup now use `App\Support\NativeSession` or Laravel request data instead
+  of reading `$_SESSION`/`$_GET` directly; the fallback audit blocks new direct
+  native superglobal reads in Laravel-owned code
 - dashboard shell, legacy master, home, and branded error views now receive
   current user/session values from Laravel view data instead of reading the
   legacy session class directly in Blade
@@ -380,17 +388,18 @@ Remaining cleanup is mostly archival and hardening:
   values through Laravel controller/view-composer data instead of reading the
   legacy session class directly in templates
 - low-risk modern controller, report-controller, offer, user-management,
-  middleware, view-composer, app-model, repository, and SMS-service batches now
-  read current user id/type, permissions, and user data through
+  middleware, view-composer, app-model, repository, trait, and SMS-service
+  batches now read current user id/type, permissions, and user data through
   `App\Support\CurrentUserSession` instead of importing the legacy session class
   directly, including the older `src/Report`, `src/User`, `src/Offer`,
   `src/Clicks`, `src/Table`, and notification helper layers
-- modern routes/controllers and the offer-click repository now read legacy
+- modern routes, controllers, and the offer-click repository now read legacy
   permission constants/static helpers through `App\Support\LegacyPermissions`
-  instead of importing the legacy permission class directly
+  instead of importing the legacy permission class directly; click formatting
+  now reads the current permissions object through `CurrentUserSession`
 - the fallback audit now fails if modern Laravel code imports the legacy
   permission class directly outside the `App\Support\LegacyPermissions`
-  boundary
+  boundary or reloads permissions from the legacy session directly
 - modern Laravel geo lookup callers now resolve the legacy `ClickGeo` helper
   through `App\Support\LegacyClickGeo`; the fallback audit fails if Laravel-side
   code imports the legacy `ClickGeo` class directly outside that boundary

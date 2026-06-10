@@ -6,6 +6,7 @@ use App\Company;
 use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\PublicCompatibilityController;
+use App\Support\NativeSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -127,21 +128,33 @@ class PublicCompatibilityRoutesTest extends TestCase
 
     public function test_laravel_company_model_resolves_current_subdomain_without_legacy_company_class(): void
     {
-        $originalSubDomain = $_SESSION['COMPANY_SUBDOMAIN'] ?? null;
+        $originalSubDomain = NativeSession::get('COMPANY_SUBDOMAIN');
 
         try {
-            $_SESSION['COMPANY_SUBDOMAIN'] = 'tenant-a';
+            NativeSession::put('COMPANY_SUBDOMAIN', 'tenant-a');
             $this->assertSame('tenant-a', Company::currentSubDomain());
 
-            unset($_SESSION['COMPANY_SUBDOMAIN']);
+            NativeSession::forget('COMPANY_SUBDOMAIN');
             $this->assertSame((string) env('DB_DATABASE'), Company::currentSubDomain());
         } finally {
             if ($originalSubDomain === null) {
-                unset($_SESSION['COMPANY_SUBDOMAIN']);
+                NativeSession::forget('COMPANY_SUBDOMAIN');
             } else {
-                $_SESSION['COMPANY_SUBDOMAIN'] = $originalSubDomain;
+                NativeSession::put('COMPANY_SUBDOMAIN', $originalSubDomain);
             }
         }
+    }
+
+    public function test_laravel_company_model_uses_native_session_boundary(): void
+    {
+        $companyModel = File::get(app_path('Company.php'));
+        $loginController = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeSession', $companyModel);
+        $this->assertStringContainsString('App\\Support\\NativeSession', $loginController);
+        $this->assertStringNotContainsString('$_SESSION', $companyModel);
+        $this->assertStringNotContainsString('$_SESSION', $loginController);
+        $this->assertStringNotContainsString('$_GET', $loginController);
     }
 
     public function test_laravel_company_model_resolves_login_theme_css_url(): void

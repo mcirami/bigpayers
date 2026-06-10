@@ -80,8 +80,18 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/CurrentUserSession.php' => 'The dedicated boundary around the legacy session class.',
     ];
 
+    private array $nativeSessionForbiddenPatterns = [
+        '$_SESSION' => 'Use App\\Support\\NativeSession instead of reading or writing the native session superglobal directly.',
+        '$_GET' => 'Use Illuminate\\Http\\Request instead of reading query parameters from the native request superglobal directly.',
+    ];
+
+    private array $nativeSessionAllowedFiles = [
+        'app/Support/NativeSession.php' => 'The dedicated boundary around native PHP session superglobal access.',
+    ];
+
     private array $legacyPermissionsForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\User\\Permissions' => 'Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
+        'Permissions::loadFromSession()' => 'Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
     ];
 
     private array $legacyPermissionsAllowedFiles = [
@@ -485,6 +495,10 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support' => 'Dedicated wrappers around legacy classes.',
     ];
 
+    private array $legacyBoundaryAllowedFiles = [
+        'bootstrap/legacy_loader.php' => 'The explicit legacy runtime bootstrap boundary.',
+    ];
+
     public function handle(): int
     {
         $legacyFiles = $this->legacyPhpFiles();
@@ -602,6 +616,15 @@ class AuditLegacyFallbackCoverage extends Command
         if ($legacySessionDependencyErrors->isNotEmpty()) {
             $this->error('Runtime code still imports the legacy session class directly:');
             $legacySessionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $nativeSessionDependencyErrors = $this->nativeSessionDependencyErrors();
+
+        if ($nativeSessionDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still reads native PHP superglobals directly:');
+            $nativeSessionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -1030,6 +1053,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
+        $this->info('Modern Laravel code reads native PHP session state through NativeSession or request boundaries.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');
@@ -1073,7 +1097,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.');
         $this->info('Modern report controllers resolve remaining legacy report repositories through App\Support boundaries.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
-        $this->info('Modern Laravel source keeps direct legacy class references inside App\Support boundaries.');
+        $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
 
         return self::SUCCESS;
     }
@@ -1387,6 +1411,61 @@ class AuditLegacyFallbackCoverage extends Command
             ->values();
     }
 
+    private function nativeSessionDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'config',
+            'database',
+            'public',
+            'resources/views',
+            'routes',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->nativeSessionDependencyErrorsFor($sourceFiles);
+    }
+
+    private function nativeSessionDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->nativeSessionAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
     private function legacyMailDependencyErrors()
     {
         $sourceFiles = collect();
@@ -1445,6 +1524,10 @@ class AuditLegacyFallbackCoverage extends Command
         $sourceFiles = collect();
         $directories = [
             'app',
+            'bootstrap',
+            'config',
+            'database',
+            'public',
             'resources/views',
             'routes',
         ];
@@ -1478,6 +1561,10 @@ class AuditLegacyFallbackCoverage extends Command
     {
         return collect($sourceFiles)
             ->reject(function (string $contents, string $relativePath) {
+                if (array_key_exists($relativePath, $this->legacyBoundaryAllowedFiles)) {
+                    return true;
+                }
+
                 foreach (array_keys($this->legacyBoundaryAllowedDirectories) as $allowedDirectory) {
                     if (str_starts_with($relativePath, $allowedDirectory . '/')) {
                         return true;

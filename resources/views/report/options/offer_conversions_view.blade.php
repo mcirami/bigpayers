@@ -1,6 +1,6 @@
 @php
 
-    $filterValue = isset($_GET['filter']) ? $_GET['filter'] : "affiliate";
+    $filterValue = request()->query('filter', "affiliate");
 
 @endphp
 

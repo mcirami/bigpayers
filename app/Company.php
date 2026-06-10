@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Support\NativeSession;
 use Throwable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -71,7 +72,7 @@ class Company extends Model
 
     public static function currentSubDomain(): string
     {
-        return (string) ($_SESSION['COMPANY_SUBDOMAIN'] ?? env('DB_DATABASE'));
+        return (string) NativeSession::get('COMPANY_SUBDOMAIN', env('DB_DATABASE'));
     }
 
     public function offerUrls()
@@ -228,7 +229,7 @@ class Company extends Model
             $saved = $this->save();
 
             if ($saved) {
-                unset($_SESSION['company']);
+                NativeSession::forget('company');
             }
 
             return $saved;

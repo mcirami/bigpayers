@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Support\LegacyLogin as Login;
 use App\Support\LegacyUser as User;
+use App\Support\NativeSession;
 use Illuminate\Http\Request;
 
 class LegacyLoginController extends Controller
@@ -86,10 +87,10 @@ class LegacyLoginController extends Controller
 
 		return $company;
 	}
-    public function logout()
+    public function logout(Request $request)
     {
-        if (isset($_GET["adminLogin"])) {
-            unset($_SESSION["adminLogin"]);
+        if ($request->has('adminLogin')) {
+            NativeSession::forget('adminLogin');
 
             return '<script type="text/javascript">window.close();</script>';
         }

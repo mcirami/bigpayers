@@ -49,11 +49,15 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code reads native PHP session state through NativeSession or request boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code sends legacy mail through LegacyMail.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel source keeps direct legacy class references inside App\Support boundaries.',
+            'Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.',
             $output
         );
         $this->assertStringContainsString(
@@ -468,6 +472,7 @@ class LegacyFallbackAuditTest extends TestCase
             'modernRetiredScriptReferenceErrors',
             'retiredCompanySessionDependencyErrors',
             'legacyBoundaryDependencyErrors',
+            'nativeSessionDependencyErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickDependencyErrors',
@@ -613,6 +618,32 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
+    public function test_native_session_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'nativeSessionDependencyErrorsFor',
+            [[
+                'app/Company.php' => 'return $_SESSION["COMPANY_SUBDOMAIN"] ?? null;',
+                'app/Http/Controllers/BadController.php' => 'if (isset($_GET["adminLogin"])) {}',
+                'app/Support/NativeSession.php' => 'return $_SESSION[$key] ?? $default;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\NativeSession;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Company.php: Use App\\Support\\NativeSession instead of reading or writing the native session superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use Illuminate\\Http\\Request instead of reading query parameters from the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
+    }
+
     public function test_legacy_mail_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -643,7 +674,10 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBoundaryDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
+                'config/bad.php' => 'LeadMax\\TrackYourStats\\System\\Connection::class;',
                 'database/seeds/BadSeeder.php' => 'LeadMax\\TrackYourStats\\Offer\\Offer::VISIBILITY_PRIVATE;',
+                'public/bad-entrypoint.php' => 'LeadMax\\TrackYourStats\\System\\Company::loadFromSession();',
+                'bootstrap/legacy_loader.php' => 'LeadMax\\TrackYourStats\\System\\Company::loadFromSession();',
                 'app/Support/LegacyUser.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
                 'resources/views/clean.blade.php' => 'App\\Support\\LegacyUser::selectAllOwnedAffiliates();',
             ]]
@@ -654,10 +688,18 @@ class LegacyFallbackAuditTest extends TestCase
             $errors->all()
         );
         $this->assertContains(
+            'config/bad.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            $errors->all()
+        );
+        $this->assertContains(
             'database/seeds/BadSeeder.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertContains(
+            'public/bad-entrypoint.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            $errors->all()
+        );
+        $this->assertCount(4, $errors);
     }
 
     public function test_legacy_permissions_dependency_errors_report_forbidden_sources(): void
@@ -669,6 +711,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsDependencyErrorsFor',
             [[
                 'routes/web.php' => 'use LeadMax\\TrackYourStats\\User\\Permissions;',
+                'app/Http/Traits/BadTrait.php' => 'Permissions::loadFromSession();',
                 'app/Support/LegacyPermissions.php' => 'use LeadMax\\TrackYourStats\\User\\Permissions;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPermissions as Permissions;',
             ]]
@@ -678,7 +721,11 @@ class LegacyFallbackAuditTest extends TestCase
             'routes/web.php: Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Traits/BadTrait.php: Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_click_geo_dependency_errors_report_forbidden_sources(): void
@@ -1563,6 +1610,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapForbiddenPatterns',
             'retiredCompanySessionForbiddenPatterns',
             'legacySessionForbiddenPatterns',
+            'nativeSessionForbiddenPatterns',
+            'nativeSessionAllowedFiles',
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyClickForbiddenPatterns',
@@ -1607,6 +1656,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyMiscReportRepositoriesForbiddenPatterns',
             'legacyMailForbiddenPatterns',
             'legacyBoundaryAllowedDirectories',
+            'legacyBoundaryAllowedFiles',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 

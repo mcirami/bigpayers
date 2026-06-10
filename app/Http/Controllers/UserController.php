@@ -666,8 +666,8 @@ class UserController extends Controller
 		return response()->json(['success' => true]);
 	}
 
-	public function getUserSubIds($id = null) {
-        $affId = $id ?? ($_GET["idrep"] ?? null);
+	public function getUserSubIds(Request $request, $id = null) {
+        $affId = $id ?? $request->query('idrep');
         if (!$affId) {
             return response()->json([]);
         }
