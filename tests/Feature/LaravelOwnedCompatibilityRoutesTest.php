@@ -539,6 +539,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/ClickIdToolController.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
+            base_path('src/Clicks/URLTagReplacers/TYSVariables.php'),
+            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            base_path('src/Clicks/URLEvents/Listeners/ConversionListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/DeductionListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/FreeSignUpListener.php'),
+            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            base_path('src/Database/Stubs/ConversionRegister.php'),
         ] as $path) {
             $contents = File::get($path);
 

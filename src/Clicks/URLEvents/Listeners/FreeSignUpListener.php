@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 
-use LeadMax\TrackYourStats\Clicks\UID;
+use App\Support\LegacyUid as UID;
 use LeadMax\TrackYourStats\Clicks\URLEvents\FreeSignUpRegistrationEvent;
 
 class FreeSignUpListener extends Listener

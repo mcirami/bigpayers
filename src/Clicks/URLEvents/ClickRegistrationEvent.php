@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Support\LegacyClick as Click;
 use LeadMax\TrackYourStats\Clicks\Conversion;
 use LeadMax\TrackYourStats\Clicks\Cookie;
-use LeadMax\TrackYourStats\Clicks\UID;
+use App\Support\LegacyUid as UID;
 use LeadMax\TrackYourStats\Clicks\URLProcessor;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\Base64;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\SubVariables;
