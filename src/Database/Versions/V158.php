@@ -14,8 +14,8 @@ use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use LeadMax\TrackYourStats\Database\Version;
 use LeadMax\TrackYourStats\Offer\Campaigns;
 use LeadMax\TrackYourStats\Offer\CreateOffer;
-use LeadMax\TrackYourStats\Offer\Offer;
-use LeadMax\TrackYourStats\Offer\RepHasOffer;
+use App\Support\LegacyOffer as Offer;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use LeadMax\TrackYourStats\User\CreateUser;
 use \LeadMax\TrackYourStats\User\User;
 

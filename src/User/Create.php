@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
-use LeadMax\TrackYourStats\Offer\RepHasOffer;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\CurrentUserSession;
 use PDO;
 

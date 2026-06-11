@@ -12,7 +12,7 @@ use App\User;
 use Illuminate\Http\JsonResponse;
 use App\Support\LegacyConversion as Conversion;
 use LeadMax\TrackYourStats\Offer\Deduction;
-use LeadMax\TrackYourStats\User\PostBackURLs\DeductionPostBackURL;
+use App\Support\LegacyDeductionPostBackURL as DeductionPostBackURL;
 
 class DeductionRegistrationEvent extends URLEvent
 {

@@ -12,7 +12,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use LeadMax\TrackYourStats\Offer\FreeSignUp;
-use LeadMax\TrackYourStats\User\PostBackURLs\FreePostBackURL;
+use App\Support\LegacyFreePostBackURL as FreePostBackURL;
 
 class FreeSignUpRegistrationEvent extends URLEvent
 {

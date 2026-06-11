@@ -9,8 +9,8 @@
 namespace LeadMax\TrackYourStats\Clicks;
 
 
-use LeadMax\TrackYourStats\Offer\Offer;
-use LeadMax\TrackYourStats\Offer\RepHasOffer;
+use App\Support\LegacyOffer as Offer;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use LeadMax\TrackYourStats\User\User;
 use PDO;
 

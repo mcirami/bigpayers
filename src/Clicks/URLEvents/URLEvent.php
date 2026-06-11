@@ -16,7 +16,7 @@ use LeadMax\TrackYourStats\Clicks\URLProcessor;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\Base64;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\SubVariables;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\TYSVariables;
-use LeadMax\TrackYourStats\Offer\Offer;
+use App\Support\LegacyOffer as Offer;
 use \LeadMax\TrackYourStats\User\User;
 
 

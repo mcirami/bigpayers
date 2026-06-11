@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 
-use LeadMax\TrackYourStats\Offer\RepHasOffer;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 
 class CreateUser
 {

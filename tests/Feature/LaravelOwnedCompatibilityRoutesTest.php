@@ -171,13 +171,31 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
             app_path('Http/Controllers/OfferController.php'),
+            base_path('src/Clicks/ClickVars.php'),
+            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
+            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            base_path('src/Database/Versions/V158.php'),
         ] as $path) {
             $contents = File::get($path);
 
             $this->assertStringContainsString('App\\Support\\LegacyOffer', $contents);
-            $this->assertStringContainsString('App\\Support\\LegacyRepHasOffer', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Offer', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\RepHasOffer', $contents);
+        }
+
+        foreach ([
+            app_path('Http/Controllers/AffiliateMassPostbackController.php'),
+            app_path('Http/Controllers/OfferController.php'),
+            base_path('src/Clicks/ClickVars.php'),
+            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            base_path('src/Database/Versions/V158.php'),
+            base_path('src/User/Create.php'),
+            base_path('src/User/CreateUser.php'),
+            base_path('src/User/PostBackURLs/ConversionPostBackURL.php'),
+            base_path('src/User/User.php'),
+        ] as $path) {
+            $this->assertStringContainsString('App\\Support\\LegacyRepHasOffer', File::get($path));
         }
 
         $userController = File::get(app_path('Http/Controllers/UserController.php'));
@@ -213,6 +231,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\PostBackURLs', $offerController);
+
+        foreach ([
+            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php') => 'App\\Support\\LegacyConversionPostBackURL as ConversionPostBackURL',
+            base_path('src/Clicks/URLEvents/DeductionRegistrationEvent.php') => 'App\\Support\\LegacyDeductionPostBackURL as DeductionPostBackURL',
+            base_path('src/Clicks/URLEvents/FreeSignUpRegistrationEvent.php') => 'App\\Support\\LegacyFreePostBackURL as FreePostBackURL',
+        ] as $path => $expectedImport) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString($expectedImport, $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\PostBackURLs', $contents);
+        }
 
         foreach ([
             'LegacyConversionPostBackURL.php' => 'LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL',
