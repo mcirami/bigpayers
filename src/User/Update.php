@@ -12,6 +12,7 @@ use App\Privilege;
 use Illuminate\Support\Facades\DB;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
+use App\Support\LegacyUser as User;
 use PDO;
 
 
@@ -140,7 +141,7 @@ class Update
     {
 
         //Select one record
-        $user = new \LeadMax\TrackYourStats\User\User();
+        $user = new User();
         $this->selectedUser = User::SelectOne($this->assign->get("idrep"));
         $this->selectedUserType = User::findRepType($this->assign->get("idrep"));
 
@@ -156,7 +157,7 @@ class Update
                     <label class=\"value_span9\">" . config('branding.account.singular') . "</label>
   
                 <select class=\"form-control input-sm \" id=\"referrer_repid\" name=\"referrer_repid\">";
-        $new_replist = new \LeadMax\TrackYourStats\User\User();
+        $new_replist = new User();
         $result = $new_replist->select_all_assignables();
 
         foreach ($result as $key => $value) {

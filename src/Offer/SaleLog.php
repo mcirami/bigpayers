@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 use App\Support\CurrentUserSession;
 use App\Support\LegacyConversion as Conversion;
-use \LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 
 class SaleLog
 {

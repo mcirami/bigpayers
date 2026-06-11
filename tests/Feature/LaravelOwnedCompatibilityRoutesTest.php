@@ -76,6 +76,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/BonusController.php'),
             app_path('Http/Controllers/OfferController.php'),
             app_path('Http/Controllers/UserController.php'),
+            base_path('src/Clicks/ClickVars.php'),
+            base_path('src/Clicks/Conversion.php'),
+            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            base_path('src/Database/Versions/V158.php'),
+            base_path('src/Offer/Create.php'),
+            base_path('src/Offer/RepHasOffer.php'),
+            base_path('src/Offer/SaleLog.php'),
+            base_path('src/Offer/Update.php'),
+            base_path('src/Offer/View.php'),
+            base_path('src/System/Session.php'),
+            base_path('src/User/PostBackURLs/ConversionPostBackURL.php'),
+            base_path('src/User/Update.php'),
         ] as $path) {
             $contents = File::get($path);
 

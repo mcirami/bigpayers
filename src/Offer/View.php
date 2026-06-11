@@ -16,7 +16,7 @@ use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
 use App\Support\LegacyPaginate as Paginate;
-use \LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 
 
 class View

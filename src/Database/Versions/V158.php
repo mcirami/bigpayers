@@ -17,7 +17,7 @@ use LeadMax\TrackYourStats\Offer\CreateOffer;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use LeadMax\TrackYourStats\User\CreateUser;
-use \LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 
 class V158 extends Version
 {

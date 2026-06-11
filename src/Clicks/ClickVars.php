@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Clicks;
 
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
-use LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 use PDO;
 
 class ClickVars

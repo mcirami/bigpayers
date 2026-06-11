@@ -1,6 +1,6 @@
 <?php namespace LeadMax\TrackYourStats\System;
 
-use LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 
 /**
  * Author: Dean

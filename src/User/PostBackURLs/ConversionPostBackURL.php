@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\User\PostBackURLs;
 
 
 use App\Support\LegacyRepHasOffer as RepHasOffer;
-use LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 
 class ConversionPostBackURL extends PostBackURL
 {

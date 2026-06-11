@@ -20,7 +20,7 @@ use LeadMax\TrackYourStats\System\Notifications;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPermissions as Permissions;
 use App\Support\LegacyTree as Tree;
-use \LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 use PDO;
 
 

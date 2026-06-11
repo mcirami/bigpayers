@@ -10,7 +10,7 @@ use App\Support\CurrentUserSession;
 use App\Support\LegacyBonus as Bonus;
 use LeadMax\TrackYourStats\User\ReferralRegister;
 use App\Support\LegacyReferrals as Referrals;
-use \LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 use PDO;
 
 

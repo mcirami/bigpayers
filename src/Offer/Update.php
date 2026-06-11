@@ -7,7 +7,7 @@ use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
 use App\Support\LegacyTree as Tree;
-use \LeadMax\TrackYourStats\User\User;
+use App\Support\LegacyUser as User;
 use PDO;
 
 class Update
