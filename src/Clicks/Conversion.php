@@ -7,9 +7,9 @@ use App\Privilege;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\User\Bonus;
+use App\Support\LegacyBonus as Bonus;
 use LeadMax\TrackYourStats\User\ReferralRegister;
-use LeadMax\TrackYourStats\User\Referrals;
+use App\Support\LegacyReferrals as Referrals;
 use \LeadMax\TrackYourStats\User\User;
 use PDO;
 

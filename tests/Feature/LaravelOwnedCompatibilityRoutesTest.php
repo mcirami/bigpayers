@@ -96,6 +96,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\LegacyBonus', $bonusController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Bonus', $bonusController);
 
+        foreach ([
+            base_path('src/Clicks/Conversion.php'),
+            base_path('src/Clicks/URLEvents/BonusRegistrationEvent.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyBonus as Bonus', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Bonus', $contents);
+        }
+
         $salaryController = File::get(app_path('Http/Controllers/SalaryController.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacySalary', $salaryController);
@@ -115,6 +125,21 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'App\\Support\\LegacyReportPermissions as ReportPermissions',
         ] as $expectedImport) {
             $this->assertStringContainsString($expectedImport, $userController);
+        }
+
+        foreach ([
+            base_path('src/Clicks/Conversion.php') => 'App\\Support\\LegacyReferrals as Referrals',
+            base_path('src/Database/Versions/V148.php') => 'App\\Support\\LegacyReportPermissions as ReportPermissions',
+            base_path('src/Offer/Deduction.php') => 'App\\Support\\LegacyReferrals as Referrals',
+            base_path('src/Offer/Offer.php') => 'App\\Support\\LegacyPrivileges as Privileges',
+            base_path('src/Report/Affiliate.php') => 'App\\Support\\LegacyReportPermissions as ReportPermissions',
+        ] as $path => $expectedImport) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString($expectedImport, $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Privileges', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\Referrals', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\ReportPermissions', $contents);
         }
 
         foreach ([
@@ -1042,12 +1067,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
     public function test_index_click_registration_uses_legacy_event_boundaries(): void
     {
-        $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());
+        foreach ([
+            (new ReflectionClass(IndexController::class))->getFileName(),
+            base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'),
+        ] as $path) {
+            $controller = File::get($path);
 
-        $this->assertStringContainsString('App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler', $controller);
-        $this->assertStringContainsString('App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent', $controller);
+            if ($path === (new ReflectionClass(IndexController::class))->getFileName()) {
+                $this->assertStringContainsString('App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler', $controller);
+                $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler', $controller);
+            }
+
+            $this->assertStringContainsString('App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent', $controller);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent', $controller);
+        }
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler',

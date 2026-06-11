@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 use App\Support\LegacyTrackingParameters as TrackingParameters;
-use LeadMax\TrackYourStats\Clicks\URLEvents\ClickRegistrationEvent;
+use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
 
 class ClickListener extends Listener
 {

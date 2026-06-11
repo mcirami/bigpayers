@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Database\Versions;
 
 
 use LeadMax\TrackYourStats\Database\Version;
-use LeadMax\TrackYourStats\User\ReportPermissions;
+use App\Support\LegacyReportPermissions as ReportPermissions;
 
 class V148 extends Version
 {

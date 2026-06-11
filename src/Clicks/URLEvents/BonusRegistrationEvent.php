@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 
 use App\User;
 use Illuminate\Http\JsonResponse;
-use LeadMax\TrackYourStats\User\Bonus;
+use App\Support\LegacyBonus as Bonus;
 
 class BonusRegistrationEvent extends URLEvent
 {

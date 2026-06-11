@@ -16,7 +16,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\User\Privileges;
+use App\Support\LegacyPrivileges as Privileges;
 use PDO;
 
 //Begin class

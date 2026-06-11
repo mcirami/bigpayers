@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
 use LeadMax\TrackYourStats\Table\ReportBase;
-use LeadMax\TrackYourStats\User\ReportPermissions;
+use App\Support\LegacyReportPermissions as ReportPermissions;
 use PDO;
 
 class Affiliate extends ReportBase
