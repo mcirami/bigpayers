@@ -398,10 +398,12 @@ Remaining cleanup is mostly archival and hardening:
 - modern routes, controllers, and the offer-click repository now read legacy
   permission constants/static helpers through `App\Support\LegacyPermissions`
   instead of importing the legacy permission class directly; click formatting
-  now reads the current permissions object through `CurrentUserSession`
+  and older report/offer/user helper classes now read the current permissions
+  object through `CurrentUserSession`
 - the fallback audit now fails if modern Laravel code imports the legacy
   permission class directly outside the `App\Support\LegacyPermissions`
-  boundary or reloads permissions from the legacy session directly
+  boundary or if Laravel-reached helper code reloads permissions from the
+  legacy session directly
 - modern Laravel geo lookup callers now resolve the legacy `ClickGeo` helper
   through `App\Support\LegacyClickGeo`; the fallback audit fails if Laravel-side
   code imports the legacy `ClickGeo` class directly outside that boundary

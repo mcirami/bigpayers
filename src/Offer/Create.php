@@ -14,7 +14,6 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\User\Permissions;
 use \LeadMax\TrackYourStats\User\User;
 
 class Create
@@ -40,7 +39,7 @@ class Create
 
 //        Global $per; // instance of the permissions class set upon login.
 
-        $per = Permissions::loadFromSession();
+        $per = CurrentUserSession::permissions();
 
 
         // if they can create managers, they can assign managers to an offer, 'ast' is just a get setting to change back and forth between managers radio button and affiliates radio button on webpage
@@ -104,7 +103,7 @@ class Create
             $man = "checked";
         }
 
-        $per = Permissions::loadFromSession();
+        $per = CurrentUserSession::permissions();
 
         if ($per->can("create_managers")) {
             echo "

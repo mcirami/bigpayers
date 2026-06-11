@@ -18,7 +18,7 @@ use App\BonusOffer;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use LeadMax\TrackYourStats\System\Notifications;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\User\Permissions;
+use App\Support\LegacyPermissions as Permissions;
 use LeadMax\TrackYourStats\User\Tree;
 use \LeadMax\TrackYourStats\User\User;
 use PDO;

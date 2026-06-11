@@ -728,6 +728,7 @@ class LegacyFallbackAuditTest extends TestCase
             [[
                 'routes/web.php' => 'use LeadMax\\TrackYourStats\\User\\Permissions;',
                 'app/Http/Traits/BadTrait.php' => 'Permissions::loadFromSession();',
+                'src/Offer/BadCreate.php' => 'Permissions::loadFromSession();',
                 'app/Support/LegacyPermissions.php' => 'use LeadMax\\TrackYourStats\\User\\Permissions;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPermissions as Permissions;',
             ]]
@@ -741,7 +742,11 @@ class LegacyFallbackAuditTest extends TestCase
             'app/Http/Traits/BadTrait.php: Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertContains(
+            'src/Offer/BadCreate.php: Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_click_geo_dependency_errors_report_forbidden_sources(): void

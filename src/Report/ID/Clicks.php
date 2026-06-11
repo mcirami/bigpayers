@@ -11,7 +11,6 @@ use LeadMax\TrackYourStats\Clicks\ClickVars;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\ReportBase;
-use LeadMax\TrackYourStats\User\Permissions;
 use PDO;
 
 class Clicks extends ReportBase
@@ -61,7 +60,7 @@ class Clicks extends ReportBase
 
         $rep = $prepz->fetch(\PDO::FETCH_ASSOC);
 
-        $per = Permissions::loadFromSession();
+        $per = CurrentUserSession::permissions();
 
         if ($per->can("view_fraud_data")) {
             $sql = "SELECT  clicks.idclicks, clicks.first_timestamp,  conversions.timestamp, {$resolvedPaid} as paid, click_vars.url,  click_geo.ip, rep.idrep, rep.first_name, clicks.offer_idoffer FROM clicks
@@ -130,7 +129,7 @@ class Clicks extends ReportBase
 
 		$db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, FALSE);
 
-        $per = Permissions::loadFromSession();
+        $per = CurrentUserSession::permissions();
 
 
         if ($per->can("view_fraud_data")) {
@@ -244,7 +243,7 @@ class Clicks extends ReportBase
 
         }
 
-        $per = Permissions::loadFromSession();
+        $per = CurrentUserSession::permissions();
 
 
         if ($per->can("view_fraud_data")) {

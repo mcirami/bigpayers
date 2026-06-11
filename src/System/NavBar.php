@@ -2,8 +2,8 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Support\LegacyPermissions as Permissions;
 use LeadMax\TrackYourStats\Table\Date;
-use LeadMax\TrackYourStats\User\Permissions;
 
 class NavBar
 {

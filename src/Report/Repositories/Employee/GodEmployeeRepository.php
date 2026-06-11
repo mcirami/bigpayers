@@ -9,7 +9,6 @@ use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\Date;
-use LeadMax\TrackYourStats\User\Permissions;
 use Termwind\Components\Raw;
 
 class GodEmployeeRepository extends Repository

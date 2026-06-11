@@ -63,7 +63,7 @@ class Update
 
         $this->userType = $userType;
 
-        $per = Permissions::loadFromSession();
+        $per = CurrentUserSession::permissions();
 
         $this->per = $per;
 
