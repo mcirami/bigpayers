@@ -1180,6 +1180,7 @@ class LegacyFallbackAuditTest extends TestCase
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Date;',
                 'resources/views/report/bad.blade.php' => 'new LeadMax\\TrackYourStats\\Table\\Date;',
+                'src/Table/Date.php' => 'return $_COOKIE["timezone"];',
                 'app/Support/LegacyDate.php' => 'use LeadMax\\TrackYourStats\\Table\\Date;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyDate as Date;',
             ]]
@@ -1193,7 +1194,11 @@ class LegacyFallbackAuditTest extends TestCase
             'resources/views/report/bad.blade.php: Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertContains(
+            'src/Table/Date.php: Use Laravel request cookie helpers instead of reading the timezone cookie directly.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_paginate_dependency_errors_report_forbidden_sources(): void

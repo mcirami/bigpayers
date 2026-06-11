@@ -8,7 +8,7 @@
  */
 
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\Date;
+use App\Support\LegacyDate as Date;
 use PDO;
 
 class Salary

@@ -16,7 +16,7 @@ namespace LeadMax\TrackYourStats\Report;
 use LeadMax\TrackYourStats\Offer\Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\Date;
+use App\Support\LegacyDate as Date;
 use LeadMax\TrackYourStats\Table\ReportBase;
 
 class Employee extends ReportBase

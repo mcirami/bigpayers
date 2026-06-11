@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Report\Repositories;
 
 
-use LeadMax\TrackYourStats\Clicks\Click;
+use App\Support\LegacyClick as Click;
 use App\Support\CurrentUserSession;
 
 class SubVarRepository extends Repository

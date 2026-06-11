@@ -14,7 +14,7 @@ use App\OfferURL;
 use App\Privilege;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\Date;
+use App\Support\LegacyDate as Date;
 use LeadMax\TrackYourStats\Table\Paginate;
 use \LeadMax\TrackYourStats\User\User;
 

@@ -461,8 +461,9 @@ Remaining cleanup is mostly archival and hardening:
   Laravel-side sale log imports outside the boundary
 - modern report date helpers and report Blade date helper instantiations now
   resolve the legacy `Date` helper through `App\Support\LegacyDate`; the
-  fallback audit fails on new direct Laravel-side date imports outside the
-  boundary
+  older `src/Table/Date` helper reads the timezone cookie through Laravel's
+  request boundary, and the fallback audit fails on new direct Laravel-side date
+  imports or direct timezone-cookie reads outside the boundary
 - modern pagination helper callers now resolve the legacy `Paginate` helper
   through `App\Support\LegacyPaginate`; stale direct imports/comments were
   removed, and the fallback audit fails on new direct Laravel-side paginate

@@ -17,7 +17,7 @@ class Date
 
     static function today()
     {
-        $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/New_York";
+        $timezone = request()->cookie("timezone", "America/New_York");
         $date = Carbon::today($timezone);
 
 
@@ -42,7 +42,7 @@ class Date
 
     static function tomorrow()
     {
-        $timezone = (isset($_COOKIE["timezone"])) ? $_COOKIE["timezone"] : "America/New_York";
+        $timezone = request()->cookie("timezone", "America/New_York");
         $date = Carbon::tomorrow($timezone);
 
         return $date->format("Y-m-d");

@@ -15,7 +15,7 @@ use LeadMax\TrackYourStats\Offer\Rules\Device;
 use LeadMax\TrackYourStats\Offer\Rules\Geo;
 use LeadMax\TrackYourStats\Offer\Rules\NoneUnique;
 use PDO;
-use LeadMax\TrackYourStats\Clicks\ClickGeo;
+use App\Support\LegacyClickGeo as ClickGeo;
 
 class Rules
 {

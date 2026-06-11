@@ -273,6 +273,7 @@ class AuditLegacyFallbackCoverage extends Command
 
     private array $legacyDateForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Table\\Date' => 'Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
+        '$_COOKIE["timezone"]' => 'Use Laravel request cookie helpers instead of reading the timezone cookie directly.',
     ];
 
     private array $legacyDateAllowedFiles = [
@@ -1643,6 +1644,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -1695,6 +1697,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -2683,6 +2686,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {

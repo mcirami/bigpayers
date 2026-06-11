@@ -6,7 +6,7 @@ namespace LeadMax\TrackYourStats\Report;
 // Reports->Report (nav bar)
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\Date;
+use App\Support\LegacyDate as Date;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use LeadMax\TrackYourStats\User\ReportPermissions;
 use PDO;
