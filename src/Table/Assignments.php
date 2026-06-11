@@ -15,7 +15,7 @@ namespace LeadMax\TrackYourStats\Table;
 
 
 /*  $today = date("y-m-d");
- *  EX: $assignHandler = new \LeadMax\TrackYourStats\Table\Assignments(
+ *  EX: $assignHandler = new Assignments(
  *                  [
  *                      'd_from' =>  $today,
  *                      'rrp' => 10,

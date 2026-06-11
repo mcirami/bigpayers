@@ -14,6 +14,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\CurrentUserSession;
+use App\Support\LegacyAssignments as Assignments;
 use \LeadMax\TrackYourStats\User\User;
 
 class Create
@@ -31,7 +32,7 @@ class Create
 
     function __construct($Assignments)
     {
-        if (!($Assignments instanceof \LeadMax\TrackYourStats\Table\Assignments)) {
+        if (!($Assignments instanceof Assignments)) {
             throw new \Exception("Must pass an Assignments object to constructor!");
         }
 

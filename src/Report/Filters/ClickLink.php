@@ -4,7 +4,7 @@ namespace LeadMax\TrackYourStats\Report\Filters;
 
 
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\Table\Assignments;
+use App\Support\LegacyAssignments as Assignments;
 
 class ClickLink implements Filter
 {

@@ -19,7 +19,7 @@ use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use LeadMax\TrackYourStats\System\Notifications;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPermissions as Permissions;
-use LeadMax\TrackYourStats\User\Tree;
+use App\Support\LegacyTree as Tree;
 use \LeadMax\TrackYourStats\User\User;
 use PDO;
 

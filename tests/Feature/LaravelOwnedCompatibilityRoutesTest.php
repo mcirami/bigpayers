@@ -719,10 +719,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
     public function test_modern_assignments_reads_use_legacy_assignments_boundary(): void
     {
-        $controller = File::get(app_path('Http/Controllers/Report/ClickReportController.php'));
+        foreach ([
+            app_path('Http/Controllers/Report/ClickReportController.php'),
+            base_path('src/Offer/Create.php'),
+            base_path('src/Offer/Update.php'),
+            base_path('src/Report/Filters/ClickLink.php'),
+            base_path('src/User/Update.php'),
+        ] as $path) {
+            $contents = File::get($path);
 
-        $this->assertStringContainsString('App\\Support\\LegacyAssignments as Assignments', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Assignments', $controller);
+            $this->assertStringContainsString('App\\Support\\LegacyAssignments as Assignments', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Assignments', $contents);
+        }
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Table\\Assignments',
@@ -735,6 +743,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/UserController.php'),
             app_path('Observers/UserObserver.php'),
+            base_path('src/Offer/RepHasOffer.php'),
+            base_path('src/Offer/Update.php'),
         ] as $path) {
             $contents = File::get($path);
 

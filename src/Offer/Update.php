@@ -5,8 +5,8 @@ namespace LeadMax\TrackYourStats\Offer;
 use App\BonusOffer;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\Assignments;
-use LeadMax\TrackYourStats\User\Tree;
+use App\Support\LegacyAssignments as Assignments;
+use App\Support\LegacyTree as Tree;
 use \LeadMax\TrackYourStats\User\User;
 use PDO;
 

@@ -11,6 +11,7 @@ namespace LeadMax\TrackYourStats\User;
 use App\Privilege;
 use Illuminate\Support\Facades\DB;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyAssignments as Assignments;
 use PDO;
 
 
@@ -43,7 +44,7 @@ class Update
     function __construct($assign)
     {
 
-        if (!($assign instanceof \LeadMax\TrackYourStats\Table\Assignments)) {
+        if (!($assign instanceof Assignments)) {
             throw new \Exception("Must pass an Assignment object to constructor!");
         }
 
