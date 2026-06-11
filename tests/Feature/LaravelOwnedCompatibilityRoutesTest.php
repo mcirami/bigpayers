@@ -508,6 +508,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/AdjustmentsController.php'),
             app_path('Http/Controllers/ChatLogController.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
+            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
+            base_path('src/Clicks/URLEvents/DeductionRegistrationEvent.php'),
+            base_path('src/Offer/SaleLog.php'),
+            base_path('src/User/ReferralRegister.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -523,10 +528,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
     public function test_modern_pending_conversion_reads_use_legacy_pending_conversion_boundary(): void
     {
-        $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));
+        foreach ([
+            app_path('Http/Controllers/ChatLogController.php'),
+            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
+        ] as $path) {
+            $contents = File::get($path);
 
-        $this->assertStringContainsString('App\\Support\\LegacyPendingConversion as PendingConversion', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PendingConversion', $controller);
+            $this->assertStringContainsString('App\\Support\\LegacyPendingConversion as PendingConversion', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PendingConversion', $contents);
+        }
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Clicks\\PendingConversion',
@@ -595,6 +605,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/ConversionReportController.php'),
             app_path('Http/Controllers/Report/SubReportController.php'),
             app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
+            base_path('src/Clicks/Conversion.php'),
+            base_path('src/Report/Employee.php'),
+            base_path('src/Report/ID/Clicks.php'),
+            base_path('src/Report/Offer.php'),
+            base_path('src/Report/Repositories/Employee/AdminEmployeeRepository.php'),
+            base_path('src/Report/Repositories/Employee/GodEmployeeRepository.php'),
+            base_path('src/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
+            base_path('src/Report/Repositories/Offer/AdminOfferRepository.php'),
+            base_path('src/Report/Repositories/Offer/GodOfferRepository.php'),
+            base_path('src/Report/Repositories/Offer/ManagerOfferRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -680,6 +700,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/Report/ChatLogReportController.php'),
             app_path('Http/Controllers/UserController.php'),
+            base_path('src/Offer/View.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -988,10 +1009,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
     {
-        $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());
+        foreach ([
+            (new ReflectionClass(IndexController::class))->getFileName(),
+            base_path('src/Clicks/URLEvents/Listeners/BonusListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/Listener.php'),
+            base_path('src/Offer/Caps.php'),
+            base_path('src/Offer/Rules.php'),
+            base_path('src/Offer/Rules/NoneUnique.php'),
+        ] as $path) {
+            $contents = File::get($path);
 
-        $this->assertStringContainsString('App\\Support\\LegacyTrackingParameters as TrackingParameters', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\TrackingParameters', $controller);
+            $this->assertStringContainsString('App\\Support\\LegacyTrackingParameters as TrackingParameters', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\TrackingParameters', $contents);
+        }
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters',

@@ -5,7 +5,7 @@ namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
 use App\Privilege;
 use App\User;
 use Illuminate\Support\Facades\DB;
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 

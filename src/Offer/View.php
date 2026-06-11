@@ -15,7 +15,7 @@ use App\Privilege;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
-use LeadMax\TrackYourStats\Table\Paginate;
+use App\Support\LegacyPaginate as Paginate;
 use \LeadMax\TrackYourStats\User\User;
 
 

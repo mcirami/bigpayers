@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use LeadMax\TrackYourStats\Clicks\Cookie;
-use LeadMax\TrackYourStats\Clicks\TrackingParameters;
+use App\Support\LegacyTrackingParameters as TrackingParameters;
 
 class NoneUnique implements Rule
 {

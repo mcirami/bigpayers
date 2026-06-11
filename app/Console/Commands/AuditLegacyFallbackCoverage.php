@@ -1874,6 +1874,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -1926,6 +1927,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -1978,6 +1980,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -2135,6 +2138,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -2447,6 +2451,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {
@@ -2812,6 +2817,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {

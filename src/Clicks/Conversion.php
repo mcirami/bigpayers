@@ -5,7 +5,7 @@ namespace LeadMax\TrackYourStats\Clicks;
 
 use App\Privilege;
 use LeadMax\TrackYourStats\Database\DatabaseConnection;
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\User\Bonus;
 use LeadMax\TrackYourStats\User\ReferralRegister;

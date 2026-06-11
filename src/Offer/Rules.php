@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use Carbon\Carbon;
+use App\Support\LegacyTrackingParameters as TrackingParameters;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Offer\Rules\Device;
@@ -396,7 +397,7 @@ class Rules
     {
         $url = "http://".$_SERVER["HTTP_HOST"];
 
-        $params = \LeadMax\TrackYourStats\Clicks\TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize($_GET);
         $query = [];
 
         foreach ($params as $key => $val) {
@@ -407,11 +408,11 @@ class Rules
             $query[$key] = $val;
         }
 
-        $query["rid"] = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "repid");
+        $query["rid"] = TrackingParameters::get($params, "repid");
         $query["oid"] = $offid;
 
         for ($i = 1; $i <= 5; $i++) {
-            $subValue = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "sub{$i}");
+            $subValue = TrackingParameters::get($params, "sub{$i}");
             if ($subValue !== null) {
                 $query["s{$i}"] = $subValue;
             }

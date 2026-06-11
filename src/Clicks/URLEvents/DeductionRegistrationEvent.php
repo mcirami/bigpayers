@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 
 use App\User;
 use Illuminate\Http\JsonResponse;
-use LeadMax\TrackYourStats\Clicks\Conversion;
+use App\Support\LegacyConversion as Conversion;
 use LeadMax\TrackYourStats\Offer\Deduction;
 use LeadMax\TrackYourStats\User\PostBackURLs\DeductionPostBackURL;
 

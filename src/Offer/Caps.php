@@ -8,6 +8,7 @@
  */
 
 use Carbon\Carbon;
+use App\Support\LegacyTrackingParameters as TrackingParameters;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -193,7 +194,7 @@ class Caps
     public function sendToRedirectOffer()
     {
         $url = findProtocol().$_SERVER["HTTP_HOST"];
-        $params = \LeadMax\TrackYourStats\Clicks\TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize($_GET);
         $query = [];
 
         foreach ($params as $name => $val) {
@@ -204,11 +205,11 @@ class Caps
             $query[$name] = $val;
         }
 
-        $query["rid"] = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "repid");
+        $query["rid"] = TrackingParameters::get($params, "repid");
         $query["oid"] = $this->cap_rules["redirect_offer"];
 
         for ($i = 1; $i <= 5; $i++) {
-            $subValue = \LeadMax\TrackYourStats\Clicks\TrackingParameters::get($params, "sub{$i}");
+            $subValue = TrackingParameters::get($params, "sub{$i}");
             if ($subValue !== null) {
                 $query["s{$i}"] = $subValue;
             }

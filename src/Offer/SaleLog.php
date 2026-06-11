@@ -9,8 +9,8 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 
-use LeadMax\TrackYourStats\Clicks\Conversion;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyConversion as Conversion;
 use \LeadMax\TrackYourStats\User\User;
 
 class SaleLog

@@ -13,7 +13,7 @@
 namespace LeadMax\TrackYourStats\Report;
 
 
-use LeadMax\TrackYourStats\Offer\Payouts;
+use App\Support\LegacyPayouts as Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;

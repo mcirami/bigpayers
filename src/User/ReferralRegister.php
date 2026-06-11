@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 
-use LeadMax\TrackYourStats\Clicks\Conversion;
+use App\Support\LegacyConversion as Conversion;
 
 class ReferralRegister
 {

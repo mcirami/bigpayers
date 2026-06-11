@@ -8,7 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
-use LeadMax\TrackYourStats\Clicks\TrackingParameters;
+use App\Support\LegacyTrackingParameters as TrackingParameters;
 
 abstract class Listener
 {

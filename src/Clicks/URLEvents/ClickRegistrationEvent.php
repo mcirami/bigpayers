@@ -7,7 +7,7 @@ use App\BonusOffer;
 use App\User;
 use Illuminate\Support\Facades\Log;
 use App\Support\LegacyClick as Click;
-use LeadMax\TrackYourStats\Clicks\Conversion;
+use App\Support\LegacyConversion as Conversion;
 use LeadMax\TrackYourStats\Clicks\Cookie;
 use App\Support\LegacyUid as UID;
 use LeadMax\TrackYourStats\Clicks\URLProcessor;
