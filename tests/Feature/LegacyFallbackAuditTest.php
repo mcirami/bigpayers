@@ -73,6 +73,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy click vars through LegacyClickVars.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.',
             $output
         );
@@ -476,6 +480,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickDependencyErrors',
+            'legacyClickVarsDependencyErrors',
             'legacyClickSearcherDependencyErrors',
             'legacyConversionDependencyErrors',
             'legacyPendingConversionDependencyErrors',
@@ -787,6 +792,27 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_click_vars_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyClickVarsDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickVars;',
+                'app/Support/LegacyClickVars.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickVars;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickVars as ClickVars;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickVars instead of importing the legacy click vars class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1641,6 +1667,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyClickForbiddenPatterns',
+            'legacyClickVarsForbiddenPatterns',
             'legacyClickSearcherForbiddenPatterns',
             'legacyConversionForbiddenPatterns',
             'legacyPendingConversionForbiddenPatterns',

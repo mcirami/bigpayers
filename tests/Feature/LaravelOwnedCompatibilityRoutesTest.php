@@ -469,6 +469,26 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_modern_click_vars_reads_use_legacy_click_vars_boundary(): void
+    {
+        foreach ([
+            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            base_path('src/Database/Versions/V130.php'),
+            base_path('src/Database/Versions/V164.php'),
+            base_path('src/Report/ID/Clicks.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyClickVars as ClickVars', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\ClickVars', $contents);
+        }
+
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Clicks\\ClickVars',
+            File::get(app_path('Support/LegacyClickVars.php'))
+        );
+    }
+
     public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void
     {
         $controller = File::get(app_path('Http/Controllers/ClickSearchController.php'));

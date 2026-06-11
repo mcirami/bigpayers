@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 
 
 use App\Support\LegacyClick as Click;
-use LeadMax\TrackYourStats\Clicks\ClickVars;
+use App\Support\LegacyClickVars as ClickVars;
 use LeadMax\TrackYourStats\Clicks\UID;
 use LeadMax\TrackYourStats\Clicks\URLProcessor;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\Base64;
