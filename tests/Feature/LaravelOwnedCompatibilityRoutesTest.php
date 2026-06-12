@@ -189,6 +189,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             );
         }
 
+        foreach ([
+            base_path('src/User/Bonus.php'),
+            base_path('src/User/PostBackUrl.php'),
+            base_path('src/User/Privileges.php'),
+            base_path('src/User/Referrals.php'),
+            base_path('src/User/Salary.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
+
         $deduction = File::get(base_path('src/Offer/Deduction.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $deduction);
@@ -247,9 +260,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
 
         $offer = File::get(base_path('src/Offer/Offer.php'));
+        $repHasOffer = File::get(base_path('src/Offer/RepHasOffer.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offer);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offer);
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $repHasOffer);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $repHasOffer);
     }
 
     public function test_modern_offer_postback_urls_use_legacy_boundaries(): void
@@ -952,6 +968,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\User\\Tree',
             File::get(app_path('Support/LegacyTree.php'))
         );
+
+        $tree = File::get(base_path('src/User/Tree.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $tree);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $tree);
     }
 
     public function test_modern_admin_login_scripts_use_legacy_admin_login_boundary(): void

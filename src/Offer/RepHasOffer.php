@@ -15,7 +15,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use App\BonusOffer;
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyNotifications as Notifications;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPermissions as Permissions;
@@ -125,7 +125,7 @@ class RepHasOffer
             return false;
         }
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep_has_offer SET postback_url = ? WHERE rep_idrep = ? AND rep_has_offer.offer_idoffer IN (";
 
 
@@ -175,7 +175,7 @@ class RepHasOffer
     {
         $userData = User::SelectOne($userID);
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON rep.idrep = privileges.rep_idrep AND privileges.is_rep =1 WHERE rep.lft > :left AND rep.rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":left", $userData->lft);
@@ -216,7 +216,7 @@ class RepHasOffer
             return false;
         }
         $offerPayout = $offer["payout"];
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep_has_offer SET payout = :payout WHERE offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":offer_id", $offer_id);
@@ -227,7 +227,7 @@ class RepHasOffer
 
     public static function massAssignAffiliates($userList, $offerList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         foreach ($offerList as $offerID) {
             $sql = "INSERT IGNORE INTO rep_has_offer (rep_idrep, offer_idoffer, payout) VALUES";
             $questionMarks = [];
@@ -251,7 +251,7 @@ class RepHasOffer
 
     public static function queryGetAffiliatesAssignedToOffer($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN rep_has_offer ON rep_has_offer.rep_idrep = rep.idrep AND rep_has_offer.offer_idoffer = :id WHERE rep.lft > :left AND rep.rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -265,7 +265,7 @@ class RepHasOffer
 
     public static function unAssignAffiliates($userList, $offerId)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "DELETE FROM rep_has_offer WHERE offer_idoffer = ? AND rep_idrep IN (";
 
         $queryValues = [$offerId];
@@ -315,7 +315,7 @@ class RepHasOffer
                        rep_has_offer.rep_idrep = rep.idrep AND  rep_has_offer.offer_idoffer = :id OR offer.created_by = :repID
                        
                         ";
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $prep = $db->prepare($sql);
 
         $prep->bindParam(":id", $id);
@@ -339,7 +339,7 @@ class RepHasOffer
 
     static function getPostbackURL($offid, $affid)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT  postback_url FROM rep_has_offer WHERE rep_idrep = :affid AND
         offer_idoffer = :offid ";
 
@@ -368,7 +368,7 @@ class RepHasOffer
         $url = post("postback_url");
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep_has_offer SET postback_url = :postback_url ";
 
 
@@ -474,7 +474,7 @@ class RepHasOffer
             }
 
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
 
             $prep = $db->prepare($sql);
@@ -561,7 +561,7 @@ class RepHasOffer
         }
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $prep = $db->prepare($sql);
@@ -589,7 +589,7 @@ class RepHasOffer
 
         //$idoffer = get("idoffer");
 //        echo $idoffer;
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT rep_has_offer.rep_idrep, rep.referrer_repid FROM rep_has_offer INNER JOIN rep ON rep.idrep = rep_has_offer.rep_idrep WHERE offer_idoffer = :idoffer ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':idoffer', $idoffer);
@@ -606,7 +606,7 @@ class RepHasOffer
 
         //$idoffer = get("idoffer");
 //        echo $idoffer;
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep_has_offer WHERE offer_idoffer = :idoffer";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':idoffer', $idoffer);
@@ -622,7 +622,7 @@ class RepHasOffer
 
         //$idoffer = get("idoffer");
 //        echo $idoffer;
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep_has_offer INNER JOIN rep ON rep.idrep = rep_has_offer.rep_idrep AND rep.referrer_repid = :managerID WHERE offer_idoffer = :idoffer";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':idoffer', $idoffer);
@@ -637,7 +637,7 @@ class RepHasOffer
     // SELECT ONE
     public function SelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep_has_offer WHERE idrep_has_offer=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -650,7 +650,7 @@ class RepHasOffer
     // DELETE ALL THAT MATCH OFFER ID
     public function DeleteAll($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "DELETE FROM `rep_has_offer` WHERE `offer_idoffer` = :id";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_STR);
@@ -683,7 +683,7 @@ class RepHasOffer
                     $managerIDList[] = $managerList[$i];
                 }
 
-                $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+                $db = DatabaseConnection::getInstance();
                 $prep = $db->prepare($sql);
 
                 $prep->execute($managerIDList);
@@ -708,7 +708,7 @@ class RepHasOffer
 
     public static function assignAffiliateToPublicOffers($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idoffer, payout FROM offer WHERE is_public = 1";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -746,7 +746,7 @@ class RepHasOffer
 
         if ($submit) {
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
             $db->beginTransaction();
 

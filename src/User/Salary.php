@@ -9,6 +9,7 @@
 
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 class Salary
@@ -53,7 +54,7 @@ class Salary
 
     public function queryFetchAffiliateSalaries()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name, salary.id, salary.status, salary.last_update, salary FROM salary RIGHT JOIN rep ON rep.idrep = salary.user_id AND rep.lft > :left AND rep.rgt < :right INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1 ";
         $prep = $db->prepare($sql);
         $prep->bindParam(":left", CurrentUserSession::data()->lft);
@@ -66,7 +67,7 @@ class Salary
 
     private function queryAffiliateSalary()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT salary, last_update, salary.status, rep.user_name FROM salary RIGHT JOIN rep ON rep.idrep = salary.user_id WHERE user_id = :affiliate_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":affiliate_id", $this->affid);
@@ -83,7 +84,7 @@ class Salary
 
     public function payAllAffiliates($affiliateList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $questionMarks = array();
@@ -106,7 +107,7 @@ class Salary
     public function payAffiliate($user_id, $payout, $reason)
     {
         // find salary.id
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT id FROM salary WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -145,7 +146,7 @@ class Salary
 
     public function weekReport()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name, salary, salary.id, salary.status, last_update, salary_log.payout, salary_log.reason FROM rep LEFT JOIN salary ON salary.user_id = rep.idrep LEFT JOIN salary_log ON salary_log.salary_id = salary.id 
 
 AND salary_log.timestamp >= :monday AND salary_log.timestamp <= :sunday
@@ -167,7 +168,7 @@ AND salary_log.timestamp >= :monday AND salary_log.timestamp <= :sunday
 
     public static function createSalary($userID, $salary)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO salary (user_id, salary, timestamp, last_update, status) VALUES(:userID, :salary, :timestamp, :last_update, 1)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":userID", $userID);
@@ -184,7 +185,7 @@ AND salary_log.timestamp >= :monday AND salary_log.timestamp <= :sunday
 
     public static function updateSalary($user_id, $salary, $status)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE salary SET salary = :salary, status = :status WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);

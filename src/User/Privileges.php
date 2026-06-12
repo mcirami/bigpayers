@@ -15,6 +15,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 
@@ -46,7 +47,7 @@ class Privileges
 
     public static function create($user_id, $user_type)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO privileges(rep_idrep, is_god, is_admin, is_manager, is_rep) VALUES(:user_id,";
 
         $sql .= ($user_type == \App\Privilege::ROLE_GOD) ? "1," : "0,";
@@ -153,7 +154,7 @@ class Privileges
     // SELECT All 2
     public function select_all()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM privileges ";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -164,7 +165,7 @@ class Privileges
     // SELECT All 2
     public function get_count()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT COUNT(*) FROM privileges ";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -175,7 +176,7 @@ class Privileges
     // Get column names
     public function get_column_names()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $rows = $db->query("SELECT * FROM privileges LIMIT 1");
         for ($i = 0; $i < $rows->columnCount(); $i++) {
             $column = $rows->getColumnMeta($i);
@@ -187,7 +188,7 @@ class Privileges
 
     public static function selectOneByUserStatic($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM privileges WHERE rep_idrep=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -199,7 +200,7 @@ class Privileges
     // SELECT ONE
     public function SelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM privileges WHERE idprivileges=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -212,7 +213,7 @@ class Privileges
     // SELECT ONE BASED ON REPID
     public function SelectOneRepId($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM privileges WHERE rep_idrep=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -235,7 +236,7 @@ class Privileges
         $submit = post('button');
         if ($submit) {
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
             $rep_idrep = post('rep_idrep');
             $is_god = post('is_god');
@@ -266,7 +267,7 @@ class Privileges
         $submit = post('button');
         if ($submit) {
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = " UPDATE privileges SET  rep_idrep ='$this->rep_idrep',is_god ='$this->is_god',is_admin ='$this->is_admin' WHERE idprivileges = :id ";
             $stmt = $db->prepare($sql);
             $stmt->bindParam(':id', $id, PDO::PARAM_INT);

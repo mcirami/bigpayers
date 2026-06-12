@@ -2,6 +2,7 @@
 
 namespace LeadMax\TrackYourStats\User;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 // logic for heirachy tree for users
@@ -11,7 +12,7 @@ class Tree
 
     public static function getLR($affid)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT lft, rgt FROM rep WHERE idrep = :affid";
         $prep = $db->prepare($sql);
         $prep->bindParam(":affid", $affid);
@@ -23,7 +24,7 @@ class Tree
 
     public static function getChildren($left, $right)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep WHERE rep.lft > :left AND rep.rgt < :right";
 
     }
@@ -38,7 +39,7 @@ class Tree
     {
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         // the right value of this node is the left value + 1
         $right = $left + 1;
 
@@ -82,7 +83,7 @@ class Tree
     static function display_tree($idrep)
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         // retrieve the left and right value of the $root node

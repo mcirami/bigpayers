@@ -21,6 +21,7 @@
 
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 class Bonus
@@ -60,7 +61,7 @@ class Bonus
 
     public static function registerBonusToUser($bonusId, $userId)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $bonus = self::SelectOne($bonusId)->fetch(PDO::FETCH_OBJ);
 
@@ -108,7 +109,7 @@ class Bonus
 
     public static function queryFindAssignedUsers($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN user_has_bonus ON user_id = idrep AND bonus_id = :id WHERE lft > :left AND rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -123,7 +124,7 @@ class Bonus
 
     public static function SelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM bonus WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -134,7 +135,7 @@ class Bonus
 
     public static function querySelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
             $sql = "SELECT * FROM bonus WHERE id = :id";
         } else {
@@ -167,7 +168,7 @@ class Bonus
 
     public function registerAchievedBonuses()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         foreach ($this->newAchievedBonuses as $bonus) {
             $date = date("U");
 
@@ -244,7 +245,7 @@ class Bonus
         $currentWeek = Date::getSalesWeekEpoch();
         $user_id = $this->userID;
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM click_bonus WHERE aff_id = :user_id AND click_bonus.timestamp >= :start_date AND click_bonus.timestamp <= :end_date";
 
         $prep = $db->prepare($sql);
@@ -269,7 +270,7 @@ class Bonus
         $currentWeek = Date::getSalesWeek();
         $user_id = $this->userID;
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE user_id = :user_id AND timestamp >= :start_date AND timestamp <= :end_date";
 
         $prep = $db->prepare($sql);
@@ -286,7 +287,7 @@ class Bonus
 
     private function querySelectAllBonuses()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM bonus";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -297,7 +298,7 @@ class Bonus
 
     private function queryUsersBonuses()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM bonus INNER JOIN user_has_bonus ON user_id = :userID  AND bonus_id = bonus.id GROUP BY bonus.id, user_has_bonus.user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":userID", $this->userID);
@@ -308,7 +309,7 @@ class Bonus
 
     public static function createBonus($name, $sales_required, $payout, $status, $inheritable)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO bonus (name, sales_required, payout, author, is_active, timestamp, inheritable) VALUES(:name, :sales_required, :payout, :author, :status, :timestamp, :inheritable)";
         $prep = $db->prepare($sql);
 
@@ -335,7 +336,7 @@ class Bonus
 
     public static function updateBonus($id, $name, $sales_required, $payout, $status, $inheritable)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE bonus SET name = :name, sales_required = :sales_required, payout = :payout, is_active = :status, inheritable = :inheritable WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":name", $name);
@@ -350,7 +351,7 @@ class Bonus
 
     public static function disableBonus($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE bonus SET status = 0 WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -364,7 +365,7 @@ class Bonus
 
     public static function queryFetchUsersBonuses($userId)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM user_has_bonus INNER JOIN bonus ON bonus_id = bonus.id WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $userId);
@@ -388,7 +389,7 @@ class Bonus
 
     public static function assignUsersToBonus($bonusID, $userList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $insertValues = array();
         $questionMarks = array();
@@ -412,7 +413,7 @@ class Bonus
 
     public static function removeUsersFromBonus($bonusID, $userList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "DELETE FROM user_has_bonus WHERE bonus_id = ? AND user_id = ";
 
         for ($i = 0; $i < count($userList); $i++) {

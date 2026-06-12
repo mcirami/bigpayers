@@ -1,6 +1,7 @@
 <?php namespace LeadMax\TrackYourStats\User;
 
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 /**
  * Author: Dean
@@ -52,7 +53,7 @@ class Referrals
 
     public static function SelectOneReferralPaidConversionId($conversion_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM referrals_paid WHERE conversion_id = :conversion_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":conversion_id", $conversion_id);
@@ -63,7 +64,7 @@ class Referrals
 
     public static function deleteReferralStructure($referringUserId, $affiliateId)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "DELETE FROM referrals WHERE referrer_user_id = :refUserId AND aff_id = :aff_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":refUserId", $referringUserId);
@@ -121,7 +122,7 @@ class Referrals
             default:
                 return false;
         }
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO referrals_paid (aff_id, referred_aff_id, paid) VALUES (:aff_id, :referred_aff_id, :paid)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":aff_id", $this->affid); //my affiliate id
@@ -134,7 +135,7 @@ class Referrals
 
     private function findMyReferrerStructure($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM referrals WHERE aff_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -145,7 +146,7 @@ class Referrals
 
     public static function findReferrer($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT referrer_user_id FROM referrals WHERE aff_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -159,7 +160,7 @@ class Referrals
 
     public static function updateReferrer($user_id, $referrer_user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE referrals SET referrer_user_id = :referrer_user_id WHERE aff_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":referrer_user_id", $referrer_user_id);
@@ -170,7 +171,7 @@ class Referrals
 
     public static function printSelectBoxForEditAffiliate($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN privileges ON privileges.is_rep = 1 AND privileges.rep_idrep = rep.idrep WHERE rep.lft > :left AND rep.rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":left", CurrentUserSession::data()->lft);
@@ -209,7 +210,7 @@ class Referrals
 
     public static function selectNoneAssignedReferralAffiliates($affiliate_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep
  INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1
 
@@ -296,7 +297,7 @@ class Referrals
 
     private function queryGetAffiliateReferrals()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT referrer_user_id, aff_id, start_date, end_date, referral_type, commission_basis, min_payment_threshhold, payout, is_active, user_name FROM referrals
                 LEFT JOIN rep ON rep.idrep = referrals.aff_id
                 WHERE referrer_user_id = :affid";
@@ -311,7 +312,7 @@ class Referrals
 
     static function updateReferral($referrerAffID, $affiliateID, $options)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE referrals SET start_date = :start_date, end_date = :end_date,
                 referral_type = :referral_type, payout = :amount, is_active = :is_active
                 WHERE referrer_user_id = :referrerAffID AND aff_id = :affID";
@@ -343,7 +344,7 @@ class Referrals
 
     static function addReferral($referrerAffID, $affiliateID, $options)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO referrals (referrer_user_id, aff_id, start_date, end_date, referral_type, payout) VALUES (:referrerAffID, :affID, :start_date, :end_date, :referral_type, :payout)";
         $prep = $db->prepare($sql);
 

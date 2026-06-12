@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\User;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class PostBackUrl
 {
@@ -72,7 +73,7 @@ class PostBackUrl
 
     private function getOfferUrls()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep_has_offer WHERE rep_idrep = :user_id AND offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -116,7 +117,7 @@ class PostBackUrl
             self::createUserPostBackRow($user_id);
         }
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_postbacks SET url = :global, free_sign_up_url = :free WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -128,7 +129,7 @@ class PostBackUrl
 
     public static function createUserPostBackRow($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT IGNORE INTO user_postbacks (user_id) VALUES(:user_id)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -138,7 +139,7 @@ class PostBackUrl
 
     public static function doesUserHaveTableRow($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -153,7 +154,7 @@ class PostBackUrl
 
     public function getDeductionURL()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT deduction_url FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -172,7 +173,7 @@ class PostBackUrl
 
     public function getFreeSignUpURL()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT free_sign_up_url FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -191,7 +192,7 @@ class PostBackUrl
 
     public static function querySelectOneUserId($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -225,7 +226,7 @@ class PostBackUrl
 
     public function updateDeductionURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_postbacks SET deduction_url = :url WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":url", $url);
@@ -235,7 +236,7 @@ class PostBackUrl
 
     public function updateFreeSignUpURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_postbacks SET free_sign_up_url = :url WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":url", $url);
