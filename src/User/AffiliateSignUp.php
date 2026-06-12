@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 
 use Illuminate\Support\Facades\DB;
+use App\Support\LegacyNotifications as Notifications;
 use LeadMax\TrackYourStats\System\Connection;
 
 class AffiliateSignUp
@@ -88,7 +89,7 @@ class AffiliateSignUp
         $msg = "A new affiliate sign up has been requested, to over look and approve it please user this link  <a href=\"/user/pending/{$affiliate_id}/activate\">here</a>";
 
 
-        return \LeadMax\TrackYourStats\System\Notifications::sendNotification($user_ids, 1, "Affiliate Sign Up Request",
+        return Notifications::sendNotification($user_ids, 1, "Affiliate Sign Up Request",
             $msg);
     }
 

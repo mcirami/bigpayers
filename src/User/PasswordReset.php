@@ -1,7 +1,7 @@
 <?php
 
 
-use LeadMax\TrackYourStats\System\Mail;
+use App\Support\LegacyMail as Mail;
 
 // all business logic for password resets
 

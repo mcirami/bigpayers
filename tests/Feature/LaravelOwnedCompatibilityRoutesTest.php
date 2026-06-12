@@ -482,6 +482,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/LegacyCompatibilityController.php'),
             app_path('Http/Controllers/NotificationController.php'),
+            base_path('src/User/PasswordReset.php'),
+            base_path('src/User/User.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1138,6 +1140,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             (new ReflectionClass(IndexController::class))->getFileName(),
             (new ReflectionClass(IPBlacklistController::class))->getFileName(),
+            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1169,6 +1172,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             (new ReflectionClass(AppServiceProvider::class))->getFileName(),
             (new ReflectionClass(OfferController::class))->getFileName(),
+            base_path('src/Offer/RepHasOffer.php'),
+            base_path('src/User/AffiliateSignUp.php'),
         ] as $path) {
             $contents = File::get($path);
 

@@ -19,7 +19,7 @@ use LeadMax\TrackYourStats\Offer\Caps;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use LeadMax\TrackYourStats\Offer\Rules;
-use LeadMax\TrackYourStats\System\IPBlackList;
+use App\Support\LegacyIPBlackList as IPBlackList;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
