@@ -15,6 +15,7 @@ use App\Privilege;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPaginate as Paginate;
 use App\Support\LegacyUser as User;
 
@@ -326,7 +327,7 @@ class View
 
     function queryManager($items_per_page = false, $offset = false, $ACTIVE = 1)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $sql = "SELECT
@@ -388,7 +389,7 @@ class View
 
     function queryGod($items_per_page = false, $offset = false, $ACTIVE = 1)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $sql = "SELECT
@@ -438,7 +439,7 @@ class View
 
     function queryAff($items_per_page = false, $offset = false, $ACTIVE = 1)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $sql = "SELECT
@@ -493,7 +494,7 @@ class View
 
     private function querySelectRequestableOffers($user_id = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $visibility = Offer::VISIBILITY_REQUESTABLE;

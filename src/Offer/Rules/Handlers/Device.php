@@ -7,6 +7,7 @@
  * Time: 12:40 PM
  */
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 class Device
@@ -87,7 +88,7 @@ class Device
         $ruleData->capAmount = (int)$ruleData->capAmount;
         $ruleData->capStatus = (int)$ruleData->capStatus;
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         try {
 
             $db->beginTransaction();
@@ -208,7 +209,7 @@ class Device
     private function queryGetRules()
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rule 
         INNER JOIN device_rule ON device_rule.rule_idrule = rule.idrule
         LEFT OUTER JOIN device_list on device_list.device_rule_iddevice_rule = device_rule.iddevice_rule 
@@ -227,7 +228,7 @@ class Device
     public function createRule()
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         try {
 
             $db->beginTransaction();

@@ -14,8 +14,8 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPrivileges as Privileges;
 use PDO;
 
@@ -85,7 +85,7 @@ class Offer
 
     public static function deleteOffer($offer_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE offer SET status = 2 WHERE idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":offer_id", $offer_id);
@@ -96,7 +96,7 @@ class Offer
     // SELECT getCount
     static function getCount($active)
     {
-        $dbc = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $dbc = DatabaseConnection::getInstance();
         $sql = "";
         if ($active == 1) {
             $sql = "SELECT * FROM offer INNER JOIN rep_h_offer ON rep_has_offer.rep_idrep = :repid AND rep_has_offer.offer_idoffer = offer.idoffer WHERE offer.status = 1 ";
@@ -144,7 +144,7 @@ class Offer
     public static function duplicateOffer($offer_id)
     {
         $dupe = self::selectOneQuery($offer_id)->fetch(PDO::FETCH_OBJ);
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO offer (offer_name, description, url, payout, status, offer_timestamp, created_by, campaign_id) VALUES(:offer_name, :description, :url, :payout, 0, :timestamp, :created_by, :campaign_id)";
         $prep = $db->prepare($sql);
 
@@ -238,7 +238,7 @@ class Offer
     // SELECT ONE
     public function SelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM offer WHERE idoffer = :id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -250,7 +250,7 @@ class Offer
 
     public static function selectOwnedOffers($userType)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         switch ($userType) {
@@ -294,7 +294,7 @@ class Offer
 
     public static function selectOneQuery($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM offer WHERE idoffer = :id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -318,7 +318,7 @@ class Offer
     {
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $prep = $db->prepare("SELECT * FROM offer WHERE idoffer = :id");
         $prep->bindParam(":id", $id);

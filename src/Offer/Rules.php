@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use Carbon\Carbon;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyTrackingParameters as TrackingParameters;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -52,7 +53,7 @@ class Rules
 
     public function duplicateRules($newOfferID)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         if ($this->rules !== false) {
 
             // first organize by rule id
@@ -349,7 +350,7 @@ class Rules
     private
     function getRulesQuery()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rule
 
                 LEFT JOIN geo_rule on geo_rule.rule_idrule = rule.idrule
@@ -376,7 +377,7 @@ class Rules
 
     private function getBaseRulesQuery()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rule
 
                 LEFT JOIN geo_rule on geo_rule.rule_idrule = rule.idrule

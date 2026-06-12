@@ -245,6 +245,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Offer\\RepHasOffer',
             File::get(app_path('Support/LegacyRepHasOffer.php'))
         );
+
+        $offer = File::get(base_path('src/Offer/Offer.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offer);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offer);
     }
 
     public function test_modern_offer_postback_urls_use_legacy_boundaries(): void
@@ -352,6 +357,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $freeSignUp);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $freeSignUp);
+
+        foreach ([
+            base_path('src/Offer/Caps.php'),
+            base_path('src/Offer/Campaigns.php'),
+            base_path('src/Offer/View.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
     }
 
     public function test_modern_offer_rule_helpers_use_legacy_boundaries(): void
@@ -384,6 +400,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 $legacyClass,
                 File::get(app_path("Support/{$wrapper}"))
             );
+        }
+
+        foreach ([
+            base_path('src/Offer/Rules.php'),
+            base_path('src/Offer/Rules/Handlers/Device.php'),
+            base_path('src/Offer/Rules/Handlers/Geo.php'),
+            base_path('src/Offer/Rules/Handlers/NoneUnique.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
     }
 

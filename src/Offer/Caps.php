@@ -8,6 +8,7 @@
  */
 
 use Carbon\Carbon;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyTrackingParameters as TrackingParameters;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\StreamHandler;
@@ -71,7 +72,7 @@ class Caps
 
     public static function duplicateCapRules($offer_id, $new_offer_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM offer_caps WHERE offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":offer_id", $offer_id);
@@ -96,7 +97,7 @@ class Caps
 
     public function createCapRules($options)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO offer_caps (offer_idoffer,type, time_interval, interval_cap, redirect_offer)
             VALUES(:offerID, :type, :time_interval, :interval_cap,  :redirect_offer)";
         $prep = $db->prepare($sql);
@@ -134,7 +135,7 @@ class Caps
             return false;
         }
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE offer_caps SET status = 0, max_cap_status = 0, time_block_status = 0, hourly_cap_status = 0 WHERE offer_idoffer = :offerID";
         $prep = $db->prepare($sql);
 
@@ -156,7 +157,7 @@ class Caps
         }
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE offer_caps SET type = :type, time_interval = :time_interval, interval_cap = :interval_cap, redirect_offer = :redirect_offer, max_cap = :max_cap, max_cap_status = :max_cap_status, max_cap_date = :max_cap_date, status = 1, time_block_status = :time_block_status, block_start_time = :block_start_time, block_end_time = :block_end_time, hourly_cap_status = :hourly_cap_status, hourly_cap = :hourly_cap WHERE offer_idoffer = :offerID";
         $prep = $db->prepare($sql);
 
@@ -223,7 +224,7 @@ class Caps
 
     private function getOfferCapRules()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM offer_caps WHERE offer_idoffer = :offerID ";
         if ($this->updating == false) {
             $sql .= " AND status = 1 ";
@@ -332,7 +333,7 @@ class Caps
 			}
 		}
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         switch ($this->cap_rules["type"]) {
 
@@ -402,7 +403,7 @@ class Caps
 							$clicksLog->info('Click', $log);*/
 
 							if ($dateNow > $this->cap_rules['max_cap_date']) {
-								$db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+								$db   = DatabaseConnection::getInstance();
 								$sql  = "UPDATE offer_caps SET max_cap_status = 0, max_cap_date = NULL WHERE offer_idoffer = :offerID";
 								$prep = $db->prepare( $sql );
 								$prep->bindParam(":offerID", $this->offerID);

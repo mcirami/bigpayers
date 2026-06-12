@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 class Campaigns
@@ -19,7 +20,7 @@ class Campaigns
 
     public static function getDefaultCampaignId()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT id FROM campaigns ORDER BY id ASC LIMIT 1";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -35,7 +36,7 @@ class Campaigns
             return $this->selectCampaignsWithOwnedOffersOnly();
         }
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $prep = $db->prepare($sql);
 
@@ -46,7 +47,7 @@ class Campaigns
 
     public static function selectCampaign($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM campaigns WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -58,7 +59,7 @@ class Campaigns
 
     public static function selectCampaignOffers($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM offer WHERE campaign_id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -70,7 +71,7 @@ class Campaigns
 
     public function selectCampaignsWithOwnedOffersOnly()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT offer_idoffer FROM rep_has_offer INNER JOIN rep ON rep.lft > :left AND rep.rgt < :right GROUP BY offer_idoffer";
         $prep = $db->prepare($sql);
         $left = CurrentUserSession::data()->lft;
@@ -107,7 +108,7 @@ class Campaigns
 
     public static function createCampaign($name)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO campaigns (name, timestamp) VALUES(:name, :timestamp)";
         $prep = $db->prepare($sql);
 
@@ -125,7 +126,7 @@ class Campaigns
 
     public static function updateCampaign($id, $name)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE campaigns SET name = :name WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -137,7 +138,7 @@ class Campaigns
 
     public static function assignOffer($campaignID, $offerID)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE offer SET campaign_id = :campaign_id WHERE idoffer = :offer_id";
         $prep = $db->prepare($sql);
 
@@ -150,7 +151,7 @@ class Campaigns
 
     public static function assignOffers($campaignID, $offerList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE offer SET campaign_id = ? WHERE idoffer IN (";
 
         $insertValues = [$campaignID];
@@ -172,14 +173,14 @@ class Campaigns
 
     public static function removeOffers($campaign_id, $offerList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
     }
 
 
     public function queryGetOffers()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         if ($this->userType !== \App\Privilege::ROLE_GOD) {
             return Offer::selectOwnedOffers($this->userType);
         } else {

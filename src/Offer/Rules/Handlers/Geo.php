@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer\Rules\Handlers;
 
 use Illuminate\Support\Facades\Log;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 
@@ -70,7 +71,7 @@ class Geo
         $ruleData->deny = (int)$ruleData->deny;
         $ruleData->redirectOffer = (int)$ruleData->redirectOffer;
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         try {
 
             $db->beginTransaction();
@@ -192,7 +193,7 @@ class Geo
     private function queryGetRules()
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rule
         INNER JOIN geo_rule ON geo_rule.rule_idrule = rule.idrule
         LEFT OUTER JOIN country_list on country_list.geo_rule_idgeo_rule = geo_rule.idgeo_rule 
@@ -211,7 +212,7 @@ class Geo
     public function createRule()
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         try {
 
             $db->beginTransaction();

@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Offer\Rules\Handlers;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class NoneUnique
 {
@@ -36,7 +37,7 @@ class NoneUnique
 
     public function save()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO rule(name, offer_idoffer, type, redirect_offer, is_active, deny) VALUES (:name, :offer_id, :type, :redirect_offer, :is_active, :deny)";
         $prep = $db->prepare($sql);
 
@@ -52,7 +53,7 @@ class NoneUnique
 
     public function update()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rule SET name = :name, offer_idoffer = :offer_id, type = :type, redirect_offer = :redirect_offer,  is_active = :is_active, deny = :deny WHERE idrule = :id";
         $prep = $db->prepare($sql);
 
@@ -70,7 +71,7 @@ class NoneUnique
 
     public static function loadFromId($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rule WHERE idrule = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
