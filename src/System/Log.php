@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 // php file used to store our log functions, these functions log to the database,
 // there are two log functions, one that is just an informational log which logs to table "logs" in db,
@@ -23,7 +24,7 @@ function LogDB($error, $class)
     //gets ip of user
     $ip = $_SERVER["REMOTE_ADDR"];
 
-    $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+    $db = DatabaseConnection::getInstance();
 
 
     $error = substr($error, 0, 254);
@@ -67,7 +68,7 @@ function logError($error, $class)
     //gets ip of user
     $ip = $_SERVER["REMOTE_ADDR"];
 
-    $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+    $db = DatabaseConnection::getInstance();
 
 
     $sql = "INSERT INTO error_logs (class, error,url, time_stamp, ip) VALUES(:class, :error, :url, :time, :ip);";
@@ -87,5 +88,4 @@ function logError($error, $class)
     }
 
 }
-
 

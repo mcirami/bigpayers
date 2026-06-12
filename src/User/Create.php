@@ -9,8 +9,9 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use PDO;
 
 
@@ -47,7 +48,7 @@ class Create
             $affiliate_id = isset($_GET["id"]) ? $_GET["id"] : intval($id);
 			$referrer_repid = isset($_POST["referrer_repid"]) ? $_POST["referrer_repid"] : $mid;
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = "UPDATE rep SET status = 1, referrer_repid = :referrer_repid WHERE idrep = :id";
             $prep = $db->prepare($sql);
             $prep->bindParam(":id", $affiliate_id);
@@ -253,7 +254,7 @@ class Create
         }
 
 		if(CurrentUserSession::permissions()->can("create_admins")) {
-			$db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+			$db = DatabaseConnection::getInstance();
 			$sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_god = 1";
 			$stmt = $db->prepare($sql);
 			$stmt->execute();

@@ -12,6 +12,7 @@ use App\Privilege;
 use Illuminate\Support\Facades\DB;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyUser as User;
 use PDO;
 
@@ -212,7 +213,7 @@ class Update
     public function clearLoginAttempts()
     {
         if (isset($_GET["clearAtt"]) && isset($_GET["idrep"]) && $_GET["clearAtt"] == 1) {
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = "UPDATE logins SET success = 3 WHERE rep_username = :user_name and date = :date";
 
 
@@ -241,7 +242,7 @@ class Update
 		    return false;
 	    }
 
-	    $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+	    $db = DatabaseConnection::getInstance();
 
 	    $sql = "SELECT offer.offer_name, offer.idoffer, offer.payout FROM offer WHERE offer.status = 1 ORDER BY offer.idoffer";
 
@@ -359,7 +360,7 @@ class Update
 
 // update rep specific offer payout
         if (isset($_GET["offerid"]) && isset($_GET["out"]) && isset($_GET["idrep"]) && $userType != Privilege::ROLE_AFFILIATE) {
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = "UPDATE rep_has_offer SET payout=:payout WHERE rep_idrep = :repID AND offer_idoffer=:idoffer";
             $prep = $db->prepare($sql);
 
@@ -567,7 +568,7 @@ class Update
 
     public function findUserType()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $sql = "SELECT is_admin, is_manager, is_rep FROM privileges WHERE rep_idrep = :idrep";
         $prep = $db->prepare($sql);

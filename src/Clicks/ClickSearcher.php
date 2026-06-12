@@ -9,6 +9,8 @@
 
 namespace LeadMax\TrackYourStats\Clicks;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+
 class ClickSearcher
 {
 
@@ -23,7 +25,7 @@ class ClickSearcher
 
     public function clickVars()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM click_vars WHERE click_id = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":click_id", $this->clickId);
@@ -34,7 +36,7 @@ class ClickSearcher
 
     public function clickData()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE idclicks = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":click_id", $this->clickId);

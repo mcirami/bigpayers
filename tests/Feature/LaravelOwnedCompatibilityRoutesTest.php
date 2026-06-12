@@ -60,6 +60,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\User\\Login',
             File::get(app_path('Support/LegacyLogin.php'))
         );
+        $login = File::get(base_path('src/User/Login.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $login);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $login);
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\User\\AffiliateSignUp',
             File::get(app_path('Support/LegacyAffiliateSignUp.php'))
@@ -68,8 +72,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'App\\Support\\LegacyConnection as Connection',
             File::get(base_path('src/User/AffiliateSignUp.php'))
         );
+        $this->assertStringContainsString(
+            'App\\Support\\LegacyDatabaseConnection as DatabaseConnection',
+            File::get(base_path('src/User/AffiliateSignUp.php'))
+        );
         $this->assertStringNotContainsString(
             'LeadMax\\TrackYourStats\\System\\Connection',
+            File::get(base_path('src/User/AffiliateSignUp.php'))
+        );
+        $this->assertStringNotContainsString(
+            'LeadMax\\TrackYourStats\\Database\\DatabaseConnection',
             File::get(base_path('src/User/AffiliateSignUp.php'))
         );
         $this->assertStringContainsString(
@@ -190,11 +202,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         foreach ([
+            base_path('src/User/BanUser.php'),
             base_path('src/User/Bonus.php'),
+            base_path('src/User/Create.php'),
+            base_path('src/User/CreateUser.php'),
+            base_path('src/User/Permissions.php'),
             base_path('src/User/PostBackUrl.php'),
             base_path('src/User/Privileges.php'),
             base_path('src/User/Referrals.php'),
+            base_path('src/User/ReportPermissions.php'),
             base_path('src/User/Salary.php'),
+            base_path('src/User/Update.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -261,11 +279,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $offer = File::get(base_path('src/Offer/Offer.php'));
         $repHasOffer = File::get(base_path('src/Offer/RepHasOffer.php'));
+        $offerUpdate = File::get(base_path('src/Offer/Update.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offer);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offer);
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $repHasOffer);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $repHasOffer);
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offerUpdate);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offerUpdate);
     }
 
     public function test_modern_offer_postback_urls_use_legacy_boundaries(): void
@@ -359,6 +380,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Offer\\CreateOffer',
             File::get(app_path('Support/LegacyCreateOffer.php'))
+        );
+        $this->assertStringContainsString(
+            'App\\Support\\LegacyDatabaseConnection as DatabaseConnection',
+            File::get(base_path('src/Offer/CreateOffer.php'))
+        );
+        $this->assertStringNotContainsString(
+            'LeadMax\\TrackYourStats\\Database\\DatabaseConnection',
+            File::get(base_path('src/Offer/CreateOffer.php'))
         );
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Offer\\FreeSignUp',
@@ -507,6 +536,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $contents);
         }
+
+        $urls = File::get(base_path('src/Offer/URLs.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $urls);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $urls);
     }
 
     public function test_low_risk_modern_controllers_use_current_session_boundary(): void
@@ -613,6 +647,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\System\\Mail',
             File::get(app_path('Support/LegacyMail.php'))
         );
+        $passwordReset = File::get(base_path('src/User/PasswordReset.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $passwordReset);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $passwordReset);
     }
 
     public function test_modern_click_geo_reads_use_legacy_click_geo_boundary(): void
@@ -678,6 +716,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\ClickVars',
             File::get(app_path('Support/LegacyClickVars.php'))
         );
+        $clickVars = File::get(base_path('src/Clicks/ClickVars.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickVars);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickVars);
     }
 
     public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void
@@ -691,6 +733,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\ClickSearcher',
             File::get(app_path('Support/LegacyClickSearcher.php'))
         );
+        $clickSearcher = File::get(base_path('src/Clicks/ClickSearcher.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickSearcher);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickSearcher);
     }
 
     public function test_modern_conversion_reads_use_legacy_conversion_boundary(): void
@@ -720,6 +766,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $conversion);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $conversion);
+
+        $referralRegister = File::get(base_path('src/User/ReferralRegister.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $referralRegister);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRegister);
     }
 
     public function test_modern_pending_conversion_reads_use_legacy_pending_conversion_boundary(): void
@@ -1148,6 +1199,21 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
+    public function test_legacy_system_helpers_use_legacy_database_connection_boundary(): void
+    {
+        foreach ([
+            base_path('src/System/Database.php'),
+            base_path('src/System/Functions.php'),
+            base_path('src/System/Log.php'),
+            base_path('src/System/Setup.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
+    }
+
     public function test_modern_offer_report_repositories_use_legacy_boundaries(): void
     {
         foreach ([
@@ -1239,6 +1305,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 File::get($path)
             );
         }
+        $referralRepository = File::get(base_path('src/Report/Repositories/ReferralRepository.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $referralRepository);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRepository);
     }
 
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void

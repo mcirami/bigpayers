@@ -11,6 +11,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 define('ACCOUNT_TYPE', config('branding.account.singular'));
@@ -368,7 +369,7 @@ class Permissions
 
     static function permissionsExist($affid)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM permissions WHERE aff_id = :affid LIMIT 1";
         $prep = $db->prepare($sql);
         $prep->bindParam(":affid", $affid);
@@ -416,7 +417,7 @@ class Permissions
         }
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE permissions SET ";
 
 
@@ -506,7 +507,7 @@ class Permissions
             return "VALIDATE_BAD";
         }
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO permissions (";
 
         $keys = array_keys($list);
@@ -554,7 +555,7 @@ class Permissions
         }
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM permissions WHERE aff_id = :affid";
         $prep = $db->prepare($sql);
         $prep->bindParam(":affid", $this->repID);
@@ -582,7 +583,7 @@ class Permissions
     function getPermissions()
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "DESCRIBE permissions";
         $prep = $db->prepare($sql);
         try {

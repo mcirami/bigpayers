@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 
 class CreateUser
@@ -37,7 +38,7 @@ class CreateUser
 
     private function insertIntoTableRep()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO rep(first_name, last_name, cell_phone, email, user_name, password, status, referrer_repid, rep_timestamp, lft, rgt, skype, company_name)
 				VALUES(:first_name, :last_name, :cell_phone, :email, :user_name, :password,:status, :referrer_repid, :rep_timestamp, :lft, :rgt, :skype, :company_name)";
 
@@ -213,7 +214,7 @@ class CreateUser
 
     public static function doesUserNameExist($userName)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT user_name FROM rep WHERE user_name = :user_name";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_name", $userName);
@@ -224,7 +225,7 @@ class CreateUser
 
     public static function doesEmailExist($email)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT email FROM rep WHERE email = :email";
         $prep = $db->prepare($sql);
         $prep->bindParam(":email", $email);

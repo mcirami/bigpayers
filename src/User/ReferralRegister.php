@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyConversion as Conversion;
 
 class ReferralRegister
@@ -34,7 +35,7 @@ class ReferralRegister
 
     public function getMyReferralStructure()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM referrals WHERE aff_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->userId);
@@ -67,7 +68,7 @@ class ReferralRegister
 
     public function saveCommission()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO referrals_paid (aff_id, referred_aff_id, conversion_id, paid, timestamp) VALUES (:aff_id, :referred_aff_id, :conversion_id, :paid, :timestamp)";
         $prep = $db->prepare($sql);
 

@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 
 use Illuminate\Support\Facades\DB;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyNotifications as Notifications;
 use App\Support\LegacyConnection as Connection;
 
@@ -53,7 +54,7 @@ class AffiliateSignUp
 
     public static function queryFetchPendingAffiliates()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep WHERE rep.referrer_repid = 1 AND status = 0";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -68,7 +69,7 @@ class AffiliateSignUp
 
     public static function notifyUsersOfRegistration($affiliate_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT aff_id FROM permissions WHERE approve_affiliate_sign_ups = 1";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -123,7 +124,7 @@ class AffiliateSignUp
 INSERT INTO rep (first_name, last_name, email, user_name, password, status, referrer_repid, rep_timestamp, lft,rgt, skype, company_name) VALUES(:first_name, :last_name, :email, :user_name, :password, :status, :mid, :date, 0,0, :skype, :company_name);
 ";
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $prep = $db->prepare($sql);
 
@@ -157,7 +158,7 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function userNameOrEmailExists($userName, $email)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep WHERE user_name = :user_name OR email = :email";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_name", $userName);

@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class ReportPermissions
 {

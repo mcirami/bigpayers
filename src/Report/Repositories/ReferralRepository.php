@@ -1,5 +1,7 @@
 <?php namespace LeadMax\TrackYourStats\Report\Repositories;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+
 /**
  * Author: Dean
  * Email: dwm348@gmail.com
@@ -17,7 +19,7 @@ class ReferralRepository
 
     public function getAffiliateReferrals($left, $right, $startDate, $endDate, $selectActiveOnly = true)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT referrer_user_id, aff_id, start_date, end_date, referral_type, commission_basis, payout FROM referrals INNER JOIN rep ON rep.idrep = referrer_user_id AND rep.lft > :left AND rep.rgt < :right
                 WHERE :startDate >= referrals.start_date   AND  :endDate <= referrals.end_date ";
         if ($selectActiveOnly) {

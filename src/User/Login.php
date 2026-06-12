@@ -9,8 +9,8 @@
 namespace LeadMax\TrackYourStats\User;
 
 use Illuminate\Support\Facades\Log;
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 // class Login

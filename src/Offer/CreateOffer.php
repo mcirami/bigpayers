@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class CreateOffer
 {

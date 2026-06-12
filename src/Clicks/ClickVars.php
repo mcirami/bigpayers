@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks;
 
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser as User;
@@ -373,7 +374,7 @@ class ClickVars
 
     static function selectSubVars($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM click_vars WHERE click_id = :id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);

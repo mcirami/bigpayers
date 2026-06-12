@@ -2,6 +2,7 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 // Class used when setting up new company installs
@@ -88,7 +89,7 @@ class Setup
             $pwd = salt(12);
 
             echo "SUBMIT";
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = "INSERT INTO company (shortHand, subDomain, companyName, address, city, state, zip, telephone, email, skype, colors, uid) 
               VALUES(:shortHand, :subDomain, :companyName, :address, :city, :state, :zip, :telephone, :email, :skype, :colors, :uid);";
             $prep = $db->prepare($sql);

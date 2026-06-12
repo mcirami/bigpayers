@@ -6,6 +6,7 @@ use App\BonusOffer;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyTree as Tree;
 use App\Support\LegacyUser as User;
 use PDO;
@@ -113,7 +114,7 @@ class Update
                 $userID)->fetchAll(PDO::FETCH_ASSOC);
 
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = "SELECT rep_idrep FROM rep_has_offer INNER JOIN rep ON rep.idrep = rep_has_offer.rep_idrep AND rep.referrer_repid = :managerID WHERE offer_idoffer = :offerid";
             $prep = $db->prepare($sql);
             $prep->bindParam(":offerid", $this->offerID);
@@ -160,7 +161,7 @@ class Update
             }
 
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $sql = "SELECT rep_idrep FROM rep_has_offer WHERE offer_idoffer = :offerid";
             $prep = $db->prepare($sql);
             $prep->bindParam(":offerid", $this->offerID);
@@ -230,7 +231,7 @@ class Update
 
     private function doesManagersHaveAffiliates($managerList)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT user_name, lft, rgt FROM rep WHERE idrep IN(";
 
 
@@ -282,7 +283,7 @@ class Update
                 }
 
 
-                $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+                $db = DatabaseConnection::getInstance();
                 $prep = $db->prepare($sql);
 
                 $prep->execute($managerIDList);
@@ -344,7 +345,7 @@ class Update
         $sql .= " AND offer_idoffer = ?";
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $prep = $db->prepare($sql);
 
         return $prep->execute($affIDs);
@@ -358,7 +359,7 @@ class Update
 
         if ($submit) {
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
             $db->beginTransaction();
 

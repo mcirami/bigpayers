@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyMail as Mail;
 
 // all business logic for password resets
@@ -11,7 +12,7 @@ function checkPasswordResetRequest()
     if (isset($_POST["email"])) {
 
         if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
             $sql = "SELECT first_name, email, idrep, user_name FROM rep where email = :email";
 
@@ -101,7 +102,7 @@ function checkToken()
 
     if (isset($_GET["token"])) {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $prep = $db->prepare("SELECT * FROM password_resets WHERE verify = :token AND active = 1");
         $prep->bindParam(":token", $_GET["token"]);
@@ -128,7 +129,7 @@ function checkPasswordAndReset()
 
     if (isset($_POST["password"]) && isset($_POST["confirmpassword"]) && isset($_POST["token"])) {
         if ($_POST["password"] == $_POST["confirmpassword"]) {
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
             $prep = $db->prepare("SELECT * FROM password_resets WHERE verify = :token AND active = 1");
             $prep->bindParam(":token", $_POST["token"]);

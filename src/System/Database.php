@@ -8,6 +8,8 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+
 
 // when switched to homestead, MySQL was a newer version and required group bys in certain queries, to fix this, we can disable that setting..
 
@@ -19,7 +21,7 @@ class Database
 
     static function FIX_ERROR_ONLY_FULL_GROUP_BY()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));";
         $db->query($sql);
 

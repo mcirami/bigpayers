@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class BanUser
 {
@@ -27,7 +27,7 @@ class BanUser
 
     public static function updateBan($user_id, $expires, $reason, $status)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE banned_users SET expires = :expires, reason = :reason, status = :status WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":expires", $expires);
@@ -45,7 +45,7 @@ class BanUser
 
     public static function banUser($user_id, $expires, $reason)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO banned_users(user_id, expires, reason) VALUES(:user_id, :expires, :reason)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -61,7 +61,7 @@ class BanUser
 
     public static function disableBan($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE banned_users SET status = 0 WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -71,7 +71,7 @@ class BanUser
 
     public static function isUserBanned($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM banned_users WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -95,7 +95,7 @@ class BanUser
 
     public static function getBannedUserQuery($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM banned_users WHERE user_id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);

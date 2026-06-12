@@ -1,4 +1,7 @@
 <?php
+
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+
 /*
 HEZECOM CMS PRO v1.0
 http://hezecom.com
@@ -70,7 +73,7 @@ function handle_error($errno, $errstr, $errfile, $errline)
     //gets ip of user
     $ip = $_SERVER["REMOTE_ADDR"];
 
-    $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+    $db = DatabaseConnection::getInstance();
 
 
     $sql = "INSERT INTO error_logs (class, error, time_stamp, ip, error_number, resolved) VALUES(:class, :error,  :time, :ip, :error_number, 0 );";
@@ -214,4 +217,3 @@ function send_to($direction)
     }
 
 }
-
