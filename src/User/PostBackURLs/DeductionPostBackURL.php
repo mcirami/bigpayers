@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\User\PostBackURLs;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class DeductionPostBackURL extends PostBackURL
 {
@@ -33,7 +34,7 @@ class DeductionPostBackURL extends PostBackURL
 
     public function updateGlobalURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_postbacks SET deduction_url = :url WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam("url", $url);
@@ -44,7 +45,7 @@ class DeductionPostBackURL extends PostBackURL
 
     public function updateOfferURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep_has_offer SET deduction_postback = :url WHERE rep_idrep = :user_id AND offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -56,7 +57,7 @@ class DeductionPostBackURL extends PostBackURL
 
     private function get_offer_post_back()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT deduction_postback FROM rep_has_offer WHERE rep_idrep = :user_id AND offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -77,7 +78,7 @@ class DeductionPostBackURL extends PostBackURL
 
     private function get_global_post_back()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT deduction_url FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);

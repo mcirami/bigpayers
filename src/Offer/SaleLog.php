@@ -11,6 +11,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 use App\Support\CurrentUserSession;
 use App\Support\LegacyConversion as Conversion;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyUser as User;
 
 class SaleLog
@@ -95,7 +96,7 @@ class SaleLog
 
     public static function selectOneFromConversionIdQuery($conversion_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM sale_log WHERE conversion_id = :conversion_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":conversion_id", $conversion_id);
@@ -106,7 +107,7 @@ class SaleLog
 
     public static function selectOneQuery($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM sale_log WHERE id = :id";
         $prep = $db->prepare($sql);
 
@@ -120,7 +121,7 @@ class SaleLog
 
     public function save()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT IGNORE INTO sale_log (conversion_id) VALUES(:conversion_id)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":conversion_id", $this->conversion_id);

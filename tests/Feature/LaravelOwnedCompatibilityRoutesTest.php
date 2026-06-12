@@ -188,6 +188,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 File::get(app_path("Support/{$wrapper}"))
             );
         }
+
+        $deduction = File::get(base_path('src/Offer/Deduction.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $deduction);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $deduction);
     }
 
     public function test_modern_offer_domain_helpers_use_legacy_boundaries(): void
@@ -277,6 +282,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 File::get(app_path("Support/{$wrapper}"))
             );
         }
+
+        foreach ([
+            base_path('src/User/PostBackURLs/ConversionPostBackURL.php'),
+            base_path('src/User/PostBackURLs/FreePostBackURL.php'),
+            base_path('src/User/PostBackURLs/DeductionPostBackURL.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
     }
 
     public function test_modern_offer_support_helpers_use_legacy_boundaries(): void
@@ -292,6 +308,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(base_path('src/Offer/Rules/Device.php'))
         );
         $this->assertStringContainsString('App\\Support\\LegacyCreateOffer as CreateOffer', $legacySeedVersion);
+        $this->assertStringContainsString(
+            'App\\Support\\LegacyFreeSignUp as FreeSignUp',
+            File::get(base_path('src/Clicks/URLEvents/FreeSignUpRegistrationEvent.php'))
+        );
         $this->assertStringContainsString('App\\Support\\LegacyOfferView', $offerController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $offerController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $legacySeedVersion);
@@ -301,6 +321,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(base_path('src/Offer/Rules/Device.php'))
         );
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\CreateOffer', $legacySeedVersion);
+        $this->assertStringNotContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\FreeSignUp',
+            File::get(base_path('src/Clicks/URLEvents/FreeSignUpRegistrationEvent.php'))
+        );
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\View', $offerController);
 
         $this->assertStringContainsString(
@@ -316,9 +340,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(app_path('Support/LegacyCreateOffer.php'))
         );
         $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\FreeSignUp',
+            File::get(app_path('Support/LegacyFreeSignUp.php'))
+        );
+        $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Offer\\View',
             File::get(app_path('Support/LegacyOfferView.php'))
         );
+
+        $freeSignUp = File::get(base_path('src/Offer/FreeSignUp.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $freeSignUp);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $freeSignUp);
     }
 
     public function test_modern_offer_rule_helpers_use_legacy_boundaries(): void
@@ -769,6 +802,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog',
             File::get(app_path('Support/LegacyAdjustmentsLog.php'))
         );
+
+        $adjustmentsLog = File::get(base_path('src/Offer/AdjustmentsLog.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $adjustmentsLog);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $adjustmentsLog);
     }
 
     public function test_modern_sale_log_reads_use_legacy_sale_log_boundary(): void
@@ -782,6 +820,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Offer\\SaleLog',
             File::get(app_path('Support/LegacySaleLog.php'))
         );
+
+        $saleLog = File::get(base_path('src/Offer/SaleLog.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $saleLog);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $saleLog);
     }
 
     public function test_modern_date_reads_use_legacy_date_boundary(): void

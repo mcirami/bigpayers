@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\User\PostBackURLs;
 
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser as User;
 
@@ -36,7 +37,7 @@ class ConversionPostBackURL extends PostBackURL
 
     public function updateGlobalURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_postbacks SET url = :url WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam("url", $url);
@@ -47,7 +48,7 @@ class ConversionPostBackURL extends PostBackURL
 
     public function updateOfferURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep_has_offer SET postback_url = :url WHERE rep_idrep = :user_id AND offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);

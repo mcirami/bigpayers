@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\User\PostBackURLs;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class FreePostBackURL extends PostBackURL
 {
@@ -36,7 +37,7 @@ class FreePostBackURL extends PostBackURL
 
     public function updateGlobalURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_postbacks SET free_sign_up_url = :url WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam("url", $url);
@@ -47,7 +48,7 @@ class FreePostBackURL extends PostBackURL
 
     public function updateOfferURL($url)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep_has_offer SET free_sign_up_postback = :url WHERE rep_idrep = :user_id AND offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -60,7 +61,7 @@ class FreePostBackURL extends PostBackURL
 
     private function get_offer_post_back()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT free_sign_up_postback FROM rep_has_offer WHERE rep_idrep = :user_id AND offer_idoffer = :offer_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);
@@ -80,7 +81,7 @@ class FreePostBackURL extends PostBackURL
 
     private function get_global_post_back()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT free_sign_up_url FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->user_id);

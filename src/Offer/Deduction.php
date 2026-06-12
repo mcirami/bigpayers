@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\LegacyReferrals as Referrals;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class Deduction
 {
@@ -26,7 +27,7 @@ class Deduction
 
     public static function SelectOne($conversion_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM deductions WHERE conversion_id = :conversion_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":conversion_id", $conversion_id);
@@ -42,7 +43,7 @@ class Deduction
             return false;
         }
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT IGNORE INTO deductions (conversion_id) VALUES(:conversion_id)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":conversion_id", $this->conversion_id);
@@ -63,7 +64,7 @@ class Deduction
 
     public function deductReferral()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $referralPaid = Referrals::SelectOneReferralPaidConversionId($this->conversion_id);
 
         if ($referralPaid == false) {

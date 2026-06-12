@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Offer;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class AdjustmentsLog
 {
@@ -35,7 +36,7 @@ class AdjustmentsLog
 
     public function log()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO adjustments_log (conversion_id, user_id, action) VALUES(:conversion_id, :user_id, :action)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":conversion_id", $this->conversion_id);

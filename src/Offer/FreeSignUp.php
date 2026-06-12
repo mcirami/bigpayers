@@ -4,6 +4,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\LegacyClick as Click;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class FreeSignUp
 {
@@ -21,7 +22,7 @@ class FreeSignUp
 
     public static function selectOne($click_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM free_sign_ups WHERE click_id = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":click_id", $click_id);
@@ -40,7 +41,7 @@ class FreeSignUp
 
     public static function createFromId($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM free_sign_ups WHERE id =:id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -101,7 +102,7 @@ class FreeSignUp
 
     public function save()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT IGNORE INTO free_sign_ups (click_id, user_id) VALUES(:click_id, :user_id)";
         $prep = $db->prepare($sql);
 
@@ -121,7 +122,7 @@ class FreeSignUp
 
     public function update()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE free_sign_ups SET click_id = :click_id, user_id = :user_id, timestamp = :timestamp WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $this->id);
