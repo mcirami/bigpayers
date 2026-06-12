@@ -8,7 +8,7 @@
  */
 
 use Carbon\Carbon;
-use LeadMax\TrackYourStats\Report\Filters\DollarSign;
+use App\Support\LegacyDollarSignFilter as DollarSign;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use PDO;
 

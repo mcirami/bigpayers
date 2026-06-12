@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Report\Repositories;
 
 
-use LeadMax\TrackYourStats\Offer\AdjustmentsLog;
+use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
 
 class AdjustmentsLogRepository extends Repository
 {

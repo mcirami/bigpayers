@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\Report;
 
-use LeadMax\TrackYourStats\Report\Repositories\BlackListRepository;
+use App\Support\LegacyBlackListRepository as BlackListRepository;
 
 /**
  * Author: Dean

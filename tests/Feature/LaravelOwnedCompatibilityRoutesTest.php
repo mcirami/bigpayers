@@ -701,6 +701,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AdjustmentsController.php'),
             app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
+            base_path('src/Report/Repositories/AdjustmentsLogRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -931,6 +932,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
             app_path('Http/Controllers/Report/SubReportController.php'),
+            base_path('src/Report/AffiliatePayout.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -959,6 +961,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/BlackListReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
+            base_path('src/Report/BlackList.php'),
         ] as $path) {
             $contents = File::get($path);
 
