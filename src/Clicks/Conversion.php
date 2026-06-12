@@ -4,7 +4,7 @@ namespace LeadMax\TrackYourStats\Clicks;
 
 
 use App\Privilege;
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyBonus as Bonus;
@@ -201,7 +201,7 @@ class Conversion
 
     static function selectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE click_id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -213,7 +213,7 @@ class Conversion
 
     static function selectOneByConversionID($ConversionId)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $ConversionId);
@@ -226,7 +226,7 @@ class Conversion
     // OLD AND DISGUSTING
     static function Conversion($clickid, $customPayout = false, $returnConversionId = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $click = Click::SelectOne($clickid);
 

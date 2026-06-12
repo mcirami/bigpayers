@@ -1,5 +1,7 @@
 <?php namespace LeadMax\TrackYourStats\System;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+
 /**
  * Author: Dean
  * Email: dwm348@gmail.com
@@ -18,7 +20,7 @@ class IPBlackList
 
     public static function selectIPs()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM ip_blacklist ORDER BY id DESC";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -28,7 +30,7 @@ class IPBlackList
 
     public static function selectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM ip_blacklist WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -40,7 +42,7 @@ class IPBlackList
 
     public static function updateBlackList($id, $start, $end)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE ip_blacklist SET start = :start, end = :end WHERE id = :id";
         $prep = $db->prepare($sql);
         $start = ip2long($start);
@@ -54,7 +56,7 @@ class IPBlackList
 
     public static function deleteBlackList($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "DELETE FROM ip_blacklist WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -65,7 +67,7 @@ class IPBlackList
 
     public static function createNewBlacklist($start, $end)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO ip_blacklist (start, end, timestamp) VALUES(:start, :end, :timestamp) ";
         $prep = $db->prepare($sql);
         $start = ip2long($start);
@@ -87,7 +89,7 @@ class IPBlackList
 
     public function logIP()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO ip_blacklist_log (ip_address, timestamp) VALUES(:ip_address, :timestamp)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":ip_address", $this->ip_address);
@@ -100,7 +102,7 @@ class IPBlackList
 
     public function isBlackListed()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT id FROM ip_blacklist WHERE :ip >= start AND :ip2 <= end";
         $prep = $db->prepare($sql);
         $prep->bindParam(":ip", $this->ip_address);

@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Database\Versions;
 
 
 use App\Privilege;
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use LeadMax\TrackYourStats\Database\Version;
 use App\Support\LegacyCampaigns as Campaigns;
 use App\Support\LegacyCreateOffer as CreateOffer;

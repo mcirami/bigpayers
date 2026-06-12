@@ -4,7 +4,7 @@
 namespace LeadMax\TrackYourStats\Clicks;
 
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 class PendingConversion
 {

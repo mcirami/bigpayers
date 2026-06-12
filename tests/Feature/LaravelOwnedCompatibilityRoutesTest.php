@@ -286,6 +286,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $offerController);
         $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $legacySeedVersion);
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $legacySeedVersion);
         $this->assertStringContainsString(
             'App\\Support\\LegacyCaps as Caps',
             File::get(base_path('src/Offer/Rules/Device.php'))
@@ -294,6 +295,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\LegacyOfferView', $offerController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $offerController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $legacySeedVersion);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $legacySeedVersion);
         $this->assertStringNotContainsString(
             'LeadMax\\TrackYourStats\\Offer\\Caps',
             File::get(base_path('src/Offer/Rules/Device.php'))
@@ -574,6 +576,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\Click',
             File::get(app_path('Support/LegacyClick.php'))
         );
+
+        $click = File::get(base_path('src/Clicks/Click.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $click);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $click);
     }
 
     public function test_modern_click_vars_reads_use_legacy_click_vars_boundary(): void
@@ -631,6 +638,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\Conversion',
             File::get(app_path('Support/LegacyConversion.php'))
         );
+
+        $conversion = File::get(base_path('src/Clicks/Conversion.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $conversion);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $conversion);
     }
 
     public function test_modern_pending_conversion_reads_use_legacy_pending_conversion_boundary(): void
@@ -649,6 +661,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\PendingConversion',
             File::get(app_path('Support/LegacyPendingConversion.php'))
         );
+
+        $pendingConversion = File::get(base_path('src/Clicks/PendingConversion.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $pendingConversion);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $pendingConversion);
     }
 
     public function test_modern_click_id_reads_use_legacy_uid_boundary(): void
@@ -1019,6 +1036,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path => $legacyClass) {
             $this->assertStringContainsString($legacyClass, File::get($path));
         }
+
+        $blackListRepository = File::get(base_path('src/Report/Repositories/BlackListRepository.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $blackListRepository);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $blackListRepository);
     }
 
     public function test_modern_report_controllers_use_legacy_database_connection_boundary(): void
@@ -1175,6 +1197,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent',
             File::get(app_path('Support/LegacyClickRegistrationEvent.php'))
         );
+
+        $clickRegistrationEvent = File::get(base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickRegistrationEvent);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickRegistrationEvent);
     }
 
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void
@@ -1183,12 +1210,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             (new ReflectionClass(IndexController::class))->getFileName(),
             (new ReflectionClass(IPBlacklistController::class))->getFileName(),
             base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            base_path('src/System/IPBlackList.php'),
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyIPBlackList as IPBlackList', $contents);
+            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\IPBlackList', $contents);
         }
+
+        $ipBlackList = File::get(base_path('src/System/IPBlackList.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $ipBlackList);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $ipBlackList);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\System\\IPBlackList',
@@ -1222,6 +1255,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\LegacyNotifications as Notifications', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Notifications', $contents);
         }
+
+        $notifications = File::get(base_path('src/System/Notifications.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $notifications);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $notifications);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\System\\Notifications',

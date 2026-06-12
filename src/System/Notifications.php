@@ -8,6 +8,7 @@
  */
 
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 
@@ -104,7 +105,7 @@ class Notifications
 
     public function delete($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_has_notification SET deleted = 1 WHERE notification_id = :id AND user_id = :user_id ";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -121,7 +122,7 @@ class Notifications
 
     public function markAsRead($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE user_has_notification SET seen = 1 WHERE notification_id = :id AND user_id = :user_id ";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -133,7 +134,7 @@ class Notifications
 
     public static function sendNotification($to, int $from, string $title, string $message)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO notifications (title, body, timestamp, author) VALUES(:title, :body, :timestamp, :author)";
 
         $timestamp = date("U");
@@ -182,7 +183,7 @@ class Notifications
 
     public function createNotification($title, $body, $users)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $title = xss_clean($title);
         $body = xss_clean($body);
@@ -334,7 +335,7 @@ class Notifications
 
     public function fetchUsersNotifications()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT user_has_notification.notification_id, user_has_notification.user_id, user_has_notification.seen,
                 notifications.id, notifications.title, notifications.body, notifications.timestamp, rep.user_name as author_user_name
  

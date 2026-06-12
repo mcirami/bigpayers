@@ -2,12 +2,14 @@
 
 namespace LeadMax\TrackYourStats\Report\Repositories;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+
 class BlackListRepository
 {
 
     public function affiliatesBetween($dateFrom, $dateTo, $limit = false, $offset = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name, count(clicks.idclicks) as Clicks  FROM rep INNER JOIN clicks ON clicks.rep_idrep = rep.idrep AND clicks.click_type = 2 AND  clicks.first_timestamp >= :dateFrom AND clicks.first_timestamp <= :dateTo
            GROUP BY idrep ORDER BY Clicks DESC
 
@@ -33,7 +35,7 @@ class BlackListRepository
 
     public function clicksBetween($aff_id, $dateFrom, $dateTo)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks INNER JOIN click_geo ON click_geo.click_id = clicks.idclicks INNER JOIN click_vars ON click_vars.click_id = clicks.idclicks WHERE clicks.click_type = 2 AND clicks.rep_idrep = :aff_id AND clicks.first_timestamp >= :dateFrom and clicks.first_timestamp <= :dateTo";
         $prep = $db->prepare($sql);
         $dateFrom .= " 00:00:00";

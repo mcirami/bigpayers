@@ -1,7 +1,7 @@
 <?php
 namespace LeadMax\TrackYourStats\Clicks;
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 use GeoIp2\Database\Reader;
@@ -50,7 +50,7 @@ class Click
 
     public static function updateClickType($click_id, $click_type)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE clicks SET click_type = :click_type WHERE idclicks = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam("click_type", $click_type);
@@ -210,7 +210,7 @@ class Click
     // SELECT ONE
     public static function SelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE idclicks=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -221,7 +221,7 @@ class Click
 
     public static function querySelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE idclicks=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -232,7 +232,7 @@ class Click
 
     static function SelectOneByUID($uid)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE uid= :uid ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':uid', $uid);
@@ -254,7 +254,7 @@ class Click
     // SELECT All 2
     static function select_all()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks ";
         $stmt = $db->prepare($sql);
         $stmt->execute();
