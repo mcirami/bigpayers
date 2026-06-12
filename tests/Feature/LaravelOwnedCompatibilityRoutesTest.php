@@ -65,8 +65,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(app_path('Support/LegacyAffiliateSignUp.php'))
         );
         $this->assertStringContainsString(
+            'App\\Support\\LegacyConnection as Connection',
+            File::get(base_path('src/User/AffiliateSignUp.php'))
+        );
+        $this->assertStringNotContainsString(
+            'LeadMax\\TrackYourStats\\System\\Connection',
+            File::get(base_path('src/User/AffiliateSignUp.php'))
+        );
+        $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\User\\User',
             File::get(app_path('Support/LegacyUser.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\System\\Connection',
+            File::get(app_path('Support/LegacyConnection.php'))
         );
     }
 
@@ -270,15 +282,36 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_offer_support_helpers_use_legacy_boundaries(): void
     {
         $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+        $legacySeedVersion = File::get(base_path('src/Database/Versions/V158.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $offerController);
+        $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $legacySeedVersion);
+        $this->assertStringContainsString(
+            'App\\Support\\LegacyCaps as Caps',
+            File::get(base_path('src/Offer/Rules/Device.php'))
+        );
+        $this->assertStringContainsString('App\\Support\\LegacyCreateOffer as CreateOffer', $legacySeedVersion);
         $this->assertStringContainsString('App\\Support\\LegacyOfferView', $offerController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $offerController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $legacySeedVersion);
+        $this->assertStringNotContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\Caps',
+            File::get(base_path('src/Offer/Rules/Device.php'))
+        );
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\CreateOffer', $legacySeedVersion);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\View', $offerController);
 
         $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\Caps',
+            File::get(app_path('Support/LegacyCaps.php'))
+        );
+        $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Offer\\Campaigns',
             File::get(app_path('Support/LegacyCampaigns.php'))
+        );
+        $this->assertStringContainsString(
+            'LeadMax\\TrackYourStats\\Offer\\CreateOffer',
+            File::get(app_path('Support/LegacyCreateOffer.php'))
         );
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Offer\\View',
@@ -289,6 +322,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_offer_rule_helpers_use_legacy_boundaries(): void
     {
         $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+        $clickRegistrationEvent = File::get(base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'));
 
         foreach ([
             'App\\Support\\LegacyDeviceRuleHandler',
@@ -301,6 +335,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Rules', $offerController);
+        $this->assertStringContainsString('App\\Support\\LegacyOfferRules as Rules', $clickRegistrationEvent);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Rules', $clickRegistrationEvent);
 
         foreach ([
             'LegacyOfferRules.php' => 'LeadMax\\TrackYourStats\\Offer\\Rules',
@@ -351,9 +387,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_database_updates_use_legacy_company_updater_boundary(): void
     {
         $controller = File::get(app_path('Http/Controllers/DatabaseUpdateController.php'));
+        $companyUpdater = File::get(base_path('src/Database/CompanyUpdater.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyCompanyUpdater as CompanyUpdater', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\CompanyUpdater', $controller);
+        $this->assertStringContainsString('App\\Support\\LegacyConnection as Connection', $companyUpdater);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Connection', $companyUpdater);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Database\\CompanyUpdater',

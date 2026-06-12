@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use Illuminate\Support\Facades\DB;
 use App\Support\LegacyNotifications as Notifications;
-use LeadMax\TrackYourStats\System\Connection;
+use App\Support\LegacyConnection as Connection;
 
 class AffiliateSignUp
 {

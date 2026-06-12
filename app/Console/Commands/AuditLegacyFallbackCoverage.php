@@ -242,12 +242,16 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyOfferSupportForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Offer\\Caps' => 'Use App\\Support\\LegacyCaps instead of importing the legacy offer caps class directly.',
         'LeadMax\\TrackYourStats\\Offer\\Campaigns' => 'Use App\\Support\\LegacyCampaigns instead of importing the legacy campaigns class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\CreateOffer' => 'Use App\\Support\\LegacyCreateOffer instead of importing the legacy create-offer class directly.',
         'LeadMax\\TrackYourStats\\Offer\\View' => 'Use App\\Support\\LegacyOfferView instead of referencing the legacy offer view class directly.',
     ];
 
     private array $legacyOfferSupportAllowedFiles = [
+        'app/Support/LegacyCaps.php' => 'The dedicated boundary around the legacy offer caps class.',
         'app/Support/LegacyCampaigns.php' => 'The dedicated boundary around the legacy campaigns class.',
+        'app/Support/LegacyCreateOffer.php' => 'The dedicated boundary around the legacy create-offer class.',
         'app/Support/LegacyOfferView.php' => 'The dedicated boundary around the legacy offer view class.',
     ];
 
@@ -2562,6 +2566,7 @@ class AuditLegacyFallbackCoverage extends Command
             'app',
             'resources/views',
             'routes',
+            'src',
         ];
 
         foreach ($directories as $directory) {

@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
 use Detection\MobileDetect;
-use LeadMax\TrackYourStats\Offer\Caps;
+use App\Support\LegacyCaps as Caps;
 
 class Device implements Rule
 {
