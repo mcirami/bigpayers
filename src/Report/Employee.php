@@ -17,6 +17,7 @@ use App\Support\LegacyPayouts as Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use LeadMax\TrackYourStats\Table\ReportBase;
 
 class Employee extends ReportBase
@@ -386,7 +387,7 @@ class Employee extends ReportBase
             $sql .= "OFFSET {$offset}";
         }
 
-        $db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db   = DatabaseConnection::getInstance();
         $stmt = $db->prepare($sql);
 
 
@@ -512,7 +513,7 @@ class Employee extends ReportBase
         }
 
 
-        $db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db   = DatabaseConnection::getInstance();
         $stmt = $db->prepare($sql);
 
 

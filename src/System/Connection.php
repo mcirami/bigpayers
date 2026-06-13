@@ -2,8 +2,8 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use function Couchbase\defaultDecoder;
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
 use PDO;
 
 /**

@@ -123,6 +123,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\User\\User',
             File::get(app_path('Support/LegacyUser.php'))
         );
+        $legacyUser = File::get(base_path('src/User/User.php'));
+
+        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $legacyUser);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $legacyUser);
     }
 
     public function test_modern_user_domain_helpers_use_legacy_boundaries(): void
@@ -1197,11 +1201,27 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Database\\DatabaseConnection',
             File::get(app_path('Support/LegacyDatabaseConnection.php'))
         );
+
+        foreach ([
+            base_path('src/Report/Affiliate.php'),
+            base_path('src/Report/AffiliatePayout.php'),
+            base_path('src/Report/Employee.php'),
+            base_path('src/Report/ID/Clicks.php'),
+            base_path('src/Report/Offer.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
     }
 
     public function test_legacy_system_helpers_use_legacy_database_connection_boundary(): void
     {
         foreach ([
+            base_path('src/System/Company.php'),
+            base_path('src/System/Connection.php'),
+            base_path('src/System/DBUpdater.php'),
             base_path('src/System/Database.php'),
             base_path('src/System/Functions.php'),
             base_path('src/System/Log.php'),

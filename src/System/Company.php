@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\System;
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 
 // Class to handle company auto loading for installs, gets company info, colors, sub-domain, etc..

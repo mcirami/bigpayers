@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\System;
 
-use LeadMax\TrackYourStats\Database\DatabaseConnection;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 /**
  * Author: Dean

@@ -18,9 +18,10 @@ namespace LeadMax\TrackYourStats\User;
 
 use App\Company;
 use App\Privilege;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
-use App\Support\LegacyMail as Mail;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\LegacyMail as Mail;
+use App\Support\LegacyRepHasOffer as RepHasOffer;
 use PDO;
 
 //Begin class
@@ -75,7 +76,7 @@ class User extends Login
 
     public static function updateUserStatus($userId, $status)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "UPDATE rep SET status = :status WHERE idrep = :userId";
         $prep = $db->prepare($sql);
         $prep->bindParam(":userId", $userId);
@@ -87,7 +88,7 @@ class User extends Login
 
     public static function sendWelcomeEmail($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT email, first_name FROM rep WHERE idrep = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $user_id);
@@ -128,7 +129,7 @@ class User extends Login
 
     public static function getUsersGlobalPostBackURL($user_id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM user_postbacks WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $user_id);
@@ -144,7 +145,7 @@ class User extends Login
 
     public static function selectAllManagers()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_manager = 1";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -154,7 +155,7 @@ class User extends Login
 
     public static function selectAllAdmins()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_admin = 1";
         $prep = $db->prepare($sql);
         $prep->execute();
@@ -165,7 +166,7 @@ class User extends Login
     public static function updateUserId($id, $newId)
     {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $db->query("SET FOREIGN_KEY_CHECKS=0;");
 
@@ -217,7 +218,7 @@ class User extends Login
 
     public function queryUserRow()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep WHERE idrep = :userID";
         $prep = $db->prepare($sql);
         $prep->bindParam(":userID", $this->user_id);
@@ -231,7 +232,7 @@ class User extends Login
     {
 
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         // the right value of this node is the left value + 1
         $right = $left + 1;
 
@@ -292,7 +293,7 @@ class User extends Login
 
     public static function selectAllAffiliateIDs($customDBConnection = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         if ($customDBConnection) {
             $db = $customDBConnection;
         }
@@ -306,7 +307,7 @@ class User extends Login
     // SELECT All 2
     public function select_all()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep ";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -317,7 +318,7 @@ class User extends Login
     // SELECT All ASSIGNABLE BRUHS
     public function select_all_assignables()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 0 WHERE idrep != 0 AND status = 1";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -328,7 +329,7 @@ class User extends Login
 
     public static function selectOwnedManagers()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_manager = 1 WHERE lft > :left AND rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":left", CurrentUserSession::data()->lft);
@@ -340,7 +341,7 @@ class User extends Login
 
     public static function selectAdmins()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_admin = 1 WHERE lft > :left AND rgt < :right";
         $prep = $db->prepare($sql);
         $prep->bindParam(":left", CurrentUserSession::data()->lft);
@@ -352,7 +353,7 @@ class User extends Login
 
     public function selectAssignablesManager()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 0 WHERE idrep != 0 AND status = 1";
@@ -369,7 +370,7 @@ class User extends Login
 
     public function select_all_managers()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_manager = 1";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -379,7 +380,7 @@ class User extends Login
 
     public function select_all_managers_num()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_manager = 1";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -391,7 +392,7 @@ class User extends Login
     // SELECT All REPS
     public function select_all_reps()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -403,7 +404,7 @@ class User extends Login
     // SELECT All 2
     public function select_all_num()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1";
         $stmt = $db->prepare($sql);
         $stmt->execute();
@@ -414,7 +415,7 @@ class User extends Login
 
     public static function selectUsersByPrivileges($userType)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_";
         switch ($userType) {
             case \App\Privilege::ROLE_ADMIN:
@@ -444,7 +445,7 @@ class User extends Login
     // SELECT All 2
     public function selectAllManagerAffiliates($affid)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT idrep, user_name FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1 WHERE rep.referrer_repid = :affid";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(":affid", $affid);
@@ -455,7 +456,7 @@ class User extends Login
 
     static function selectAllOwnedAffiliates($selectAllColumns = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         if ($selectAllColumns) {
             $sql = "SELECT * FROM rep INNER JOIN privileges ON privileges.rep_idrep = rep.idrep AND privileges.is_rep = 1 WHERE rep.lft > :left AND rep.rgt < :right";
         } else {
@@ -480,7 +481,7 @@ class User extends Login
     // SELECT ONE
     public static function SelectOne($id)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM rep WHERE idrep=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -500,7 +501,7 @@ class User extends Login
         if ($submit) {
 
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
 
 
             if (post("user_name") == "") {
@@ -552,7 +553,7 @@ class User extends Login
                     $company_name = filter_var(post('company_name'), FILTER_SANITIZE_STRING);
                     $rep_timestamp = date('Y-m-d H:i:s');
                     $new_password = password_hash($password, PASSWORD_DEFAULT);
-                    $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+                    $db = DatabaseConnection::getInstance();
                     $sql = "INSERT INTO rep(first_name,last_name,cell_phone,email,user_name,password,status,referrer_repid,rep_timestamp, skype, company_name) VALUES(:first_name,:last_name,:cell_phone,:email,:user_name,:password,:status,:referrer_repid,:rep_timestamp, :skype,
 :company_name)";
                     $stmt = $db->prepare($sql);
@@ -685,7 +686,7 @@ class User extends Login
     //OUTPUT: True if the current logged in rep id is the inputed aff's referrer id
     public function hasRep($affid)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT lft, rgt FROM rep WHERE idrep = :affid";
         $prep = $db->prepare($sql);
         $prep->bindParam(":affid", $affid);
@@ -839,7 +840,7 @@ class User extends Login
             $sql .= " WHERE idrep = :id ";
 
 
-            $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+            $db = DatabaseConnection::getInstance();
             $stmt = $db->prepare($sql);
 
 

@@ -8,6 +8,7 @@ namespace LeadMax\TrackYourStats\Report\ID;
 use Carbon\Carbon;
 use App\Support\LegacyClickGeo as ClickGeo;
 use App\Support\LegacyClickVars as ClickVars;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
 use LeadMax\TrackYourStats\Table\ReportBase;
@@ -46,7 +47,7 @@ class Clicks extends ReportBase
 
     private function queryEmployee($d_from = false, $d_to = false, $repID = null, $rowCount = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $resolvedPaid = Payouts::sqlForRole($this->userType, 'offer', null);
 
 
@@ -103,7 +104,7 @@ class Clicks extends ReportBase
         }*/
 
 
-        $db   = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db   = DatabaseConnection::getInstance();
         $stmt = $db->prepare($sql);
 
         $stmt->bindParam(":left", $rep["lft"]);
@@ -125,7 +126,7 @@ class Clicks extends ReportBase
 
     public function queryAffiliate($d_from = false, $d_to = false, $repID = null, $items_per_page = 0, $offset = 0, $rowCount = false)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
 		$db->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, FALSE);
 

@@ -8,6 +8,7 @@
  */
 
 use Carbon\Carbon;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use PDO;
@@ -326,7 +327,7 @@ class AffiliatePayout
 
     private function queryReferrals()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT rep.user_name, aff_id, sum(paid) as Referral_Revenue FROM referrals_paid INNER JOIN rep ON rep.idrep = aff_id WHERE referred_aff_id = :affid AND timestamp >= :dateFrom1 AND timestamp <= :dateTo1 GROUP BY aff_id
 ";
 
@@ -348,7 +349,7 @@ class AffiliatePayout
 
     private function querySalaries()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT payout, reason, salary_log.timestamp FROM salary_log INNER JOIN salary ON salary.id = salary_log.salary_id AND salary.user_id = :affid WHERE salary_log.timestamp >= :dateFrom AND salary_log.timestamp <= :dateTo";
         $prep = $db->prepare($sql);
 
@@ -368,7 +369,7 @@ class AffiliatePayout
 
     private function queryBonuses()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql =
             "SELECT name, click_bonus.payout, count(click_bonus.id) as timesBonusesHit , click_bonus.timestamp FROM click_bonus LEFT JOIN bonus ON bonus.id = click_bonus.bonus_id WHERE aff_id = :affid AND click_bonus.timestamp >= :dateFrom AND click_bonus.timestamp <= :dateTo GROUP BY bonus.id, click_bonus.id";
         $prep = $db->prepare($sql);
@@ -388,7 +389,7 @@ class AffiliatePayout
 
     private function queryConversions()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT sum(paid) as paid FROM conversions WHERE user_id = :affid AND timestamp >= :dateFrom and timestamp <= :dateTo";
         $prep = $db->prepare($sql);
 
@@ -406,7 +407,7 @@ class AffiliatePayout
 
     private function queryDeductions()
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT sum(paid) as deductions FROM conversions INNER JOIN deductions ON conversion_id = conversions.id AND deduction_timestamp BETWEEN :dateFrom AND :dateTo WHERE user_id = :user_id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":user_id", $this->affid);

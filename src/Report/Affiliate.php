@@ -7,6 +7,7 @@ namespace LeadMax\TrackYourStats\Report;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDate as Date;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use LeadMax\TrackYourStats\Table\ReportBase;
 use App\Support\LegacyReportPermissions as ReportPermissions;
 use PDO;
@@ -108,7 +109,7 @@ class Affiliate extends ReportBase
 
     public function fetchSalary($dateFrom, $dateTo)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT payout, reason, salary.timestamp FROM salary_log INNER JOIN salary ON salary.id = salary_log.salary_id AND salary.user_id = :affiliate_id WHERE salary_log.timestamp >= :dateFrom and salary_log.timestamp <= :dateTo";
         $prep = $db->prepare($sql);
 
@@ -146,7 +147,7 @@ class Affiliate extends ReportBase
 
     public function fetchBonuses($dateFrom, $dateTo)
     {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT bonus.name, click_bonus.payout FROM click_bonus INNER JOIN bonus ON bonus.id = click_bonus.bonus_id WHERE aff_id = :user_id AND click_bonus.timestamp >= :startDate AND click_bonus.timestamp <= :endDate";
         $prep = $db->prepare($sql);
 
@@ -170,7 +171,7 @@ class Affiliate extends ReportBase
         $rowCount = false
     ) {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $sql = "SELECT
                     offer.idoffer as offer_id,

@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Report;
 
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
+use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use LeadMax\TrackYourStats\Table\ReportBase;
 
 // Offer Report
@@ -178,7 +179,7 @@ class Offer extends ReportBase
         $d_to = false,
         $SELECT_NONACTIVE = false
     ) {
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $revenueExpression = Payouts::sqlForRole($this->repType, 'offer', null);
 
 
@@ -370,7 +371,7 @@ class Offer extends ReportBase
         $SELECT_NONACTIVE = false
     ) {
 
-        $db = \LeadMax\TrackYourStats\Database\DatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $revenueExpression = Payouts::sqlForRole($this->repType, 'offer', null);
 
 
