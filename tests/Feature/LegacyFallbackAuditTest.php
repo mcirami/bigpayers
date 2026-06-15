@@ -521,6 +521,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyEmployeeReportRepositoriesDependencyErrors',
             'legacyMiscReportRepositoriesDependencyErrors',
             'legacyMailDependencyErrors',
+            'malformedLegacyNamespaceErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
             'allowedNonLegacyPhpRouteInventoryErrors',
@@ -1579,6 +1580,26 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertContains(
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyDatabaseConnection instead of referencing the legacy database connection class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_malformed_legacy_namespace_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'malformedLegacyNamespaceErrorsFor',
+            [[
+                'src/BadHelper.php' => '\\LeadMax\\TrackYourStats\\LeadMax\\TrackYourStats\\System\\Log($e, null);',
+                'src/CleanHelper.php' => '\\Log($e, null);',
+            ]]
+        );
+
+        $this->assertContains(
+            'src/BadHelper.php: Remove the duplicated legacy namespace segment.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

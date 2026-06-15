@@ -346,7 +346,7 @@ class Permissions
 
             return false;
         } catch (\Exception $e) {
-            Log($e, $this);
+            \Log($e, $this);
         }
 
     }
@@ -569,11 +569,11 @@ class Permissions
 
                 $this->permissions = $raw;
             } else {
-                Log("Unknown getUserPermissions() Error", $this);
+                \Log("Unknown getUserPermissions() Error", $this);
             }
 
         } catch (\Exception $e) {
-            Log($e, $this);
+            \Log($e, $this);
         }
 
 
@@ -598,11 +598,11 @@ class Permissions
                 $this->permissions = $columnNames;
 
             } else {
-                Log("Unknown getPermissions() Error", $this);
+                \Log("Unknown getPermissions() Error", $this);
             }
 
         } catch (\Exception $e) {
-            Log($e, $this);
+            \Log($e, $this);
         }
 
     }

@@ -3,7 +3,6 @@
 namespace LeadMax\TrackYourStats\Database\Versions;
 
 
-use function Couchbase\defaultDecoder;
 use LeadMax\TrackYourStats\Database\Version;
 
 class V167 extends Version

@@ -98,7 +98,7 @@ class DBUpdater
                 }
 
             } catch (\Exception $e) {
-                Log($e, $this);
+                \Log($e, $this);
 
                 return false;
             }

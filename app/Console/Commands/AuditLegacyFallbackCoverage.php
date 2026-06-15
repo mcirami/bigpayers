@@ -510,6 +510,10 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyMail.php' => 'The dedicated boundary around the legacy mail class.',
     ];
 
+    private array $malformedLegacyNamespaceForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\LeadMax\\TrackYourStats' => 'Remove the duplicated legacy namespace segment.',
+    ];
+
     private array $legacyBoundaryAllowedDirectories = [
         'app/Support' => 'Dedicated wrappers around legacy classes.',
     ];
@@ -1044,6 +1048,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $malformedLegacyNamespaceErrors = $this->malformedLegacyNamespaceErrors();
+
+        if ($malformedLegacyNamespaceErrors->isNotEmpty()) {
+            $this->error('Source code still contains malformed legacy namespace references:');
+            $malformedLegacyNamespaceErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyBoundaryDependencyErrors = $this->legacyBoundaryDependencyErrors();
 
         if ($legacyBoundaryDependencyErrors->isNotEmpty()) {
@@ -1126,6 +1139,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.');
         $this->info('Modern report controllers resolve remaining legacy report repositories through App\Support boundaries.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
+        $this->info('Source code has no malformed duplicated legacy namespace references.');
         $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
 
         return self::SUCCESS;
@@ -1585,6 +1599,62 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         return $this->legacyBoundaryDependencyErrorsFor($sourceFiles);
+    }
+
+    private function malformedLegacyNamespaceErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'bootstrap',
+            'config',
+            'database',
+            'public',
+            'resources',
+            'routes',
+            'src',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if ($file->getExtension() !== 'php') {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->malformedLegacyNamespaceErrorsFor($sourceFiles);
+    }
+
+    private function malformedLegacyNamespaceErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->malformedLegacyNamespaceForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
     }
 
     private function legacyBoundaryDependencyErrorsFor($sourceFiles)

@@ -36,7 +36,7 @@ class Cookie
                 $this->cookie = array();
             }
         } catch (\Exception $e) {
-            \LeadMax\TrackYourStats\LeadMax\TrackYourStats\System\Log($e, null);
+            \Log($e, null);
             $this->deleteCookie();
         }
 

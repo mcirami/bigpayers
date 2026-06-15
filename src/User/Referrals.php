@@ -100,10 +100,6 @@ class Referrals
 //@deprecated
     public function registerCommission($paid)
     {
-//		$this->logFunctionArgs(func_get_arg(0));
-//
-//		\LeadMax\TrackYourStats\System\Log(func_get_arg(0), $this);
-
         $structure = $this->myReferrerStructure;
         // Commission requires a Referrer Structure
         if (!$structure) {

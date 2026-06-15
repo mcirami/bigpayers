@@ -48,6 +48,13 @@ function LogDB($error, $class)
 
 }
 
+if (! function_exists('Log')) {
+    function Log($error, $class)
+    {
+        return LogDB($error, $class);
+    }
+}
+
 
 //
 function logError($error, $class)
@@ -88,4 +95,3 @@ function logError($error, $class)
     }
 
 }
-

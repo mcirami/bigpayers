@@ -229,7 +229,7 @@ class Update
             if ($prep->execute()) {
                 send_to("/user/{$this->assign->get("idrep")}/edit?clearAtt=2");
             } else {
-                \LeadMax\TrackYourStats\LeadMax\TrackYourStats\System\Log("clear User logins error", null);
+                \Log("clear User logins error", null);
 
             }
         }
@@ -371,7 +371,7 @@ class Update
             if ($prep->execute()) {
                 send_to("/user/{$this->assign->get("idrep")}/edit");
             } else {
-                \LeadMax\TrackYourStats\System\Log("offer update error", null);
+                \Log("offer update error", null);
 
             }
 
