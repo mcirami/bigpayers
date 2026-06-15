@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use PDO;
 
 // Class used when setting up new company installs
@@ -112,7 +113,7 @@ class Setup
 
                 if ($this->createDatabase()) {
                     if ($this->installDB()) {
-                        $msg = "<html><body><h1>A company was setup from ".$_SERVER["REMOTE_ADDR"]."</h1><br/>";
+                        $msg = "<html><body><h1>A company was setup from ".NativeRequest::server('REMOTE_ADDR')."</h1><br/>";
                         $msg .= "<p>company Short Hand: {$shortHand} </p>";
                         $msg .= "<p>Sub Domain: {$subDomain} </p>";
                         $msg .= "<br/><h2>company Contact:</h2>";

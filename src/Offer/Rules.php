@@ -11,6 +11,7 @@ namespace LeadMax\TrackYourStats\Offer;
 use Carbon\Carbon;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\NativeRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use LeadMax\TrackYourStats\Offer\Rules\Device;
@@ -396,9 +397,9 @@ class Rules
 
     private function buildRedirectUrl($offid)
     {
-        $url = "http://".$_SERVER["HTTP_HOST"];
+        $url = "http://".NativeRequest::server('HTTP_HOST');
 
-        $params = TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
         $query = [];
 
         foreach ($params as $key => $val) {

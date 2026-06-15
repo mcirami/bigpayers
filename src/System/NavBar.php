@@ -4,6 +4,7 @@ namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyPermissions as Permissions;
 use App\Support\LegacyDate as Date;
+use App\Support\NativeRequest;
 
 class NavBar
 {
@@ -171,7 +172,7 @@ class NavBar
             $this->menu['Reports'] = $reports;
         }
 
-        $this->currentPage = parse_url($_SERVER["REQUEST_URI"])["path"];
+        $this->currentPage = parse_url(NativeRequest::server('REQUEST_URI'))["path"];
 
 
     }

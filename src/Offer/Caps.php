@@ -10,6 +10,7 @@
 use Carbon\Carbon;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\NativeRequest;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -194,8 +195,8 @@ class Caps
 
     public function sendToRedirectOffer()
     {
-        $url = findProtocol().$_SERVER["HTTP_HOST"];
-        $params = TrackingParameters::normalize($_GET);
+        $url = findProtocol().NativeRequest::server('HTTP_HOST');
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
         $query = [];
 
         foreach ($params as $name => $val) {

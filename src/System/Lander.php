@@ -2,6 +2,8 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Support\NativeRequest;
+
 class Lander
 {
 
@@ -22,8 +24,10 @@ class Lander
 
     private function customFileCheck()
     {
-        if (isset($_GET["section"]) && strpos($_GET["section"], '..') === false) {
-            $file = $this->resolveSectionFile($_GET["section"]);
+        $section = NativeRequest::query('section');
+
+        if ($section !== null && strpos($section, '..') === false) {
+            $file = $this->resolveSectionFile($section);
             if ($file && file_exists($file)) {
                 $this->landerFile = $file;
                 $this->customFileLoaded = true;
@@ -57,7 +61,7 @@ class Lander
 
     public function isLandingPage()
     {
-        return ($_SERVER["HTTP_HOST"] == $this->company->getLandingPage() && $this->company->getLandingPage());
+        return (NativeRequest::server('HTTP_HOST') == $this->company->getLandingPage() && $this->company->getLandingPage());
         /*return ("liontracking" == $this->company->getLandingPage() && $this->company->getLandingPage());*/
     }
 

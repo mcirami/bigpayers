@@ -8,9 +8,10 @@
 
 namespace LeadMax\TrackYourStats\Table;
 
+use App\Support\NativeRequest;
 
 //Clean up assignments on report pages, tables, etc. currently, there's way too much clutter and bullshit on the paginate assignments, bot and so on. Needs major clean up
-//Start with having a page create an Assignments object, passing an assoc array with what assignments they want to $_GET. their value in the array will be the default value if no $_GET was assigned to that var
+//Start with having a page create an Assignments object, passing an assoc array with query-backed assignments. Their value in the array will be the default value if no request value was assigned to that var.
 //Vars passed with an '!' at the beginning are considered a required variable and will redirect if not set
 
 
@@ -55,9 +56,11 @@ class Assignments
 
     public function clean()
     {
+        $query = NativeRequest::queryAll();
+
         foreach ($this->assignments as $key => $val) {
-            if (isset($_GET[$key])) {
-                $this->assignments[$key] = xss_clean($_GET[$key]);
+            if (isset($query[$key])) {
+                $this->assignments[$key] = xss_clean($query[$key]);
             }
         }
     }
@@ -111,10 +114,11 @@ class Assignments
 
         $this->checkRequired();
 
+        $query = NativeRequest::queryAll();
 
         foreach ($this->assignments as $key => $val) {
-            if (isset($_GET[$key])) {
-                $this->assignments[$key] = $_GET[$key];
+            if (isset($query[$key])) {
+                $this->assignments[$key] = $query[$key];
             }
         }
 
@@ -180,7 +184,7 @@ class Assignments
             }
         }
 
-        if (isset($_GET["adminLogin"])) {
+        if (NativeRequest::hasQuery('adminLogin')) {
             $url .= "&adminLogin";
         }
 
@@ -229,11 +233,13 @@ class Assignments
 
     private function checkRequired()
     {
+        $query = NativeRequest::queryAll();
+
         foreach ($this->required as $key => $val) {
-            if (!isset($_GET[$key])) {
+            if (!isset($query[$key])) {
                 $this->redirect();
             } else {
-                if ($_GET[$key] == null) {
+                if ($query[$key] == null) {
                     $this->redirect();
                 }
             }

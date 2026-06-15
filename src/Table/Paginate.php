@@ -9,6 +9,8 @@
 
 namespace LeadMax\TrackYourStats\Table;
 
+use App\Support\NativeRequest;
+
 //paginate class by dave.
 
 class Paginate
@@ -39,7 +41,7 @@ class Paginate
         <label for=\"page\">Page &nbsp;</label>
   
     
-        <select onchange=\"window.location = '".htmlspecialchars(parse_url($_SERVER["REQUEST_URI"])["path"], ENT_QUOTES,
+        <select onchange=\"window.location = '".htmlspecialchars(parse_url(NativeRequest::server('REQUEST_URI'))["path"], ENT_QUOTES,
                 "utf-8").$assign->buildAssignments(["page"])."&page='+getElementById('page').value + '';\" id=\"page\" name=\"page\" >
             ";
 
@@ -61,8 +63,10 @@ class Paginate
     public function get_page()
     {
 
-        if (isset($_GET['page']) && is_numeric($_GET['page'])) { // Already been determined.
-            return $this->current_page = $_GET['page'];
+        $page = NativeRequest::query('page');
+
+        if ($page !== null && is_numeric($page)) { // Already been determined.
+            return $this->current_page = $page;
         } else {
             return $this->current_page = 1;
         }
@@ -113,6 +117,5 @@ class Paginate
 
 
 }
-
 
 

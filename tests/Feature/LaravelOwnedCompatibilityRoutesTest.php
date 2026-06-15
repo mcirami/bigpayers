@@ -724,6 +724,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $click);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $click);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $click);
+        $this->assertStringNotContainsString('$_GET', $click);
+        $this->assertStringNotContainsString('$_SERVER', $click);
     }
 
     public function test_modern_click_vars_reads_use_legacy_click_vars_boundary(): void
@@ -875,6 +878,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\System\\Lander',
             File::get(app_path('Support/LegacyLander.php'))
         );
+
+        $lander = File::get(base_path('src/System/Lander.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $lander);
+        $this->assertStringNotContainsString('$_GET', $lander);
+        $this->assertStringNotContainsString('$_SERVER', $lander);
     }
 
     public function test_modern_payout_reads_use_legacy_payouts_boundary(): void
@@ -1006,6 +1015,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Table\\Paginate',
             File::get(app_path('Support/LegacyPaginate.php'))
         );
+
+        $paginate = File::get(base_path('src/Table/Paginate.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $paginate);
+        $this->assertStringNotContainsString('$_GET', $paginate);
+        $this->assertStringNotContainsString('$_SERVER', $paginate);
     }
 
     public function test_modern_assignments_reads_use_legacy_assignments_boundary(): void
@@ -1027,6 +1042,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Table\\Assignments',
             File::get(app_path('Support/LegacyAssignments.php'))
         );
+
+        $assignments = File::get(base_path('src/Table/Assignments.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $assignments);
+        $this->assertStringNotContainsString('$_GET', $assignments);
     }
 
     public function test_modern_tree_reads_use_legacy_tree_boundary(): void
@@ -1277,6 +1297,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             base_path('src/System/Connection.php'),
             base_path('src/System/Functions.php'),
+            base_path('src/System/Log.php'),
+            base_path('src/System/Setup.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1405,6 +1427,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters',
             File::get(app_path('Support/LegacyTrackingParameters.php'))
         );
+
+        foreach ([
+            base_path('src/Offer/Caps.php'),
+            base_path('src/Offer/Rules.php'),
+            base_path('src/Offer/Rules/NoneUnique.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\NativeRequest', $contents);
+            $this->assertStringNotContainsString('$_GET', $contents);
+            $this->assertStringNotContainsString('$_SERVER', $contents);
+        }
     }
 
     public function test_index_click_registration_uses_legacy_event_boundaries(): void
@@ -1513,6 +1547,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\System\\NavBar',
             File::get(app_path('Support/LegacyNavBar.php'))
         );
+
+        $navBar = File::get(base_path('src/System/NavBar.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $navBar);
+        $this->assertStringNotContainsString('$_SERVER', $navBar);
     }
 
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void

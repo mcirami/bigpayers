@@ -1,6 +1,7 @@
 <?php
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 
 // php file used to store our log functions, these functions log to the database,
 // there are two log functions, one that is just an informational log which logs to table "logs" in db,
@@ -9,7 +10,7 @@ use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 
 function LogDB($error, $class)
 {   //gets full url of page that error happened on
-    $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $actual_link = "http://" . NativeRequest::server('HTTP_HOST') . NativeRequest::server('REQUEST_URI');
 
     //gets class name of class that error happened, set to null if not in class
     if ($class != null) {
@@ -22,7 +23,7 @@ function LogDB($error, $class)
     $time = date("U");
 
     //gets ip of user
-    $ip = $_SERVER["REMOTE_ADDR"];
+    $ip = NativeRequest::server('REMOTE_ADDR');
 
     $db = DatabaseConnection::getInstance();
 
@@ -60,7 +61,7 @@ if (! function_exists('Log')) {
 function logError($error, $class)
 {
     //gets full url of page that error happened on
-    $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $actual_link = "http://" . NativeRequest::server('HTTP_HOST') . NativeRequest::server('REQUEST_URI');
 
     //gets class name of class that error happened, set to null if not in class
     if ($class != null) {
@@ -73,7 +74,7 @@ function logError($error, $class)
     $time = date("U");
 
     //gets ip of user
-    $ip = $_SERVER["REMOTE_ADDR"];
+    $ip = NativeRequest::server('REMOTE_ADDR');
 
     $db = DatabaseConnection::getInstance();
 

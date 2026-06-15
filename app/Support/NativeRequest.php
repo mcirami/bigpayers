@@ -9,6 +9,16 @@ class NativeRequest
         return isset($_GET[$key]);
     }
 
+    public static function query(string $key, $default = null)
+    {
+        return $_GET[$key] ?? $default;
+    }
+
+    public static function queryAll(): array
+    {
+        return $_GET;
+    }
+
     public static function post(string $key, $default = null)
     {
         return $_POST[$key] ?? $default;

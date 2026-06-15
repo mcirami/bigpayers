@@ -2,6 +2,7 @@
 namespace LeadMax\TrackYourStats\Clicks;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use PDO;
 
 use GeoIp2\Database\Reader;
@@ -101,13 +102,13 @@ class Click
     {
 
         if (isset($this->subVarArray) == false) {
-            $this->subVarArray = $_GET;
+            $this->subVarArray = NativeRequest::queryAll();
         }
 
         $this->subVarArray = TrackingParameters::normalize($this->subVarArray);
 
         if (isset($this->queryString) == false) {
-            $this->queryString = $_SERVER["REQUEST_URI"];
+            $this->queryString = NativeRequest::server('REQUEST_URI');
         }
 
         $db = DatabaseConnection::getInstance();
