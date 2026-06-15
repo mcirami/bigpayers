@@ -18,4 +18,9 @@ class NativeSession
     {
         unset($_SESSION[$key]);
     }
+
+    public static function destroy(): void
+    {
+        session_destroy();
+    }
 }

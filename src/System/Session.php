@@ -1,6 +1,7 @@
 <?php namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyUser as User;
+use App\Support\NativeRequest;
 use App\Support\NativeSession;
 
 /**
@@ -25,7 +26,7 @@ class Session
     {
         $adminLogin = NativeSession::get('adminLogin');
 
-        if (isset($_GET["adminLogin"]) && $adminLogin !== null) {
+        if (NativeRequest::hasQuery('adminLogin') && $adminLogin !== null) {
             if (isset($adminLogin[$requestedSessionVar])) {
                 if ($unserialize) {
                     return unserialize($adminLogin[$requestedSessionVar]);

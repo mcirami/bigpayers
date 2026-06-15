@@ -58,6 +58,16 @@ class PublicCompatibilityRoutesTest extends TestCase
         $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('login_themes/default/index.php'), '/login');
     }
 
+    public function test_legacy_logout_php_uses_native_session_boundary(): void
+    {
+        $logout = File::get(base_path('legacy/logout.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $logout);
+        $this->assertStringContainsString('App\\Support\\NativeSession', $logout);
+        $this->assertStringNotContainsString('$_GET', $logout);
+        $this->assertStringNotContainsString('$_SESSION', $logout);
+    }
+
     public function test_company_css_sanitizes_theme_colors_before_rendering(): void
     {
         $controller = app(CompanyCssController::class);

@@ -1,10 +1,12 @@
 <?php
 
+use App\Support\NativeSession;
+use App\Support\NativeRequest;
 use LeadMax\TrackYourStats\User\User;
 
-if(isset($_GET["adminLogin"]))
+if(NativeRequest::hasQuery('adminLogin'))
 {
-    unset($_SESSION["adminLogin"]);
+    NativeSession::forget('adminLogin');
 ?>
 <script type="text/javascript">
     window.close();

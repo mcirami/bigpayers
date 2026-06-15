@@ -66,6 +66,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $login);
         $this->assertStringContainsString('App\\Support\\NativeSession', $login);
         $this->assertStringNotContainsString('$_SESSION', $login);
+        $this->assertStringContainsString('NativeSession::destroy()', $login);
+        $this->assertStringNotContainsString('session_destroy()', $login);
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\User\\AffiliateSignUp',
             File::get(app_path('Support/LegacyAffiliateSignUp.php'))
@@ -129,6 +131,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\NativeSession', $legacySession);
         $this->assertStringNotContainsString('$_SESSION', $legacySession);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $legacySession);
+        $this->assertStringNotContainsString('$_GET', $legacySession);
 
         $legacyUser = File::get(base_path('src/User/User.php'));
 
@@ -1067,6 +1071,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\NativeSession', $adminLogin);
         $this->assertStringNotContainsString('$_SESSION', $adminLogin);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $adminLogin);
+        $this->assertStringNotContainsString('$_GET', $adminLogin);
     }
 
     public function test_modern_notification_layouts_use_legacy_notify_boundary(): void

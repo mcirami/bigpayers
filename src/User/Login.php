@@ -279,7 +279,7 @@ class Login
         if ($adminId !== null) {
             $this->adminLogin($adminId);
         } else {
-            session_destroy();
+            NativeSession::destroy();
         }
 
 
