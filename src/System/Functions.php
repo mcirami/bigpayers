@@ -1,6 +1,7 @@
 <?php
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 
 /*
 HEZECOM CMS PRO v1.0
@@ -14,7 +15,7 @@ function findProtocol()
 {
     $protocol = "http://";
 
-    if (isset($_SERVER["SERVER_PORT"]) && $_SERVER["SERVER_PORT"] == 443) {
+    if (NativeRequest::server('SERVER_PORT') == 443) {
         $protocol = "https://";
     }
 
@@ -27,12 +28,13 @@ function getWebRoot()
 {
     $protocol = findProtocol();
 
-    if (isset($_SERVER["HTTP_HOST"])) {
+    $host = NativeRequest::server('HTTP_HOST');
 
-        if (($_SERVER["HTTP_HOST"] == "127.0.0.1" || $_SERVER["HTTP_HOST"] == "localhost")) {
-            $webroot = $protocol.$_SERVER['HTTP_HOST'].'/trackyourstats/';
+    if ($host !== null) {
+        if (($host == "127.0.0.1" || $host == "localhost")) {
+            $webroot = $protocol.$host.'/trackyourstats/';
         } else {
-            $webroot = $protocol.$_SERVER['HTTP_HOST'].'/';
+            $webroot = $protocol.$host.'/';
         }
     } else {
         $webroot = "unknown";
@@ -71,7 +73,7 @@ function handle_error($errno, $errstr, $errfile, $errline)
     $time = date("U");
 
     //gets ip of user
-    $ip = $_SERVER["REMOTE_ADDR"];
+    $ip = NativeRequest::server('REMOTE_ADDR');
 
     $db = DatabaseConnection::getInstance();
 
@@ -146,9 +148,7 @@ function alert($msg)
 //post
 function post($var)
 {
-    if (isset($_POST[$var])) {
-        return $_POST[$var];
-    }
+    return NativeRequest::post($var);
 }
 
 
@@ -197,7 +197,7 @@ function xss_clean($data)
 function send_to($direction)
 {
 
-    if (isset($_GET["adminLogin"])) {
+    if (NativeRequest::hasQuery('adminLogin')) {
         if (strpos($direction, "?")) {
             $direction .= "&adminLogin";
         } else {

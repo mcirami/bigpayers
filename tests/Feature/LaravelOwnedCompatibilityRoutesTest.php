@@ -64,7 +64,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $login);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $login);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $login);
         $this->assertStringContainsString('App\\Support\\NativeSession', $login);
+        $this->assertStringNotContainsString('$_POST', $login);
+        $this->assertStringNotContainsString('$_SERVER', $login);
         $this->assertStringNotContainsString('$_SESSION', $login);
         $this->assertStringContainsString('NativeSession::destroy()', $login);
         $this->assertStringNotContainsString('session_destroy()', $login);
@@ -1269,6 +1272,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
             $this->assertStringContainsString('App\\Support\\NativeSession', $contents);
             $this->assertStringNotContainsString('$_SESSION', $contents);
+        }
+
+        foreach ([
+            base_path('src/System/Connection.php'),
+            base_path('src/System/Functions.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\NativeRequest', $contents);
+            $this->assertStringNotContainsString('$_GET', $contents);
+            $this->assertStringNotContainsString('$_POST', $contents);
+            $this->assertStringNotContainsString('$_SERVER', $contents);
         }
     }
 

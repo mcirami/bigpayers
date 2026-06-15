@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
 
@@ -91,7 +92,7 @@ class Connection
         $db = DatabaseConnection::getMasterInstance();
         $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE login_url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $loginURL = $this->normalizeHost($_SERVER["HTTP_HOST"]);
+        $loginURL = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
         $wwwLoginURL = 'www.' . $loginURL;
         $prep->bindParam(":url", $loginURL);
         $prep->bindParam(":wwwUrl", $wwwLoginURL);
@@ -114,7 +115,7 @@ class Connection
         $db = DatabaseConnection::getMasterInstance();
         $sql = "SELECT * FROM ". env('DB_DATABASE') . ".offer_urls WHERE url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $host = $this->normalizeHost($_SERVER["HTTP_HOST"]);
+        $host = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
         $wwwHost = 'www.' . $host;
         $prep->bindParam(":url", $host);
         $prep->bindParam(":wwwUrl", $wwwHost);
@@ -218,7 +219,7 @@ class Connection
         $db = DatabaseConnection::getMasterInstance();
         $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE landing_page IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $loginURL = $this->normalizeHost($_SERVER["HTTP_HOST"]);
+        $loginURL = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
         $wwwLoginURL = 'www.' . $loginURL;
         $prep->bindParam(":url", $loginURL);
         $prep->bindParam(":wwwUrl", $wwwLoginURL);

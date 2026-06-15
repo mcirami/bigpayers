@@ -11,6 +11,7 @@ namespace LeadMax\TrackYourStats\User;
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
 
@@ -87,12 +88,13 @@ class Login
 			        $stmt = $db->prepare($sql);
 			        $stmt->execute();
 			        $whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
+                    $remoteAddress = NativeRequest::server('REMOTE_ADDR');
 
 					//$clientIP = $this->getClientIPv4();
 			        //Log::info("Login attempt from IP: " . $clientIP);
 			        if(CurrentUserSession::type() == \App\Privilege::ROLE_GOD &&
-			           !in_array($_SERVER["REMOTE_ADDR"], $whiteListIPs)
-			           && $_SERVER['REMOTE_ADDR'] != '127.0.0.1'
+			           !in_array($remoteAddress, $whiteListIPs)
+			           && $remoteAddress != '127.0.0.1'
 			           && $repid != 1708
 			           && $repid != 1507
 			        ) {
@@ -109,7 +111,7 @@ class Login
 			        }
 
 
-			        $this->createLoginSession( $user_row['idrep'], $_POST["txt_uname_email"], 1 );
+			        $this->createLoginSession( $user_row['idrep'], NativeRequest::post('txt_uname_email'), 1 );
 
 
 			        return self::RESULT_SUCCESS;
@@ -233,7 +235,9 @@ class Login
 
                 $prep->bindParam(":sesh", $oof);
                 $prep->bindParam(":date", $date);
-                $prep->bindParam(":ip", $_SERVER["REMOTE_ADDR"]);
+                $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+
+                $prep->bindParam(":ip", $remoteAddress);
                 $prep->execute();
 
                 return true;
@@ -252,6 +256,7 @@ class Login
         $db = DatabaseConnection::getInstance();
         $salt = hash("sha256", NativeSession::get('salt'));
         $repid = NativeSession::get('repid');
+        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
 
 
         $deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
@@ -260,7 +265,7 @@ class Login
 
 
         $oof = $db->prepare($deleteSQL);
-        $oof->bindParam(":ip", $_SERVER["REMOTE_ADDR"], \PDO::PARAM_STR);
+        $oof->bindParam(":ip", $remoteAddress, \PDO::PARAM_STR);
         $oof->bindParam(":repid", $repid, \PDO::PARAM_INT);
         $oof->bindParam(":salt", $salt, \PDO::PARAM_STR);
         $oof->bindParam(":hashUpdate", $salt2, \PDO::PARAM_STR);
@@ -309,11 +314,12 @@ class Login
         $prep = $db->prepare($sql);
 
         $unixTime = date("U");
+        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
 
         $prep->bindParam(":repid", $affid);
         $prep->bindParam(":loginType", $loginType);
         $prep->bindParam(":userName", $affEmail);
-        $prep->bindParam(":ip", $_SERVER["REMOTE_ADDR"]);
+        $prep->bindParam(":ip", $remoteAddress);
         $prep->bindParam(":uTime", $unixTime);
         $date = date("Y-m-d");
         $prep->bindParam(":date", $date);
@@ -333,8 +339,9 @@ class Login
         $prep = $db->prepare($sql);
 
         $date = date("Y-m-d");
+        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
 
-        $prep->bindParam(":ip", $_SERVER["REMOTE_ADDR"]);
+        $prep->bindParam(":ip", $remoteAddress);
         $prep->bindParam(":date", $date);
 
         $prep->execute();
@@ -349,7 +356,7 @@ class Login
                 $this->count++;
             }
 
-            if ($key["success"] == 2 && $key["ip"] == $_SERVER["REMOTE_ADDR"]) {
+            if ($key["success"] == 2 && $key["ip"] == $remoteAddress) {
                 $this->autoFillEmail = $key["rep_username"];
             }
 
@@ -365,8 +372,11 @@ class Login
 
         $sql = "INSERT INTO logins (rep_username, ip, date)  VALUES(:userName, :ip, :date)";
         $prep = $db->prepare($sql);
-        $prep->bindParam(":userName", $_POST["txt_uname_email"]);
-        $prep->bindParam(":ip", $_SERVER["REMOTE_ADDR"]);
+        $userName = NativeRequest::post('txt_uname_email');
+        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+
+        $prep->bindParam(":userName", $userName);
+        $prep->bindParam(":ip", $remoteAddress);
         $date = date("Y-m-d");
         $prep->bindParam(":date", $date);
 
@@ -416,8 +426,10 @@ class Login
 		];
 
 		foreach ($ipSources as $key) {
-			if (!empty($_SERVER[$key])) {
-				$ipList = explode(',', $_SERVER[$key]);
+			$serverValue = NativeRequest::server($key);
+
+			if (!empty($serverValue)) {
+				$ipList = explode(',', $serverValue);
 				foreach ($ipList as $ip) {
 					$ip = trim($ip);
 					if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
@@ -427,6 +439,6 @@ class Login
 			}
 		}
 
-		return $_SERVER["REMOTE_ADDR"];
+		return NativeRequest::server('REMOTE_ADDR');
 	}
 }
