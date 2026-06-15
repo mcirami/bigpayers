@@ -11,6 +11,7 @@ namespace LeadMax\TrackYourStats\User;
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeSession;
 use PDO;
 
 // class Login
@@ -53,31 +54,33 @@ class Login
 
 		        if ( password_verify( $password, $user_row['password'] ) ) {
 			        //            if (($password = $user_row['password'])) {
-			        $_SESSION['user_session'] = $user_row['user_name'];
-			        $_SESSION['email']        = $user_row['email'];
-			        $_SESSION['repid']        = $user_row['idrep'];
+			        NativeSession::put('user_session', $user_row['user_name']);
+			        NativeSession::put('email', $user_row['email']);
+			        NativeSession::put('repid', $user_row['idrep']);
 
 
 			        $new_privileges = new Privileges();
 
 
 			        $user = new User();
+                    $repid = NativeSession::get('repid');
 
-			        $_SESSION["userData"] = serialize( User::SelectOne( $_SESSION["repid"] ) );
-
-
-			        $_SESSION["usr"] = serialize( $new_privileges->SelectOneRepId( $_SESSION["repid"] ) );
+			        NativeSession::put('userData', serialize(User::SelectOne($repid)));
 
 
-			        $_SESSION["userType"] = $this->findUserType( unserialize( $_SESSION["usr"] ) );
+                    $userPrivileges = $new_privileges->SelectOneRepId($repid);
+			        NativeSession::put('usr', serialize($userPrivileges));
+
+
+			        NativeSession::put('userType', $this->findUserType($userPrivileges));
 
 
 			        $per                     = new Permissions( $user_row["idrep"] );
-			        $_SESSION["permissions"] = serialize( $per );
+			        NativeSession::put('permissions', serialize($per));
 
 
-			        $user  = $_SESSION['user_session'];
-			        $repid = $_SESSION['repid'];
+			        $user  = NativeSession::get('user_session');
+			        $repid = NativeSession::get('repid');
 
 			        $db = DatabaseConnection::getInstance();
 			        $sql = "SELECT ip_address FROM ip_whitelist";
@@ -99,7 +102,7 @@ class Login
 			        setcookie( "user_name", "$user", "0", "/" );
 			        setcookie( "repid", "$repid", "0", "/" );
 
-			        $_SESSION["salt"] = $this->generateSalt( 32 );
+			        NativeSession::put('salt', $this->generateSalt( 32 ));
 
 			        if ( CurrentUserSession::type() != \App\Privilege::ROLE_GOD ) {
 				        $this->clearPreviousLoginAttempts( $user_row["user_name"] );
@@ -166,7 +169,7 @@ class Login
             $adminLogin["salt"] = $this->generateSalt(32);
             $this->createLoginSession($user_row['idrep'], $user_row["user_name"], 1);
 
-            $_SESSION["adminLogin"] = $adminLogin;
+            NativeSession::put('adminLogin', $adminLogin);
 
             return true;
 
@@ -187,14 +190,17 @@ class Login
 
         $prep = $db->prepare($sql);
 
-        if (!isset($_SESSION["salt"])) {
+        $salt = NativeSession::get('salt');
+
+        if ($salt === null) {
             return false;
         }
 
-        $oof = hash("sha256", $_SESSION["salt"]);
+        $oof = hash("sha256", $salt);
+        $repid = NativeSession::get('repid');
 
         $prep->bindParam(":sesh", $oof);
-        $prep->bindParam(":repid", $_SESSION["repid"]);
+        $prep->bindParam(":repid", $repid);
 
         $prep->execute();
 
@@ -221,7 +227,7 @@ class Login
 
 
                 $prep = $db->prepare($sql);
-                $oof = hash("sha256", $_SESSION["salt"]);
+                $oof = hash("sha256", $salt);
 
                 $date = date("U");
 
@@ -244,7 +250,8 @@ class Login
 
 
         $db = DatabaseConnection::getInstance();
-        $salt = hash("sha256", $_SESSION["salt"]);
+        $salt = hash("sha256", NativeSession::get('salt'));
+        $repid = NativeSession::get('repid');
 
 
         $deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
@@ -254,21 +261,23 @@ class Login
 
         $oof = $db->prepare($deleteSQL);
         $oof->bindParam(":ip", $_SERVER["REMOTE_ADDR"], \PDO::PARAM_STR);
-        $oof->bindParam(":repid", $_SESSION["repid"], \PDO::PARAM_INT);
+        $oof->bindParam(":repid", $repid, \PDO::PARAM_INT);
         $oof->bindParam(":salt", $salt, \PDO::PARAM_STR);
         $oof->bindParam(":hashUpdate", $salt2, \PDO::PARAM_STR);
 
         $oof->execute();
 
-        unset($_SESSION['user_session']);
-        unset($_SESSION['email']);
-        unset($_SESSION['repid']);
-        unset($_SESSION['permissions']);
-        unset($_SESSION["colors"]);
+        NativeSession::forget('user_session');
+        NativeSession::forget('email');
+        NativeSession::forget('repid');
+        NativeSession::forget('permissions');
+        NativeSession::forget('colors');
 
 
-        if (isset($_SESSION["admin_id"])) {
-            $this->adminLogin($_SESSION["admin_id"]);
+        $adminId = NativeSession::get('admin_id');
+
+        if ($adminId !== null) {
+            $this->adminLogin($adminId);
         } else {
             session_destroy();
         }
@@ -292,7 +301,7 @@ class Login
 
     public function createLoginSession($affid, $affEmail, $loginType)
     {
-        $sessionID = hash("sha256", $_SESSION["salt"]);
+        $sessionID = hash("sha256", NativeSession::get('salt'));
 
         $db = DatabaseConnection::getInstance();
 

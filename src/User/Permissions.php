@@ -12,6 +12,7 @@ namespace LeadMax\TrackYourStats\User;
 use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeSession;
 use PDO;
 
 define('ACCOUNT_TYPE', config('branding.account.singular'));
@@ -198,8 +199,10 @@ class Permissions
 
     static function loadFromSession()
     {
-        if ($_SESSION["permissions"] != null) {
-            return unserialize($_SESSION["permissions"]);
+        $permissions = NativeSession::get('permissions');
+
+        if ($permissions !== null) {
+            return unserialize($permissions);
         } else {
             return false;
         }

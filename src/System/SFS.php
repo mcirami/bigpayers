@@ -8,6 +8,8 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Support\NativeSession;
+
 // SECURE FORM SUBMISSION
 /*
 A common problem in submitting forms to be inserted into the database, is that users can insert their own html into your form that you don't want to be there
@@ -59,13 +61,13 @@ class SFS
 
     public function saveToSession()
     {
-        $_SESSION["sfs"] = $this->elements;
+        NativeSession::put('sfs', $this->elements);
     }
 
 
     public function loadFromSession()
     {
-        $this->elements = $_SESSION["sfs"];
+        $this->elements = NativeSession::get('sfs');
     }
 
 
@@ -171,7 +173,7 @@ class SFS
         $salt = "";
         $characterList = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         while ($i < $max) {
-            $salt .= $characterList{mt_rand(0, (strlen($characterList) - 1))};
+            $salt .= $characterList[mt_rand(0, (strlen($characterList) - 1))];
             $i++;
         }
 

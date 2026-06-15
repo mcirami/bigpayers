@@ -2,6 +2,7 @@
 
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeSession;
 
 /**
  * Author: Dean
@@ -213,7 +214,7 @@ class Referrals
  WHERE rep.idrep NOT IN (SELECT aff_id FROM referrals  ) AND rep.lft > :left AND rep.rgt < :right AND rep.idrep != :affiliate_id2 GROUP BY rep.idrep";
         $prep = $db->prepare($sql);
 
-        $userData = unserialize($_SESSION["userData"]);
+        $userData = unserialize(NativeSession::get('userData'));
 
         $prep->bindParam(":left", $userData->lft);
         $prep->bindParam(":right", $userData->rgt);

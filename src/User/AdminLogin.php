@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\User;
 
+use App\Support\NativeSession;
 
 class AdminLogin
 {
@@ -16,7 +17,7 @@ class AdminLogin
 
     function __construct()
     {
-        if (isset($_GET["adminLogin"]) && isset($_SESSION["adminLogin"])) {
+        if (isset($_GET["adminLogin"]) && NativeSession::get('adminLogin') !== null) {
             $this->isSet = true;
         }
     }

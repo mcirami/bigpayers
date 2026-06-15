@@ -1,6 +1,7 @@
 <?php namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyUser as User;
+use App\Support\NativeSession;
 
 /**
  * Author: Dean
@@ -14,14 +15,6 @@ use App\Support\LegacyUser as User;
 
 Also as a reference to know what stuff is being stored in session.
 
-$repid = $_SESSION["repid"];
-
-$per = unserialize($_SESSION["permissions"]);
-
-$userData = unserialize($_SESSION["userData"]);
-
-$userType = $_SESSION["userType"];
-
 
  */
 
@@ -30,20 +23,24 @@ class Session
 
     private static function isAdminLogin($requestedSessionVar, $unserialize = false)
     {
-        if (isset($_GET["adminLogin"]) && isset($_SESSION['adminLogin'])) {
-            if (isset($_SESSION['adminLogin'][$requestedSessionVar])) {
+        $adminLogin = NativeSession::get('adminLogin');
+
+        if (isset($_GET["adminLogin"]) && $adminLogin !== null) {
+            if (isset($adminLogin[$requestedSessionVar])) {
                 if ($unserialize) {
-                    return unserialize($_SESSION["adminLogin"][$requestedSessionVar]);
+                    return unserialize($adminLogin[$requestedSessionVar]);
                 } else {
-                    return $_SESSION["adminLogin"][$requestedSessionVar];
+                    return $adminLogin[$requestedSessionVar];
                 }
             }
         } else {
-            if (isset($_SESSION[$requestedSessionVar])) {
+            $sessionValue = NativeSession::get($requestedSessionVar);
+
+            if ($sessionValue !== null) {
                 if ($unserialize) {
-                    return unserialize($_SESSION[$requestedSessionVar]);
+                    return unserialize($sessionValue);
                 } else {
-                    return $_SESSION[$requestedSessionVar];
+                    return $sessionValue;
                 }
             }
         }

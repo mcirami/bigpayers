@@ -64,6 +64,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $login);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $login);
+        $this->assertStringContainsString('App\\Support\\NativeSession', $login);
+        $this->assertStringNotContainsString('$_SESSION', $login);
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\User\\AffiliateSignUp',
             File::get(app_path('Support/LegacyAffiliateSignUp.php'))
@@ -123,6 +125,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\User\\User',
             File::get(app_path('Support/LegacyUser.php'))
         );
+        $legacySession = File::get(base_path('src/System/Session.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeSession', $legacySession);
+        $this->assertStringNotContainsString('$_SESSION', $legacySession);
+
         $legacyUser = File::get(base_path('src/User/User.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $legacyUser);
@@ -222,6 +229,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
             $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
+
+        foreach ([
+            base_path('src/User/Permissions.php'),
+            base_path('src/User/Referrals.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\NativeSession', $contents);
+            $this->assertStringNotContainsString('$_SESSION', $contents);
         }
 
         $deduction = File::get(base_path('src/Offer/Deduction.php'));
@@ -1046,6 +1063,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\User\\AdminLogin',
             File::get(app_path('Support/LegacyAdminLogin.php'))
         );
+        $adminLogin = File::get(base_path('src/User/AdminLogin.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeSession', $adminLogin);
+        $this->assertStringNotContainsString('$_SESSION', $adminLogin);
     }
 
     public function test_modern_notification_layouts_use_legacy_notify_boundary(): void
@@ -1231,6 +1252,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
             $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
+        }
+
+        foreach ([
+            base_path('src/System/Company.php'),
+            base_path('src/System/Connection.php'),
+            base_path('src/System/SFS.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\NativeSession', $contents);
+            $this->assertStringNotContainsString('$_SESSION', $contents);
         }
     }
 
@@ -1514,6 +1546,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
         }
+
+        $repHasOffer = File::get(base_path('src/Offer/RepHasOffer.php'));
+
+        $this->assertStringNotContainsString('$_SESSION', $repHasOffer);
     }
 
     public function test_legacy_post_compatibility_urls_keep_csrf_exceptions(): void

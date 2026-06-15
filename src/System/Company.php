@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeSession;
 use PDO;
 
 // Class to handle company auto loading for installs, gets company info, colors, sub-domain, etc..
@@ -45,8 +46,10 @@ class Company
 
     public static function loadFromSession()
     {
-        if (isset($_SESSION["company"])) {
-            return unserialize($_SESSION["company"]);
+        $company = NativeSession::get('company');
+
+        if ($company !== null) {
+            return unserialize($company);
         } else {
             $company = new self;
             $company->setSession();
@@ -103,7 +106,7 @@ class Company
 
     static function getCustomSub()
     {
-	    return $_SESSION["COMPANY_SUBDOMAIN"] ?? self::getSub();
+	    return NativeSession::get('COMPANY_SUBDOMAIN', self::getSub());
     }
 
 
@@ -139,13 +142,13 @@ class Company
 
     public function setSession()
     {
-        if ( ! isset($_SESSION["company"])) {
+        if (NativeSession::get('company') === null) {
 
 
             $this->loadCompany();
             $this->loaded();
 
-            $_SESSION["company"] = serialize($this);
+            NativeSession::put('company', serialize($this));
         }
     }
 
@@ -349,7 +352,7 @@ class Company
     //deletes session and reloads
     public function reloadSettings()
     {
-        unset($_SESSION["company"]);
+        NativeSession::forget('company');
         $this->setSession();
     }
 

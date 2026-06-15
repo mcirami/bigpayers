@@ -740,12 +740,6 @@ class User extends Login
     public function is_loggedin()
     {
         return true;
-        //    if (isset($_SESSION['rep_session'])) {
-        //        return true;
-        //    } else {
-        //
-        //        return false;
-        //    }
     }
 
     // SELECT getCount

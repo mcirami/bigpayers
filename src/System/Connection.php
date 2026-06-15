@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeSession;
 use PDO;
 
 /**
@@ -64,10 +65,11 @@ class Connection
 
     private function alreadyLoaded()
     {
-        if (isset($_SESSION["COMPANY_SUBDOMAIN"])) {
+        $subDomain = NativeSession::get('COMPANY_SUBDOMAIN');
 
+        if ($subDomain !== null) {
 
-            $this->setSub($_SESSION["COMPANY_SUBDOMAIN"]);
+            $this->setSub($subDomain);
 
             return true;
         }
@@ -149,7 +151,7 @@ class Connection
     // sets connection for class_dbcon
     public function setConnection()
     {
-        $_SESSION["COMPANY_SUBDOMAIN"] = $this->subDomain;
+        NativeSession::put('COMPANY_SUBDOMAIN', $this->subDomain);
 
         define('LOCALHOST', self::$host);
         //define("DB_NAME", $this->subDomain);

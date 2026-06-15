@@ -388,7 +388,7 @@ class RepHasOffer
         if ($prep->execute()) {
             return true;
         } else {
-            \Log("failed to update offer url in rep_has_offer, repid = {$_SESSION["repid"]}", null);
+            \Log("failed to update offer url in rep_has_offer, repid = {$userID}", null);
 
             return false;
         }
