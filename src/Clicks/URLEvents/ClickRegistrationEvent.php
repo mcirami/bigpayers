@@ -20,6 +20,7 @@ use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyOfferRules as Rules;
 use App\Support\LegacyIPBlackList as IPBlackList;
+use App\Support\NativeRequest;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -62,7 +63,7 @@ class ClickRegistrationEvent extends URLEvent
 
     private function getClickType()
     {
-        $blacklist = new IPBlackList($_SERVER["REMOTE_ADDR"]);
+        $blacklist = new IPBlackList(NativeRequest::server('REMOTE_ADDR'));
 
         if ($blacklist->isBlackListed()) {
             return Click::TYPE_BLACKLISTED;
@@ -88,21 +89,13 @@ class ClickRegistrationEvent extends URLEvent
                 return false;
             }*/
 
-            /* if(array_key_exists("HTTP_REFERER", $_SERVER)) {
-                Log::info('referer: ' . print_r($_SERVER["HTTP_REFERER"], true));
-            } */
-            //Log::info('ip: ' . print_r($ip, true));
-            //$geo = $this->country;
-            //Log::info('geo: ' . print_r($geo, true));
-
-            //Log::info('geo: ' . print_r($_SERVER, true));
             $click = new Click();
 
 	        $click->first_timestamp = date("Y-m-d H:i:s");
-            $click->ip_address = $this->ip; //$_SERVER["REMOTE_ADDR"];
+            $click->ip_address = $this->ip;
             //$click->country_code = $geo;
-            $click->referer = array_key_exists("HTTP_REFERER", $_SERVER) ? $_SERVER["HTTP_REFERER"] : null;
-            $click->browser_agent = $_SERVER["HTTP_USER_AGENT"];
+            $click->referer = NativeRequest::server('HTTP_REFERER');
+            $click->browser_agent = NativeRequest::server('HTTP_USER_AGENT');
 
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;
@@ -118,7 +111,7 @@ class ClickRegistrationEvent extends URLEvent
 
             if ($this->offerData->offer_type == Offer::TYPE_CPC && $click->click_type == Click::TYPE_UNIQUE) {
 
-                $customPrice = $_GET["price"] ?? false;
+                $customPrice = NativeRequest::query('price', false);
 
                 $conversion = new Conversion($click->id);
 

@@ -18,6 +18,7 @@ use App\Support\LegacyDate as Date;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPaginate as Paginate;
 use App\Support\LegacyUser as User;
+use App\Support\NativeRequest;
 
 
 class View
@@ -43,8 +44,8 @@ class View
         $this->printSelectBoxScript();
 
 
-        if (isset($_GET["url"])) {
-            $url = $_GET["url"];
+        if (NativeRequest::hasQuery('url')) {
+            $url = NativeRequest::query('url');
 
         }
 
@@ -67,7 +68,7 @@ class View
                 : [];
 
             if (count($this->urls) == 0) {
-                array_push($this->urls, array($_SERVER["HTTP_HOST"]));
+                array_push($this->urls, array(NativeRequest::server('HTTP_HOST')));
             }
 
             if (!isset($this->url)) {
@@ -521,7 +522,7 @@ class View
         echo "<script type=\"text/javascript\">
                     function handleSelect(elm)
                     {
-                         window.location = '{$_SERVER['PHP_SELF']}?url='+ elm.value;
+                         window.location = '" . NativeRequest::server('PHP_SELF') . "?url='+ elm.value;
                     }
                </script>";
     }

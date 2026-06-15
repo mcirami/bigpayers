@@ -448,6 +448,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
+
+        $offerView = File::get(base_path('src/Offer/View.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $offerView);
+        $this->assertStringNotContainsString('$_GET', $offerView);
+        $this->assertStringNotContainsString('$_SERVER', $offerView);
     }
 
     public function test_modern_offer_rule_helpers_use_legacy_boundaries(): void
@@ -493,6 +499,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
+
+        $geoRule = File::get(base_path('src/Offer/Rules/Geo.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $geoRule);
+        $this->assertStringNotContainsString('$_SERVER', $geoRule);
     }
 
     public function test_admin_legacy_php_urls_route_to_laravel_controllers(): void
@@ -763,6 +774,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickVars);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickVars);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $clickVars);
+        $this->assertStringNotContainsString('$_GET', $clickVars);
     }
 
     public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void
@@ -1493,6 +1506,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickRegistrationEvent);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $clickRegistrationEvent);
+        $this->assertStringNotContainsString('$_GET', $clickRegistrationEvent);
+        $this->assertStringNotContainsString('$_SERVER', $clickRegistrationEvent);
     }
 
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void

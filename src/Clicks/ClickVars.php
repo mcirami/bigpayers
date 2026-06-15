@@ -13,6 +13,7 @@ use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser as User;
+use App\Support\NativeRequest;
 use PDO;
 
 class ClickVars
@@ -40,7 +41,7 @@ class ClickVars
     {
         if ($incoming) {
             $this->incoming = $incoming;
-            $trackingQuery = TrackingParameters::normalize($_GET);
+            $trackingQuery = TrackingParameters::normalize(NativeRequest::queryAll());
 
             //get Affiliate data who's ID is linked to that click, stored as PDO::FETCH_OBJ
             $affData = new User();
@@ -151,7 +152,7 @@ class ClickVars
 
     public function processIncomingClick()
     {
-        $getArray = TrackingParameters::normalize($_GET);
+        $getArray = TrackingParameters::normalize(NativeRequest::queryAll());
 
         $newURL = $this->processTYSVariables($this->offerURL);
 
@@ -173,7 +174,7 @@ class ClickVars
 
     private function CHECK_DEBUG()
     {
-        if (isset($_GET["DEBUG"])) {
+        if (NativeRequest::hasQuery('DEBUG')) {
             dd($this->offerURL);
         }
     }
@@ -284,7 +285,7 @@ class ClickVars
     {
 
         if ($this->incoming) { //landingpage.php
-            $trackingQuery = TrackingParameters::normalize($_GET);
+            $trackingQuery = TrackingParameters::normalize(NativeRequest::queryAll());
             $url = str_replace("#affid#", TrackingParameters::get($trackingQuery, "repid"), $url);
             $url = str_replace("#offid#", TrackingParameters::get($trackingQuery, "offerid"), $url);
             $url = str_replace("#clickid#", UID::encode($this->clickID), $url);
