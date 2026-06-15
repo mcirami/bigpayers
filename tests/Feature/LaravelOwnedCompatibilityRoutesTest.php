@@ -141,6 +141,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $legacyUser);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $legacyUser);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $legacyUser);
+        $this->assertStringNotContainsString('$_COOKIE', $legacyUser);
     }
 
     public function test_modern_user_domain_helpers_use_legacy_boundaries(): void
@@ -247,6 +249,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\NativeSession', $contents);
             $this->assertStringNotContainsString('$_SESSION', $contents);
         }
+
+        $update = File::get(base_path('src/User/Update.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $update);
+        $this->assertStringNotContainsString('$_COOKIE', $update);
 
         $deduction = File::get(base_path('src/Offer/Deduction.php'));
 
@@ -727,6 +734,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\NativeRequest', $click);
         $this->assertStringNotContainsString('$_GET', $click);
         $this->assertStringNotContainsString('$_SERVER', $click);
+
+        $cookie = File::get(base_path('src/Clicks/Cookie.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $cookie);
+        $this->assertStringNotContainsString('$_COOKIE', $cookie);
     }
 
     public function test_modern_click_vars_reads_use_legacy_click_vars_boundary(): void
@@ -1429,6 +1441,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
 
         foreach ([
+            base_path('src/Clicks/URLEvents/Listeners/BonusListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/ConversionListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/DeductionListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/FreeSignUpListener.php'),
+            base_path('src/Clicks/URLEvents/Listeners/Listener.php'),
             base_path('src/Offer/Caps.php'),
             base_path('src/Offer/Rules.php'),
             base_path('src/Offer/Rules/NoneUnique.php'),
@@ -1439,6 +1457,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('$_GET', $contents);
             $this->assertStringNotContainsString('$_SERVER', $contents);
         }
+
+        $noneUnique = File::get(base_path('src/Offer/Rules/NoneUnique.php'));
+
+        $this->assertStringNotContainsString('$_COOKIE', $noneUnique);
     }
 
     public function test_index_click_registration_uses_legacy_event_boundaries(): void

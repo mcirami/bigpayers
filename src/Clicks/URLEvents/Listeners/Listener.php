@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\NativeRequest;
 
 abstract class Listener
 {
@@ -22,7 +23,7 @@ abstract class Listener
 
     protected function checkGETRequirements()
     {
-        $params = TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
 
         foreach ($this->GETRequirements as $var) {
             if (!TrackingParameters::has($params, $var) || TrackingParameters::get($params, $var) === '') {

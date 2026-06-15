@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 
 use App\Support\LegacyUid as UID;
+use App\Support\NativeRequest;
 use LeadMax\TrackYourStats\Clicks\URLEvents\FreeSignUpRegistrationEvent;
 
 class FreeSignUpListener extends Listener
@@ -19,7 +20,7 @@ class FreeSignUpListener extends Listener
 
     public function dispatch()
     {
-        $clickId = UID::decode($_GET["clickid"]);
+        $clickId = UID::decode(NativeRequest::query('clickid'));
         $register = new FreeSignUpRegistrationEvent($clickId);
 
         return $register->fire();
@@ -28,7 +29,7 @@ class FreeSignUpListener extends Listener
     public function shouldBeDispatched()
     {
         if ($this->checkGETRequirements()) {
-            if ($_GET["function"] == FreeSignUpRegistrationEvent::getEventString()) {
+            if (NativeRequest::query('function') == FreeSignUpRegistrationEvent::getEventString()) {
                 return true;
             }
         }

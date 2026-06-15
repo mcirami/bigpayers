@@ -18,6 +18,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use App\Company;
 use App\Privilege;
+use App\Support\NativeRequest;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyMail as Mail;
@@ -724,8 +725,10 @@ class User extends Login
 
     public function checkAffView()
     {
-        if (isset($_COOKIE["aff_view"])) {
-            if ($this->hasRep($_COOKIE["aff_view"])) {
+        $affiliateView = NativeRequest::cookie('aff_view');
+
+        if ($affiliateView !== null) {
+            if ($this->hasRep($affiliateView)) {
                 return true;
             }
 

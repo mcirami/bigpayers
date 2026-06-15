@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 use App\Support\LegacyUid as UID;
+use App\Support\NativeRequest;
 use LeadMax\TrackYourStats\Clicks\URLEvents\ConversionRegistrationEvent;
 
 class ConversionListener extends Listener
@@ -13,8 +14,8 @@ class ConversionListener extends Listener
 
     public function dispatch()
     {
-        $customPayout = (isset($_GET["price"]) ? $_GET["price"] : false);
-        $clickId      = UID::decode($_GET["clickid"]);
+        $customPayout = NativeRequest::query('price', false);
+        $clickId      = UID::decode(NativeRequest::query('clickid'));
         $register     = new ConversionRegistrationEvent($clickId, $customPayout);
 
         return $register->fire();
@@ -23,7 +24,7 @@ class ConversionListener extends Listener
     public function shouldBeDispatched()
     {
         if ($this->checkGETRequirements()) {
-            if (isset($_GET["function"]) == false || $_GET["function"] == "") {
+            if (NativeRequest::query('function') === null || NativeRequest::query('function') == "") {
                 return true;
             }
         }

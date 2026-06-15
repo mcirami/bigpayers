@@ -14,6 +14,7 @@ use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyUser as User;
+use App\Support\NativeRequest;
 use PDO;
 
 
@@ -78,7 +79,9 @@ class Update
     public function notifyIfCanChangePriviliges()
     {
 
-        if (isset($_COOKIE["notify_aff_update"]) && $_COOKIE["notify_aff_update"] != 1) {
+        $notifyAffiliateUpdate = NativeRequest::cookie('notify_aff_update');
+
+        if ($notifyAffiliateUpdate !== null && $notifyAffiliateUpdate != 1) {
 
 
             if ($this->cannotUpgrade) {

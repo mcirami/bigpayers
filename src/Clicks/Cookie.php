@@ -1,5 +1,6 @@
 <?php namespace LeadMax\TrackYourStats\Clicks;
 
+use App\Support\NativeRequest;
 
 /**
  * Author: Dean
@@ -30,8 +31,8 @@ class Cookie
         $this->offid = $offer_id;
 
         try {
-            if (isset($_COOKIE[$this->companyHash])) {
-                $this->cookie = json_decode($_COOKIE[$this->companyHash], true);
+            if (NativeRequest::hasCookie($this->companyHash)) {
+                $this->cookie = json_decode(NativeRequest::cookie($this->companyHash), true);
             } else {
                 $this->cookie = array();
             }
@@ -46,7 +47,7 @@ class Cookie
 
     public function hasPreventTransferCookie()
     {
-        return isset($_COOKIE["prevent_transfer"]);
+        return NativeRequest::hasCookie('prevent_transfer');
     }
 
     public function setPreventTransferCookie()
@@ -99,7 +100,7 @@ class Cookie
 
     public function deleteCookie()
     {
-        if (isset($_COOKIE[$this->companyHash])) {
+        if (NativeRequest::hasCookie($this->companyHash)) {
             setcookie($this->companyHash, "", 1);
 
         }

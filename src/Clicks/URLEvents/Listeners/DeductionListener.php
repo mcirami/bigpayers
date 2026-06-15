@@ -4,6 +4,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 
 use App\Support\LegacyUid as UID;
+use App\Support\NativeRequest;
 use LeadMax\TrackYourStats\Clicks\URLEvents\DeductionRegistrationEvent;
 
 class DeductionListener extends Listener
@@ -13,7 +14,7 @@ class DeductionListener extends Listener
 
     public function dispatch()
     {
-        $clickId = UID::decode($_GET["clickid"]);
+        $clickId = UID::decode(NativeRequest::query('clickid'));
         $register = new DeductionRegistrationEvent($clickId);
 
         return $register->fire();
@@ -23,7 +24,7 @@ class DeductionListener extends Listener
     public function shouldBeDispatched()
     {
         if ($this->checkGETRequirements()) {
-            if ($_GET["function"] == DeductionRegistrationEvent::getEventString()) {
+            if (NativeRequest::query('function') == DeductionRegistrationEvent::getEventString()) {
                 return true;
             }
         }

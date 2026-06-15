@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 
 use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\NativeRequest;
 use LeadMax\TrackYourStats\Clicks\URLEvents\BonusRegistrationEvent;
 
 class BonusListener extends Listener
@@ -19,7 +20,7 @@ class BonusListener extends Listener
 
     public function dispatch()
     {
-        $params = TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
         $register = new BonusRegistrationEvent($params["bonusid"], TrackingParameters::get($params, "repid"));
 
         return $register->fire();
@@ -27,7 +28,7 @@ class BonusListener extends Listener
 
     public function shouldBeDispatched()
     {
-        $params = TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
         if ($this->checkGETRequirements()) {
             if (($params["function"] ?? null) == BonusRegistrationEvent::getEventString()) {
                 return true;

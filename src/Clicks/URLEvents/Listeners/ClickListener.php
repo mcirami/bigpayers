@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 use App\Support\LegacyTrackingParameters as TrackingParameters;
 use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
+use App\Support\NativeRequest;
 
 class ClickListener extends Listener
 {
@@ -19,20 +20,20 @@ class ClickListener extends Listener
 
     public function dispatch()
     {
-        $params = TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
 
-        if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
-            $ip = $_SERVER['HTTP_CLIENT_IP'];
+        if (!empty(NativeRequest::server('HTTP_CLIENT_IP'))) {
+            $ip = NativeRequest::server('HTTP_CLIENT_IP');
             if ( str_contains( $ip, ',' ) ) {
                 $ip = substr($ip, 0, strpos($ip, ","));
             }
-        } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        } elseif (!empty(NativeRequest::server('HTTP_X_FORWARDED_FOR'))) {
+            $ip = NativeRequest::server('HTTP_X_FORWARDED_FOR');
             if ( str_contains( $ip, ',' ) ) {
                 $ip = substr($ip, 0, strpos($ip, ","));
             }
         } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $ip = NativeRequest::server('REMOTE_ADDR');
             if ( str_contains( $ip, ',' ) ) {
                 $ip = substr($ip, 0, strpos($ip, ","));
             }
@@ -51,7 +52,7 @@ class ClickListener extends Listener
 
     public function shouldBeDispatched()
     {
-        $params = TrackingParameters::normalize($_GET);
+        $params = TrackingParameters::normalize(NativeRequest::queryAll());
         if ($this->checkGETRequirements()) {
             if (($params["function"] ?? null) == ClickRegistrationEvent::getEventString()) {
                 return true;

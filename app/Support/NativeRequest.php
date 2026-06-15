@@ -29,6 +29,16 @@ class NativeRequest
         return $_SERVER[$key] ?? $default;
     }
 
+    public static function hasCookie(string $key): bool
+    {
+        return isset($_COOKIE[$key]);
+    }
+
+    public static function cookie(string $key, $default = null)
+    {
+        return $_COOKIE[$key] ?? $default;
+    }
+
     public static function mergePost(array $data): void
     {
         $_POST = array_merge($_POST, $data);

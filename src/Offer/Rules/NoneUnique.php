@@ -89,8 +89,8 @@ class NoneUnique implements Rule
 
     private function findCookie()
     {
-        if (isset($_COOKIE[$this->hashId])) {
-            $this->cookie = json_decode($_COOKIE[$this->hashId], true);
+        if (NativeRequest::hasCookie($this->hashId)) {
+            $this->cookie = json_decode(NativeRequest::cookie($this->hashId), true);
 //			// minor integrity check
 //			if (is_array($this->cookie) == false)
 //			{
