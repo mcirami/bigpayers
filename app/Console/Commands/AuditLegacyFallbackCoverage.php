@@ -38,6 +38,11 @@ class AuditLegacyFallbackCoverage extends Command
         'login_themes/{theme}/index.php' => 'Public compatibility redirect to /login.',
     ];
 
+    private array $legacyRedirectStubs = [
+        'signup.php' => '/signup',
+        'signup_success.php' => '/signup-success',
+    ];
+
     private array $retiredScriptEndpoints = [
         'scripts/affiliate_signup.php' => 'Use the Laravel signup routes.',
         'scripts/offer/request_offer.php' => 'Use /offer/{id}/request.',
@@ -616,6 +621,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyRedirectStubErrors = $this->legacyRedirectStubErrors();
+
+        if ($legacyRedirectStubErrors->isNotEmpty()) {
+            $this->error('Legacy redirect stubs are stale or executable:');
+            $legacyRedirectStubErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $modernScriptReferenceErrors = $this->modernRetiredScriptReferenceErrors();
 
         if ($modernScriptReferenceErrors->isNotEmpty()) {
@@ -1104,6 +1118,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
         $this->info('Legacy bootstrap is idempotent and guards native session startup.');
+        $this->info('Replaced legacy marker files are simple redirects to Laravel routes.');
         $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
@@ -1276,6 +1291,48 @@ class AuditLegacyFallbackCoverage extends Command
 
                 if (!is_string($reason) || trim($reason) === '') {
                     $errors[] = "public/{$file}: allowed public PHP entrypoint reason is blank.";
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyRedirectStubErrors()
+    {
+        return $this->legacyRedirectStubErrorsFor(
+            collect($this->legacyRedirectStubs)
+                ->mapWithKeys(function (string $target, string $file) {
+                    $path = base_path('legacy/' . $file);
+
+                    return [$file => File::exists($path) ? File::get($path) : null];
+                })
+        );
+    }
+
+    private function legacyRedirectStubErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->flatMap(function (?string $contents, string $file) {
+                $errors = [];
+                $target = $this->legacyRedirectStubs[$file] ?? null;
+
+                if ($contents === null) {
+                    return ["{$file}: legacy redirect stub file does not exist."];
+                }
+
+                if ($target === null || !str_contains($contents, "Location: {$target}")) {
+                    $errors[] = "{$file}: legacy redirect stub must point to {$target}.";
+                }
+
+                if (str_contains($contents, 'LeadMax\\TrackYourStats')) {
+                    $errors[] = "{$file}: legacy redirect stub must not execute legacy classes.";
+                }
+
+                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$file}: legacy redirect stub must not read native PHP superglobals directly.";
+                    }
                 }
 
                 return $errors;

@@ -21,6 +21,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Replaced legacy marker files are simple redirects to Laravel routes.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Intentionally unrouted legacy files are not registered as Laravel routes.',
             $output
         );
@@ -506,6 +510,34 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(4, $errors);
     }
 
+    public function test_legacy_redirect_stub_errors_report_executable_legacy_files(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyRedirectStubErrorsFor',
+            [[
+                'signup.php' => '<?php header("Location: /wrong");',
+                'signup_success.php' => '<?php header("Location: /signup-success"); $x = \\LeadMax\\TrackYourStats\\System\\Company::class; return $_GET["mid"];',
+            ]]
+        );
+
+        $this->assertContains(
+            'signup.php: legacy redirect stub must point to /signup.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'signup_success.php: legacy redirect stub must not execute legacy classes.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'signup_success.php: legacy redirect stub must not read native PHP superglobals directly.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
+    }
+
     public function test_audit_hardening_checks_are_individually_clean(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -514,6 +546,7 @@ class LegacyFallbackAuditTest extends TestCase
             'publicRewriteHardeningErrors',
             'frontControllerFallbackErrors',
             'legacyBootstrapHardeningErrors',
+            'legacyRedirectStubErrors',
             'modernRetiredScriptReferenceErrors',
             'retiredScriptImplementationErrors',
             'retiredCompanySessionDependencyErrors',

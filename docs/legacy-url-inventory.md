@@ -108,8 +108,8 @@ compatibility wrappers plus internal link cleanup.
 
 | Legacy URL | Modern route | Status | Notes |
 | --- | --- | --- | --- |
-| `/signup.php` | `/signup` | Replaced | Already route-wrapped in `routes/web.php` |
-| `/signup_success.php` | `/signup-success` | Replaced | Already route-wrapped |
+| `/signup.php` | `/signup` | Replaced | Already route-wrapped in `routes/web.php`; legacy marker file redirects to `/signup` |
+| `/signup_success.php` | `/signup-success` | Replaced | Already route-wrapped; legacy marker file redirects to `/signup-success` |
 | `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route |
 | `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route |
 | `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
@@ -262,8 +262,9 @@ Referenced from:
 - `legacy/signup.php`
 
 This is lower priority if `/signup` is now the real entry point, but it should
-be retired once legacy signup is no longer used. The old script file is now an
-explicit `410 Gone` stub.
+be retired once legacy signup is no longer used. The old `legacy/signup.php`
+marker redirects to `/signup`, and the old AJAX script file is now an explicit
+`410 Gone` stub.
 
 ## 5. URLs Missing Compatibility Coverage
 
