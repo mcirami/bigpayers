@@ -3,15 +3,18 @@
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyMail as Mail;
+use App\Support\NativeRequest;
 
 // all business logic for password resets
 
 
 function checkPasswordResetRequest()
 {
-    if (isset($_POST["email"])) {
+    $email = NativeRequest::post('email');
 
-        if (filter_var($_POST["email"], FILTER_VALIDATE_EMAIL)) {
+    if ($email !== null) {
+
+        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $db = DatabaseConnection::getInstance();
 
             $sql = "SELECT first_name, email, idrep, user_name FROM rep where email = :email";
@@ -19,7 +22,7 @@ function checkPasswordResetRequest()
 
             $prep = $db->prepare($sql);
 
-            $prep->bindParam(":email", $_POST["email"]);
+            $prep->bindParam(":email", $email);
             $prep->execute();
             $result = $prep->fetch(PDO::FETCH_ASSOC);
 
@@ -30,6 +33,7 @@ function checkPasswordResetRequest()
                 $OOF = $db->prepare($SQL);
 
                 $date = date("U");
+                $remoteAddress = NativeRequest::server('REMOTE_ADDR');
 
 
                 $salt = salt("40");
@@ -42,7 +46,7 @@ function checkPasswordResetRequest()
                 $OOF->bindParam(":email", $result["email"]);
                 $OOF->bindParam(":verify", $hash);
                 $OOF->bindParam(":time_stamp", $date);
-                $OOF->bindParam(":ip", $_SERVER["REMOTE_ADDR"]);
+                $OOF->bindParam(":ip", $remoteAddress);
 
                 $OOF->execute();
 
@@ -52,7 +56,7 @@ function checkPasswordResetRequest()
                 $message =
                     "<html>
                             <body>
-                                <p>Greetings {$result["first_name"]},</p><p>A password reset has been requested today ({$date}) from {$_SERVER["REMOTE_ADDR"]}</p>
+                                <p>Greetings {$result["first_name"]},</p><p>A password reset has been requested today ({$date}) from {$remoteAddress}</p>
                             <br/>
                                      
                             <p>You can reset your password with this link:
@@ -100,19 +104,21 @@ function checkToken()
     global $token;
     global $HAOOF;
 
-    if (isset($_GET["token"])) {
+    $requestToken = NativeRequest::query('token');
+
+    if ($requestToken !== null) {
 
         $db = DatabaseConnection::getInstance();
 
         $prep = $db->prepare("SELECT * FROM password_resets WHERE verify = :token AND active = 1");
-        $prep->bindParam(":token", $_GET["token"]);
+        $prep->bindParam(":token", $requestToken);
         $prep->execute();
 
         $result = $prep->fetch(PDO::FETCH_ASSOC);
 
         if ($prep->rowCount() > 0) {
 
-            $token = $_GET["token"];
+            $token = $requestToken;
             $HAOOF = " for {$result["user_name"]},";
 
         }
@@ -127,12 +133,16 @@ function checkPasswordAndReset()
     global $autoFill;
     global $token;
 
-    if (isset($_POST["password"]) && isset($_POST["confirmpassword"]) && isset($_POST["token"])) {
-        if ($_POST["password"] == $_POST["confirmpassword"]) {
+    $password = NativeRequest::post('password');
+    $confirmPassword = NativeRequest::post('confirmpassword');
+    $requestToken = NativeRequest::post('token');
+
+    if ($password !== null && $confirmPassword !== null && $requestToken !== null) {
+        if ($password == $confirmPassword) {
             $db = DatabaseConnection::getInstance();
 
             $prep = $db->prepare("SELECT * FROM password_resets WHERE verify = :token AND active = 1");
-            $prep->bindParam(":token", $_POST["token"]);
+            $prep->bindParam(":token", $requestToken);
             $prep->execute();
 
             $result = $prep->fetch(PDO::FETCH_ASSOC);
@@ -142,7 +152,7 @@ function checkPasswordAndReset()
             if ($result && ($date - $result["time_stamp"]) < 86400) //if it has been less than a day since password reset
             {
 
-                $hash = password_hash($_POST["password"], PASSWORD_DEFAULT);
+                $hash = password_hash($password, PASSWORD_DEFAULT);
                 $prep = $db->prepare("UPDATE rep SET password = :hash WHERE idrep = :idrep");
 
                 $prep->bindParam(":idrep", $result["repid"]);
@@ -151,7 +161,7 @@ function checkPasswordAndReset()
 
 
                 $prep = $db->prepare("UPDATE password_resets SET active = 0 WHERE verify = :token");
-                $prep->bindParam(":token", $_POST["token"]);
+                $prep->bindParam(":token", $requestToken);
                 $prep->execute();
 
                 $autoFill = "Password successfully reset for {$result["user_name"]}. <a href='/login'>Go to login.</a>";
@@ -161,7 +171,7 @@ function checkPasswordAndReset()
             }
         } else {
             $autoFill = "Passwords don't match.";
-            $token = $_POST["token"];
+            $token = $requestToken;
         }
 
 

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyNotifications as Notifications;
 use App\Support\LegacyConnection as Connection;
+use App\Support\NativeRequest;
 
 class AffiliateSignUp
 {
@@ -37,7 +38,7 @@ class AffiliateSignUp
     public function __construct()
     {
         if ($this->checkRequiredFields()) {
-            if ($this->userNameOrEmailExists($_POST["tys_username"], $_POST["tys_email"]) == false) {
+            if ($this->userNameOrEmailExists($this->getP('tys_username'), $this->getP('tys_email')) == false) {
                 if ($this->registerUser()) {
                     $this->setResult(self::SUCCESS);
                 } else {
@@ -97,8 +98,8 @@ class AffiliateSignUp
     public function registerUser()
     {
 
-        $user_name = $_POST["tys_username"];
-        $password = password_hash($_POST["tys_password"], PASSWORD_DEFAULT);
+        $user_name = $this->getP("tys_username");
+        $password = password_hash($this->getP("tys_password"), PASSWORD_DEFAULT);
 
         $firstName = $this->getP("tys_first_name");
         $lastName = $this->getP("tys_last_name");
@@ -116,7 +117,7 @@ class AffiliateSignUp
 			$status = 0;
 		}
 
-        $email = $_POST["tys_email"];
+        $email = $this->getP("tys_email");
 
         $timestamp = date("Y-m-d H:i:s");
 
@@ -174,7 +175,7 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function getP($varName)
     {
-        return (isset($_POST[$varName])) ? $_POST[$varName] : "";
+        return NativeRequest::post($varName, "");
     }
 
 
@@ -217,10 +218,12 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyEmail()
     {
-        if (isset($_POST["tys_email"]) == false) {
+        $email = NativeRequest::post("tys_email");
+
+        if ($email === null) {
             return false;
         } else {
-            if (filter_var($_POST["tys_email"], FILTER_VALIDATE_EMAIL) == false) {
+            if (filter_var($email, FILTER_VALIDATE_EMAIL) == false) {
                 return false;
             }
         }
@@ -230,13 +233,16 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyPassword()
     {
-        if (isset($_POST["tys_password"]) == false || isset($_POST["tys_confirm_password"]) == false) {
+        $password = NativeRequest::post("tys_password");
+        $confirmPassword = NativeRequest::post("tys_confirm_password");
+
+        if ($password === null || $confirmPassword === null) {
             return false;
         } else {
-            if ($_POST["tys_password"] != $_POST["tys_confirm_password"]) {
+            if ($password != $confirmPassword) {
                 return false;
             }
-            if (strlen($_POST["tys_password"]) <= 7) {
+            if (strlen($password) <= 7) {
                 return false;
             }
         }
@@ -247,10 +253,12 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyUserName()
     {
-        if (isset($_POST["tys_username"]) == false) {
+        $userName = NativeRequest::post("tys_username");
+
+        if ($userName === null) {
             return false;
         } else {
-            if (strlen($_POST["tys_username"]) <= 3) {
+            if (strlen($userName) <= 3) {
                 return false;
             }
         }
@@ -262,10 +270,12 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
     private function verifyCompanyID()
     {
 
-        if (isset($_POST["tys_cid"]) == false) {
+        $companyId = NativeRequest::post("tys_cid");
+
+        if ($companyId === null) {
             return false;
         } else {
-            $this->db = Connection::createConnectionWithCompanyID($_POST["tys_cid"], $this->forceLive);
+            $this->db = Connection::createConnectionWithCompanyID($companyId, $this->forceLive);
             if ($this->db == false) {
                 return false;
             }
@@ -276,12 +286,15 @@ INSERT INTO rep (first_name, last_name, email, user_name, password, status, refe
 
     private function verifyOtherFields()
     {
-        if (!isset($_POST["tys_first_name"])
-            || !isset($_POST["tys_last_name"])
+        $firstName = NativeRequest::post("tys_first_name");
+        $lastName = NativeRequest::post("tys_last_name");
+
+        if ($firstName === null
+            || $lastName === null
         ) {
             return false;
         } else {
-            if (strlen($_POST["tys_first_name"]) <= 2 || strlen($_POST["tys_last_name"]) <= 2 ) {
+            if (strlen($firstName) <= 2 || strlen($lastName) <= 2 ) {
                 return false;
             }
 

@@ -9,6 +9,7 @@
 
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use PDO;
 
 
@@ -68,13 +69,18 @@ class Notifications
     public function checkPostAndCreate()
     {
 
-        if (isset($_POST["button"])) {
+        if (NativeRequest::post("button") !== null) {
+            $userList = NativeRequest::post("userList");
 
-            if (!isset($_POST["userList"])) {
+            if ($userList === null) {
                 return "NO_USER_LIST";
             }
 
-            if ($this->createNotification($_POST["title"], $_POST["body"], $_POST["userList"])) {
+            if ($this->createNotification(
+                NativeRequest::post("title"),
+                NativeRequest::post("body"),
+                $userList
+            )) {
                 return true;
             }
         }
@@ -219,7 +225,7 @@ class Notifications
 
         $prep->execute($insertValues);
 
-        if (isset($_POST["sendEmails"]) && isset($_POST["userList"])) {
+        if (NativeRequest::post("sendEmails") !== null && NativeRequest::post("userList") !== null) {
 
             $sql = "SELECT email FROM rep WHERE idrep = ";
 
@@ -249,7 +255,8 @@ class Notifications
 
     public function massMail($mailerList)
     {
-        $htmlBody = "<html><h3>Notification from {$this->newNotification['user_name']} @ {$_SERVER["HTTP_HOST"]}</h3><br/>{$this->newNotification['body']}</html>";
+        $host = NativeRequest::server("HTTP_HOST");
+        $htmlBody = "<html><h3>Notification from {$this->newNotification['user_name']} @ {$host}</h3><br/>{$this->newNotification['body']}</html>";
 
         foreach ($mailerList as $address) {
             if (filter_var($address, FILTER_VALIDATE_EMAIL)) {

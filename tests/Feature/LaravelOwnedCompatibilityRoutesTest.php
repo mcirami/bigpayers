@@ -80,7 +80,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(base_path('src/User/AffiliateSignUp.php'))
         );
         $this->assertStringContainsString(
+            'App\\Support\\NativeRequest',
+            File::get(base_path('src/User/AffiliateSignUp.php'))
+        );
+        $this->assertStringContainsString(
             'App\\Support\\LegacyDatabaseConnection as DatabaseConnection',
+            File::get(base_path('src/User/AffiliateSignUp.php'))
+        );
+        $this->assertStringNotContainsString(
+            '$_POST',
             File::get(base_path('src/User/AffiliateSignUp.php'))
         );
         $this->assertStringNotContainsString(
@@ -250,10 +258,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('$_SESSION', $contents);
         }
 
+        $create = File::get(base_path('src/User/Create.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $create);
+        $this->assertStringNotContainsString('$_GET', $create);
+        $this->assertStringNotContainsString('$_POST', $create);
+
         $update = File::get(base_path('src/User/Update.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $update);
         $this->assertStringNotContainsString('$_COOKIE', $update);
+        $reportPermissions = File::get(base_path('src/User/ReportPermissions.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $reportPermissions);
+        $this->assertStringNotContainsString('$_POST', $reportPermissions);
 
         $deduction = File::get(base_path('src/Offer/Deduction.php'));
 
@@ -697,6 +715,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $passwordReset);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $passwordReset);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $passwordReset);
+        $this->assertStringNotContainsString('$_GET', $passwordReset);
+        $this->assertStringNotContainsString('$_POST', $passwordReset);
+        $this->assertStringNotContainsString('$_SERVER', $passwordReset);
     }
 
     public function test_modern_click_geo_reads_use_legacy_click_geo_boundary(): void
@@ -1567,6 +1589,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $notifications);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $notifications);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $notifications);
+        $this->assertStringNotContainsString('$_POST', $notifications);
+        $this->assertStringNotContainsString('$_SERVER', $notifications);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\System\\Notifications',

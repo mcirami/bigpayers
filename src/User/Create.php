@@ -12,6 +12,7 @@ use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
+use App\Support\NativeRequest;
 use PDO;
 
 
@@ -44,9 +45,11 @@ class Create
 
     public static function activateAffiliate($id = null, $mid = null)
     {
-        if ( (isset($_POST["button"]) && isset($_GET["id"])) || $id != null) {
-            $affiliate_id = isset($_GET["id"]) ? $_GET["id"] : intval($id);
-			$referrer_repid = isset($_POST["referrer_repid"]) ? $_POST["referrer_repid"] : $mid;
+        $requestId = NativeRequest::query("id");
+
+        if ((NativeRequest::post("button") !== null && $requestId !== null) || $id != null) {
+            $affiliate_id = $requestId !== null ? $requestId : intval($id);
+			$referrer_repid = NativeRequest::post("referrer_repid", $mid);
 
             $db = DatabaseConnection::getInstance();
             $sql = "UPDATE rep SET status = 1, referrer_repid = :referrer_repid WHERE idrep = :id";
@@ -65,14 +68,16 @@ class Create
 
             RepHasOffer::assignAffiliateToPublicOffers($affiliate_id);
 
-            if (isset($_POST["referralSelectBox"])) {
+            $referralSelectBox = NativeRequest::post("referralSelectBox");
+
+            if ($referralSelectBox !== null) {
                 $options = [
-                    'start_date' => $_POST["start_date"],
-                    'end_date' => $_POST["end_date"],
-                    'referral_type' => $_POST["referral_type"],
-                    'payout' => $_POST["amount"],
+                    'start_date' => NativeRequest::post("start_date"),
+                    'end_date' => NativeRequest::post("end_date"),
+                    'referral_type' => NativeRequest::post("referral_type"),
+                    'payout' => NativeRequest::post("amount"),
                 ];
-                Referrals::addReferral($_POST["referralSelectBox"], $affiliate_id, $options);
+                Referrals::addReferral($referralSelectBox, $affiliate_id, $options);
             }
 
             Bonus::assignUsersInheritableBonuses([$affiliate_id], $referrer_repid);

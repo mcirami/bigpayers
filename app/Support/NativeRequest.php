@@ -24,6 +24,11 @@ class NativeRequest
         return $_POST[$key] ?? $default;
     }
 
+    public static function postAll(): array
+    {
+        return $_POST;
+    }
+
     public static function server(string $key, $default = null)
     {
         return $_SERVER[$key] ?? $default;

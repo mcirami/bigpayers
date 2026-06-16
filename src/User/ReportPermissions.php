@@ -10,6 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 
 class ReportPermissions
 {
@@ -120,7 +121,7 @@ class ReportPermissions
 
         $this->getPermissionListFromConstants();
 
-        foreach ($_POST as $id => $val) {
+        foreach (NativeRequest::postAll() as $id => $val) {
             if (is_numeric($id)) {
                 $sql = "UPDATE report_permissions SET ";
                 $insertValues = [];
