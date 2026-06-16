@@ -652,6 +652,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacySourceNativeSuperglobalErrors = $this->legacySourceNativeSuperglobalErrors();
+
+        if ($legacySourceNativeSuperglobalErrors->isNotEmpty()) {
+            $this->error('Legacy source classes still read native PHP superglobals directly:');
+            $legacySourceNativeSuperglobalErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyPermissionsDependencyErrors = $this->legacyPermissionsDependencyErrors();
 
         if ($legacyPermissionsDependencyErrors->isNotEmpty()) {
@@ -1095,6 +1104,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code does not reference the retired legacy company session loader.');
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
         $this->info('Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.');
+        $this->info('Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');
@@ -1495,6 +1505,45 @@ class AuditLegacyFallbackCoverage extends Command
     {
         return collect($sourceFiles)
             ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->nativeSessionAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacySourceNativeSuperglobalErrors()
+    {
+        $sourceFiles = collect();
+        $path = base_path('src');
+
+        if (!File::isDirectory($path)) {
+            return $sourceFiles;
+        }
+
+        foreach (File::allFiles($path) as $file) {
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
+
+            $relativePath = 'src/' . str_replace('\\', '/', $file->getRelativePathname());
+
+            $sourceFiles[$relativePath] = File::get($file->getPathname());
+        }
+
+        return $this->legacySourceNativeSuperglobalErrorsFor($sourceFiles);
+    }
+
+    private function legacySourceNativeSuperglobalErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

@@ -383,6 +383,10 @@ Remaining cleanup is mostly archival and hardening:
   `App\Support\NativeRequest`, and report/click flows read query, cookie, and
   server values through Laravel request helpers. The fallback audit blocks new
   direct native superglobal reads in Laravel-owned code
+- legacy source classes under `src/` now read native request/session data
+  through `App\Support\NativeRequest` or `App\Support\NativeSession`; the
+  fallback audit fails if those classes reintroduce direct native superglobal
+  reads
 - dashboard shell, legacy master, home, and branded error views now receive
   current user/session values from Laravel view data instead of reading the
   legacy session class directly in Blade

@@ -53,6 +53,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code sends legacy mail through LegacyMail.',
             $output
         );
@@ -477,6 +481,7 @@ class LegacyFallbackAuditTest extends TestCase
             'retiredCompanySessionDependencyErrors',
             'legacyBoundaryDependencyErrors',
             'nativeSessionDependencyErrors',
+            'legacySourceNativeSuperglobalErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickDependencyErrors',
@@ -664,6 +669,55 @@ class LegacyFallbackAuditTest extends TestCase
             $errors->all()
         );
         $this->assertCount(5, $errors);
+    }
+
+    public function test_legacy_source_native_superglobal_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacySourceNativeSuperglobalErrorsFor',
+            [[
+                'src/BadSessionHelper.php' => 'return $_SESSION["user"];',
+                'src/BadQueryHelper.php' => 'return $_GET["id"];',
+                'src/BadPostHelper.php' => 'return $_POST["button"];',
+                'src/BadCookieHelper.php' => 'return $_COOKIE["timezone"];',
+                'src/BadServerHelper.php' => 'return $_SERVER["HTTP_HOST"];',
+                'src/CleanHelper.php' => 'return NativeRequest::query("id");',
+            ]]
+        );
+
+        $this->assertContains(
+            'src/BadSessionHelper.php: Use App\\Support\\NativeSession instead of reading or writing the native session superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadQueryHelper.php: Use Illuminate\\Http\\Request instead of reading query parameters from the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadPostHelper.php: Use App\\Support\\NativeRequest for explicit legacy POST bridges instead of writing the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadCookieHelper.php: Use Illuminate\\Http\\Request cookie helpers instead of reading cookies from the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadServerHelper.php: Use Illuminate\\Http\\Request server helpers instead of reading server values from the native request superglobal directly.',
+            $errors->all()
+        );
+        $this->assertCount(5, $errors);
+    }
+
+    public function test_legacy_source_classes_do_not_read_native_superglobals_directly(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod($command, 'legacySourceNativeSuperglobalErrors', []);
+
+        $this->assertSame([], $errors->all());
     }
 
     public function test_legacy_mail_dependency_errors_report_forbidden_sources(): void
