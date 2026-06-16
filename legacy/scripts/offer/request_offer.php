@@ -1,10 +1,9 @@
 <?php
 
+http_response_code(410);
+header('Content-Type: application/json');
 
-
-
-if(isset($_GET["id"]))
-{
-   $result = \LeadMax\TrackYourStats\Offer\RepHasOffer::requestOffer($_GET["id"], \LeadMax\TrackYourStats\System\Session::userID());
-   die(json_encode($result));
-}
+echo json_encode([
+    'error' => 'This legacy offer-request endpoint is retired.',
+    'replacement' => '/offer/{id}/request',
+]);

@@ -625,6 +625,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $retiredScriptImplementationErrors = $this->retiredScriptImplementationErrors();
+
+        if ($retiredScriptImplementationErrors->isNotEmpty()) {
+            $this->error('Retired legacy script endpoint files are not explicit 410 stubs:');
+            $retiredScriptImplementationErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $retiredCompanySessionDependencyErrors = $this->retiredCompanySessionDependencyErrors();
 
         if ($retiredCompanySessionDependencyErrors->isNotEmpty()) {
@@ -1098,6 +1107,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
+        $this->info('Retired legacy script endpoint files are explicit 410 stubs.');
         $this->info('Legacy POST compatibility routes have CSRF exceptions.');
         $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
@@ -1357,6 +1367,48 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         return $errors;
+    }
+
+    private function retiredScriptImplementationErrors()
+    {
+        return $this->retiredScriptImplementationErrorsFor(
+            collect($this->retiredScriptEndpoints)
+                ->filter(fn (string $replacement, string $endpoint) => array_key_exists($endpoint, $this->intentionallyUnrouted) || $endpoint === 'scripts/update_geoip.php')
+                ->mapWithKeys(function (string $replacement, string $endpoint) {
+                    $path = base_path('legacy/' . $endpoint);
+
+                    if (!File::exists($path)) {
+                        return [];
+                    }
+
+                    return [$endpoint => File::get($path)];
+                })
+        );
+    }
+
+    private function retiredScriptImplementationErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->flatMap(function (string $contents, string $endpoint) {
+                $errors = [];
+
+                if (!str_contains($contents, 'http_response_code(410)')) {
+                    $errors[] = "{$endpoint}: retired script file must return HTTP 410.";
+                }
+
+                if (str_contains($contents, 'LeadMax\\TrackYourStats')) {
+                    $errors[] = "{$endpoint}: retired script file must not execute legacy classes.";
+                }
+
+                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$endpoint}: retired script file must not read native PHP superglobals directly.";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
     }
 
     private function retiredCompanySessionDependencyErrors()

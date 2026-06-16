@@ -29,6 +29,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Retired legacy script endpoint files are explicit 410 stubs.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Legacy POST compatibility routes have CSRF exceptions.',
             $output
         );
@@ -469,6 +473,39 @@ class LegacyFallbackAuditTest extends TestCase
         }
     }
 
+    public function test_retired_script_implementation_errors_report_live_legacy_scripts(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'retiredScriptImplementationErrorsFor',
+            [[
+                'scripts/bad_live.php' => '<?php $x = \\LeadMax\\TrackYourStats\\Offer\\RepHasOffer::class; return $_POST["id"];',
+                'scripts/bad_status.php' => '<?php echo json_encode(["error" => "gone"]);',
+                'scripts/clean.php' => '<?php http_response_code(410); echo json_encode(["error" => "retired"]);',
+            ]]
+        );
+
+        $this->assertContains(
+            'scripts/bad_live.php: retired script file must return HTTP 410.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'scripts/bad_live.php: retired script file must not execute legacy classes.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'scripts/bad_live.php: retired script file must not read native PHP superglobals directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'scripts/bad_status.php: retired script file must return HTTP 410.',
+            $errors->all()
+        );
+        $this->assertCount(4, $errors);
+    }
+
     public function test_audit_hardening_checks_are_individually_clean(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -478,6 +515,7 @@ class LegacyFallbackAuditTest extends TestCase
             'frontControllerFallbackErrors',
             'legacyBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
+            'retiredScriptImplementationErrors',
             'retiredCompanySessionDependencyErrors',
             'legacyBoundaryDependencyErrors',
             'nativeSessionDependencyErrors',

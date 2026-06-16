@@ -250,6 +250,9 @@ Former references:
 - `public/js/Offer/Rules/Device.js`
 
 These have been replaced with Laravel controller endpoints.
+The retired legacy script files are retained only as explicit `410 Gone` stubs
+with replacement hints, and the fallback audit fails if they regain live legacy
+class execution code.
 
 ### Legacy Signup Script
 
@@ -259,7 +262,8 @@ Referenced from:
 - `legacy/signup.php`
 
 This is lower priority if `/signup` is now the real entry point, but it should
-be retired once legacy signup is no longer used.
+be retired once legacy signup is no longer used. The old script file is now an
+explicit `410 Gone` stub.
 
 ## 5. URLs Missing Compatibility Coverage
 

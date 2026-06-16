@@ -1,14 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: professional slacker
- * Date: 1/9/2018
- * Time: 5:31 PM
- */
 
+http_response_code(410);
+header('Content-Type: application/json');
 
-
-
-$signup = new \LeadMax\TrackYourStats\User\AffiliateSignUp();
-
-die($signup->getResult());
+echo json_encode([
+    'error' => 'This legacy signup endpoint is retired.',
+    'replacement' => '/signup',
+]);
