@@ -39,6 +39,12 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyRedirectStubs = [
+        'aff_add.php' => '/user/create',
+        'clicksearch.php' => '/click-search',
+        'global_postback.php' => '/global-postback',
+        'home.php' => '/dashboard',
+        'login.php' => '/login',
+        'logout.php' => '/logout',
         'signup.php' => '/signup',
         'signup_success.php' => '/signup-success',
     ];

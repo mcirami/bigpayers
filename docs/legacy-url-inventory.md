@@ -28,9 +28,9 @@ the legacy runtime before Laravel-owned code handles the request.
 
 The following wrappers have now been implemented in Laravel:
 
-- `/login.php` -> `/login`
-- `/logout.php` -> `/logout`
-- `/home.php` -> `/dashboard`
+- `/login.php` -> `/login` (legacy marker file redirects)
+- `/logout.php` -> `/logout` (legacy marker file redirects)
+- `/home.php` -> `/dashboard` (legacy marker file redirects)
 - `/alogin.php?affid=` -> `/login/{id}`
 - `/aff_help.php` -> modern forgot-password flow
 - `/aff_add.php` -> `/user/create`
@@ -110,15 +110,18 @@ compatibility wrappers plus internal link cleanup.
 | --- | --- | --- | --- |
 | `/signup.php` | `/signup` | Replaced | Already route-wrapped in `routes/web.php`; legacy marker file redirects to `/signup` |
 | `/signup_success.php` | `/signup-success` | Replaced | Already route-wrapped; legacy marker file redirects to `/signup-success` |
-| `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route |
+| `/home.php` | `/dashboard` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/dashboard` |
+| `/login.php` | `/login` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/login` |
+| `/logout.php` | `/logout` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/logout` |
+| `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/click-search` |
 | `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route |
 | `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
 | `/edit_blacklisted_ip.php?id=` | `/ip-blacklist/{id}/edit` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
-| `/global_postback.php` | `/global-postback` | Wrapped | Explicit compatibility route |
+| `/global_postback.php` | `/global-postback` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/global-postback` |
 | `/mass_assign_pb.php` | `/account/mass-postback` | Wrapped | Laravel affiliate mass postback assignment |
 | `/notifications.php` | `/notifications` | Wrapped | Explicit compatibility route |
 | `/settings.php` | `/settings` | Wrapped | Explicit compatibility route |
-| `/aff_add.php` | `/user/create` | Wrapped | Explicit compatibility route |
+| `/aff_add.php` | `/user/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/create` |
 | `/aff_details.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/aff_permissions.php` | `/admin/report-permissions` | Wrapped | Laravel report permissions management |
 | `/offer_urls.php` | `/offer/urls` | Wrapped | Explicit compatibility route |
