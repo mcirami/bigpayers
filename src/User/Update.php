@@ -215,7 +215,10 @@ class Update
 
     public function clearLoginAttempts()
     {
-        if (isset($_GET["clearAtt"]) && isset($_GET["idrep"]) && $_GET["clearAtt"] == 1) {
+        $clearAttempts = NativeRequest::query("clearAtt");
+        $idrep = NativeRequest::query("idrep");
+
+        if ($clearAttempts !== null && $idrep !== null && $clearAttempts == 1) {
             $db = DatabaseConnection::getInstance();
             $sql = "UPDATE logins SET success = 3 WHERE rep_username = :user_name and date = :date";
 
@@ -362,14 +365,18 @@ class Update
 
 
 // update rep specific offer payout
-        if (isset($_GET["offerid"]) && isset($_GET["out"]) && isset($_GET["idrep"]) && $userType != Privilege::ROLE_AFFILIATE) {
+        $offerId = NativeRequest::query("offerid");
+        $payout = NativeRequest::query("out");
+        $repId = NativeRequest::query("idrep");
+
+        if ($offerId !== null && $payout !== null && $repId !== null && $userType != Privilege::ROLE_AFFILIATE) {
             $db = DatabaseConnection::getInstance();
             $sql = "UPDATE rep_has_offer SET payout=:payout WHERE rep_idrep = :repID AND offer_idoffer=:idoffer";
             $prep = $db->prepare($sql);
 
-            $prep->bindParam(":payout", $_GET["out"]);
-            $prep->bindParam(":repID", $_GET["idrep"]);
-            $prep->bindParam(":idoffer", $_GET["offerid"]);
+            $prep->bindParam(":payout", $payout);
+            $prep->bindParam(":repID", $repId);
+            $prep->bindParam(":idoffer", $offerId);
 
             if ($prep->execute()) {
                 send_to("/user/{$this->assign->get("idrep")}/edit");

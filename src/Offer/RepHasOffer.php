@@ -19,6 +19,7 @@ use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyNotifications as Notifications;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPermissions as Permissions;
+use App\Support\NativeRequest;
 use App\Support\LegacyTree as Tree;
 use App\Support\LegacyUser as User;
 use PDO;
@@ -663,9 +664,9 @@ class RepHasOffer
     {
         $submit = post("button");
         if ($submit) {
+            $managerList = NativeRequest::post("replist", []);
 
-            if (!empty($_POST["replist"])) {
-                $managerList = $_POST["replist"];
+            if (!empty($managerList)) {
                 $managerIDList = array();
 
                 $newID = array();
@@ -694,7 +695,7 @@ class RepHasOffer
                 for ($i = 0; $i < count($repIDlist); $i++) {
                     $newID[] = $repIDlist[$i][0];
                 }
-                $_POST["replist"] = $newID;
+                NativeRequest::mergePost(["replist" => $newID]);
 
             }
 
@@ -789,10 +790,11 @@ class RepHasOffer
                 $stmt->execute();
                 $lastOfferId = $db->lastInsertId();
 
+                $repList = NativeRequest::post("replist", []);
 
-                if (!empty($_POST["replist"]) || $is_public == 1) {
-                    if (!empty($_POST["replist"])) {
-                        $repIdArray = $_POST["replist"];
+                if (!empty($repList) || $is_public == 1) {
+                    if (!empty($repList)) {
+                        $repIdArray = $repList;
                     }
 
                     if ($is_public == 1) {
@@ -837,34 +839,36 @@ class RepHasOffer
                 }
 
 
-                if (isset($_POST["enable_cap"])) {
+                if (NativeRequest::post("enable_cap") !== null) {
                     $cap = new Caps($lastOfferId);
+                    $capType = NativeRequest::post("cap_type");
+                    $capInterval = NativeRequest::post("cap_interval");
 
-                    if ($_POST["cap_type"] == "click") {
+                    if ($capType == "click") {
                         $options["type"] = 0;
                     }
 
-                    if ($_POST["cap_type"] == "conversion") {
+                    if ($capType == "conversion") {
                         $options["type"] = 1;
                     }
 
 
-                    if ($_POST["cap_interval"] == "daily") {
+                    if ($capInterval == "daily") {
                         $options["time_interval"] = 0;
                     }
-                    if ($_POST["cap_interval"] == "weekly") {
+                    if ($capInterval == "weekly") {
                         $options["time_interval"] = 1;
                     }
-                    if ($_POST["cap_interval"] == "monthly") {
+                    if ($capInterval == "monthly") {
                         $options["time_interval"] = 2;
                     }
-                    if ($_POST["cap_interval"] == "total") {
+                    if ($capInterval == "total") {
                         $options["time_interval"] = Caps::total;
                     }
 
-                    $options["interval_cap"] = $_POST["cap_num"];
+                    $options["interval_cap"] = NativeRequest::post("cap_num");
 
-                    $options["redirect_offer"] = $_POST["redirect_offer"];
+                    $options["redirect_offer"] = NativeRequest::post("redirect_offer");
 
 
                     $cap->createCapRules($options);
@@ -876,10 +880,12 @@ class RepHasOffer
 
                 $db->commit();
 
-                if (isset($_POST["required_sales"])) {
+                $requiredSales = NativeRequest::post("required_sales");
+
+                if ($requiredSales !== null) {
                     $bonusOffer = new BonusOffer();
                     $bonusOffer->offer_id = $lastOfferId;
-                    $bonusOffer->required_sales = $_POST["required_sales"];
+                    $bonusOffer->required_sales = $requiredSales;
                     $bonusOffer->save();
                 }
             } catch (\Exception $e) {

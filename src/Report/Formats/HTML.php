@@ -1,5 +1,6 @@
 <?php namespace LeadMax\TrackYourStats\Report\Formats;
 use App\Support\CurrentUserSession;
+use App\Support\NativeRequest;
 use App\Privilege;
 /**
  * Author: Dean
@@ -38,10 +39,15 @@ class HTML implements Format
     public function output($report)
     {
 		$params = "";
-		if(isset($_GET['d_from']) && isset($_GET['d_to']) && isset($_GET['dateSelect']) ) {
-			$params = "d_from=" . $_GET['d_from'] . "&d_to=" . $_GET['d_to'] . "&dateSelect=" . $_GET["dateSelect"];
-			if (isset($_GET['role'])) {
-				$params .= "&role=" . $_GET['role'];
+        $dateFrom = NativeRequest::query('d_from');
+        $dateTo = NativeRequest::query('d_to');
+        $dateSelect = NativeRequest::query('dateSelect');
+        $role = NativeRequest::query('role');
+
+		if($dateFrom !== null && $dateTo !== null && $dateSelect !== null ) {
+			$params = "d_from=" . $dateFrom . "&d_to=" . $dateTo . "&dateSelect=" . $dateSelect;
+			if ($role !== null) {
+				$params .= "&role=" . $role;
 			}
 		}  elseif (isset($this->dates['originalStart']) && isset($this->dates['originalEnd'])) {
             $params = "d_from=" . $this->dates['originalStart'] . "&d_to=" . $this->dates['originalEnd'] . "&dateSelect=";
@@ -83,7 +89,7 @@ class HTML implements Format
                                 echo "<td><a class='bp-report-link' href='/report/offer/{$row['idoffer']}/user-conversions?{$params}'>$row[$toPrint]</a></td>";
                             }
 						} elseif($toPrint == "Conversions" && $row[$toPrint] > 0 && (key_exists('idrep', $row) && $row[$toPrint] != "TOTAL")) {
-							if ( isset( $_GET['role'] ) && $_GET['role'] == 2 ) {
+							if ( $role == 2 ) {
 								echo "<td><a class='bp-report-link' href='/report/manager/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";
 							} else {
 								echo "<td><a class='bp-report-link' href='/user/{$row['idrep']}/conversions-by-offer?{$params}'>$row[$toPrint]</a></td>";

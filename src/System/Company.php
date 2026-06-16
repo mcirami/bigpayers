@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
 
@@ -96,7 +97,7 @@ class Company
     static function getSub()
     {
 	    return env("DB_DATABASE");
-       /* $sub = explode(".", $_SERVER["HTTP_HOST"]);
+       /* $sub = explode(".", NativeRequest::server("HTTP_HOST"));
 
 		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
 			return env("DB_DATABASE");
@@ -115,7 +116,7 @@ class Company
     // OUTPUT: com
     static function getExtension()
     {
-        $sub = explode(".", $_SERVER["HTTP_HOST"]);
+        $sub = explode(".", NativeRequest::server("HTTP_HOST"));
 
         return $sub[count($sub) - 1];
     }

@@ -28,14 +28,14 @@ the token value named as "sfs_token".
 
 Now, to use it when actually submitting to the db, you would create a new SFS object, passing the token as a string to the constructor,
 
-Ex: $sfs = new SFS($_POST["sfs_token"]);
+Ex: $sfs = new SFS($postedToken);
 
 SFS will know you passed a token, then, to get all of your element names, call the "pullElements()"
 
 then, to access your POST names use it as such:
 
 
-$_POST[$sfs->userName] (using PHP's __get magic function)
+$postedFields[$sfs->userName] (using PHP's __get magic function)
 
 
 And that's how it works, this was a quick write up of the idea/concept, but should work good.

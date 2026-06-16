@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAssignments as Assignments;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\NativeRequest;
 use App\Support\LegacyTree as Tree;
 use App\Support\LegacyUser as User;
 use PDO;
@@ -265,11 +266,10 @@ class Update
     {
         $submit = post("button");
         if ($submit) {
+            $managerList = NativeRequest::post("replist", []);
+            $managerIDList = array();
 
-            if (!empty($_POST["replist"])) {
-                $managerList = $_POST["replist"];
-                $managerIDList = array();
-
+            if (!empty($managerList)) {
                 $sql = "";
 
                 for ($i = 0; $i < count($managerList); $i++) {
@@ -297,10 +297,10 @@ class Update
                     $newID[] = $repIDlist[$i][0];
                 }
 
-                $_POST["replist"] = $newID;
+                NativeRequest::mergePost(["replist" => $newID]);
             }
 
-            $_POST["notAssigned"] = array();
+            NativeRequest::mergePost(["notAssigned" => array()]);
 
 
             $redirect_to .= "&ast=1";
@@ -433,26 +433,28 @@ class Update
                 $repIdArray = array();
 
 
-                if (isset($_POST["replist"])) {
+                $repList = NativeRequest::post("replist", []);
+
+                if (!empty($repList)) {
                     foreach ($allAssigned as $key => $val) {
-                        if (in_array($val->rep_idrep, $_POST["replist"])) {
-                            if (($key2 = array_search($val->rep_idrep, $_POST["replist"])) !== false) {
-                                unset($_POST["replist"][$key2]);
+                        if (in_array($val->rep_idrep, $repList)) {
+                            if (($key2 = array_search($val->rep_idrep, $repList)) !== false) {
+                                unset($repList[$key2]);
                             }
                         }
 
                     }
                 }
 
+                $notAssigned = NativeRequest::post("notAssigned", []);
 
-                if (!empty($_POST["notAssigned"])) {
-                    $this->deleteAffiliatesFromOffer($_POST["notAssigned"], $this->offerID);
+                if (!empty($notAssigned)) {
+                    $this->deleteAffiliatesFromOffer($notAssigned, $this->offerID);
                 }
 
-                if (isset($_POST["replist"])) {
-                    if (!empty($_POST["replist"])) {
+                if (!empty($repList)) {
 
-                        $repIdArray = $_POST["replist"];
+                        $repIdArray = $repList;
 
 
                         $insertValues = array();
@@ -483,48 +485,49 @@ class Update
                         $stmt2->execute($insertValues);
 
 
-                    }
-
                 }
 
 
                 $caps = new Caps($id, null, true);
-                if (isset($_POST["enable_cap"])) {
+                if (NativeRequest::post("enable_cap") !== null) {
 
+                    $capType = NativeRequest::post("cap_type");
+                    $capInterval = NativeRequest::post("cap_interval");
 
-                    if ($_POST["cap_type"] == "click") {
+                    if ($capType == "click") {
                         $options["type"] = 0;
                     }
 
-                    if ($_POST["cap_type"] == "conversion") {
+                    if ($capType == "conversion") {
                         $options["type"] = 1;
                     }
 
-                    if ($_POST["cap_interval"] == "daily") {
+                    if ($capInterval == "daily") {
                         $options["time_interval"] = 0;
                     }
-                    if ($_POST["cap_interval"] == "weekly") {
+                    if ($capInterval == "weekly") {
                         $options["time_interval"] = 1;
                     }
-                    if ($_POST["cap_interval"] == "monthly") {
+                    if ($capInterval == "monthly") {
                         $options["time_interval"] = 2;
                     }
 
-	                if ($_POST["cap_interval"] == "hourly") {
+	                if ($capInterval == "hourly") {
 		                $options["time_interval"] = 4;
 	                }
 
-                    if ($_POST["cap_interval"] == "total") {
+                    if ($capInterval == "total") {
                         $options["time_interval"] = Caps::total;
                     }
 
-                    $options["interval_cap"] = $_POST["cap_num"];
+                    $options["interval_cap"] = NativeRequest::post("cap_num");
 
-                    $options["redirect_offer"] = $_POST["redirect_offer"];
+                    $options["redirect_offer"] = NativeRequest::post("redirect_offer");
 
-	                if(isset($_POST["enable_max_cap"])) {
-		                if(isset($_POST["max_cap_num"])) {
-			                $options["max_cap"] = $_POST["max_cap_num"];
+	                if(NativeRequest::post("enable_max_cap") !== null) {
+                        $maxCapNum = NativeRequest::post("max_cap_num");
+		                if($maxCapNum !== null) {
+			                $options["max_cap"] = $maxCapNum;
 		                }
 		                $options["max_cap_status"] = 1;
 		                $tz = 'America/New_York';
@@ -537,9 +540,12 @@ class Update
 		                $options["max_cap_date"] = null;
 	                }
 
-	                if(isset($_POST["enable_time_block"]) && isset($_POST["block_start_time"]) && isset($_POST["block_end_time"])) {
-		                $postStart = str_replace(" ", ":00 ", $_POST["block_start_time"]);
-		                $postEnd = str_replace(" ", ":00 ", $_POST["block_end_time"]);
+                    $blockStartTime = NativeRequest::post("block_start_time");
+                    $blockEndTime = NativeRequest::post("block_end_time");
+
+	                if(NativeRequest::post("enable_time_block") !== null && $blockStartTime !== null && $blockEndTime !== null) {
+		                $postStart = str_replace(" ", ":00 ", $blockStartTime);
+		                $postEnd = str_replace(" ", ":00 ", $blockEndTime);
 		                $CarbonStart = Carbon::createFromFormat('H:i:s a', $postStart);
 		                $CarbonEnd = Carbon::createFromFormat('H:i:s a', $postEnd);
 		                $start = $CarbonStart->toTimeString();
@@ -553,9 +559,9 @@ class Update
 		                $options["time_block_status"]  = 0;
 	                }
 
-	                if(isset($_POST["enable_hourly_cap"])) {
+	                if(NativeRequest::post("enable_hourly_cap") !== null) {
 		                $options["hourly_cap_status"]   = 1;
-		                $options["hourly_cap"]          = $_POST["hourly_cap_num"];
+		                $options["hourly_cap"]          = NativeRequest::post("hourly_cap_num");
 
 	                } else {
 		                $options["hourly_cap_status"]  = 0;
@@ -571,14 +577,15 @@ class Update
                 $db->commit();
 
                 $bonusOffer = BonusOffer::where('offer_id', '=', $lastOfferId)->first();
+                $requiredSales = NativeRequest::post("required_sales");
 
-                if (isset($_POST["required_sales"])) {
+                if ($requiredSales !== null) {
                     if (is_null($bonusOffer)) {
                         $bonusOffer = new BonusOffer();
                         $bonusOffer->offer_id = $lastOfferId;
                     }
                     $bonusOffer->active = 1;
-                    $bonusOffer->required_sales = $_POST["required_sales"];
+                    $bonusOffer->required_sales = $requiredSales;
                     $bonusOffer->save();
                 } else {
                     if(!is_null($bonusOffer)){

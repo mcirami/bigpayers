@@ -151,6 +151,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $legacyUser);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $legacyUser);
         $this->assertStringNotContainsString('$_COOKIE', $legacyUser);
+        $this->assertStringNotContainsString('$_POST', $legacyUser);
     }
 
     public function test_modern_user_domain_helpers_use_legacy_boundaries(): void
@@ -268,6 +269,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $update);
         $this->assertStringNotContainsString('$_COOKIE', $update);
+        $this->assertStringNotContainsString('$_GET', $update);
         $reportPermissions = File::get(base_path('src/User/ReportPermissions.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $reportPermissions);
@@ -338,8 +340,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offer);
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $repHasOffer);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $repHasOffer);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $repHasOffer);
+        $this->assertStringNotContainsString('$_POST', $repHasOffer);
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offerUpdate);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offerUpdate);
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $offerUpdate);
+        $this->assertStringNotContainsString('$_POST', $offerUpdate);
     }
 
     public function test_modern_offer_postback_urls_use_legacy_boundaries(): void
@@ -1179,6 +1185,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $aggregateController = File::get(app_path('Http/Controllers/Report/AggregateReportController.php'));
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Formats\\HTML', $aggregateController);
 
+        $reportHtml = File::get(base_path('src/Report/Formats/HTML.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $reportHtml);
+        $this->assertStringNotContainsString('$_GET', $reportHtml);
+
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\Report\\Formats\\HTML',
             File::get(app_path('Support/LegacyReportHtml.php'))
@@ -1342,6 +1353,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         foreach ([
+            base_path('src/System/Company.php'),
             base_path('src/System/Connection.php'),
             base_path('src/System/Functions.php'),
             base_path('src/System/Log.php'),

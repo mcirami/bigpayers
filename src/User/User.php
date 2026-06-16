@@ -612,9 +612,11 @@ class User extends Login
 
                     $list = Permissions::defaultUserPermissions($list, $repType);
 
-                    if (!empty($_POST["permissions"])) {
+                    $postedPermissions = NativeRequest::post("permissions", []);
 
-                        foreach ($_POST["permissions"] as $key => $val) {
+                    if (!empty($postedPermissions)) {
+
+                        foreach ($postedPermissions as $key => $val) {
                             $list[$val] = 1;
                         }
 
@@ -629,14 +631,14 @@ class User extends Login
                     }
 
 
-                    if (isset($_POST["referralCheckBox"])) {
+                    if (NativeRequest::post("referralCheckBox") !== null) {
                         $options = [
-                            "start_date" => $_POST["start_date"],
-                            "end_date" => $_POST["end_date"],
-                            "referral_type" => $_POST["referral_type"],
-                            "payout" => $_POST["amount"],
+                            "start_date" => NativeRequest::post("start_date"),
+                            "end_date" => NativeRequest::post("end_date"),
+                            "referral_type" => NativeRequest::post("referral_type"),
+                            "payout" => NativeRequest::post("amount"),
                         ];
-                        if (!Referrals::addReferral($_POST["referralSelectBox"], $repID, $options)) {
+                        if (!Referrals::addReferral(NativeRequest::post("referralSelectBox"), $repID, $options)) {
                             $db->rollBack();
                             die("<h1> ERROR </h1>");
                         }
@@ -925,9 +927,11 @@ class User extends Login
                 $list = [];
                 $list = Permissions::defaultUserPermissions($list, $repType);
 
-                if (!empty($_POST["permissions"])) {
+                $postedPermissions = NativeRequest::post("permissions", []);
 
-                    foreach ($_POST["permissions"] as $key => $val) {
+                if (!empty($postedPermissions)) {
+
+                    foreach ($postedPermissions as $key => $val) {
                         $list[$val] = 1;
                     }
 
@@ -944,14 +948,14 @@ class User extends Login
                 }
 
             }
-            if (isset($_POST["referralCheckBox"])) {
+            if (NativeRequest::post("referralCheckBox") !== null) {
                 $options = [
-                    "start_date" => $_POST["start_date"],
-                    "end_date" => $_POST["end_date"],
-                    "referral_type" => $_POST["referral_type"],
-                    "payout" => $_POST["amount"],
+                    "start_date" => NativeRequest::post("start_date"),
+                    "end_date" => NativeRequest::post("end_date"),
+                    "referral_type" => NativeRequest::post("referral_type"),
+                    "payout" => NativeRequest::post("amount"),
                 ];
-                if (!Referrals::addReferral($_POST["referralSelectBox"], $id, $options)) {
+                if (!Referrals::addReferral(NativeRequest::post("referralSelectBox"), $id, $options)) {
                     $db->rollBack();
                     die("<h1> ERROR </h1>");
                 }
@@ -960,8 +964,10 @@ class User extends Login
 
             Tree::rebuild_tree(1, 1);
 
-            if (isset($_POST["referrer_box"])) {
-                Referrals::updateReferrer($id, $_POST["referrer_box"]);
+            $referrerBox = NativeRequest::post("referrer_box");
+
+            if ($referrerBox !== null) {
+                Referrals::updateReferrer($id, $referrerBox);
             }
 
             Bonus::assignUsersInheritableBonuses([$id], $referrer_repid);
