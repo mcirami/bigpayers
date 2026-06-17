@@ -116,7 +116,7 @@ compatibility wrappers plus internal link cleanup.
 | `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/click-search` |
 | `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/ip-blacklist` |
 | `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/ip-blacklist/create` |
-| `/edit_blacklisted_ip.php?id=` | `/ip-blacklist/{id}/edit` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
+| `/edit_blacklisted_ip.php?id=` | `/ip-blacklist/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/global_postback.php` | `/global-postback` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/global-postback` |
 | `/mass_assign_pb.php` | `/account/mass-postback` | Wrapped | Laravel affiliate mass postback assignment; legacy marker file redirects to `/account/mass-postback` |
 | `/notifications.php` | `/notifications` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/notifications` |
@@ -132,9 +132,9 @@ compatibility wrappers plus internal link cleanup.
 | `/offer_update.php?idoffer=` | `/offer/edit/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idoffer` |
 | `/offer_details.php?idoffer=` | `/offer/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idoffer` |
 | `/offer_edit_rules.php?offid=` | `/offer/rules/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `offid` |
-| `/create_none_unique.php?id=` | `/offer/rules/{id}/none-unique/create` | Wrapped | Explicit compatibility route |
-| `/edit_none_unique.php?id=` | `/offer/rules/none-unique/{id}/edit` | Wrapped | Explicit compatibility route |
-| `/offer_access.php?id=` | `/offer/{id}/access` | Wrapped | Explicit compatibility route |
+| `/create_none_unique.php?id=` | `/offer/rules/{id}/none-unique/create` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
+| `/edit_none_unique.php?id=` | `/offer/rules/none-unique/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
+| `/offer_access.php?id=` | `/offer/{id}/access` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/sale_log_view.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/log_sale.php?pcid=` | `/chat-log/add/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `pcid`/`cid` |
 | `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id`/`sid` |
@@ -167,8 +167,8 @@ compatibility wrappers plus internal link cleanup.
 | `/setup.php` | `/admin/setup` | Wrapped | Laravel company setup flow |
 | `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner |
 | `/scripts/update_geoip.php` | `/scripts/update_geoip.php` | Wrapped | Explicitly retired with 410; use provisioning/ops workflow instead |
-| `/upload_logo.php` | `/upload_logo.php` | Wrapped | Laravel logo upload endpoint |
-| `/upload_favicon.php` | `/upload_favicon.php` | Wrapped | Laravel favicon upload endpoint |
+| `/upload_logo.php` | `/upload_logo.php` | Wrapped | Laravel logo upload endpoint; legacy marker file redirects to `/settings` |
+| `/upload_favicon.php` | `/upload_favicon.php` | Wrapped | Laravel favicon upload endpoint; legacy marker file redirects to `/settings` |
 | `/dontaskdonttell.php?action=&clickid=` | `/dontaskdonttell.php` | Wrapped | God-only click ID utility |
 
 ## 2. Legacy URLs Still Referenced Internally
