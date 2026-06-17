@@ -122,16 +122,16 @@ compatibility wrappers plus internal link cleanup.
 | `/notifications.php` | `/notifications` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/notifications` |
 | `/settings.php` | `/settings` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/settings` |
 | `/aff_add.php` | `/user/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/create` |
-| `/aff_details.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/aff_details.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idrep` |
 | `/aff_permissions.php` | `/admin/report-permissions` | Wrapped | Laravel report permissions management; legacy marker file redirects to `/admin/report-permissions` |
 | `/offer_urls.php` | `/offer/urls` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/offer/urls` |
 | `/add_offer_url.php` | `/offer/urls/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/offer/urls/create` |
-| `/edit_offer_url.php?id=` | `/offer/urls/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/edit_offer_url.php?id=` | `/offer/urls/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/offer_add.php` | `/offer/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/offer/create` |
-| `/offer_edit_pb.php?offid=` | `/offer/{id}/postback` | Wrapped | Explicit compatibility route |
-| `/offer_update.php?idoffer=` | `/offer/edit/{id}` | Wrapped | Explicit compatibility route |
-| `/offer_details.php?idoffer=` | `/offer/view/{id}` | Wrapped | Explicit compatibility route |
-| `/offer_edit_rules.php?offid=` | `/offer/rules/{id}` | Wrapped | Explicit compatibility route |
+| `/offer_edit_pb.php?offid=` | `/offer/{id}/postback` | Wrapped | Explicit compatibility route; legacy marker file redirects by `offid` |
+| `/offer_update.php?idoffer=` | `/offer/edit/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idoffer` |
+| `/offer_details.php?idoffer=` | `/offer/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idoffer` |
+| `/offer_edit_rules.php?offid=` | `/offer/rules/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `offid` |
 | `/create_none_unique.php?id=` | `/offer/rules/{id}/none-unique/create` | Wrapped | Explicit compatibility route |
 | `/edit_none_unique.php?id=` | `/offer/rules/none-unique/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/offer_access.php?id=` | `/offer/{id}/access` | Wrapped | Explicit compatibility route |
@@ -153,7 +153,7 @@ compatibility wrappers plus internal link cleanup.
 | `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/banned` |
 | `/ban_user_edit.php?uid=` | `/user/{id}/ban/edit` | Wrapped | Explicit compatibility route |
 | `/ban_user.php?uid=` | `/user/{id}/ban` | Wrapped | Explicit compatibility route |
-| `/aff_update.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/aff_update.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idrep` |
 | `/aff_add_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
 | `/aff_edit_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
 | `/add_referral.php?id=` | `/user/{id}/referrals/create` | Wrapped | Explicit compatibility route |
@@ -163,7 +163,7 @@ compatibility wrappers plus internal link cleanup.
 | `/create_notification.php` | `/notifications/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/notifications/create` |
 | `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/advertisers` |
 | `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/advertisers/create` |
-| `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route |
+| `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/setup.php` | `/admin/setup` | Wrapped | Laravel company setup flow |
 | `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner |
 | `/scripts/update_geoip.php` | `/scripts/update_geoip.php` | Wrapped | Explicitly retired with 410; use provisioning/ops workflow instead |
