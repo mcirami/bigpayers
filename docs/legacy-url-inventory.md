@@ -8,7 +8,7 @@ The direct legacy fallback has been removed from
 which previously:
 
 1. boots the legacy runtime via `bootstrap/legacy_loader.php`
-2. includes `legacy/index.php` for `/`
+2. included `legacy/index.php` for `/`
 3. includes matching files under `legacy/` for arbitrary request paths
 
 The Laravel front controller still boots `bootstrap/legacy_loader.php` because
@@ -31,6 +31,7 @@ The following wrappers have now been implemented in Laravel:
 - `/login.php` -> `/login` (legacy marker file redirects)
 - `/logout.php` -> `/logout` (legacy marker file redirects)
 - `/home.php` -> `/dashboard` (legacy marker file redirects)
+- `/legacy/index.php` -> `/` (legacy marker file redirects)
 - `/alogin.php?affid=` -> `/login/{id}`
 - `/aff_help.php` -> `/forgot-password` (legacy marker file redirects)
 - `/aff_add.php` -> `/user/create`
@@ -276,7 +277,8 @@ should be considered likely breakpoints once the fallback is removed.
 
 No known top-level legacy PHP pages are missing coverage. Static support files
 such as `legacy/header.php`, `legacy/footer.php`, `legacy/404.php`, and
-`legacy/500.php` are not public workflows.
+`legacy/500.php` are not public workflows. The old header/footer support
+includes are retained only as inert stubs.
 
 ## Recommended Sequence For Removing `legacy` Fallback
 
