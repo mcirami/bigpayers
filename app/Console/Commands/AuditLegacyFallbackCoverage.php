@@ -41,6 +41,7 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyRedirectStubs = [
         'aff_add.php' => '/user/create',
         'aff_add_ref.php' => '/user/',
+        'aff_help.php' => '/forgot-password',
         'aff_permissions.php' => '/admin/report-permissions',
         'aff_edit_ref.php' => '/user/',
         'add_new_ip_blacklist.php' => '/ip-blacklist/create',
@@ -62,6 +63,7 @@ class AuditLegacyFallbackCoverage extends Command
         'create_bonus.php' => '/bonuses/create',
         'create_notification.php' => '/notifications/create',
         'create_none_unique.php' => '/offer/rules/',
+        'dontaskdonttell.php' => '/dontaskdonttell.php',
         'edit_blacklisted_ip.php' => '/ip-blacklist/',
         'edit_none_unique.php' => '/offer/rules/none-unique/',
         'edit_salary.php' => '/user/',
@@ -89,9 +91,11 @@ class AuditLegacyFallbackCoverage extends Command
         'sale_log_view.php' => '/chat-log/view/',
         'scripts/process_bonuses.php' => '/bonuses/process',
         'settings.php' => '/settings',
+        'setup.php' => '/admin/setup',
         'signup.php' => '/signup',
         'signup_success.php' => '/signup-success',
         'log_sale.php' => '/chat-log/add/',
+        'update_databases.php' => '/admin/database-updates',
         'upload_favicon.php' => '/settings',
         'upload_logo.php' => '/settings',
         'view_pending_affiliates.php' => '/user/pending',
@@ -1484,7 +1488,10 @@ class AuditLegacyFallbackCoverage extends Command
     {
         return $this->retiredScriptImplementationErrorsFor(
             collect($this->retiredScriptEndpoints)
-                ->filter(fn (string $replacement, string $endpoint) => array_key_exists($endpoint, $this->intentionallyUnrouted) || $endpoint === 'scripts/update_geoip.php')
+                ->filter(fn (string $replacement, string $endpoint) => array_key_exists($endpoint, $this->intentionallyUnrouted) || in_array($endpoint, [
+                    'scripts/sale_log.php',
+                    'scripts/update_geoip.php',
+                ], true))
                 ->mapWithKeys(function (string $replacement, string $endpoint) {
                     $path = base_path('legacy/' . $endpoint);
 

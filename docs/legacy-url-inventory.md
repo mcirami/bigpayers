@@ -32,7 +32,7 @@ The following wrappers have now been implemented in Laravel:
 - `/logout.php` -> `/logout` (legacy marker file redirects)
 - `/home.php` -> `/dashboard` (legacy marker file redirects)
 - `/alogin.php?affid=` -> `/login/{id}`
-- `/aff_help.php` -> modern forgot-password flow
+- `/aff_help.php` -> `/forgot-password` (legacy marker file redirects)
 - `/aff_add.php` -> `/user/create`
 - `/aff_details.php?idrep=` -> `/user/{id}/edit`
 - `/aff_update.php?idrep=` -> `/user/{id}/edit`
@@ -139,7 +139,7 @@ compatibility wrappers plus internal link cleanup.
 | `/log_sale.php?pcid=` | `/chat-log/add/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `pcid`/`cid` |
 | `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id`/`sid` |
 | `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `sid`/`id` |
-| `/scripts/sale_log.php` | `/scripts/sale_log.php` | Wrapped | Laravel compatibility endpoint for sale-log image deletion |
+| `/scripts/sale_log.php` | `/scripts/sale_log.php` | Wrapped | Laravel compatibility endpoint for sale-log image deletion; legacy file is a 410 stub |
 | `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries` |
 | `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries/edit` |
 | `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
@@ -164,12 +164,12 @@ compatibility wrappers plus internal link cleanup.
 | `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/advertisers` |
 | `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/advertisers/create` |
 | `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
-| `/setup.php` | `/admin/setup` | Wrapped | Laravel company setup flow |
-| `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner |
+| `/setup.php` | `/admin/setup` | Wrapped | Laravel company setup flow; legacy marker file redirects to `/admin/setup` |
+| `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner; legacy marker file redirects to `/admin/database-updates` |
 | `/scripts/update_geoip.php` | `/scripts/update_geoip.php` | Wrapped | Explicitly retired with 410; use provisioning/ops workflow instead |
 | `/upload_logo.php` | `/upload_logo.php` | Wrapped | Laravel logo upload endpoint; legacy marker file redirects to `/settings` |
 | `/upload_favicon.php` | `/upload_favicon.php` | Wrapped | Laravel favicon upload endpoint; legacy marker file redirects to `/settings` |
-| `/dontaskdonttell.php?action=&clickid=` | `/dontaskdonttell.php` | Wrapped | God-only click ID utility |
+| `/dontaskdonttell.php?action=&clickid=` | `/dontaskdonttell.php` | Wrapped | God-only click ID utility; legacy marker file redirects to Laravel route |
 
 ## 2. Legacy URLs Still Referenced Internally
 
