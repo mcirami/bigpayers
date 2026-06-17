@@ -135,28 +135,28 @@ compatibility wrappers plus internal link cleanup.
 | `/create_none_unique.php?id=` | `/offer/rules/{id}/none-unique/create` | Wrapped | Explicit compatibility route |
 | `/edit_none_unique.php?id=` | `/offer/rules/none-unique/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/offer_access.php?id=` | `/offer/{id}/access` | Wrapped | Explicit compatibility route |
-| `/sale_log_view.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
-| `/log_sale.php?pcid=` | `/chat-log/add/{id}` | Wrapped | Explicit compatibility route |
-| `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
-| `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
+| `/sale_log_view.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
+| `/log_sale.php?pcid=` | `/chat-log/add/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `pcid`/`cid` |
+| `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id`/`sid` |
+| `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route; legacy marker file redirects by `sid`/`id` |
 | `/scripts/sale_log.php` | `/scripts/sale_log.php` | Wrapped | Laravel compatibility endpoint for sale-log image deletion |
 | `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries` |
 | `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries/edit` |
-| `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route |
+| `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/bonus.php` | `/bonuses` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses` |
 | `/create_bonus.php` | `/bonuses/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses/create` |
-| `/bonus_edit.php?id=` | `/bonuses/{id}/edit` | Wrapped | Explicit compatibility route |
-| `/bonus_assign.php?id=` | `/bonuses/{id}/assign` | Wrapped | Explicit compatibility route |
+| `/bonus_edit.php?id=` | `/bonuses/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
+| `/bonus_assign.php?id=` | `/bonuses/{id}/assign` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/scripts/process_bonuses.php` | `/bonuses/process` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses/process` |
 | `/view_pending_affiliates.php` | `/user/pending` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/pending` |
-| `/activate_affiliate.php?id=` | `/user/pending/{id}/activate` | Wrapped | Explicit compatibility route |
+| `/activate_affiliate.php?id=` | `/user/pending/{id}/activate` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/banned` |
-| `/ban_user_edit.php?uid=` | `/user/{id}/ban/edit` | Wrapped | Explicit compatibility route |
-| `/ban_user.php?uid=` | `/user/{id}/ban` | Wrapped | Explicit compatibility route |
+| `/ban_user_edit.php?uid=` | `/user/{id}/ban/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `uid` |
+| `/ban_user.php?uid=` | `/user/{id}/ban` | Wrapped | Explicit compatibility route; legacy marker file redirects by `uid` |
 | `/aff_update.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects by `idrep` |
-| `/aff_add_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
-| `/aff_edit_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
-| `/add_referral.php?id=` | `/user/{id}/referrals/create` | Wrapped | Explicit compatibility route |
+| `/aff_add_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route; legacy marker file redirects by `affid` |
+| `/aff_edit_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route; legacy marker file redirects by `affid` |
+| `/add_referral.php?id=` | `/user/{id}/referrals/create` | Wrapped | Explicit compatibility route; legacy marker file redirects by `id` |
 | `/add_sale.php` | `/sales/add` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/sales/add` |
 | `/home.php` | `/dashboard` | Wrapped | Explicit compatibility route |
 | `/logout.php` | `/logout` | Wrapped | Explicit compatibility route |
