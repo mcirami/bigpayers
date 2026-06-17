@@ -114,20 +114,20 @@ compatibility wrappers plus internal link cleanup.
 | `/login.php` | `/login` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/login` |
 | `/logout.php` | `/logout` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/logout` |
 | `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/click-search` |
-| `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route |
+| `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/ip-blacklist` |
 | `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
 | `/edit_blacklisted_ip.php?id=` | `/ip-blacklist/{id}/edit` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
 | `/global_postback.php` | `/global-postback` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/global-postback` |
-| `/mass_assign_pb.php` | `/account/mass-postback` | Wrapped | Laravel affiliate mass postback assignment |
-| `/notifications.php` | `/notifications` | Wrapped | Explicit compatibility route |
-| `/settings.php` | `/settings` | Wrapped | Explicit compatibility route |
+| `/mass_assign_pb.php` | `/account/mass-postback` | Wrapped | Laravel affiliate mass postback assignment; legacy marker file redirects to `/account/mass-postback` |
+| `/notifications.php` | `/notifications` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/notifications` |
+| `/settings.php` | `/settings` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/settings` |
 | `/aff_add.php` | `/user/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/create` |
 | `/aff_details.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
-| `/aff_permissions.php` | `/admin/report-permissions` | Wrapped | Laravel report permissions management |
-| `/offer_urls.php` | `/offer/urls` | Wrapped | Explicit compatibility route |
-| `/add_offer_url.php` | `/offer/urls/create` | Wrapped | Explicit compatibility route |
+| `/aff_permissions.php` | `/admin/report-permissions` | Wrapped | Laravel report permissions management; legacy marker file redirects to `/admin/report-permissions` |
+| `/offer_urls.php` | `/offer/urls` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/offer/urls` |
+| `/add_offer_url.php` | `/offer/urls/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/offer/urls/create` |
 | `/edit_offer_url.php?id=` | `/offer/urls/{id}/edit` | Wrapped | Explicit compatibility route |
-| `/offer_add.php` | `/offer/create` | Wrapped | Explicit compatibility route |
+| `/offer_add.php` | `/offer/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/offer/create` |
 | `/offer_edit_pb.php?offid=` | `/offer/{id}/postback` | Wrapped | Explicit compatibility route |
 | `/offer_update.php?idoffer=` | `/offer/edit/{id}` | Wrapped | Explicit compatibility route |
 | `/offer_details.php?idoffer=` | `/offer/view/{id}` | Wrapped | Explicit compatibility route |
@@ -141,13 +141,13 @@ compatibility wrappers plus internal link cleanup.
 | `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
 | `/scripts/sale_log.php` | `/scripts/sale_log.php` | Wrapped | Laravel compatibility endpoint for sale-log image deletion |
 | `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route |
-| `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route |
+| `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries/edit` |
 | `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route |
-| `/bonus.php` | `/bonuses` | Wrapped | Explicit compatibility route |
+| `/bonus.php` | `/bonuses` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses` |
 | `/create_bonus.php` | `/bonuses/create` | Wrapped | Explicit compatibility route |
 | `/bonus_edit.php?id=` | `/bonuses/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/bonus_assign.php?id=` | `/bonuses/{id}/assign` | Wrapped | Explicit compatibility route |
-| `/scripts/process_bonuses.php` | `/bonuses/process` | Wrapped | Explicit compatibility route |
+| `/scripts/process_bonuses.php` | `/bonuses/process` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses/process` |
 | `/view_pending_affiliates.php` | `/user/pending` | Wrapped | Explicit compatibility route |
 | `/activate_affiliate.php?id=` | `/user/pending/{id}/activate` | Wrapped | Explicit compatibility route |
 | `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route |
@@ -160,9 +160,9 @@ compatibility wrappers plus internal link cleanup.
 | `/add_sale.php` | `/sales/add` | Wrapped | Explicit compatibility route |
 | `/home.php` | `/dashboard` | Wrapped | Explicit compatibility route |
 | `/logout.php` | `/logout` | Wrapped | Explicit compatibility route |
-| `/create_notification.php` | `/notifications/create` | Wrapped | Explicit compatibility route |
-| `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route |
-| `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route |
+| `/create_notification.php` | `/notifications/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/notifications/create` |
+| `/campaign_manage.php` | `/advertisers` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/advertisers` |
+| `/campaign_create.php` | `/advertisers/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/advertisers/create` |
 | `/campaign_edit.php?id=` | `/advertisers/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/setup.php` | `/admin/setup` | Wrapped | Laravel company setup flow |
 | `/update_databases.php` | `/admin/database-updates` | Wrapped | Laravel database update runner |
