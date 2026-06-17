@@ -41,11 +41,15 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyRedirectStubs = [
         'aff_add.php' => '/user/create',
         'aff_permissions.php' => '/admin/report-permissions',
+        'add_new_ip_blacklist.php' => '/ip-blacklist/create',
         'add_offer_url.php' => '/offer/urls/create',
+        'add_sale.php' => '/sales/add',
+        'banned_users.php' => '/user/banned',
         'bonus.php' => '/bonuses',
         'campaign_create.php' => '/advertisers/create',
         'campaign_manage.php' => '/advertisers',
         'clicksearch.php' => '/click-search',
+        'create_bonus.php' => '/bonuses/create',
         'create_notification.php' => '/notifications/create',
         'edit_salaries.php' => '/salaries/edit',
         'global_postback.php' => '/global-postback',
@@ -57,10 +61,12 @@ class AuditLegacyFallbackCoverage extends Command
         'notifications.php' => '/notifications',
         'offer_add.php' => '/offer/create',
         'offer_urls.php' => '/offer/urls',
+        'salaries.php' => '/salaries',
         'scripts/process_bonuses.php' => '/bonuses/process',
         'settings.php' => '/settings',
         'signup.php' => '/signup',
         'signup_success.php' => '/signup-success',
+        'view_pending_affiliates.php' => '/user/pending',
     ];
 
     private array $retiredScriptEndpoints = [

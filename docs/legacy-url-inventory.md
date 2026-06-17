@@ -115,7 +115,7 @@ compatibility wrappers plus internal link cleanup.
 | `/logout.php` | `/logout` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/logout` |
 | `/clicksearch.php` | `/click-search` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/click-search` |
 | `/ip_black_list.php` | `/ip-blacklist` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/ip-blacklist` |
-| `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
+| `/add_new_ip_blacklist.php` | `/ip-blacklist/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/ip-blacklist/create` |
 | `/edit_blacklisted_ip.php?id=` | `/ip-blacklist/{id}/edit` | Wrapped | Explicit compatibility route; legacy POST handled by Laravel controller |
 | `/global_postback.php` | `/global-postback` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/global-postback` |
 | `/mass_assign_pb.php` | `/account/mass-postback` | Wrapped | Laravel affiliate mass postback assignment; legacy marker file redirects to `/account/mass-postback` |
@@ -140,24 +140,24 @@ compatibility wrappers plus internal link cleanup.
 | `/sale_log_edit.php?id=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
 | `/edit_sale_log.php?sid=` | `/chat-log/view/{id}` | Wrapped | Explicit compatibility route |
 | `/scripts/sale_log.php` | `/scripts/sale_log.php` | Wrapped | Laravel compatibility endpoint for sale-log image deletion |
-| `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route |
+| `/salaries.php` | `/salaries` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries` |
 | `/edit_salaries.php` | `/salaries/edit` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/salaries/edit` |
 | `/edit_salary.php?id=` | `/user/{id}/salary/showUpdate` | Wrapped | Explicit compatibility route |
 | `/bonus.php` | `/bonuses` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses` |
-| `/create_bonus.php` | `/bonuses/create` | Wrapped | Explicit compatibility route |
+| `/create_bonus.php` | `/bonuses/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses/create` |
 | `/bonus_edit.php?id=` | `/bonuses/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/bonus_assign.php?id=` | `/bonuses/{id}/assign` | Wrapped | Explicit compatibility route |
 | `/scripts/process_bonuses.php` | `/bonuses/process` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/bonuses/process` |
-| `/view_pending_affiliates.php` | `/user/pending` | Wrapped | Explicit compatibility route |
+| `/view_pending_affiliates.php` | `/user/pending` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/pending` |
 | `/activate_affiliate.php?id=` | `/user/pending/{id}/activate` | Wrapped | Explicit compatibility route |
-| `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route |
+| `/banned_users.php` | `/user/banned` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/user/banned` |
 | `/ban_user_edit.php?uid=` | `/user/{id}/ban/edit` | Wrapped | Explicit compatibility route |
 | `/ban_user.php?uid=` | `/user/{id}/ban` | Wrapped | Explicit compatibility route |
 | `/aff_update.php?idrep=` | `/user/{id}/edit` | Wrapped | Explicit compatibility route |
 | `/aff_add_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
 | `/aff_edit_ref.php?affid=` | `/user/{id}/referrals` | Wrapped | Explicit compatibility route |
 | `/add_referral.php?id=` | `/user/{id}/referrals/create` | Wrapped | Explicit compatibility route |
-| `/add_sale.php` | `/sales/add` | Wrapped | Explicit compatibility route |
+| `/add_sale.php` | `/sales/add` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/sales/add` |
 | `/home.php` | `/dashboard` | Wrapped | Explicit compatibility route |
 | `/logout.php` | `/logout` | Wrapped | Explicit compatibility route |
 | `/create_notification.php` | `/notifications/create` | Wrapped | Explicit compatibility route; legacy marker file redirects to `/notifications/create` |
