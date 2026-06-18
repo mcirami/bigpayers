@@ -1166,11 +1166,29 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacySupportWrapperShapeErrors = $this->legacySupportWrapperShapeErrors();
+
+        if ($legacySupportWrapperShapeErrors->isNotEmpty()) {
+            $this->error('Legacy support wrappers should remain simple boundary aliases:');
+            $legacySupportWrapperShapeErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
             $this->error('Legacy POST compatibility CSRF exceptions are missing or stale:');
             $csrfExceptionErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $boundaryAllowedPathInventoryErrors = $this->boundaryAllowedPathInventoryErrors();
+
+        if ($boundaryAllowedPathInventoryErrors->isNotEmpty()) {
+            $this->error('Legacy boundary allow-list paths are missing or stale:');
+            $boundaryAllowedPathInventoryErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -1245,6 +1263,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
         $this->info('Source code has no malformed duplicated legacy namespace references.');
         $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
+        $this->info('Legacy support wrappers remain simple boundary aliases.');
+        $this->info('Legacy boundary allow-list paths exist.');
 
         return self::SUCCESS;
     }
@@ -1949,6 +1969,93 @@ class AuditLegacyFallbackCoverage extends Command
             ->filter(fn (string $contents) => str_contains($contents, 'LeadMax\\TrackYourStats'))
             ->keys()
             ->map(fn (string $relativePath) => "{$relativePath}: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.")
+            ->values();
+    }
+
+    private function legacySupportWrapperShapeErrors()
+    {
+        $sourceFiles = collect(File::glob(base_path('app/Support/Legacy*.php')))
+            ->mapWithKeys(fn (string $path) => [
+                'app/Support/' . basename($path) => File::get($path),
+            ]);
+
+        return $this->legacySupportWrapperShapeErrorsFor($sourceFiles);
+    }
+
+    private function legacySupportWrapperShapeErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+                $className = pathinfo($relativePath, PATHINFO_FILENAME);
+
+                if (!str_contains($contents, 'namespace App\\Support;')) {
+                    $errors[] = "{$relativePath}: legacy support wrapper must live in the App\\Support namespace.";
+                }
+
+                preg_match_all('/^use LeadMax\\\\TrackYourStats\\\\[^;]+\\\\([^\\\\;]+);$/m', $contents, $legacyImports);
+
+                if (count($legacyImports[0]) !== 1) {
+                    $errors[] = "{$relativePath}: legacy support wrapper must import exactly one legacy class.";
+                }
+
+                $legacyClassName = $legacyImports[1][0] ?? null;
+
+                if ($legacyClassName !== null) {
+                    $classPattern = '/class\s+' . preg_quote($className, '/') . '\s+extends\s+' . preg_quote($legacyClassName, '/') . '\b/';
+
+                    if (!preg_match($classPattern, $contents)) {
+                        $errors[] = "{$relativePath}: legacy support wrapper must extend its imported legacy class directly.";
+                    }
+                }
+
+                if (preg_match('/\bfunction\s+\w+\s*\(/', $contents)) {
+                    $errors[] = "{$relativePath}: legacy support wrapper must not define behavior; add a dedicated adapter if behavior is needed.";
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function boundaryAllowedPathInventoryErrors()
+    {
+        $properties = get_object_vars($this);
+        $allowedFiles = [];
+        $allowedDirectories = [];
+
+        foreach ($properties as $propertyName => $paths) {
+            if (!is_array($paths)) {
+                continue;
+            }
+
+            if (str_ends_with($propertyName, 'AllowedFiles')) {
+                $allowedFiles = array_merge($allowedFiles, array_keys($paths));
+            }
+
+            if (str_ends_with($propertyName, 'AllowedDirectories')) {
+                $allowedDirectories = array_merge($allowedDirectories, array_keys($paths));
+            }
+        }
+
+        return $this->boundaryAllowedPathInventoryErrorsFor(
+            array_unique($allowedFiles),
+            array_unique($allowedDirectories)
+        );
+    }
+
+    private function boundaryAllowedPathInventoryErrorsFor(array $allowedFiles, array $allowedDirectories = [])
+    {
+        $fileErrors = collect($allowedFiles)
+            ->reject(fn (string $relativePath) => File::isFile(base_path($relativePath)))
+            ->map(fn (string $relativePath) => "{$relativePath}: audited legacy boundary allow-list file does not exist.");
+
+        $directoryErrors = collect($allowedDirectories)
+            ->reject(fn (string $relativePath) => File::isDirectory(base_path($relativePath)))
+            ->map(fn (string $relativePath) => "{$relativePath}: audited legacy boundary allow-list directory does not exist.");
+
+        return $fileErrors
+            ->merge($directoryErrors)
             ->values();
     }
 

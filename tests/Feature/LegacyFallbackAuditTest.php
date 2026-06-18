@@ -73,6 +73,14 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Legacy support wrappers remain simple boundary aliases.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Legacy boundary allow-list paths exist.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Modern Laravel code reads legacy permission metadata through LegacyPermissions.',
             $output
         );
@@ -599,10 +607,12 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyMiscReportRepositoriesDependencyErrors',
             'legacyMailDependencyErrors',
             'malformedLegacyNamespaceErrors',
+            'legacySupportWrapperShapeErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
             'allowedNonLegacyPhpRouteInventoryErrors',
             'allowedPublicPhpInventoryErrors',
+            'boundaryAllowedPathInventoryErrors',
         ] as $methodName) {
             $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
             $arguments = match ($methodName) {
@@ -620,6 +630,106 @@ class LegacyFallbackAuditTest extends TestCase
                 "{$methodName} reported errors: " . $errors->implode('; ')
             );
         }
+    }
+
+    public function test_legacy_support_wrapper_shape_errors_report_non_alias_wrappers(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacySupportWrapperShapeErrorsFor',
+            [[
+                'app/Support/LegacyClean.php' => <<<'PHP'
+<?php
+
+namespace App\Support;
+
+use LeadMax\TrackYourStats\User\User;
+
+class LegacyClean extends User
+{
+}
+PHP,
+                'app/Support/LegacyWrongNamespace.php' => <<<'PHP'
+<?php
+
+namespace App\Other;
+
+use LeadMax\TrackYourStats\User\User;
+
+class LegacyWrongNamespace extends User
+{
+}
+PHP,
+                'app/Support/LegacyWrongExtends.php' => <<<'PHP'
+<?php
+
+namespace App\Support;
+
+use LeadMax\TrackYourStats\User\User;
+
+class LegacyWrongExtends
+{
+}
+PHP,
+                'app/Support/LegacyBehavior.php' => <<<'PHP'
+<?php
+
+namespace App\Support;
+
+use LeadMax\TrackYourStats\User\User;
+
+class LegacyBehavior extends User
+{
+    public function extraBehavior()
+    {
+    }
+}
+PHP,
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Support/LegacyWrongNamespace.php: legacy support wrapper must live in the App\\Support namespace.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Support/LegacyWrongExtends.php: legacy support wrapper must extend its imported legacy class directly.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Support/LegacyBehavior.php: legacy support wrapper must not define behavior; add a dedicated adapter if behavior is needed.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
+    }
+
+    public function test_boundary_allowed_path_inventory_errors_report_stale_paths(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'boundaryAllowedPathInventoryErrorsFor',
+            [[
+                'app/Support/CurrentUserSession.php',
+                'app/Support/MissingBoundary.php',
+            ], [
+                'app/Support',
+                'app/MissingBoundaryDirectory',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Support/MissingBoundary.php: audited legacy boundary allow-list file does not exist.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/MissingBoundaryDirectory: audited legacy boundary allow-list directory does not exist.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_post_csrf_exception_errors_report_missing_and_stale_entries(): void
