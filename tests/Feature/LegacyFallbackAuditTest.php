@@ -33,6 +33,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Modern views and public assets do not reference legacy PHP compatibility URLs.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Retired legacy script endpoint files are explicit 410 stubs.',
             $output
         );
@@ -530,6 +534,31 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(4, $errors);
     }
 
+    public function test_modern_legacy_php_url_reference_errors_report_old_urls_in_views_and_assets(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'modernLegacyPhpUrlReferenceErrorsFor',
+            [[
+                'resources/views/bad.blade.php' => '<form action="/signup.php"></form>',
+                'public/js/bad.js' => 'window.location = "/offer_update.php?idoffer=1";',
+                'resources/views/clean.blade.php' => '<form action="/signup"></form>',
+            ]]
+        );
+
+        $this->assertContains(
+            'resources/views/bad.blade.php: replace legacy PHP URL signup.php with its modern Laravel route.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'public/js/bad.js: replace legacy PHP URL offer_update.php with its modern Laravel route.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
+    }
+
     public function test_legacy_redirect_stub_errors_report_executable_legacy_files(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -568,6 +597,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBootstrapHardeningErrors',
             'legacyRedirectStubErrors',
             'modernRetiredScriptReferenceErrors',
+            'modernLegacyPhpUrlReferenceErrors',
             'retiredScriptImplementationErrors',
             'retiredCompanySessionDependencyErrors',
             'legacyBoundaryDependencyErrors',

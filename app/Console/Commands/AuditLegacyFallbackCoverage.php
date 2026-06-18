@@ -706,6 +706,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $modernLegacyPhpUrlReferenceErrors = $this->modernLegacyPhpUrlReferenceErrors();
+
+        if ($modernLegacyPhpUrlReferenceErrors->isNotEmpty()) {
+            $this->error('Modern views or public assets still reference legacy PHP compatibility URLs:');
+            $modernLegacyPhpUrlReferenceErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $retiredScriptImplementationErrors = $this->retiredScriptImplementationErrors();
 
         if ($retiredScriptImplementationErrors->isNotEmpty()) {
@@ -1243,6 +1252,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
+        $this->info('Modern views and public assets do not reference legacy PHP compatibility URLs.');
         $this->info('Retired legacy script endpoint files are explicit 410 stubs.');
         $this->info('Legacy POST compatibility routes have CSRF exceptions.');
         $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
@@ -1551,6 +1561,54 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         return $errors;
+    }
+
+    private function modernLegacyPhpUrlReferenceErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'resources/views',
+            'public/js',
+            'public/css',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['css', 'js', 'php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->modernLegacyPhpUrlReferenceErrorsFor($sourceFiles);
+    }
+
+    private function modernLegacyPhpUrlReferenceErrorsFor($sourceFiles)
+    {
+        $legacyPhpUrls = collect(array_keys($this->legacyRedirectStubs))
+            ->merge(array_keys($this->allowedNonLegacyPhpRoutes))
+            ->merge(array_keys($this->retiredScriptEndpoints))
+            ->reject(fn (string $url) => str_contains($url, '{'))
+            ->unique()
+            ->values();
+
+        return collect($sourceFiles)
+            ->flatMap(function (string $contents, string $relativePath) use ($legacyPhpUrls) {
+                return $legacyPhpUrls
+                    ->filter(fn (string $url) => str_contains($contents, $url))
+                    ->map(fn (string $url) => "{$relativePath}: replace legacy PHP URL {$url} with its modern Laravel route.")
+                    ->all();
+            })
+            ->values();
     }
 
     private function retiredScriptImplementationErrors()
@@ -2074,15 +2132,7 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacySupportWrapperInventoryErrorsFor(array $wrapperFiles)
     {
-        $allowedFiles = [];
-
-        foreach (get_object_vars($this) as $propertyName => $paths) {
-            if (!is_array($paths) || !str_ends_with($propertyName, 'AllowedFiles')) {
-                continue;
-            }
-
-            $allowedFiles = array_merge($allowedFiles, array_keys($paths));
-        }
+        $allowedFiles = $this->specificAuditAllowedFiles();
 
         return collect($wrapperFiles)
             ->reject(fn (string $relativePath) => in_array($relativePath, $allowedFiles, true))
@@ -2102,6 +2152,18 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacySupportDirectReferenceInventoryErrorsFor($sourceFiles)
     {
+        $allowedFiles = $this->specificAuditAllowedFiles();
+
+        return collect($sourceFiles)
+            ->filter(fn (string $contents) => str_contains($contents, 'LeadMax\\TrackYourStats'))
+            ->reject(fn (string $contents, string $relativePath) => in_array($relativePath, $allowedFiles, true))
+            ->keys()
+            ->map(fn (string $relativePath) => "{$relativePath}: support file references legacy classes but is not listed in a specific audit allow-list.")
+            ->values();
+    }
+
+    private function specificAuditAllowedFiles(): array
+    {
         $allowedFiles = [];
 
         foreach (get_object_vars($this) as $propertyName => $paths) {
@@ -2112,12 +2174,7 @@ class AuditLegacyFallbackCoverage extends Command
             $allowedFiles = array_merge($allowedFiles, array_keys($paths));
         }
 
-        return collect($sourceFiles)
-            ->filter(fn (string $contents) => str_contains($contents, 'LeadMax\\TrackYourStats'))
-            ->reject(fn (string $contents, string $relativePath) => in_array($relativePath, $allowedFiles, true))
-            ->keys()
-            ->map(fn (string $relativePath) => "{$relativePath}: support file references legacy classes but is not listed in a specific audit allow-list.")
-            ->values();
+        return array_values(array_unique($allowedFiles));
     }
 
     private function boundaryAllowedPathInventoryErrors()

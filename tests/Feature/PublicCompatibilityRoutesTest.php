@@ -196,6 +196,11 @@ class PublicCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('@var \App\Company $company', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $contents);
         }
+
+        $signup = File::get(resource_path('views/auth/signup.blade.php'));
+
+        $this->assertStringContainsString('action="/signup"', $signup);
+        $this->assertStringNotContainsString("request()->path() === 'signup.php'", $signup);
     }
 
     public function test_signup_controller_does_not_load_legacy_company_from_session(): void

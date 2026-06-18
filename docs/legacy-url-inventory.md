@@ -237,6 +237,8 @@ These are especially important because the redesigned UI previously depended on
 some of them. The fallback audit now fails if modern Blade views, public JS
 assets, resource JS assets, or legacy-backed PHP services reference the retired
 script URLs again.
+The audit also fails if modern Blade views or public CSS/JS assets link to old
+`.php` compatibility URLs instead of their modern Laravel routes.
 
 ### Offer Rules AJAX
 

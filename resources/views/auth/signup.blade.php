@@ -78,7 +78,7 @@
             <h2 class="login-card__title value_span9">Join {{ $company->getShortHand() }}</h2>
             <p class="login-card__copy value_span10">Fill out the details below and we’ll route your account through the correct approval flow.</p>
 
-            <form method="post" action="{{ request()->path() === 'signup.php' ? '/signup.php' : '/signup' }}" class="login-form">
+            <form method="post" action="/signup" class="login-form">
                 {!! csrf_field() !!}
                 @if($mid !== '')
                     <input type="hidden" name="mid" value="{{ $mid }}">
