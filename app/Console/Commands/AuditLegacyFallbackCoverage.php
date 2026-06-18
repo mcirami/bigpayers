@@ -468,12 +468,12 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyReportHtml.php' => 'The dedicated boundary around the legacy report HTML formatter.',
     ];
 
-    private array $legacyReportIdOfferForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\ID\\Offer' => 'Use App\\Support\\LegacyReportIdOffer instead of importing the legacy report ID offer class directly.',
+    private array $legacyOfferReportForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\Report\\Offer' => 'Use App\\Support\\LegacyOfferReport instead of importing the legacy offer report class directly.',
     ];
 
-    private array $legacyReportIdOfferAllowedFiles = [
-        'app/Support/LegacyReportIdOffer.php' => 'The dedicated boundary around the legacy report ID offer class.',
+    private array $legacyOfferReportAllowedFiles = [
+        'app/Support/LegacyOfferReport.php' => 'The dedicated boundary around the legacy offer report class.',
     ];
 
     private array $legacyReporterForbiddenPatterns = [
@@ -1067,11 +1067,11 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $legacyReportIdOfferDependencyErrors = $this->legacyReportIdOfferDependencyErrors();
+        $legacyOfferReportDependencyErrors = $this->legacyOfferReportDependencyErrors();
 
-        if ($legacyReportIdOfferDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy report ID offer class directly:');
-            $legacyReportIdOfferDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+        if ($legacyOfferReportDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy offer report class directly:');
+            $legacyOfferReportDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -1252,7 +1252,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern layouts render legacy notifications through LegacyNotify.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern report views render through LegacyReportHtml.');
-        $this->info('Modern click offer reports build through LegacyReportIdOffer.');
+        $this->info('Modern click offer reports build through LegacyOfferReport.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
         $this->info('Modern report controllers format reports through legacy report filter wrappers.');
         $this->info('Modern report controllers build affiliate and blacklist reports through legacy report object wrappers.');
@@ -2002,6 +2002,13 @@ class AuditLegacyFallbackCoverage extends Command
                 $legacyClassName = $legacyImports[1][0] ?? null;
 
                 if ($legacyClassName !== null) {
+                    $legacyClass = str_replace('use ', '', rtrim($legacyImports[0][0], ';'));
+                    $legacyClassPath = 'src/' . str_replace('\\', '/', substr($legacyClass, strlen('LeadMax\\TrackYourStats\\'))) . '.php';
+
+                    if (!File::isFile(base_path($legacyClassPath))) {
+                        $errors[] = "{$relativePath}: imported legacy class file {$legacyClassPath} does not exist.";
+                    }
+
                     $classPattern = '/class\s+' . preg_quote($className, '/') . '\s+extends\s+' . preg_quote($legacyClassName, '/') . '\b/';
 
                     if (!preg_match($classPattern, $contents)) {
@@ -3904,7 +3911,7 @@ class AuditLegacyFallbackCoverage extends Command
             ->values();
     }
 
-    private function legacyReportIdOfferDependencyErrors()
+    private function legacyOfferReportDependencyErrors()
     {
         $sourceFiles = collect();
         $directories = [
@@ -3935,17 +3942,17 @@ class AuditLegacyFallbackCoverage extends Command
             }
         }
 
-        return $this->legacyReportIdOfferDependencyErrorsFor($sourceFiles);
+        return $this->legacyOfferReportDependencyErrorsFor($sourceFiles);
     }
 
-    private function legacyReportIdOfferDependencyErrorsFor($sourceFiles)
+    private function legacyOfferReportDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyReportIdOfferAllowedFiles))
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferReportAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
-                foreach ($this->legacyReportIdOfferForbiddenPatterns as $pattern => $message) {
+                foreach ($this->legacyOfferReportForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

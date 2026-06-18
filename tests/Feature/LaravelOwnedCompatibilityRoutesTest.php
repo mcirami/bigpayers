@@ -1196,16 +1196,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
-    public function test_modern_click_offer_reports_use_legacy_report_id_offer_boundary(): void
+    public function test_modern_click_offer_reports_use_legacy_offer_report_boundary(): void
     {
         $controller = File::get(app_path('Http/Controllers/Report/ClickReportController.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyReportIdOffer', $controller);
+        $this->assertStringContainsString('App\\Support\\LegacyOfferReport', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\ID\\Offer', $controller);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Offer', $controller);
 
         $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Report\\ID\\Offer',
-            File::get(app_path('Support/LegacyReportIdOffer.php'))
+            'LeadMax\\TrackYourStats\\Report\\Offer',
+            File::get(app_path('Support/LegacyOfferReport.php'))
         );
     }
 

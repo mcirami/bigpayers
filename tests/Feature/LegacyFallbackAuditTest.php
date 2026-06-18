@@ -221,7 +221,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern click offer reports build through LegacyReportIdOffer.',
+            'Modern click offer reports build through LegacyOfferReport.',
             $output
         );
         $this->assertStringContainsString(
@@ -597,7 +597,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyNotifyDependencyErrors',
             'legacyCompanyUpdaterDependencyErrors',
             'legacyReportHtmlDependencyErrors',
-            'legacyReportIdOfferDependencyErrors',
+            'legacyOfferReportDependencyErrors',
             'legacyReporterDependencyErrors',
             'legacyReportFiltersDependencyErrors',
             'legacyReportObjectsDependencyErrors',
@@ -687,6 +687,17 @@ class LegacyBehavior extends User
     }
 }
 PHP,
+                'app/Support/LegacyMissingSource.php' => <<<'PHP'
+<?php
+
+namespace App\Support;
+
+use LeadMax\TrackYourStats\User\MissingSource;
+
+class LegacyMissingSource extends MissingSource
+{
+}
+PHP,
             ]]
         );
 
@@ -702,7 +713,11 @@ PHP,
             'app/Support/LegacyBehavior.php: legacy support wrapper must not define behavior; add a dedicated adapter if behavior is needed.',
             $errors->all()
         );
-        $this->assertCount(3, $errors);
+        $this->assertContains(
+            'app/Support/LegacyMissingSource.php: imported legacy class file src/User/MissingSource.php does not exist.',
+            $errors->all()
+        );
+        $this->assertCount(4, $errors);
     }
 
     public function test_boundary_allowed_path_inventory_errors_report_stale_paths(): void
@@ -1755,22 +1770,22 @@ PHP,
         $this->assertCount(1, $errors);
     }
 
-    public function test_legacy_report_id_offer_dependency_errors_report_forbidden_sources(): void
+    public function test_legacy_offer_report_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
 
         $errors = $this->invokeAuditMethod(
             $command,
-            'legacyReportIdOfferDependencyErrorsFor',
+            'legacyOfferReportDependencyErrorsFor',
             [[
-                'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\Report\\ID\\Offer($assign);',
-                'app/Support/LegacyReportIdOffer.php' => 'use LeadMax\\TrackYourStats\\Report\\ID\\Offer;',
-                'app/Http/Controllers/CleanController.php' => 'new LegacyReportIdOffer($assign);',
+                'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\Report\\Offer($assign);',
+                'app/Support/LegacyOfferReport.php' => 'use LeadMax\\TrackYourStats\\Report\\Offer;',
+                'app/Http/Controllers/CleanController.php' => 'new LegacyOfferReport($assign);',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyReportIdOffer instead of importing the legacy report ID offer class directly.',
+            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyOfferReport instead of importing the legacy offer report class directly.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1995,7 +2010,7 @@ PHP,
             'legacyNotifyForbiddenPatterns',
             'legacyCompanyUpdaterForbiddenPatterns',
             'legacyReportHtmlForbiddenPatterns',
-            'legacyReportIdOfferForbiddenPatterns',
+            'legacyOfferReportForbiddenPatterns',
             'legacyReporterForbiddenPatterns',
             'legacyReportFiltersForbiddenPatterns',
             'legacyReportObjectsForbiddenPatterns',

@@ -514,9 +514,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern report Blade views now render legacy report HTML formatters through
   `App\Support\LegacyReportHtml`; the fallback audit fails on new direct
   Laravel-side report HTML formatter imports outside the boundary
-- modern click offer reports now build legacy report-ID offer reports through
-  `App\Support\LegacyReportIdOffer`; the fallback audit fails on new direct
-  Laravel-side report ID offer imports outside the boundary
+- modern click offer reports now build legacy offer reports through
+  `App\Support\LegacyOfferReport`; the fallback audit fails on new direct
+  Laravel-side legacy offer report imports outside the boundary
 - modern report controllers now coordinate report repositories through
   `App\Support\LegacyReporter`; the fallback audit fails on new direct
   Laravel-side reporter imports outside the boundary
