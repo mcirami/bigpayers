@@ -460,6 +460,14 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyCompanyUpdater.php' => 'The dedicated boundary around the legacy company updater class.',
     ];
 
+    private array $legacyConnectionForbiddenPatterns = [
+        'LeadMax\\TrackYourStats\\System\\Connection' => 'Use App\\Support\\LegacyConnection instead of importing the legacy connection class directly.',
+    ];
+
+    private array $legacyConnectionAllowedFiles = [
+        'app/Support/LegacyConnection.php' => 'The dedicated boundary around the legacy connection class.',
+    ];
+
     private array $legacyReportHtmlForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Report\\Formats\\HTML' => 'Use App\\Support\\LegacyReportHtml instead of importing the legacy report HTML formatter directly.',
     ];
@@ -1058,6 +1066,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacyConnectionDependencyErrors = $this->legacyConnectionDependencyErrors();
+
+        if ($legacyConnectionDependencyErrors->isNotEmpty()) {
+            $this->error('Modern Laravel code still imports the legacy connection class directly:');
+            $legacyConnectionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacyReportHtmlDependencyErrors = $this->legacyReportHtmlDependencyErrors();
 
         if ($legacyReportHtmlDependencyErrors->isNotEmpty()) {
@@ -1175,6 +1192,24 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $legacySupportWrapperInventoryErrors = $this->legacySupportWrapperInventoryErrors();
+
+        if ($legacySupportWrapperInventoryErrors->isNotEmpty()) {
+            $this->error('Legacy support wrappers are missing specific audit allow-list coverage:');
+            $legacySupportWrapperInventoryErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $legacySupportDirectReferenceInventoryErrors = $this->legacySupportDirectReferenceInventoryErrors();
+
+        if ($legacySupportDirectReferenceInventoryErrors->isNotEmpty()) {
+            $this->error('Support files with direct legacy references are missing specific audit allow-list coverage:');
+            $legacySupportDirectReferenceInventoryErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
@@ -1251,6 +1286,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern layout assets append admin-login scripts through LegacyAdminLogin.');
         $this->info('Modern layouts render legacy notifications through LegacyNotify.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
+        $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');
         $this->info('Modern report views render through LegacyReportHtml.');
         $this->info('Modern click offer reports build through LegacyOfferReport.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
@@ -1264,6 +1300,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Source code has no malformed duplicated legacy namespace references.');
         $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
         $this->info('Legacy support wrappers remain simple boundary aliases.');
+        $this->info('Legacy support wrappers have specific audit allow-list coverage.');
+        $this->info('Support files with direct legacy references have specific audit allow-list coverage.');
         $this->info('Legacy boundary allow-list paths exist.');
 
         return self::SUCCESS;
@@ -2022,6 +2060,63 @@ class AuditLegacyFallbackCoverage extends Command
 
                 return $errors;
             })
+            ->values();
+    }
+
+    private function legacySupportWrapperInventoryErrors()
+    {
+        return $this->legacySupportWrapperInventoryErrorsFor(
+            collect(File::glob(base_path('app/Support/Legacy*.php')))
+                ->map(fn (string $path) => 'app/Support/' . basename($path))
+                ->all()
+        );
+    }
+
+    private function legacySupportWrapperInventoryErrorsFor(array $wrapperFiles)
+    {
+        $allowedFiles = [];
+
+        foreach (get_object_vars($this) as $propertyName => $paths) {
+            if (!is_array($paths) || !str_ends_with($propertyName, 'AllowedFiles')) {
+                continue;
+            }
+
+            $allowedFiles = array_merge($allowedFiles, array_keys($paths));
+        }
+
+        return collect($wrapperFiles)
+            ->reject(fn (string $relativePath) => in_array($relativePath, $allowedFiles, true))
+            ->map(fn (string $relativePath) => "{$relativePath}: legacy support wrapper is not listed in a specific audit allow-list.")
+            ->values();
+    }
+
+    private function legacySupportDirectReferenceInventoryErrors()
+    {
+        $sourceFiles = collect(File::glob(base_path('app/Support/*.php')))
+            ->mapWithKeys(fn (string $path) => [
+                'app/Support/' . basename($path) => File::get($path),
+            ]);
+
+        return $this->legacySupportDirectReferenceInventoryErrorsFor($sourceFiles);
+    }
+
+    private function legacySupportDirectReferenceInventoryErrorsFor($sourceFiles)
+    {
+        $allowedFiles = [];
+
+        foreach (get_object_vars($this) as $propertyName => $paths) {
+            if (!is_array($paths) || !str_ends_with($propertyName, 'AllowedFiles')) {
+                continue;
+            }
+
+            $allowedFiles = array_merge($allowedFiles, array_keys($paths));
+        }
+
+        return collect($sourceFiles)
+            ->filter(fn (string $contents) => str_contains($contents, 'LeadMax\\TrackYourStats'))
+            ->reject(fn (string $contents, string $relativePath) => in_array($relativePath, $allowedFiles, true))
+            ->keys()
+            ->map(fn (string $relativePath) => "{$relativePath}: support file references legacy classes but is not listed in a specific audit allow-list.")
             ->values();
     }
 
@@ -3849,6 +3944,59 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyCompanyUpdaterForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function legacyConnectionDependencyErrors()
+    {
+        $sourceFiles = collect();
+        $directories = [
+            'app',
+            'resources/views',
+            'routes',
+            'src',
+        ];
+
+        foreach ($directories as $directory) {
+            $path = base_path($directory);
+
+            if (!File::isDirectory($path)) {
+                continue;
+            }
+
+            foreach (File::allFiles($path) as $file) {
+                if (!in_array($file->getExtension(), ['php'], true)) {
+                    continue;
+                }
+
+                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
+
+                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
+                    continue;
+                }
+
+                $sourceFiles[$relativePath] = File::get($file->getPathname());
+            }
+        }
+
+        return $this->legacyConnectionDependencyErrorsFor($sourceFiles);
+    }
+
+    private function legacyConnectionDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyConnectionAllowedFiles))
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->legacyConnectionForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

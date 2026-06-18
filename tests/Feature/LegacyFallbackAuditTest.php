@@ -77,6 +77,14 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Legacy support wrappers have specific audit allow-list coverage.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Support files with direct legacy references have specific audit allow-list coverage.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Legacy boundary allow-list paths exist.',
             $output
         );
@@ -214,6 +222,10 @@ class LegacyFallbackAuditTest extends TestCase
         );
         $this->assertStringContainsString(
             'Modern database update screens run through LegacyCompanyUpdater.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Modern Laravel code resolves legacy connections through LegacyConnection.',
             $output
         );
         $this->assertStringContainsString(
@@ -596,6 +608,7 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyAdminLoginDependencyErrors',
             'legacyNotifyDependencyErrors',
             'legacyCompanyUpdaterDependencyErrors',
+            'legacyConnectionDependencyErrors',
             'legacyReportHtmlDependencyErrors',
             'legacyOfferReportDependencyErrors',
             'legacyReporterDependencyErrors',
@@ -608,6 +621,8 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyMailDependencyErrors',
             'malformedLegacyNamespaceErrors',
             'legacySupportWrapperShapeErrors',
+            'legacySupportWrapperInventoryErrors',
+            'legacySupportDirectReferenceInventoryErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
             'allowedNonLegacyPhpRouteInventoryErrors',
@@ -718,6 +733,47 @@ PHP,
             $errors->all()
         );
         $this->assertCount(4, $errors);
+    }
+
+    public function test_legacy_support_wrapper_inventory_errors_report_unlisted_wrappers(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacySupportWrapperInventoryErrorsFor',
+            [[
+                'app/Support/LegacyOfferReport.php',
+                'app/Support/LegacyMissingBoundary.php',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Support/LegacyMissingBoundary.php: legacy support wrapper is not listed in a specific audit allow-list.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
+    public function test_legacy_support_direct_reference_inventory_errors_report_unlisted_support_files(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacySupportDirectReferenceInventoryErrorsFor',
+            [[
+                'app/Support/CurrentUserSession.php' => 'use LeadMax\\TrackYourStats\\System\\Session;',
+                'app/Support/UnlistedLegacyAdapter.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
+                'app/Support/PlainAdapter.php' => 'use App\\User;',
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Support/UnlistedLegacyAdapter.php: support file references legacy classes but is not listed in a specific audit allow-list.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
     }
 
     public function test_boundary_allowed_path_inventory_errors_report_stale_paths(): void
@@ -1749,6 +1805,27 @@ PHP,
         $this->assertCount(1, $errors);
     }
 
+    public function test_legacy_connection_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyConnectionDependencyErrorsFor',
+            [[
+                'src/User/BadSource.php' => 'use LeadMax\\TrackYourStats\\System\\Connection;',
+                'app/Support/LegacyConnection.php' => 'use LeadMax\\TrackYourStats\\System\\Connection;',
+                'src/User/CleanSource.php' => 'use App\\Support\\LegacyConnection as Connection;',
+            ]]
+        );
+
+        $this->assertContains(
+            'src/User/BadSource.php: Use App\\Support\\LegacyConnection instead of importing the legacy connection class directly.',
+            $errors->all()
+        );
+        $this->assertCount(1, $errors);
+    }
+
     public function test_legacy_report_html_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -2009,6 +2086,7 @@ PHP,
             'legacyAdminLoginForbiddenPatterns',
             'legacyNotifyForbiddenPatterns',
             'legacyCompanyUpdaterForbiddenPatterns',
+            'legacyConnectionForbiddenPatterns',
             'legacyReportHtmlForbiddenPatterns',
             'legacyOfferReportForbiddenPatterns',
             'legacyReporterForbiddenPatterns',

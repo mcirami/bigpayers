@@ -397,6 +397,9 @@ Remaining cleanup is mostly archival and hardening:
   `LeadMax\TrackYourStats` references in Laravel app, bootstrap, config,
   database, public, route, or view code must live under `App\Support`, except
   for the explicit `bootstrap/legacy_loader.php` runtime bootstrap
+- `App\Support` files that directly reference legacy classes must also be listed
+  in a specific audited allow-list, so broad support-boundary coverage does not
+  hide new undocumented legacy dependencies
 - the fallback audit now fails if runtime code reintroduces the retired legacy
   company class import or `Company::loadFromSession()` dependency
 - the fallback audit now fails if runtime code imports the legacy session class
@@ -511,6 +514,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern database-update screens now run the legacy company database updater
   through `App\Support\LegacyCompanyUpdater`; the fallback audit fails on new
   direct Laravel-side company-updater imports outside the boundary
+- legacy source paths reached by Laravel now resolve legacy database bootstrap
+  connections through `App\Support\LegacyConnection`; the fallback audit fails
+  on new direct connection imports outside that boundary
 - modern report Blade views now render legacy report HTML formatters through
   `App\Support\LegacyReportHtml`; the fallback audit fails on new direct
   Laravel-side report HTML formatter imports outside the boundary
