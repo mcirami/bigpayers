@@ -3,10 +3,13 @@
 namespace App\Console\Commands;
 
 use App\Company;
+use App\Services\CompanyDatabaseConnectionManager;
 use Illuminate\Console\Command;
 
 class MigrateAllInstalls extends Command
 {
+    private $connections;
+
     /**
      * The name and signature of the console command.
      *
@@ -26,9 +29,11 @@ class MigrateAllInstalls extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CompanyDatabaseConnectionManager $connections)
     {
         parent::__construct();
+
+        $this->connections = $connections;
     }
 
     /**
@@ -39,19 +44,12 @@ class MigrateAllInstalls extends Command
     public function handle()
     {
         foreach (Company::all() as $company) {
-            \Config::set('database.connections.'.$company->subDomain, array(
-                'driver' => 'mysql',
-                'host' => env('DB_HOST'),
-                'database' => $company->subDomain,
-                'username' => env('DB_USERNAME'),
-                'password' => env('DB_PASSWORD'),
-                'charset' => 'utf8',
-                'collation' => 'utf8_unicode_ci',
-                'prefix' => '',
-            ));
-            
-            $this->info('Running migration for "'.$company->subDomain.'"');
-            $this->call('migrate', array('--database' => $company->subDomain, '--force' => '--force'));
+            $connectionName = $this->connections->configure($company);
+
+            $this->info('Running migration for "' . $connectionName . '"');
+            $this->call('migrate', ['--database' => $connectionName, '--force' => true]);
         }
+
+        return 0;
     }
 }

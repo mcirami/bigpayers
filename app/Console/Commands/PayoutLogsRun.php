@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Company;
 use App\PayoutLog;
+use App\Services\CompanyDatabaseConnectionManager;
 use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
 use App\Support\LegacyDate as Date;
 use Carbon\Carbon;
@@ -11,6 +12,8 @@ use Illuminate\Console\Command;
 
 class PayoutLogsRun extends Command
 {
+    private $connections;
+
     /**
      * The name and signature of the console command.
      *
@@ -30,9 +33,11 @@ class PayoutLogsRun extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CompanyDatabaseConnectionManager $connections)
     {
         parent::__construct();
+
+        $this->connections = $connections;
     }
 
     /**
@@ -48,19 +53,7 @@ class PayoutLogsRun extends Command
             $currentStartTime = Carbon::now();
             $this->info('Running payout logs for company: ' . $company->subDomain);
 
-            // TODO: This _should_? be put into a "Service" class, or a facade of sorts..
-            \Config::set('database.connections.' . $company->subDomain, array(
-                'driver' => 'mysql',
-                'host' => env('DB_HOST'),
-                'database' => $company->subDomain,
-                'username' => env('DB_USERNAME'),
-                'password' => env('DB_PASSWORD'),
-                'charset' => 'utf8',
-                'collation' => 'utf8_unicode_ci',
-                'prefix' => '',
-            ));
-            \DB::setDefaultConnection($company->subDomain);
-
+            $this->connections->useAsDefault($company);
 
             if ($this->option('start') && $this->option('end')) {
                 $start = Carbon::parse($this->option('start'));
