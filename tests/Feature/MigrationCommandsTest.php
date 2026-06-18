@@ -104,6 +104,27 @@ class MigrationCommandsTest extends TestCase
         $singleCompany = File::get(base_path('app/Console/Commands/MigrateSingleCompany.php'));
 
         $this->assertStringContainsString("Unable to find company", $singleCompany);
-        $this->assertStringContainsString('return 1;', $singleCompany);
+        $this->assertStringContainsString('return self::FAILURE;', $singleCompany);
+    }
+
+    public function test_migration_commands_expose_safe_selection_and_pretend_options(): void
+    {
+        $allInstalls = File::get(base_path('app/Console/Commands/MigrateAllInstalls.php'));
+        $singleCompany = File::get(base_path('app/Console/Commands/MigrateSingleCompany.php'));
+
+        $this->assertStringContainsString('{--company=*', $allInstalls);
+        $this->assertStringContainsString('trim($subDomain)', $allInstalls);
+        $this->assertStringContainsString('->unique()', $allInstalls);
+        $this->assertStringContainsString('whereIn(\'subDomain\', $subDomains)', $allInstalls);
+        $this->assertStringContainsString('Unknown company subdomain(s):', $allInstalls);
+        $this->assertStringContainsString('return self::FAILURE;', $allInstalls);
+        $this->assertStringContainsString('No companies matched the migration filters.', $allInstalls);
+        $this->assertStringContainsString('return self::SUCCESS;', $allInstalls);
+        $this->assertStringContainsString("'--pretend' => (bool) \$this->option('pretend')", $allInstalls);
+
+        $this->assertStringContainsString('{--pretend', $singleCompany);
+        $this->assertStringContainsString('Runs migrations for a specific company.', $singleCompany);
+        $this->assertStringContainsString('return self::FAILURE;', $singleCompany);
+        $this->assertStringContainsString("'--pretend' => (bool) \$this->option('pretend')", $singleCompany);
     }
 }

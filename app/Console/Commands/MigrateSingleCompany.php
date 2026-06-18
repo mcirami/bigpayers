@@ -15,14 +15,16 @@ class MigrateSingleCompany extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:single {company}';
+    protected $signature = 'migrate:single
+        {company : Company subdomain to migrate}
+        {--pretend : Dump the SQL queries that would be run without executing them}';
 
     /**i
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Runs migrates for a specific company.';
+    protected $description = 'Runs migrations for a specific company.';
 
     /**
      * Create a new command instance.
@@ -48,14 +50,18 @@ class MigrateSingleCompany extends Command
         if (!$company) {
             $this->error('Unable to find company "' . $this->argument('company') . '".');
 
-            return 1;
+            return self::FAILURE;
         }
 
         $connectionName = $this->connections->configure($company);
 
         $this->info('Running migration for "' . $connectionName . '"');
-        $this->call('migrate', ['--database' => $connectionName, '--force' => true]);
+        $this->call('migrate', [
+            '--database' => $connectionName,
+            '--force' => true,
+            '--pretend' => (bool) $this->option('pretend'),
+        ]);
 
-        return 0;
+        return self::SUCCESS;
     }
 }
