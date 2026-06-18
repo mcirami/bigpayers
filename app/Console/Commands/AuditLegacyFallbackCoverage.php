@@ -1658,37 +1658,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function retiredCompanySessionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->retiredCompanySessionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->retiredCompanySessionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function retiredCompanySessionDependencyErrorsFor($sourceFiles)
@@ -1710,37 +1685,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacySessionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacySessionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacySessionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacySessionDependencyErrorsFor($sourceFiles)
@@ -1763,39 +1713,14 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function nativeSessionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->nativeSessionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'config',
             'database',
             'public',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->nativeSessionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function nativeSessionDependencyErrorsFor($sourceFiles)
@@ -1900,38 +1825,13 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyMailDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyMailDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'database',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyMailDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyMailDependencyErrorsFor($sourceFiles)
@@ -1954,8 +1854,7 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyBoundaryDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyBoundaryDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'bootstrap',
             'config',
@@ -1963,37 +1862,12 @@ class AuditLegacyFallbackCoverage extends Command
             'public',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyBoundaryDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function malformedLegacyNamespaceErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->malformedLegacyNamespaceErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'bootstrap',
             'config',
@@ -2002,7 +1876,12 @@ class AuditLegacyFallbackCoverage extends Command
             'resources',
             'routes',
             'src',
-        ];
+        ]));
+    }
+
+    private function sourceFilesFromDirectories(array $directories, array $extensions = ['php'])
+    {
+        $sourceFiles = collect();
 
         foreach ($directories as $directory) {
             $path = base_path($directory);
@@ -2012,7 +1891,7 @@ class AuditLegacyFallbackCoverage extends Command
             }
 
             foreach (File::allFiles($path) as $file) {
-                if ($file->getExtension() !== 'php') {
+                if (!in_array($file->getExtension(), $extensions, true)) {
                     continue;
                 }
 
@@ -2026,7 +1905,7 @@ class AuditLegacyFallbackCoverage extends Command
             }
         }
 
-        return $this->malformedLegacyNamespaceErrorsFor($sourceFiles);
+        return $sourceFiles;
     }
 
     private function malformedLegacyNamespaceErrorsFor($sourceFiles)
@@ -2220,37 +2099,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPermissionsDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyPermissionsDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyPermissionsDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyPermissionsDependencyErrorsFor($sourceFiles)
@@ -2273,37 +2127,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyClickGeoDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyClickGeoDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyClickGeoDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyClickGeoDependencyErrorsFor($sourceFiles)
@@ -2326,37 +2155,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyClickDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyClickDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyClickDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyClickDependencyErrorsFor($sourceFiles)
@@ -2379,37 +2183,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyClickVarsDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyClickVarsDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyClickVarsDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyClickVarsDependencyErrorsFor($sourceFiles)
@@ -2432,37 +2211,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyClickSearcherDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyClickSearcherDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyClickSearcherDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyClickSearcherDependencyErrorsFor($sourceFiles)
@@ -2485,37 +2239,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyConversionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyConversionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyConversionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyConversionDependencyErrorsFor($sourceFiles)
@@ -2538,37 +2267,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPendingConversionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyPendingConversionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyPendingConversionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyPendingConversionDependencyErrorsFor($sourceFiles)
@@ -2591,37 +2295,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPostBackUrlEventHandlerDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyPostBackUrlEventHandlerDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyPostBackUrlEventHandlerDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyPostBackUrlEventHandlerDependencyErrorsFor($sourceFiles)
@@ -2644,37 +2323,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyClickRegistrationEventDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyClickRegistrationEventDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyClickRegistrationEventDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyClickRegistrationEventDependencyErrorsFor($sourceFiles)
@@ -2697,37 +2351,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyUidDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyUidDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyUidDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyUidDependencyErrorsFor($sourceFiles)
@@ -2750,37 +2379,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyTrackingParametersDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyTrackingParametersDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyTrackingParametersDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyTrackingParametersDependencyErrorsFor($sourceFiles)
@@ -2803,37 +2407,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyLanderDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyLanderDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyLanderDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyLanderDependencyErrorsFor($sourceFiles)
@@ -2856,36 +2435,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyNavBarDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyNavBarDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyNavBarDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyNavBarDependencyErrorsFor($sourceFiles)
@@ -2908,37 +2462,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyIpBlackListDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyIpBlackListDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyIpBlackListDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyIpBlackListDependencyErrorsFor($sourceFiles)
@@ -2961,36 +2490,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyImagesUploaderDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyImagesUploaderDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyImagesUploaderDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyImagesUploaderDependencyErrorsFor($sourceFiles)
@@ -3013,37 +2517,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyNotificationsDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyNotificationsDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyNotificationsDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyNotificationsDependencyErrorsFor($sourceFiles)
@@ -3066,37 +2545,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPayoutsDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyPayoutsDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyPayoutsDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyPayoutsDependencyErrorsFor($sourceFiles)
@@ -3119,37 +2573,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyOfferDomainDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyOfferDomainDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyOfferDomainDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyOfferDomainDependencyErrorsFor($sourceFiles)
@@ -3172,37 +2601,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyOfferSupportDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyOfferSupportDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyOfferSupportDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyOfferSupportDependencyErrorsFor($sourceFiles)
@@ -3225,36 +2629,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyOfferRulesDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyOfferRulesDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyOfferRulesDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyOfferRulesDependencyErrorsFor($sourceFiles)
@@ -3277,37 +2656,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyAdjustmentsLogDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyAdjustmentsLogDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyAdjustmentsLogDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyAdjustmentsLogDependencyErrorsFor($sourceFiles)
@@ -3330,36 +2684,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacySaleLogDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacySaleLogDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacySaleLogDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacySaleLogDependencyErrorsFor($sourceFiles)
@@ -3382,37 +2711,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyDateDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyDateDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyDateDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyDateDependencyErrorsFor($sourceFiles)
@@ -3435,37 +2739,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPaginateDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyPaginateDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyPaginateDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyPaginateDependencyErrorsFor($sourceFiles)
@@ -3488,37 +2767,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyAssignmentsDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyAssignmentsDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyAssignmentsDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyAssignmentsDependencyErrorsFor($sourceFiles)
@@ -3541,37 +2795,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyTreeDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyTreeDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyTreeDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyTreeDependencyErrorsFor($sourceFiles)
@@ -3594,37 +2823,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyUserDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyUserDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyUserDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyUserDependencyErrorsFor($sourceFiles)
@@ -3647,36 +2851,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyLoginDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyLoginDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyLoginDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyLoginDependencyErrorsFor($sourceFiles)
@@ -3699,36 +2878,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyAffiliateSignUpDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyAffiliateSignUpDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyAffiliateSignUpDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyAffiliateSignUpDependencyErrorsFor($sourceFiles)
@@ -3751,37 +2905,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyUserDomainDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyUserDomainDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyUserDomainDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyUserDomainDependencyErrorsFor($sourceFiles)
@@ -3804,37 +2933,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyOfferPostBackUrlDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyOfferPostBackUrlDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyOfferPostBackUrlDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyOfferPostBackUrlDependencyErrorsFor($sourceFiles)
@@ -3857,36 +2961,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyAdminLoginDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyAdminLoginDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyAdminLoginDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyAdminLoginDependencyErrorsFor($sourceFiles)
@@ -3909,36 +2988,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyNotifyDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyNotifyDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyNotifyDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyNotifyDependencyErrorsFor($sourceFiles)
@@ -3961,36 +3015,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyCompanyUpdaterDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyCompanyUpdaterDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyCompanyUpdaterDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyCompanyUpdaterDependencyErrorsFor($sourceFiles)
@@ -4013,37 +3042,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyConnectionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyConnectionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyConnectionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyConnectionDependencyErrorsFor($sourceFiles)
@@ -4066,36 +3070,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyReportHtmlDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyReportHtmlDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyReportHtmlDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyReportHtmlDependencyErrorsFor($sourceFiles)
@@ -4118,36 +3097,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyOfferReportDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyOfferReportDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyOfferReportDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyOfferReportDependencyErrorsFor($sourceFiles)
@@ -4170,36 +3124,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyReporterDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyReporterDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyReporterDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyReporterDependencyErrorsFor($sourceFiles)
@@ -4222,36 +3151,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyReportFiltersDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyReportFiltersDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyReportFiltersDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyReportFiltersDependencyErrorsFor($sourceFiles)
@@ -4274,37 +3178,12 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyReportObjectsDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyReportObjectsDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
             'src',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyReportObjectsDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyReportObjectsDependencyErrorsFor($sourceFiles)
@@ -4327,36 +3206,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyDatabaseConnectionDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyDatabaseConnectionDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyDatabaseConnectionDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyDatabaseConnectionDependencyErrorsFor($sourceFiles)
@@ -4379,36 +3233,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyOfferReportRepositoriesDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyOfferReportRepositoriesDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyOfferReportRepositoriesDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyOfferReportRepositoriesDependencyErrorsFor($sourceFiles)
@@ -4431,36 +3260,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyEmployeeReportRepositoriesDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyEmployeeReportRepositoriesDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyEmployeeReportRepositoriesDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyEmployeeReportRepositoriesDependencyErrorsFor($sourceFiles)
@@ -4483,36 +3287,11 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyMiscReportRepositoriesDependencyErrors()
     {
-        $sourceFiles = collect();
-        $directories = [
+        return $this->legacyMiscReportRepositoriesDependencyErrorsFor($this->sourceFilesFromDirectories([
             'app',
             'resources/views',
             'routes',
-        ];
-
-        foreach ($directories as $directory) {
-            $path = base_path($directory);
-
-            if (!File::isDirectory($path)) {
-                continue;
-            }
-
-            foreach (File::allFiles($path) as $file) {
-                if (!in_array($file->getExtension(), ['php'], true)) {
-                    continue;
-                }
-
-                $relativePath = $directory . '/' . str_replace('\\', '/', $file->getRelativePathname());
-
-                if ($relativePath === 'app/Console/Commands/AuditLegacyFallbackCoverage.php') {
-                    continue;
-                }
-
-                $sourceFiles[$relativePath] = File::get($file->getPathname());
-            }
-        }
-
-        return $this->legacyMiscReportRepositoriesDependencyErrorsFor($sourceFiles);
+        ]));
     }
 
     private function legacyMiscReportRepositoriesDependencyErrorsFor($sourceFiles)
