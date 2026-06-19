@@ -36,12 +36,12 @@ return [
     ],
 
     'geo' => [
-	    'ip_database' => env('GEO_IP_DATABASE'),
+        'ip_database' => env('GEO_IP_DATABASE'),
     ],
 
     'smspool' => [
-	    'key' => env('SMSPOOL_API_KEY'),
-	    'base_url' => env('SMSPOOL_BASE_URL', 'https://api.smspool.net'),
+        'key' => env('SMSPOOL_API_KEY'),
+        'base_url' => env('SMSPOOL_BASE_URL', 'https://api.smspool.net'),
     ],
 
 ];

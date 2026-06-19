@@ -303,7 +303,7 @@ class Geo implements Rule
 
     private function resolveGeoDatabasePath(): string
     {
-        $configuredPath = env("GEO_IP_DATABASE");
+        $configuredPath = config('services.geo.ip_database');
 
         if (is_string($configuredPath) && $configuredPath !== '' && is_readable($configuredPath)) {
             return $configuredPath;

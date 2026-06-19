@@ -33,7 +33,7 @@ class GeoIPUpdater
             $this->downloadURL = $this->defaultURL.$this->licenseKey;
         }
 
-        $this->rootPath = env("GEO_IP_DATABASE");
+        $this->rootPath = config('services.geo.ip_database');
     }
 
     public function testGeoDB($filePath)

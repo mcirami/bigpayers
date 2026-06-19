@@ -527,6 +527,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $geoRule = File::get(base_path('src/Offer/Rules/Geo.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $geoRule);
+        $this->assertStringContainsString("config('services.geo.ip_database')", $geoRule);
+        $this->assertStringNotContainsString('GEO_IP_DATABASE', $geoRule);
         $this->assertStringNotContainsString('$_SERVER', $geoRule);
     }
 
@@ -771,6 +773,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $click);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $click);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $click);
+        $this->assertStringContainsString("config('services.geo.ip_database')", $click);
+        $this->assertStringNotContainsString('GEO_IP_DATABASE', $click);
         $this->assertStringNotContainsString('$_GET', $click);
         $this->assertStringNotContainsString('$_SERVER', $click);
 
@@ -1369,11 +1373,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $legacySetup = File::get(base_path('src/System/Setup.php'));
+        $geoIpUpdater = File::get(base_path('src/System/GeoIPUpdater.php'));
 
         $this->assertStringContainsString('App\\Services\\BaseInstallSql', $legacySetup);
         $this->assertStringContainsString('App\\Services\\TenantDatabasePdoFactory', $legacySetup);
         $this->assertStringNotContainsString('resources/importDB.php', $legacySetup);
         $this->assertStringNotContainsString('tys_create_db', $legacySetup);
+        $this->assertStringContainsString("config('services.geo.ip_database')", $geoIpUpdater);
+        $this->assertStringNotContainsString('GEO_IP_DATABASE', $geoIpUpdater);
     }
 
     public function test_modern_offer_report_repositories_use_legacy_boundaries(): void
