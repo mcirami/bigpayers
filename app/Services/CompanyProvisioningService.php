@@ -42,26 +42,7 @@ class CompanyProvisioningService
         $tenant->exec($this->baseInstallSql->contents($schemaPath));
         $this->updateBootstrapAdmin($tenant, $data);
 
-        $company = new Company();
-        $company->shortHand = $data['shortHand'];
-        $company->subDomain = $subDomain;
-        $company->companyName = $data['companyName'];
-        $company->city = $data['city'];
-        $company->state = $data['state'];
-        $company->address = $data['address'];
-        $company->zip = $data['zip'];
-        $company->telephone = $data['telephone'];
-        $company->email = $data['email'];
-        $company->skype = $data['skype'] ?? '';
-        $company->messenger_type = $data['messenger_type'] ?? 'Telegram';
-        $company->messenger_username = $data['messenger_username'] ?? ($data['skype'] ?? '');
-        $company->colors = self::DEFAULT_COLORS;
-        $company->uid = salt(4, true);
-        $company->db_version = 0;
-        $company->login_url = $data['login_url'] ?? '';
-        $company->landing_page = $data['landing_page'] ?? '';
-        $company->login_theme = $data['login_theme'] ?? '';
-        $company->allow_register = (bool) ($data['allow_register'] ?? true);
+        $company = $this->newCompany($data, $subDomain);
         $company->save();
 
         File::ensureDirectoryExists(public_path("images/{$subDomain}"));
@@ -86,6 +67,32 @@ class CompanyProvisioningService
             ':user_name' => $data['userName'],
             ':password' => Hash::make($data['password']),
         ]);
+    }
+
+    private function newCompany(array $data, string $subDomain): Company
+    {
+        $company = new Company();
+        $company->shortHand = $data['shortHand'];
+        $company->subDomain = $subDomain;
+        $company->companyName = $data['companyName'];
+        $company->city = $data['city'];
+        $company->state = $data['state'];
+        $company->address = $data['address'];
+        $company->zip = $data['zip'];
+        $company->telephone = $data['telephone'];
+        $company->email = $data['email'];
+        $company->skype = $data['skype'] ?? '';
+        $company->messenger_type = $data['messenger_type'] ?? 'Telegram';
+        $company->messenger_username = $data['messenger_username'] ?? ($data['skype'] ?? '');
+        $company->colors = self::DEFAULT_COLORS;
+        $company->uid = salt(4, true);
+        $company->db_version = 0;
+        $company->login_url = $data['login_url'] ?? '';
+        $company->landing_page = $data['landing_page'] ?? '';
+        $company->login_theme = $data['login_theme'] ?? '';
+        $company->allow_register = (bool) ($data['allow_register'] ?? true);
+
+        return $company;
     }
 
     private function databaseExists(PDO $server, string $database): bool

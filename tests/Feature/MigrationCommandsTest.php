@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
+use ReflectionMethod;
 use Symfony\Component\Console\Tester\CommandTester;
 use Tests\TestCase;
 
@@ -198,8 +199,53 @@ class MigrationCommandsTest extends TestCase
         $this->assertStringContainsString('$this->databases->make()', $provisioning);
         $this->assertStringContainsString('$this->databases->make($subDomain)', $provisioning);
         $this->assertStringContainsString('$this->databases->quoteIdentifier($subDomain)', $provisioning);
+        $this->assertStringContainsString('$company = $this->newCompany($data, $subDomain);', $provisioning);
+        $this->assertStringContainsString('private function newCompany(array $data, string $subDomain): Company', $provisioning);
         $this->assertStringNotContainsString('new PDO', $provisioning);
         $this->assertStringNotContainsString('PDO::MYSQL_ATTR_MULTI_STATEMENTS', $provisioning);
+    }
+
+    public function test_company_provisioning_builds_company_with_defaults_without_database_side_effects(): void
+    {
+        $method = new ReflectionMethod(\App\Services\CompanyProvisioningService::class, 'newCompany');
+        $method->setAccessible(true);
+
+        $company = $method->invoke(
+            app(\App\Services\CompanyProvisioningService::class),
+            [
+                'shortHand' => 'Acme',
+                'companyName' => 'Acme Affiliates',
+                'city' => 'Chicago',
+                'state' => 'IL',
+                'address' => '123 Main',
+                'zip' => '60601',
+                'telephone' => '555-0100',
+                'email' => 'admin@example.test',
+                'skype' => 'legacy-messenger',
+                'allow_register' => '0',
+            ],
+            'tenant_a'
+        );
+
+        $this->assertSame('Acme', $company->shortHand);
+        $this->assertSame('tenant_a', $company->subDomain);
+        $this->assertSame('Acme Affiliates', $company->companyName);
+        $this->assertSame('Telegram', $company->messenger_type);
+        $this->assertSame('legacy-messenger', $company->messenger_username);
+        $this->assertSame('', $company->login_url);
+        $this->assertSame('', $company->landing_page);
+        $this->assertSame('', $company->login_theme);
+        $this->assertFalse((bool) $company->allow_register);
+        $this->assertSame(0, $company->db_version);
+        $this->assertNotSame('', $company->uid);
+    }
+
+    public function test_legacy_salt_helper_generates_random_strings_on_modern_php(): void
+    {
+        $salt = salt(12, true);
+
+        $this->assertSame(12, strlen($salt));
+        $this->assertMatchesRegularExpression('/^[A-Za-z0-9]+$/', $salt);
     }
 
     public function test_white_label_database_switching_uses_connection_manager(): void

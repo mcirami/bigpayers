@@ -132,7 +132,7 @@ function salt($max = 40, $numAndCharOnly = false)
     }
 
     while ($i < $max) {
-        $salt .= $characterList(mt_rand(0, (strlen($characterList) - 1)));
+        $salt .= $characterList[mt_rand(0, (strlen($characterList) - 1))];
         $i++;
     }
 
