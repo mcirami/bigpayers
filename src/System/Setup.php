@@ -2,9 +2,10 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Services\BaseInstallSql;
+use App\Services\TenantDatabasePdoFactory;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\NativeRequest;
-use PDO;
 
 // Class used when setting up new company installs
 
@@ -16,6 +17,14 @@ use PDO;
 
 class Setup
 {
+    private $baseInstallSql;
+    private $databases;
+
+    public function __construct(?BaseInstallSql $baseInstallSql = null, ?TenantDatabasePdoFactory $databases = null)
+    {
+        $this->baseInstallSql = $baseInstallSql ?: new BaseInstallSql();
+        $this->databases = $databases ?: new TenantDatabasePdoFactory();
+    }
 
 
     function createAdmin()
@@ -35,19 +44,10 @@ class Setup
     public function installDB()
     {
         try {
-            $db = new PDO("mysql:host=localhost;", "tys_create_db", "DWcuvaXOq9KdK9dM");
+            $tenant = $this->databases->make($this->subDomain());
+            $tenant->exec($this->baseInstallSql->contents());
 
-            require "resources/importDB.php";
-
-
-            $db = $db->prepare("USE ".post("subDomain").";".$query);
-            if ($db->execute()) {
-                return true;
-            }
-
-            return false;
-
-
+            return true;
         } catch (\Exception $e) {
             return $e;
         }
@@ -56,17 +56,10 @@ class Setup
     function createDatabase()
     {
         try {
-            $db = new PDO("mysql:host=localhost;", "tys_create_db", "DWcuvaXOq9KdK9dM");
+            $db = $this->databases->make();
+            $db->exec('CREATE SCHEMA IF NOT EXISTS ' . $this->databases->quoteIdentifier($this->subDomain()));
 
-
-            $db = $db->prepare("CREATE SCHEMA IF NOT EXISTS ".post("subDomain"));
-            if ($db->execute()) {
-                return true;
-            }
-
-            return false;
-
-
+            return true;
         } catch (\Exception $e) {
             return $e;
         }
@@ -154,5 +147,10 @@ class Setup
 
         return "NO POST";
 
+    }
+
+    private function subDomain(): string
+    {
+        return strtolower(trim((string) post("subDomain")));
     }
 }

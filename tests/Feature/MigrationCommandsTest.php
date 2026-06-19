@@ -153,6 +153,7 @@ class MigrationCommandsTest extends TestCase
         $resolver = File::get(base_path('app/Services/BaseInstallSql.php'));
         $provisioning = File::get(base_path('app/Services/CompanyProvisioningService.php'));
         $legacyImport = File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php'));
+        $legacySetup = File::get(base_path('src/System/Setup.php'));
 
         $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
         $this->assertStringContainsString('Unable to find base_install.sql.', $resolver);
@@ -165,6 +166,79 @@ class MigrationCommandsTest extends TestCase
         $this->assertStringContainsString('$this->baseInstallSql->path()', $legacyImport);
         $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacyImport);
         $this->assertStringNotContainsString("env('TYS_BASE_INSTALL", $legacyImport);
+
+        $this->assertStringContainsString('BaseInstallSql', $legacySetup);
+        $this->assertStringContainsString('TenantDatabasePdoFactory', $legacySetup);
+        $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacySetup);
+        $this->assertStringContainsString('$this->databases->quoteIdentifier($this->subDomain())', $legacySetup);
+        $this->assertStringNotContainsString('resources/importDB.php', $legacySetup);
+        $this->assertStringNotContainsString('tys_create_db', $legacySetup);
+    }
+
+    public function test_base_install_sql_resolver_prefers_configured_absolute_path(): void
+    {
+        $path = sys_get_temp_dir() . '/tys-base-install-test.sql';
+        $previousPath = getenv('TYS_BASE_INSTALL');
+
+        try {
+            File::put($path, 'select 1;');
+            putenv('TYS_BASE_INSTALL=' . $path);
+
+            $resolver = new BaseInstallSql();
+
+            $this->assertSame($path, $resolver->path());
+            $this->assertSame('select 1;', $resolver->contents());
+        } finally {
+            File::delete($path);
+
+            if ($previousPath === false) {
+                putenv('TYS_BASE_INSTALL');
+            } else {
+                putenv('TYS_BASE_INSTALL=' . $previousPath);
+            }
+        }
+    }
+
+    public function test_base_install_sql_resolver_treats_configured_relative_path_as_storage_relative(): void
+    {
+        $relativePath = 'tys-base-install-relative-test.sql';
+        $path = storage_path($relativePath);
+        $previousPath = getenv('TYS_BASE_INSTALL');
+
+        try {
+            File::put($path, 'select 2;');
+            putenv('TYS_BASE_INSTALL=' . $relativePath);
+
+            $resolver = new BaseInstallSql();
+
+            $this->assertSame($path, $resolver->path());
+            $this->assertSame('select 2;', $resolver->contents());
+        } finally {
+            File::delete($path);
+
+            if ($previousPath === false) {
+                putenv('TYS_BASE_INSTALL');
+            } else {
+                putenv('TYS_BASE_INSTALL=' . $previousPath);
+            }
+        }
+    }
+
+    public function test_base_install_sql_resolver_falls_back_when_configured_path_is_missing(): void
+    {
+        $previousPath = getenv('TYS_BASE_INSTALL');
+
+        try {
+            putenv('TYS_BASE_INSTALL=/tmp/missing-tys-base-install-test.sql');
+
+            $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
+        } finally {
+            if ($previousPath === false) {
+                putenv('TYS_BASE_INSTALL');
+            } else {
+                putenv('TYS_BASE_INSTALL=' . $previousPath);
+            }
+        }
     }
 
     public function test_tenant_database_pdo_factory_builds_connection_details_for_provisioning(): void

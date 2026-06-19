@@ -1367,6 +1367,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('$_POST', $contents);
             $this->assertStringNotContainsString('$_SERVER', $contents);
         }
+
+        $legacySetup = File::get(base_path('src/System/Setup.php'));
+
+        $this->assertStringContainsString('App\\Services\\BaseInstallSql', $legacySetup);
+        $this->assertStringContainsString('App\\Services\\TenantDatabasePdoFactory', $legacySetup);
+        $this->assertStringNotContainsString('resources/importDB.php', $legacySetup);
+        $this->assertStringNotContainsString('tys_create_db', $legacySetup);
     }
 
     public function test_modern_offer_report_repositories_use_legacy_boundaries(): void

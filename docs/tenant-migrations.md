@@ -52,6 +52,11 @@ Creating a new company install is handled separately by
 imports `base_install.sql`, updates the bootstrap admin user, creates the master
 company row, and prepares the public image directory.
 
+The schema dump is resolved through `App\Services\BaseInstallSql`. By default it
+uses `base_install.sql` at the project root, then `storage/base_install.sql`. Set
+`TYS_BASE_INSTALL` to an absolute path, or to a storage-relative filename, when a
+specific dump file should be used.
+
 Do not use the tenant migration commands as a provisioning substitute; they
 expect the company database to already exist.
 
