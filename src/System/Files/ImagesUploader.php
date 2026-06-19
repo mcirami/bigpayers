@@ -41,7 +41,7 @@ class ImagesUploader
 
     public function doesCompanySubDomainFolderExist()
     {
-        $dir = env('SALE_LOG_DIRECTORY').'/'.Company::currentSubDomain();
+        $dir = config('filesystems.sale_log_directory').'/'.Company::currentSubDomain();
         if (file_exists($dir) == false) {
             return mkdir($dir);
         } else {

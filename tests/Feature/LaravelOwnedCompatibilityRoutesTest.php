@@ -653,8 +653,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $smsApiController = File::get(app_path('Http/Controllers/Sms/SmsApiController.php'));
+        $smsClientController = File::get(app_path('Http/Controllers/Sms/SmsClientController.php'));
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $smsApiController);
+        $this->assertStringContainsString("config('services.sms.base_url')", $smsClientController);
+        $this->assertStringNotContainsString('SMS_URL', $smsClientController);
     }
 
     public function test_laravel_session_boundaries_use_current_session_boundary(): void
@@ -675,6 +678,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
         }
+
+        $text69 = File::get(app_path('Services/SMS/Text69.php'));
+
+        $this->assertStringContainsString("config('services.sms.base_url')", $text69);
+        $this->assertStringNotContainsString('SMS_URL', $text69);
     }
 
     public function test_modern_permission_reads_use_legacy_permissions_boundary(): void
@@ -1013,6 +1021,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $saleLog = File::get(base_path('src/Offer/SaleLog.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $saleLog);
+        $this->assertStringContainsString("config('filesystems.sale_log_directory')", $saleLog);
+        $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $saleLog);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $saleLog);
     }
 
@@ -1590,7 +1600,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $controller = File::get((new ReflectionClass(ChatLogController::class))->getFileName());
 
         $this->assertStringContainsString('App\\Support\\LegacyImagesUploader as ImagesUploader', $controller);
+        $this->assertStringContainsString("config('filesystems.sale_log_directory')", $controller);
+        $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader', $controller);
+
+        $imagesUploader = File::get(base_path('src/System/Files/ImagesUploader.php'));
+
+        $this->assertStringContainsString("config('filesystems.sale_log_directory')", $imagesUploader);
+        $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $imagesUploader);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader',

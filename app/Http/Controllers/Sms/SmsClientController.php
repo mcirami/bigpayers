@@ -40,7 +40,7 @@ class SmsClientController extends Controller
 
 
         try {
-            $response = $http->post(env('SMS_URL').'/worker/create', [
+            $response = $http->post(rtrim((string) config('services.sms.base_url'), '/').'/worker/create', [
                     'form_params' => $request->all(),
                 ]
             );

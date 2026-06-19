@@ -45,7 +45,7 @@ class ChatLogController extends Controller
                 $saleLog = new SaleLog();
                 $saleLog->conversion_id = $conversion->id;
                 if ($saleLog->save()) {
-                    $imageUploader->uploadDirectory = env("SALE_LOG_DIRECTORY")."/".$this->companySubDomain()."/{$saleLog->id}";
+                    $imageUploader->uploadDirectory = $this->saleLogDirectory((int) $saleLog->id);
                     if ($imageUploader->uploadFiles('images')) {
                         if (CurrentUserSession::type() == \App\Privilege::ROLE_AFFILIATE) {
                             return redirect("/report/sale-log");
@@ -175,7 +175,7 @@ class ChatLogController extends Controller
 
     private function saleLogDirectory(int $saleLogId): string
     {
-        return env('SALE_LOG_DIRECTORY').'/'.$this->companySubDomain()."/{$saleLogId}";
+        return config('filesystems.sale_log_directory').'/'.$this->companySubDomain()."/{$saleLogId}";
     }
 
     private function companySubDomain(): string

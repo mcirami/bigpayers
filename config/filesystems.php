@@ -28,6 +28,8 @@ return [
 
     'cloud' => 's3',
 
+    'sale_log_directory' => env('SALE_LOG_DIRECTORY'),
+
     /*
     |--------------------------------------------------------------------------
     | Filesystem Disks

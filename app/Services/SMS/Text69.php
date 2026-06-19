@@ -26,7 +26,7 @@ class Text69 implements ShortMessageServiceInterface
             abort(400, "User doesn't have a SMS Client");
         }
 
-        $response = (new Client())->get(env('SMS_URL') . '/user/' . $smsClient->sms_user_id . "/token");
+        $response = (new Client())->get($this->url('/user/' . $smsClient->sms_user_id . '/token'));
 
         $this->accessToken = json_decode($response->getBody())->accessToken;
     }
@@ -40,7 +40,7 @@ class Text69 implements ShortMessageServiceInterface
     public function patchConversation(Request $request)
     {
 
-        $response = (new Client())->patch(env('SMS_URL') . '/api/conversations', [
+        $response = (new Client())->patch($this->url('/api/conversations'), [
             'headers' => [
                 'Authorization' => 'Bearer ' . $this->getBearerToken(),
                 'Content-Type' => 'application/x-www-form-urlencoded',
@@ -75,7 +75,7 @@ class Text69 implements ShortMessageServiceInterface
         ];
 
 
-        $response = (new Client())->post(env('SMS_URL') . '/api/messages/send', $params);
+        $response = (new Client())->post($this->url('/api/messages/send'), $params);
 
         return ((string)$response->getBody());
     }
@@ -83,7 +83,7 @@ class Text69 implements ShortMessageServiceInterface
     public function getConversations()
     {
 
-        $response = (new Client())->get(env('SMS_URL') . '/api/user/conversations/', [
+        $response = (new Client())->get($this->url('/api/user/conversations/'), [
             'headers' => ['Authorization' => 'Bearer ' . $this->getBearerToken()],
         ]);
 
@@ -94,7 +94,7 @@ class Text69 implements ShortMessageServiceInterface
     public function getConversation($id)
     {
 
-        $response = (new Client())->get(env('SMS_URL') . '/api/conversations/' . $id, [
+        $response = (new Client())->get($this->url('/api/conversations/' . $id), [
             'headers' => ['Authorization' => 'Bearer ' . $this->getBearerToken()],
         ]);
 
@@ -105,7 +105,7 @@ class Text69 implements ShortMessageServiceInterface
     public function getMessages($conversationId)
     {
 
-        $response = (new Client)->get(env('SMS_URL') . '/api/conversations/' . $conversationId . '/messages', [
+        $response = (new Client)->get($this->url('/api/conversations/' . $conversationId . '/messages'), [
             'headers' => ['Authorization' => 'Bearer ' . $this->getBearerToken()],
         ]);
 
@@ -115,12 +115,17 @@ class Text69 implements ShortMessageServiceInterface
     public function markConversationAsRead($conversationId)
     {
 
-        $response = (new Client)->patch(env('SMS_URL') . '/api/conversations/' . $conversationId . '/read-new-messages',
+        $response = (new Client)->patch($this->url('/api/conversations/' . $conversationId . '/read-new-messages'),
             [
                 'headers' => ['Authorization' => 'Bearer ' . $this->getBearerToken()],
             ]);
 
         return (string)$response->getBody();
+    }
+
+    private function url(string $path): string
+    {
+        return rtrim((string) config('services.sms.base_url'), '/') . '/' . ltrim($path, '/');
     }
 
 }

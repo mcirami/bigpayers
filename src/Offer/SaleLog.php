@@ -81,7 +81,7 @@ class SaleLog
 
     public static function getImageURLsFromSaleId($sale_id)
     {
-        $files = scandir(env('SALE_LOG_DIRECTORY').'/'.\App\Company::currentSubDomain().'/'.$sale_id);
+        $files = scandir(config('filesystems.sale_log_directory').'/'.\App\Company::currentSubDomain().'/'.$sale_id);
 
         $filtered = [];
 
@@ -137,7 +137,7 @@ class SaleLog
 
     public function renameSaleImage($fileName)
     {
-        return unlink(env('SALE_LOG_DIRECTORY')."/$this->id/{$fileName}");
+        return unlink(config('filesystems.sale_log_directory')."/$this->id/{$fileName}");
     }
 
 }
