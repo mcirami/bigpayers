@@ -12,6 +12,13 @@ class CompanyProvisioningService
 {
     private const DEFAULT_COLORS = '484848;FFFFFF;2A58AD;1D4C9E;82A7EB;FCED16;EAEEF1;FFFFFF;404452;999999;1D4C9E';
 
+    private $baseInstallSql;
+
+    public function __construct(BaseInstallSql $baseInstallSql)
+    {
+        $this->baseInstallSql = $baseInstallSql;
+    }
+
     public function provision(array $data): array
     {
         $subDomain = $this->normalizeSubDomain($data['subDomain']);
@@ -20,7 +27,7 @@ class CompanyProvisioningService
             throw new RuntimeException("An install already exists for {$subDomain}.");
         }
 
-        $schemaPath = $this->baseInstallPath();
+        $schemaPath = $this->baseInstallSql->path();
         $server = $this->serverConnection();
 
         if ($this->databaseExists($server, $subDomain)) {
@@ -30,7 +37,7 @@ class CompanyProvisioningService
         $server->exec('CREATE DATABASE ' . $this->quoteIdentifier($subDomain));
 
         $tenant = $this->tenantConnection($subDomain);
-        $tenant->exec(File::get($schemaPath));
+        $tenant->exec($this->baseInstallSql->contents());
         $this->updateBootstrapAdmin($tenant, $data);
 
         $company = new Company();
@@ -85,22 +92,6 @@ class CompanyProvisioningService
         $statement->execute([':database' => $database]);
 
         return (bool) $statement->fetchColumn();
-    }
-
-    private function baseInstallPath(): string
-    {
-        $paths = [
-            base_path('base_install.sql'),
-            storage_path('base_install.sql'),
-        ];
-
-        foreach ($paths as $path) {
-            if (File::isFile($path)) {
-                return $path;
-            }
-        }
-
-        throw new RuntimeException('Unable to find base_install.sql.');
     }
 
     private function serverConnection(): PDO

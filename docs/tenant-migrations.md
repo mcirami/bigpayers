@@ -50,3 +50,8 @@ company row, and prepares the public image directory.
 
 Do not use the tenant migration commands as a provisioning substitute; they
 expect the company database to already exist.
+
+`php artisan migrate:legacy <database>` is a lower-level import helper for
+loading `base_install.sql` into an already-selected database name. It uses the
+same tenant connection settings as the migration commands, but it does not
+create the database or company record.

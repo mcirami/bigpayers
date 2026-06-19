@@ -2,17 +2,24 @@
 
 namespace App\Console\Commands;
 
+use App\Services\BaseInstallSql;
+use App\Services\CompanyDatabaseConnectionManager;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 
 class MigrateLegacyDatabase extends Command
 {
+    private $connections;
+    private $baseInstallSql;
+
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'migrate:legacy {database}';
+    protected $signature = 'migrate:legacy {database : Database name to import into}';
 
     /**
      * The console command description.
@@ -26,9 +33,12 @@ class MigrateLegacyDatabase extends Command
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CompanyDatabaseConnectionManager $connections, BaseInstallSql $baseInstallSql)
     {
         parent::__construct();
+
+        $this->connections = $connections;
+        $this->baseInstallSql = $baseInstallSql;
     }
 
     /**
@@ -38,9 +48,18 @@ class MigrateLegacyDatabase extends Command
      */
     public function handle()
     {
-        $this->info('Importing ' . storage_path(env('TYS_BASE_INSTALL')));
-        $this->info('To: ' . $this->argument('database'));
+        $database = (string) $this->argument('database');
 
+        try {
+            $path = $this->baseInstallSql->path();
+        } catch (RuntimeException $exception) {
+            $this->error($exception->getMessage());
+
+            return self::FAILURE;
+        }
+
+        $this->info('Importing ' . $path);
+        $this->info('To: ' . $database);
 
         //        if ($this->ask('Do you want to delete the current master database? y/n', 'y') == 'y') {
         //            $this->info('Deleting current master database..');
@@ -53,25 +72,17 @@ class MigrateLegacyDatabase extends Command
         //            $this->info('Jeez fine.');
         //        }
 
-        // Set the database
-        \Config::set('database.connections.importing', array(
-            'driver' => 'mysql',
-            'host' => env('DB_HOST'),
-            'port' => env('DB_PORT'),
-            'database' => $this->argument('database'),
-            'username' => env('DB_USERNAME'),
-            'password' => env('DB_PASSWORD'),
-            'charset' => 'utf8',
-            'collation' => 'utf8_unicode_ci',
-            'prefix' => '',
-        ));
+        Config::set('database.connections.importing', $this->connections->connectionConfig($database));
+        DB::purge('importing');
 
-        if (DB::connection('importing')->unprepared(file_get_contents(storage_path(env('TYS_BASE_INSTALL'))))) {
+        if (DB::connection('importing')->unprepared($this->baseInstallSql->contents())) {
             $this->info('Success!');
+
+            return self::SUCCESS;
         } else {
             $this->error('Failed to import legacy database!');
 
-            return;
+            return self::FAILURE;
         }
     }
 }

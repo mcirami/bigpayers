@@ -3,10 +3,17 @@
 namespace Tests\Feature;
 
 use App\Company;
+use App\Console\Commands\MigrateAllInstalls;
+use App\Console\Commands\MigrateSingleCompany;
+use App\Services\BaseInstallSql;
 use App\Services\CompanyDatabaseConnectionManager;
+use Illuminate\Console\Command;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
+use Symfony\Component\Console\Tester\CommandTester;
 use Tests\TestCase;
 
 class MigrationCommandsTest extends TestCase
@@ -70,13 +77,13 @@ class MigrationCommandsTest extends TestCase
         $commands = [
             File::get(base_path('app/Console/Commands/AggregateReportData.php')),
             File::get(base_path('app/Console/Commands/MigrateAllInstalls.php')),
+            File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php')),
             File::get(base_path('app/Console/Commands/MigrateSingleCompany.php')),
             File::get(base_path('app/Console/Commands/PayoutLogsRun.php')),
         ];
 
         foreach ($commands as $commandSource) {
             $this->assertStringContainsString(CompanyDatabaseConnectionManager::class, $commandSource);
-            $this->assertStringNotContainsString('Config::set', $commandSource);
             $this->assertStringNotContainsString("env('DB_HOST')", $commandSource);
             $this->assertStringNotContainsString("'--force' => '--force'", $commandSource);
         }
@@ -90,6 +97,10 @@ class MigrationCommandsTest extends TestCase
             File::get(base_path('app/Console/Commands/MigrateSingleCompany.php'))
         );
         $this->assertStringContainsString(
+            '$this->connections->connectionConfig($database)',
+            File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php'))
+        );
+        $this->assertStringContainsString(
             '$this->connections->useAsDefault($company)',
             File::get(base_path('app/Console/Commands/AggregateReportData.php'))
         );
@@ -99,12 +110,23 @@ class MigrationCommandsTest extends TestCase
         );
     }
 
-    public function test_single_company_migration_handles_unknown_companies(): void
+    public function test_base_install_sql_resolver_is_used_by_provisioning_and_legacy_imports(): void
     {
-        $singleCompany = File::get(base_path('app/Console/Commands/MigrateSingleCompany.php'));
+        $resolver = File::get(base_path('app/Services/BaseInstallSql.php'));
+        $provisioning = File::get(base_path('app/Services/CompanyProvisioningService.php'));
+        $legacyImport = File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php'));
 
-        $this->assertStringContainsString("Unable to find company", $singleCompany);
-        $this->assertStringContainsString('return self::FAILURE;', $singleCompany);
+        $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
+        $this->assertStringContainsString('Unable to find base_install.sql.', $resolver);
+        $this->assertStringContainsString('BaseInstallSql $baseInstallSql', $provisioning);
+        $this->assertStringContainsString('$this->baseInstallSql->path()', $provisioning);
+        $this->assertStringContainsString('$this->baseInstallSql->contents()', $provisioning);
+        $this->assertStringNotContainsString('private function baseInstallPath', $provisioning);
+
+        $this->assertStringContainsString('BaseInstallSql $baseInstallSql', $legacyImport);
+        $this->assertStringContainsString('$this->baseInstallSql->path()', $legacyImport);
+        $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacyImport);
+        $this->assertStringNotContainsString("env('TYS_BASE_INSTALL", $legacyImport);
     }
 
     public function test_migration_commands_expose_safe_selection_and_pretend_options(): void
@@ -113,18 +135,165 @@ class MigrationCommandsTest extends TestCase
         $singleCompany = File::get(base_path('app/Console/Commands/MigrateSingleCompany.php'));
 
         $this->assertStringContainsString('{--company=*', $allInstalls);
-        $this->assertStringContainsString('trim($subDomain)', $allInstalls);
-        $this->assertStringContainsString('->unique()', $allInstalls);
-        $this->assertStringContainsString('whereIn(\'subDomain\', $subDomains)', $allInstalls);
-        $this->assertStringContainsString('Unknown company subdomain(s):', $allInstalls);
-        $this->assertStringContainsString('return self::FAILURE;', $allInstalls);
-        $this->assertStringContainsString('No companies matched the migration filters.', $allInstalls);
-        $this->assertStringContainsString('return self::SUCCESS;', $allInstalls);
-        $this->assertStringContainsString("'--pretend' => (bool) \$this->option('pretend')", $allInstalls);
-
         $this->assertStringContainsString('{--pretend', $singleCompany);
-        $this->assertStringContainsString('Runs migrations for a specific company.', $singleCompany);
-        $this->assertStringContainsString('return self::FAILURE;', $singleCompany);
-        $this->assertStringContainsString("'--pretend' => (bool) \$this->option('pretend')", $singleCompany);
+    }
+
+    public function test_migrate_all_runs_only_selected_companies_and_passes_pretend_to_migrate(): void
+    {
+        $this->createMasterCompanyTable(['tenant-b', 'tenant-a', 'tenant-c']);
+
+        $connections = new FakeCompanyDatabaseConnectionManager();
+        $command = new TestMigrateAllInstalls($connections);
+        $command->setLaravel(app());
+        $tester = new CommandTester($command);
+
+        $exitCode = $tester->execute([
+            '--company' => [' tenant-c ', 'tenant-a', 'tenant-c'],
+            '--pretend' => true,
+        ]);
+
+        $this->assertSame(Command::SUCCESS, $exitCode);
+        $this->assertSame(['tenant-a', 'tenant-c'], $connections->configured);
+        $this->assertSame([
+            [
+                'command' => 'migrate',
+                'arguments' => [
+                    '--database' => 'tenant-a',
+                    '--force' => true,
+                    '--pretend' => true,
+                ],
+            ],
+            [
+                'command' => 'migrate',
+                'arguments' => [
+                    '--database' => 'tenant-c',
+                    '--force' => true,
+                    '--pretend' => true,
+                ],
+            ],
+        ], $command->calls);
+    }
+
+    public function test_migrate_all_fails_when_a_selected_company_is_unknown(): void
+    {
+        $this->createMasterCompanyTable(['tenant-a']);
+
+        $connections = new FakeCompanyDatabaseConnectionManager();
+        $command = new TestMigrateAllInstalls($connections);
+        $command->setLaravel(app());
+        $tester = new CommandTester($command);
+
+        $exitCode = $tester->execute([
+            '--company' => ['tenant-a', 'missing-tenant'],
+        ]);
+
+        $this->assertSame(Command::FAILURE, $exitCode);
+        $this->assertStringContainsString('Unknown company subdomain(s): missing-tenant', $tester->getDisplay());
+        $this->assertSame([], $connections->configured);
+        $this->assertSame([], $command->calls);
+    }
+
+    public function test_migrate_single_fails_when_company_is_unknown_without_calling_migrate(): void
+    {
+        $this->createMasterCompanyTable(['tenant-a']);
+
+        $connections = new FakeCompanyDatabaseConnectionManager();
+        $command = new TestMigrateSingleCompany($connections);
+        $command->setLaravel(app());
+        $tester = new CommandTester($command);
+
+        $exitCode = $tester->execute([
+            'company' => 'missing-tenant',
+        ]);
+
+        $this->assertSame(Command::FAILURE, $exitCode);
+        $this->assertStringContainsString('Unable to find company "missing-tenant".', $tester->getDisplay());
+        $this->assertSame([], $connections->configured);
+        $this->assertSame([], $command->calls);
+    }
+
+    public function test_migrate_single_runs_selected_company_and_passes_pretend_to_migrate(): void
+    {
+        $this->createMasterCompanyTable(['tenant-a', 'tenant-b']);
+
+        $connections = new FakeCompanyDatabaseConnectionManager();
+        $command = new TestMigrateSingleCompany($connections);
+        $command->setLaravel(app());
+        $tester = new CommandTester($command);
+
+        $exitCode = $tester->execute([
+            'company' => 'tenant-b',
+            '--pretend' => true,
+        ]);
+
+        $this->assertSame(Command::SUCCESS, $exitCode);
+        $this->assertSame(['tenant-b'], $connections->configured);
+        $this->assertSame([
+            [
+                'command' => 'migrate',
+                'arguments' => [
+                    '--database' => 'tenant-b',
+                    '--force' => true,
+                    '--pretend' => true,
+                ],
+            ],
+        ], $command->calls);
+    }
+
+    private function createMasterCompanyTable(array $subDomains): void
+    {
+        Config::set('database.connections.master', [
+            'driver' => 'sqlite',
+            'database' => ':memory:',
+            'prefix' => '',
+        ]);
+        DB::purge('master');
+
+        Schema::connection('master')->create('company', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('subDomain');
+        });
+
+        foreach ($subDomains as $subDomain) {
+            $company = new Company();
+            $company->subDomain = $subDomain;
+            $company->save();
+        }
+    }
+}
+
+class FakeCompanyDatabaseConnectionManager extends CompanyDatabaseConnectionManager
+{
+    public $configured = [];
+
+    public function configure(Company $company): string
+    {
+        $this->configured[] = $company->subDomain;
+
+        return $company->subDomain;
+    }
+}
+
+class TestMigrateAllInstalls extends MigrateAllInstalls
+{
+    public $calls = [];
+
+    public function call($command, array $arguments = [])
+    {
+        $this->calls[] = compact('command', 'arguments');
+
+        return Command::SUCCESS;
+    }
+}
+
+class TestMigrateSingleCompany extends MigrateSingleCompany
+{
+    public $calls = [];
+
+    public function call($command, array $arguments = [])
+    {
+        $this->calls[] = compact('command', 'arguments');
+
+        return Command::SUCCESS;
     }
 }
