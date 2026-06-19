@@ -26,7 +26,7 @@ class BaseInstallSql
     private function candidatePaths(): array
     {
         $paths = [];
-        $configuredPath = env('TYS_BASE_INSTALL');
+        $configuredPath = config('provisioning.base_install_sql');
 
         if ($configuredPath) {
             $paths[] = $this->absolutePath((string) $configuredPath);

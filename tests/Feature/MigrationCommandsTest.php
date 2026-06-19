@@ -157,6 +157,9 @@ class MigrationCommandsTest extends TestCase
 
         $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
         $this->assertStringContainsString('Unable to find base_install.sql.', $resolver);
+        $this->assertStringContainsString("'base_install_sql' => env('TYS_BASE_INSTALL')", File::get(config_path('provisioning.php')));
+        $this->assertStringContainsString("config('provisioning.base_install_sql')", $resolver);
+        $this->assertStringNotContainsString("env('TYS_BASE_INSTALL", $resolver);
         $this->assertStringContainsString('BaseInstallSql $baseInstallSql', $provisioning);
         $this->assertStringContainsString('$this->baseInstallSql->path()', $provisioning);
         $this->assertStringContainsString('$this->baseInstallSql->contents($schemaPath)', $provisioning);
@@ -178,11 +181,10 @@ class MigrationCommandsTest extends TestCase
     public function test_base_install_sql_resolver_prefers_configured_absolute_path(): void
     {
         $path = sys_get_temp_dir() . '/tys-base-install-test.sql';
-        $previousPath = getenv('TYS_BASE_INSTALL');
 
         try {
             File::put($path, 'select 1;');
-            putenv('TYS_BASE_INSTALL=' . $path);
+            Config::set('provisioning.base_install_sql', $path);
 
             $resolver = new BaseInstallSql();
 
@@ -190,12 +192,6 @@ class MigrationCommandsTest extends TestCase
             $this->assertSame('select 1;', $resolver->contents());
         } finally {
             File::delete($path);
-
-            if ($previousPath === false) {
-                putenv('TYS_BASE_INSTALL');
-            } else {
-                putenv('TYS_BASE_INSTALL=' . $previousPath);
-            }
         }
     }
 
@@ -203,11 +199,10 @@ class MigrationCommandsTest extends TestCase
     {
         $relativePath = 'tys-base-install-relative-test.sql';
         $path = storage_path($relativePath);
-        $previousPath = getenv('TYS_BASE_INSTALL');
 
         try {
             File::put($path, 'select 2;');
-            putenv('TYS_BASE_INSTALL=' . $relativePath);
+            Config::set('provisioning.base_install_sql', $relativePath);
 
             $resolver = new BaseInstallSql();
 
@@ -215,30 +210,14 @@ class MigrationCommandsTest extends TestCase
             $this->assertSame('select 2;', $resolver->contents());
         } finally {
             File::delete($path);
-
-            if ($previousPath === false) {
-                putenv('TYS_BASE_INSTALL');
-            } else {
-                putenv('TYS_BASE_INSTALL=' . $previousPath);
-            }
         }
     }
 
     public function test_base_install_sql_resolver_falls_back_when_configured_path_is_missing(): void
     {
-        $previousPath = getenv('TYS_BASE_INSTALL');
+        Config::set('provisioning.base_install_sql', '/tmp/missing-tys-base-install-test.sql');
 
-        try {
-            putenv('TYS_BASE_INSTALL=/tmp/missing-tys-base-install-test.sql');
-
-            $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
-        } finally {
-            if ($previousPath === false) {
-                putenv('TYS_BASE_INSTALL');
-            } else {
-                putenv('TYS_BASE_INSTALL=' . $previousPath);
-            }
-        }
+        $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
     }
 
     public function test_tenant_database_pdo_factory_builds_connection_details_for_provisioning(): void
