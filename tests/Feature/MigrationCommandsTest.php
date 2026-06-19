@@ -72,6 +72,29 @@ class MigrationCommandsTest extends TestCase
         }
     }
 
+    public function test_company_database_connection_manager_can_configure_named_connections(): void
+    {
+        Config::set('database.connections.mysql', [
+            'driver' => 'mysql',
+            'host' => 'db-host',
+            'port' => '3307',
+            'database' => 'master_db',
+            'username' => 'db-user',
+            'password' => 'db-pass',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ]);
+
+        $connectionName = (new CompanyDatabaseConnectionManager())->configureNamed('importing', 'tenant_import');
+
+        $this->assertSame('importing', $connectionName);
+        $this->assertSame('tenant_import', Config::get('database.connections.importing.database'));
+        $this->assertSame('db-host', Config::get('database.connections.importing.host'));
+    }
+
     public function test_migration_commands_use_the_company_database_connection_manager(): void
     {
         $commands = [
@@ -80,6 +103,7 @@ class MigrationCommandsTest extends TestCase
             File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php')),
             File::get(base_path('app/Console/Commands/MigrateSingleCompany.php')),
             File::get(base_path('app/Console/Commands/PayoutLogsRun.php')),
+            File::get(base_path('app/Http/Controllers/RelevanceReactorController.php')),
         ];
 
         foreach ($commands as $commandSource) {
@@ -97,7 +121,7 @@ class MigrationCommandsTest extends TestCase
             File::get(base_path('app/Console/Commands/MigrateSingleCompany.php'))
         );
         $this->assertStringContainsString(
-            '$this->connections->connectionConfig($database)',
+            "\$this->connections->configureNamed('importing', \$database)",
             File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php'))
         );
         $this->assertStringContainsString(
@@ -107,6 +131,18 @@ class MigrationCommandsTest extends TestCase
         $this->assertStringContainsString(
             '$this->connections->useAsDefault($company)',
             File::get(base_path('app/Console/Commands/PayoutLogsRun.php'))
+        );
+        $this->assertStringContainsString(
+            '?CompanyDatabaseConnectionManager $connections = null',
+            File::get(base_path('app/Services/DBWhiteLabelService.php'))
+        );
+        $this->assertStringContainsString(
+            "\$this->connections->configureNamed('mysql', \$this->subDomain)",
+            File::get(base_path('app/Services/DBWhiteLabelService.php'))
+        );
+        $this->assertStringContainsString(
+            "\$connections->configureNamed('mysql', \$company)",
+            File::get(base_path('app/Http/Controllers/RelevanceReactorController.php'))
         );
     }
 
@@ -127,6 +163,22 @@ class MigrationCommandsTest extends TestCase
         $this->assertStringContainsString('$this->baseInstallSql->path()', $legacyImport);
         $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacyImport);
         $this->assertStringNotContainsString("env('TYS_BASE_INSTALL", $legacyImport);
+    }
+
+    public function test_white_label_database_switching_uses_connection_manager(): void
+    {
+        $connections = new FakeCompanyDatabaseConnectionManager();
+        $service = new \App\Services\DBWhiteLabelService('tenant-a.example.test', $connections);
+        $service->subDomain = 'tenant_a';
+
+        $service->changeDatabaseHostWithSubDomain();
+
+        $this->assertSame([
+            [
+                'connectionName' => 'mysql',
+                'database' => 'tenant_a',
+            ],
+        ], $connections->configuredNames);
     }
 
     public function test_migration_commands_expose_safe_selection_and_pretend_options(): void
@@ -265,12 +317,20 @@ class MigrationCommandsTest extends TestCase
 class FakeCompanyDatabaseConnectionManager extends CompanyDatabaseConnectionManager
 {
     public $configured = [];
+    public $configuredNames = [];
 
     public function configure(Company $company): string
     {
         $this->configured[] = $company->subDomain;
 
         return $company->subDomain;
+    }
+
+    public function configureNamed(string $connectionName, string $database): string
+    {
+        $this->configuredNames[] = compact('connectionName', 'database');
+
+        return $connectionName;
     }
 }
 

@@ -10,9 +10,12 @@ class CompanyDatabaseConnectionManager
 {
     public function configure(Company $company): string
     {
-        $connectionName = $this->connectionName($company);
+        return $this->configureNamed($this->connectionName($company), $this->connectionName($company));
+    }
 
-        Config::set("database.connections.{$connectionName}", $this->connectionConfig($connectionName));
+    public function configureNamed(string $connectionName, string $database): string
+    {
+        Config::set("database.connections.{$connectionName}", $this->connectionConfig($database));
         DB::purge($connectionName);
 
         return $connectionName;

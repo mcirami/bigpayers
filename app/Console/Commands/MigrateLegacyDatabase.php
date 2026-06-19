@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Services\BaseInstallSql;
 use App\Services\CompanyDatabaseConnectionManager;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
@@ -61,21 +60,9 @@ class MigrateLegacyDatabase extends Command
         $this->info('Importing ' . $path);
         $this->info('To: ' . $database);
 
-        //        if ($this->ask('Do you want to delete the current master database? y/n', 'y') == 'y') {
-        //            $this->info('Deleting current master database..');
-        //            if (DB::connection('master')
-        //                ->unprepared("select concat('drop table if exists ', table_name, ' cascade;')
-        //                                    from information_schema.tables;")) {
-        //               $this->info('Success!');
-        //            }
-        //        } else {
-        //            $this->info('Jeez fine.');
-        //        }
+        $connectionName = $this->connections->configureNamed('importing', $database);
 
-        Config::set('database.connections.importing', $this->connections->connectionConfig($database));
-        DB::purge('importing');
-
-        if (DB::connection('importing')->unprepared($this->baseInstallSql->contents())) {
+        if (DB::connection($connectionName)->unprepared($this->baseInstallSql->contents())) {
             $this->info('Success!');
 
             return self::SUCCESS;

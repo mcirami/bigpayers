@@ -10,8 +10,6 @@ namespace App\Services;
 
 use App\Company;
 use App\OfferURL;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 
 class DBWhiteLabelService
 {
@@ -19,19 +17,17 @@ class DBWhiteLabelService
 
     public $url;
 
-    public function __construct($url)
+    private $connections;
+
+    public function __construct($url, ?CompanyDatabaseConnectionManager $connections = null)
     {
         $this->url = $url;
+        $this->connections = $connections ?: app(CompanyDatabaseConnectionManager::class);
     }
 
     public function changeDatabaseHostWithSubDomain()
     {
-        Config::set('database.connections.mysql.database', $this->subDomain);
-
-
-        //If you want to use query builder without having to specify the connection
-//		Config::set('database.default', 'mysql');
-//		DB::reconnect('mysql');
+        $this->connections->configureNamed('mysql', $this->subDomain);
     }
 
 

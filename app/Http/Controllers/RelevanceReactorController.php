@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Email;
 use App\EmailPool;
+use App\Services\CompanyDatabaseConnectionManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
 class RelevanceReactorController extends Controller
 {
 
-    public function distributeEmail(Request $request)
+    public function distributeEmail(Request $request, CompanyDatabaseConnectionManager $connections)
     {
         $companies = Company::all('subDomain')->toArray();
         $currentCompanies = Arr::flatten($companies);
@@ -36,8 +37,7 @@ class RelevanceReactorController extends Controller
         }
 
 
-        // change database
-        \Config::set('database.connections.mysql.database', $company);
+        $connections->configureNamed('mysql', $company);
 
 
         $email = new Email();
