@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use App\Email;
-use App\EmailPool;
 use App\Services\CompanyDatabaseConnectionManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;

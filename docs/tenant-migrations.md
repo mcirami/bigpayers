@@ -41,6 +41,10 @@ settings consistent with the primary tenant database configuration.
 Commands that iterate over companies should use the connection manager instead
 of calling `Config::set(...)` or reading `env(...)` directly.
 
+`App\Services\TenantDatabasePdoFactory` owns the raw PDO DSN/options used by
+provisioning when it needs server-level access to create a database or import
+the base install SQL.
+
 ## Provisioning Boundary
 
 Creating a new company install is handled separately by

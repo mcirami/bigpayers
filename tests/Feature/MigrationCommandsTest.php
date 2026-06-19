@@ -7,6 +7,7 @@ use App\Console\Commands\MigrateAllInstalls;
 use App\Console\Commands\MigrateSingleCompany;
 use App\Services\BaseInstallSql;
 use App\Services\CompanyDatabaseConnectionManager;
+use App\Services\TenantDatabasePdoFactory;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
@@ -156,13 +157,49 @@ class MigrationCommandsTest extends TestCase
         $this->assertStringContainsString('Unable to find base_install.sql.', $resolver);
         $this->assertStringContainsString('BaseInstallSql $baseInstallSql', $provisioning);
         $this->assertStringContainsString('$this->baseInstallSql->path()', $provisioning);
-        $this->assertStringContainsString('$this->baseInstallSql->contents()', $provisioning);
+        $this->assertStringContainsString('$this->baseInstallSql->contents($schemaPath)', $provisioning);
         $this->assertStringNotContainsString('private function baseInstallPath', $provisioning);
 
         $this->assertStringContainsString('BaseInstallSql $baseInstallSql', $legacyImport);
         $this->assertStringContainsString('$this->baseInstallSql->path()', $legacyImport);
         $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacyImport);
         $this->assertStringNotContainsString("env('TYS_BASE_INSTALL", $legacyImport);
+    }
+
+    public function test_tenant_database_pdo_factory_builds_connection_details_for_provisioning(): void
+    {
+        Config::set('database.connections.mysql', [
+            'driver' => 'mysql',
+            'host' => 'db-host',
+            'port' => '3307',
+            'database' => 'master_db',
+            'username' => 'db-user',
+            'password' => 'db-pass',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'strict' => false,
+            'engine' => null,
+        ]);
+
+        $factory = new TenantDatabasePdoFactory();
+
+        $this->assertSame('mysql:host=db-host;port=3307', $factory->dsn());
+        $this->assertSame('mysql:host=db-host;port=3307;dbname=tenant_a', $factory->dsn('tenant_a'));
+        $this->assertSame('`tenant``name`', $factory->quoteIdentifier('tenant`name'));
+        $this->assertFalse($factory->options()[\PDO::ATTR_EMULATE_PREPARES]);
+    }
+
+    public function test_company_provisioning_uses_database_factory_boundaries(): void
+    {
+        $provisioning = File::get(base_path('app/Services/CompanyProvisioningService.php'));
+
+        $this->assertStringContainsString('TenantDatabasePdoFactory $databases', $provisioning);
+        $this->assertStringContainsString('$this->databases->make()', $provisioning);
+        $this->assertStringContainsString('$this->databases->make($subDomain)', $provisioning);
+        $this->assertStringContainsString('$this->databases->quoteIdentifier($subDomain)', $provisioning);
+        $this->assertStringNotContainsString('new PDO', $provisioning);
+        $this->assertStringNotContainsString('PDO::MYSQL_ATTR_MULTI_STATEMENTS', $provisioning);
     }
 
     public function test_white_label_database_switching_uses_connection_manager(): void

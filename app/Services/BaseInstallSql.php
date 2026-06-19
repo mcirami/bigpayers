@@ -18,9 +18,9 @@ class BaseInstallSql
         throw new RuntimeException('Unable to find base_install.sql.');
     }
 
-    public function contents(): string
+    public function contents(?string $path = null): string
     {
-        return File::get($this->path());
+        return File::get($path ?: $this->path());
     }
 
     private function candidatePaths(): array

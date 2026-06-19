@@ -13,10 +13,12 @@ class CompanyProvisioningService
     private const DEFAULT_COLORS = '484848;FFFFFF;2A58AD;1D4C9E;82A7EB;FCED16;EAEEF1;FFFFFF;404452;999999;1D4C9E';
 
     private $baseInstallSql;
+    private $databases;
 
-    public function __construct(BaseInstallSql $baseInstallSql)
+    public function __construct(BaseInstallSql $baseInstallSql, TenantDatabasePdoFactory $databases)
     {
         $this->baseInstallSql = $baseInstallSql;
+        $this->databases = $databases;
     }
 
     public function provision(array $data): array
@@ -28,16 +30,16 @@ class CompanyProvisioningService
         }
 
         $schemaPath = $this->baseInstallSql->path();
-        $server = $this->serverConnection();
+        $server = $this->databases->make();
 
         if ($this->databaseExists($server, $subDomain)) {
             throw new RuntimeException("A database named {$subDomain} already exists.");
         }
 
-        $server->exec('CREATE DATABASE ' . $this->quoteIdentifier($subDomain));
+        $server->exec('CREATE DATABASE ' . $this->databases->quoteIdentifier($subDomain));
 
-        $tenant = $this->tenantConnection($subDomain);
-        $tenant->exec($this->baseInstallSql->contents());
+        $tenant = $this->databases->make($subDomain);
+        $tenant->exec($this->baseInstallSql->contents($schemaPath));
         $this->updateBootstrapAdmin($tenant, $data);
 
         $company = new Company();
@@ -92,42 +94,6 @@ class CompanyProvisioningService
         $statement->execute([':database' => $database]);
 
         return (bool) $statement->fetchColumn();
-    }
-
-    private function serverConnection(): PDO
-    {
-        return $this->makeConnection();
-    }
-
-    private function tenantConnection(string $database): PDO
-    {
-        return $this->makeConnection($database);
-    }
-
-    private function makeConnection(?string $database = null): PDO
-    {
-        $config = config('database.connections.mysql');
-        $dsn = 'mysql:host=' . $config['host'] . ';port=' . $config['port'];
-
-        if ($database !== null) {
-            $dsn .= ';dbname=' . $database;
-        }
-
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_EMULATE_PREPARES => false,
-        ];
-
-        if (defined('PDO::MYSQL_ATTR_MULTI_STATEMENTS')) {
-            $options[PDO::MYSQL_ATTR_MULTI_STATEMENTS] = true;
-        }
-
-        return new PDO($dsn, $config['username'], $config['password'], $options);
-    }
-
-    private function quoteIdentifier(string $identifier): string
-    {
-        return '`' . str_replace('`', '``', $identifier) . '`';
     }
 
     private function normalizeSubDomain(string $subDomain): string
