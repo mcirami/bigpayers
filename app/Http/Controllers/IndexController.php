@@ -37,7 +37,7 @@ class IndexController extends Controller
             return redirect('404');
         }
 
-        if (env('DB_DATABASE') != "chattrackpro") {
+        if (config('database.connections.mysql.database') != "chattrackpro") {
             if ($request->getHttpHost() !== $company->landing_page && $request->getHttpHost() !== $company->login_url) {
                 if ($company->getSubDomain() == "debug") {
                     return redirect('login');

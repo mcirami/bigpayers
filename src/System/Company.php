@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Services\LegacyDatabaseConfig;
 use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
@@ -96,11 +97,11 @@ class Company
     //gets sub domain of current host
     static function getSub()
     {
-	    return env("DB_DATABASE");
+	    return LegacyDatabaseConfig::primaryDatabase();
        /* $sub = explode(".", NativeRequest::server("HTTP_HOST"));
 
 		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
-			return env("DB_DATABASE");
+			return LegacyDatabaseConfig::primaryDatabase();
 		}
         return $sub[0];*/
     }

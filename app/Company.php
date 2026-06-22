@@ -72,7 +72,7 @@ class Company extends Model
 
     public static function currentSubDomain(): string
     {
-        return (string) NativeSession::get('COMPANY_SUBDOMAIN', env('DB_DATABASE'));
+        return (string) NativeSession::get('COMPANY_SUBDOMAIN', config('database.connections.mysql.database'));
     }
 
     public function offerUrls()

@@ -1382,9 +1382,27 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('$_SERVER', $contents);
         }
 
+        $legacyDatabaseConfig = File::get(app_path('Services/LegacyDatabaseConfig.php'));
+        $legacyDatabaseConnection = File::get(base_path('src/Database/DatabaseConnection.php'));
+        $legacyCompany = File::get(base_path('src/System/Company.php'));
+        $legacyConnection = File::get(base_path('src/System/Connection.php'));
+        $indexController = File::get(app_path('Http/Controllers/IndexController.php'));
         $legacySetup = File::get(base_path('src/System/Setup.php'));
         $geoIpUpdater = File::get(base_path('src/System/GeoIPUpdater.php'));
 
+        $this->assertStringContainsString("config(\"database.connections.mysql.{\$key}\")", $legacyDatabaseConfig);
+        $this->assertStringContainsString("config(\"database.connections.master.{\$key}\")", $legacyDatabaseConfig);
+        $this->assertStringContainsString('LegacyDatabaseConfig', $legacyDatabaseConnection);
+        $this->assertStringContainsString('LegacyDatabaseConfig', $legacyCompany);
+        $this->assertStringContainsString('LegacyDatabaseConfig', $legacyConnection);
+        $this->assertStringContainsString("config('database.connections.mysql.database')", $indexController);
+        $this->assertStringNotContainsString('DB_DATABASE', $legacyDatabaseConnection);
+        $this->assertStringNotContainsString('DB_DATABASE', $legacyCompany);
+        $this->assertStringNotContainsString('DB_DATABASE', $legacyConnection);
+        $this->assertStringNotContainsString('DB_DATABASE', $indexController);
+        $this->assertStringNotContainsString('DB_HOST', $legacyDatabaseConnection);
+        $this->assertStringNotContainsString('DB_HOST', $legacyConnection);
+        $this->assertStringNotContainsString('MASTER_DB_', $legacyDatabaseConnection);
         $this->assertStringContainsString('App\\Services\\BaseInstallSql', $legacySetup);
         $this->assertStringContainsString('App\\Services\\TenantDatabasePdoFactory', $legacySetup);
         $this->assertStringNotContainsString('resources/importDB.php', $legacySetup);

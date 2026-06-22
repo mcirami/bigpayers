@@ -3,6 +3,7 @@
 namespace LeadMax\TrackYourStats\System;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Services\LegacyDatabaseConfig;
 use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
@@ -58,10 +59,10 @@ class Connection
 
     private function loadEnv()
     {
-        self::$host = env("DB_HOST");
-        self::$user = env("DB_USERNAME");
-        self::$password = env("DB_PASSWORD");
-        self::$port = env("DB_PORT");
+        self::$host = LegacyDatabaseConfig::mysql('host');
+        self::$user = LegacyDatabaseConfig::mysql('username');
+        self::$password = LegacyDatabaseConfig::mysql('password');
+        self::$port = LegacyDatabaseConfig::mysql('port');
     }
 
     private function alreadyLoaded()
@@ -90,7 +91,7 @@ class Connection
     public function isLoginPage()
     {
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE login_url IN (:url, :wwwUrl)";
+        $sql = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE login_url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
         $loginURL = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
         $wwwLoginURL = 'www.' . $loginURL;
@@ -113,7 +114,7 @@ class Connection
     {
 
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT * FROM ". env('DB_DATABASE') . ".offer_urls WHERE url IN (:url, :wwwUrl)";
+        $sql = "SELECT * FROM ". LegacyDatabaseConfig::primaryDatabase() . ".offer_urls WHERE url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
         $host = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
         $wwwHost = 'www.' . $host;
@@ -128,7 +129,7 @@ class Connection
 
             $offerUrlEntry = $prep->fetch(PDO::FETCH_ASSOC);
 
-            $sqlC = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE id = :id";
+            $sqlC = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE id = :id";
 
             $prep = $db->prepare($sqlC);
             $prep->bindParam(":id", $offerUrlEntry["company_id"]);
@@ -156,7 +157,7 @@ class Connection
 
         define('LOCALHOST', self::$host);
         //define("DB_NAME", $this->subDomain);
-	    define("DB_NAME", env('DB_DATABASE'));
+	    define("DB_NAME", LegacyDatabaseConfig::primaryDatabase());
 
         define("DB_USERNAME", self::$user);
         define("DB_PASSWORD", self::$password);
@@ -217,7 +218,7 @@ class Connection
     private function isLanderPage()
     {
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT subDomain FROM ". env('DB_DATABASE') . ".company WHERE landing_page IN (:url, :wwwUrl)";
+        $sql = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE landing_page IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
         $loginURL = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
         $wwwLoginURL = 'www.' . $loginURL;

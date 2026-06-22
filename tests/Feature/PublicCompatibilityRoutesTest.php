@@ -146,7 +146,7 @@ class PublicCompatibilityRoutesTest extends TestCase
             $this->assertSame('tenant-a', Company::currentSubDomain());
 
             NativeSession::forget('COMPANY_SUBDOMAIN');
-            $this->assertSame((string) env('DB_DATABASE'), Company::currentSubDomain());
+            $this->assertSame((string) config('database.connections.mysql.database'), Company::currentSubDomain());
         } finally {
             if ($originalSubDomain === null) {
                 NativeSession::forget('COMPANY_SUBDOMAIN');
