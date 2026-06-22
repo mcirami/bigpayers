@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Ban;
 use App\Privilege;
+use App\Services\BrandingLabels;
 use App\User;
 use App\Click;
 use Carbon\Carbon;
@@ -538,7 +539,7 @@ class UserController extends Controller
 
         Bonus::assignUsersInheritableBonuses([$user->idrep], $validated['referrer_repid']);
 
-        return redirect('/user/pending')->with('message', config('branding.affiliate.singular') . ' activated successfully.');
+        return redirect('/user/pending')->with('message', BrandingLabels::affiliate() . ' activated successfully.');
     }
 
     public function viewBannedUsers()
@@ -960,11 +961,11 @@ class UserController extends Controller
         }
 
         if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_MANAGERS)) {
-            $options[Privilege::ROLE_MANAGER] = config('branding.account.singular');
+            $options[Privilege::ROLE_MANAGER] = BrandingLabels::account();
         }
 
         if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_AFFILIATES)) {
-            $options[Privilege::ROLE_AFFILIATE] = config('branding.affiliate.singular');
+            $options[Privilege::ROLE_AFFILIATE] = BrandingLabels::affiliate();
         }
 
         return $options;

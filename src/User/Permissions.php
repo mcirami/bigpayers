@@ -10,13 +10,14 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
+use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\NativeSession;
 use PDO;
 
-define('ACCOUNT_TYPE', config('branding.account.singular'));
-define('AFFILIATE_TYPE', config('branding.affiliate.singular'));
+define('ACCOUNT_TYPE', BrandingLabels::account());
+define('AFFILIATE_TYPE', BrandingLabels::affiliate());
 // permissions class to get permissions for entered user id
 
 class Permissions

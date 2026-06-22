@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
 use App\User;
 use Carbon\Carbon;
@@ -164,8 +165,8 @@ class NotificationController extends Controller
 
         if (CurrentUserSession::can(Permissions::CREATE_MANAGERS)) {
             $recipientGroups[] = [
-                'label' => config('branding.account.plural'),
-                'type' => config('branding.account.singular'),
+                'label' => BrandingLabels::accounts(),
+                'type' => BrandingLabels::account(),
                 'users' => User::query()
                     ->withRole(Privilege::ROLE_MANAGER)
                     ->orderBy('rep.user_name')
@@ -174,8 +175,8 @@ class NotificationController extends Controller
         }
 
         $recipientGroups[] = [
-            'label' => config('branding.affiliate.plural'),
-            'type' => config('branding.affiliate.singular'),
+            'label' => BrandingLabels::affiliates(),
+            'type' => BrandingLabels::affiliate(),
             'users' => User::query()
                 ->withRole(Privilege::ROLE_AFFILIATE)
                 ->myUsers()

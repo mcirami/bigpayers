@@ -6,6 +6,7 @@ use App\Company;
 use App\Console\Commands\MigrateAllInstalls;
 use App\Console\Commands\MigrateSingleCompany;
 use App\Services\BaseInstallSql;
+use App\Services\BrandingLabels;
 use App\Services\CompanyDatabaseConnectionManager;
 use App\Services\GeoIpDatabase;
 use App\Services\LegacyDatabaseConfig;
@@ -171,6 +172,25 @@ class MigrationCommandsTest extends TestCase
             'configured-but-missing.mmdb',
             GeoIpDatabase::readablePath(base_path('missing-root'), GeoIpDatabase::configuredPath())
         );
+    }
+
+    public function test_branding_labels_read_configured_account_and_affiliate_labels(): void
+    {
+        Config::set('branding.account.singular', 'Advertiser');
+        Config::set('branding.account.plural', 'Advertisers');
+        Config::set('branding.affiliate.singular', 'Partner');
+        Config::set('branding.affiliate.plural', 'Partners');
+
+        $this->assertSame('Advertiser', BrandingLabels::account());
+        $this->assertSame('Advertisers', BrandingLabels::accounts());
+        $this->assertSame('Partner', BrandingLabels::affiliate());
+        $this->assertSame('Partners', BrandingLabels::affiliates());
+        $this->assertSame([
+            'accountTypeLabel' => 'Advertiser',
+            'accountTypeLabelPlural' => 'Advertisers',
+            'affiliateTypeLabel' => 'Partner',
+            'affiliateTypeLabelPlural' => 'Partners',
+        ], BrandingLabels::viewData());
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void

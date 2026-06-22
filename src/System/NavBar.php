@@ -2,6 +2,7 @@
 
 namespace LeadMax\TrackYourStats\System;
 
+use App\Services\BrandingLabels;
 use App\Support\LegacyPermissions as Permissions;
 use App\Support\LegacyDate as Date;
 use App\Support\NativeRequest;
@@ -157,7 +158,7 @@ class NavBar
         $this->userType = $userType;
         $this->permissions = $permissions;;
         if (isset($this->menu['Reports']['Agent Report'])) {
-            $affiliateReportLabel = config('branding.affiliate.singular') . ' Report';
+            $affiliateReportLabel = BrandingLabels::affiliate() . ' Report';
             $reports = [];
 
             foreach ($this->menu['Reports'] as $key => $value) {

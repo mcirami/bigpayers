@@ -5,8 +5,8 @@
 </script>
 
 @php
-    $accountLabelPlural = $accountLabelPlural ?? ($accountTypeLabelPlural ?? config('branding.account.plural'));
-    $affiliateLabel = $affiliateLabel ?? ($affiliateTypeLabelPlural ?? config('branding.affiliate.plural'));
+    $accountLabelPlural = $accountLabelPlural ?? ($accountTypeLabelPlural ?? \App\Services\BrandingLabels::accounts());
+    $affiliateLabel = $affiliateLabel ?? ($affiliateTypeLabelPlural ?? \App\Services\BrandingLabels::affiliates());
 @endphp
 
 <label class="bp-form-field">

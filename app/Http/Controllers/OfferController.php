@@ -9,6 +9,7 @@ use App\Offer;
 use App\OfferURL;
 use App\PredefinedOfferRule;
 use App\Privilege;
+use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyConversionPostBackURL;
 use App\Support\LegacyDeductionPostBackURL;
@@ -321,7 +322,7 @@ class OfferController extends Controller
 			'mode' => 'create',
 			'pageTitle' => 'Create Offer',
 			'pageHeading' => 'Create a new offer',
-			'pageCopy' => 'Launch a new offer, choose how it appears in the directory, and assign it to the right ' . strtolower(config('branding.affiliate.plural')) . ' from the same screen.',
+			'pageCopy' => 'Launch a new offer, choose how it appears in the directory, and assign it to the right ' . strtolower(BrandingLabels::affiliates()) . ' from the same screen.',
 			'formAction' => '/offer/create',
 			'submitLabel' => 'Create offer',
 			'offer' => $offer,

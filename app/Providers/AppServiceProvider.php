@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Company;
 use App\Observers\UserObserver;
+use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyNavBar as NavBar;
 use App\Support\LegacyNotifications as Notifications;
@@ -23,12 +24,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         View::share('webroot', getWebRoot());
-        View::share([
-            'accountTypeLabel' => config('branding.account.singular'),
-            'accountTypeLabelPlural' => config('branding.account.plural'),
-            'affiliateTypeLabel' => config('branding.affiliate.singular'),
-            'affiliateTypeLabelPlural' => config('branding.affiliate.plural'),
-        ]);
+        View::share(BrandingLabels::viewData());
         view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
             $currentUser = CurrentUserSession::data();
             $currentUserId = CurrentUserSession::id();

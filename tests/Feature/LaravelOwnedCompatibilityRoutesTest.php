@@ -1778,6 +1778,36 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_account_and_affiliate_branding_labels_use_shared_boundary(): void
+    {
+        foreach ([
+            app_path(),
+            base_path('src'),
+            resource_path('views'),
+        ] as $directory) {
+            foreach (File::allFiles($directory) as $file) {
+                $path = $file->getPathname();
+
+                if ($path === app_path('Services/BrandingLabels.php')) {
+                    continue;
+                }
+
+                $contents = File::get($path);
+
+                foreach ([
+                    "config('branding.account.",
+                    "config('branding.affiliate.",
+                ] as $forbiddenPattern) {
+                    $this->assertStringNotContainsString(
+                        $forbiddenPattern,
+                        $contents,
+                        "{$path} should read account and affiliate branding labels through BrandingLabels."
+                    );
+                }
+            }
+        }
+    }
+
     public function test_runtime_source_reads_configuration_instead_of_env_directly(): void
     {
         foreach ([

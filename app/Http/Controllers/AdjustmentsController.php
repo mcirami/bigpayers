@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
 use App\Support\LegacyClick as Click;
@@ -18,8 +19,8 @@ class AdjustmentsController extends Controller
     {
         return view('salelog.add', [
             'defaultTimestamp' => Carbon::now('UTC')->format('Y-m-d\TH:i'),
-            'affiliateLabel' => config('branding.affiliate.singular'),
-            'affiliatePluralLabel' => config('branding.affiliate.plural'),
+            'affiliateLabel' => BrandingLabels::affiliate(),
+            'affiliatePluralLabel' => BrandingLabels::affiliates(),
         ]);
     }
 
