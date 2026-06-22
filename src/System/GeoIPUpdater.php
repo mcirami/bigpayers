@@ -1,5 +1,6 @@
 <?php namespace LeadMax\TrackYourStats\System;
 
+use App\Services\GeoIpDatabase;
 use GeoIp2\Record\MaxMind;
 
 /**
@@ -33,7 +34,7 @@ class GeoIPUpdater
             $this->downloadURL = $this->defaultURL.$this->licenseKey;
         }
 
-        $this->rootPath = config('services.geo.ip_database');
+        $this->rootPath = GeoIpDatabase::configuredPath();
     }
 
     public function testGeoDB($filePath)

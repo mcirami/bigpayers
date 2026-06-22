@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Sms;
 
 use App\Http\Controllers\Controller;
 use App\SMSClient;
+use App\Services\SmsApiEndpoint;
 use App\Support\CurrentUserSession;
 use App\User;
 use GuzzleHttp\Client;
@@ -40,7 +41,7 @@ class SmsClientController extends Controller
 
 
         try {
-            $response = $http->post(rtrim((string) config('services.sms.base_url'), '/').'/worker/create', [
+            $response = $http->post(SmsApiEndpoint::url('/worker/create'), [
                     'form_params' => $request->all(),
                 ]
             );

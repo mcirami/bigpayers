@@ -8,6 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Clicks;
 
+use App\Services\GeoIpDatabase;
 use GeoIp2\Database\Reader;
 use Illuminate\Support\Facades\Cache;
 use MaxMind\Db\Reader\InvalidDatabaseException;
@@ -47,7 +48,7 @@ class ClickGeo
 	protected static function reader(): Reader
 	{
 		if (self::$reader === null) {
-			self::$reader = new Reader(config('services.geo.ip_database'));
+			self::$reader = new Reader(GeoIpDatabase::configuredPath());
 		}
 
 		return self::$reader;

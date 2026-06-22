@@ -7,7 +7,9 @@ use App\Console\Commands\MigrateAllInstalls;
 use App\Console\Commands\MigrateSingleCompany;
 use App\Services\BaseInstallSql;
 use App\Services\CompanyDatabaseConnectionManager;
+use App\Services\GeoIpDatabase;
 use App\Services\LegacyDatabaseConfig;
+use App\Services\SmsApiEndpoint;
 use App\Services\TenantDatabasePdoFactory;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -141,6 +143,34 @@ class MigrationCommandsTest extends TestCase
             $this->assertStringContainsString($environmentName, $documentation);
             $this->assertStringContainsString($configKey, $documentation);
         }
+    }
+
+    public function test_sms_api_endpoint_builds_configured_urls(): void
+    {
+        Config::set('services.sms.base_url', 'https://sms.example.test/');
+
+        $this->assertSame('https://sms.example.test', SmsApiEndpoint::baseUrl());
+        $this->assertSame('https://sms.example.test/worker/create', SmsApiEndpoint::url('/worker/create'));
+        $this->assertSame('https://sms.example.test/api/messages/send', SmsApiEndpoint::url('api/messages/send'));
+    }
+
+    public function test_geo_ip_database_resolves_configured_and_fallback_paths(): void
+    {
+        Config::set('services.geo.ip_database', __FILE__);
+
+        $this->assertSame(__FILE__, GeoIpDatabase::configuredPath());
+        $this->assertSame(__FILE__, GeoIpDatabase::readablePath(base_path()));
+
+        Config::set('services.geo.ip_database', 'configured-but-missing.mmdb');
+
+        $this->assertSame(
+            'resources/GeoIP2-City.mmdb',
+            GeoIpDatabase::readablePath(base_path('missing-root'))
+        );
+        $this->assertSame(
+            'configured-but-missing.mmdb',
+            GeoIpDatabase::readablePath(base_path('missing-root'), GeoIpDatabase::configuredPath())
+        );
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void

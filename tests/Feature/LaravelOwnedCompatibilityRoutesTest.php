@@ -527,7 +527,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $geoRule = File::get(base_path('src/Offer/Rules/Geo.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $geoRule);
-        $this->assertStringContainsString("config('services.geo.ip_database')", $geoRule);
+        $this->assertStringContainsString('App\\Services\\GeoIpDatabase', $geoRule);
+        $this->assertStringNotContainsString("config('services.geo.ip_database')", $geoRule);
         $this->assertStringNotContainsString('GEO_IP_DATABASE', $geoRule);
         $this->assertStringNotContainsString('$_SERVER', $geoRule);
     }
@@ -656,7 +657,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $smsClientController = File::get(app_path('Http/Controllers/Sms/SmsClientController.php'));
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $smsApiController);
-        $this->assertStringContainsString("config('services.sms.base_url')", $smsClientController);
+        $this->assertStringContainsString('App\\Services\\SmsApiEndpoint', $smsClientController);
+        $this->assertStringNotContainsString("config('services.sms.base_url')", $smsClientController);
         $this->assertStringNotContainsString('SMS_URL', $smsClientController);
     }
 
@@ -681,7 +683,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $text69 = File::get(app_path('Services/SMS/Text69.php'));
 
-        $this->assertStringContainsString("config('services.sms.base_url')", $text69);
+        $this->assertStringContainsString('App\\Services\\SmsApiEndpoint', $text69);
+        $this->assertStringNotContainsString("config('services.sms.base_url')", $text69);
         $this->assertStringNotContainsString('SMS_URL', $text69);
     }
 
@@ -781,7 +784,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $click);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $click);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $click);
-        $this->assertStringContainsString("config('services.geo.ip_database')", $click);
+        $this->assertStringContainsString('App\\Services\\GeoIpDatabase', $click);
+        $this->assertStringNotContainsString("config('services.geo.ip_database')", $click);
         $this->assertStringNotContainsString('GEO_IP_DATABASE', $click);
         $this->assertStringNotContainsString('$_GET', $click);
         $this->assertStringNotContainsString('$_SERVER', $click);
@@ -1408,7 +1412,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Services\\TenantDatabasePdoFactory', $legacySetup);
         $this->assertStringNotContainsString('resources/importDB.php', $legacySetup);
         $this->assertStringNotContainsString('tys_create_db', $legacySetup);
-        $this->assertStringContainsString("config('services.geo.ip_database')", $geoIpUpdater);
+        $this->assertStringContainsString('App\\Services\\GeoIpDatabase', $geoIpUpdater);
+        $this->assertStringNotContainsString("config('services.geo.ip_database')", $geoIpUpdater);
         $this->assertStringNotContainsString('GEO_IP_DATABASE', $geoIpUpdater);
     }
 

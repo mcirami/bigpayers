@@ -9,18 +9,13 @@
 namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
+use App\Services\GeoIpDatabase;
 use App\Support\NativeRequest;
 use GeoIp2\Database\Reader;
 use MaxMind\Db\Reader\InvalidDatabaseException;
 
 class Geo implements Rule
 {
-    private const GEO_DB_CANDIDATES = [
-        'storage/GeoIP2-City.mmdb',
-        'public/GeoIP2-City.mmdb',
-        'resources/GeoIP2-City.mmdb',
-    ];
-
     // countries list from github
     static $countries = array(
         "AF" => "Afghanistan",
@@ -303,23 +298,7 @@ class Geo implements Rule
 
     private function resolveGeoDatabasePath(): string
     {
-        $configuredPath = config('services.geo.ip_database');
-
-        if (is_string($configuredPath) && $configuredPath !== '' && is_readable($configuredPath)) {
-            return $configuredPath;
-        }
-
-        $root = dirname(__DIR__, 4);
-
-        foreach (self::GEO_DB_CANDIDATES as $candidate) {
-            $path = $root . DIRECTORY_SEPARATOR . $candidate;
-
-            if (is_readable($path)) {
-                return $path;
-            }
-        }
-
-        return (string) $configuredPath;
+        return GeoIpDatabase::readablePath(dirname(__DIR__, 4), GeoIpDatabase::configuredPath());
     }
 
     public function getRedirectOffer()

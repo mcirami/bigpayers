@@ -1,6 +1,7 @@
 <?php
 namespace LeadMax\TrackYourStats\Clicks;
 
+use App\Services\GeoIpDatabase;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\NativeRequest;
 use PDO;
@@ -25,11 +26,6 @@ class Click
 
 	public $subVarArray;
 
-    private const GEO_DB_CANDIDATES = [
-        'storage/GeoIP2-City.mmdb',
-        'public/GeoIP2-City.mmdb',
-        'resources/GeoIP2-City.mmdb',
-    ];
     public $queryString;
 
 
@@ -189,23 +185,7 @@ class Click
 
     private function resolveGeoDatabasePath(): string
     {
-        $configuredPath = config('services.geo.ip_database');
-
-        if (is_string($configuredPath) && $configuredPath !== '' && is_readable($configuredPath)) {
-            return $configuredPath;
-        }
-
-        $root = dirname(__DIR__, 2);
-
-        foreach (self::GEO_DB_CANDIDATES as $candidate) {
-            $path = $root . DIRECTORY_SEPARATOR . $candidate;
-
-            if (is_readable($path)) {
-                return $path;
-            }
-        }
-
-        return 'resources/GeoIP2-City.mmdb';
+        return GeoIpDatabase::readablePath(dirname(__DIR__, 2));
     }
 
     // SELECT ONE
