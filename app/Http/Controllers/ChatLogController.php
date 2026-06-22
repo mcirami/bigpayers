@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use App\Offer;
+use App\Services\SaleLogImageStorage;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyClick as Click;
 use App\Support\LegacyConversion as Conversion;
@@ -175,7 +176,7 @@ class ChatLogController extends Controller
 
     private function saleLogDirectory(int $saleLogId): string
     {
-        return config('filesystems.sale_log_directory').'/'.$this->companySubDomain()."/{$saleLogId}";
+        return SaleLogImageStorage::saleLogDirectory($saleLogId, $this->companySubDomain());
     }
 
     private function companySubDomain(): string

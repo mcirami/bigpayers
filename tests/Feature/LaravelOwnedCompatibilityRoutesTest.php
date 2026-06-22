@@ -1021,7 +1021,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $saleLog = File::get(base_path('src/Offer/SaleLog.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $saleLog);
-        $this->assertStringContainsString("config('filesystems.sale_log_directory')", $saleLog);
+        $this->assertStringContainsString('App\\Services\\SaleLogImageStorage', $saleLog);
+        $this->assertStringNotContainsString("config('filesystems.sale_log_directory')", $saleLog);
         $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $saleLog);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $saleLog);
     }
@@ -1618,13 +1619,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $controller = File::get((new ReflectionClass(ChatLogController::class))->getFileName());
 
         $this->assertStringContainsString('App\\Support\\LegacyImagesUploader as ImagesUploader', $controller);
-        $this->assertStringContainsString("config('filesystems.sale_log_directory')", $controller);
+        $this->assertStringContainsString('App\\Services\\SaleLogImageStorage', $controller);
+        $this->assertStringNotContainsString("config('filesystems.sale_log_directory')", $controller);
         $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader', $controller);
 
         $imagesUploader = File::get(base_path('src/System/Files/ImagesUploader.php'));
 
-        $this->assertStringContainsString("config('filesystems.sale_log_directory')", $imagesUploader);
+        $this->assertStringContainsString('App\\Services\\SaleLogImageStorage', $imagesUploader);
+        $this->assertStringNotContainsString("config('filesystems.sale_log_directory')", $imagesUploader);
         $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $imagesUploader);
 
         $this->assertStringContainsString(

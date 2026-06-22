@@ -6,6 +6,7 @@ use App\Company;
 use App\Http\Controllers\CompanyCssController;
 use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\PublicCompatibilityController;
+use App\Services\SaleLogImageStorage;
 use App\Support\NativeSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -147,6 +148,28 @@ class PublicCompatibilityRoutesTest extends TestCase
 
             NativeSession::forget('COMPANY_SUBDOMAIN');
             $this->assertSame((string) config('database.connections.mysql.database'), Company::currentSubDomain());
+        } finally {
+            if ($originalSubDomain === null) {
+                NativeSession::forget('COMPANY_SUBDOMAIN');
+            } else {
+                NativeSession::put('COMPANY_SUBDOMAIN', $originalSubDomain);
+            }
+        }
+    }
+
+    public function test_sale_log_image_storage_builds_configured_paths(): void
+    {
+        $originalSubDomain = NativeSession::get('COMPANY_SUBDOMAIN');
+
+        try {
+            config(['filesystems.sale_log_directory' => '/var/bigpayers/sale-logs/']);
+            NativeSession::put('COMPANY_SUBDOMAIN', 'tenant-a');
+
+            $this->assertSame('/var/bigpayers/sale-logs', SaleLogImageStorage::root());
+            $this->assertSame('/var/bigpayers/sale-logs/tenant-a', SaleLogImageStorage::companyDirectory());
+            $this->assertSame('/var/bigpayers/sale-logs/tenant-b', SaleLogImageStorage::companyDirectory('tenant-b'));
+            $this->assertSame('/var/bigpayers/sale-logs/tenant-a/42', SaleLogImageStorage::saleLogDirectory(42));
+            $this->assertSame('/var/bigpayers/sale-logs/tenant-b/42/image.png', SaleLogImageStorage::saleLogFilePath(42, '../image.png', 'tenant-b'));
         } finally {
             if ($originalSubDomain === null) {
                 NativeSession::forget('COMPANY_SUBDOMAIN');

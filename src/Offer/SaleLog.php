@@ -9,6 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 
+use App\Services\SaleLogImageStorage;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyConversion as Conversion;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
@@ -81,7 +82,7 @@ class SaleLog
 
     public static function getImageURLsFromSaleId($sale_id)
     {
-        $files = scandir(config('filesystems.sale_log_directory').'/'.\App\Company::currentSubDomain().'/'.$sale_id);
+        $files = scandir(SaleLogImageStorage::saleLogDirectory($sale_id));
 
         $filtered = [];
 
@@ -137,7 +138,7 @@ class SaleLog
 
     public function renameSaleImage($fileName)
     {
-        return unlink(config('filesystems.sale_log_directory')."/$this->id/{$fileName}");
+        return unlink(SaleLogImageStorage::root()."/$this->id/{$fileName}");
     }
 
 }
