@@ -1778,7 +1778,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
-    public function test_account_and_affiliate_branding_labels_use_shared_boundary(): void
+    public function test_runtime_branding_reads_use_shared_boundaries(): void
     {
         foreach ([
             app_path(),
@@ -1788,7 +1788,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             foreach (File::allFiles($directory) as $file) {
                 $path = $file->getPathname();
 
-                if ($path === app_path('Services/BrandingLabels.php')) {
+                if (in_array($path, [
+                    app_path('Services/BrandingLabels.php'),
+                    app_path('Services/LoginBranding.php'),
+                ], true)) {
                     continue;
                 }
 
@@ -1797,11 +1800,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 foreach ([
                     "config('branding.account.",
                     "config('branding.affiliate.",
+                    "config('branding.login.",
                 ] as $forbiddenPattern) {
                     $this->assertStringNotContainsString(
                         $forbiddenPattern,
                         $contents,
-                        "{$path} should read account and affiliate branding labels through BrandingLabels."
+                        "{$path} should read runtime branding values through shared branding boundaries."
                     );
                 }
             }

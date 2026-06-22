@@ -10,6 +10,7 @@ use App\Services\BrandingLabels;
 use App\Services\CompanyDatabaseConnectionManager;
 use App\Services\GeoIpDatabase;
 use App\Services\LegacyDatabaseConfig;
+use App\Services\LoginBranding;
 use App\Services\SmsApiEndpoint;
 use App\Services\TenantDatabasePdoFactory;
 use Illuminate\Console\Command;
@@ -191,6 +192,26 @@ class MigrationCommandsTest extends TestCase
             'affiliateTypeLabel' => 'Partner',
             'affiliateTypeLabelPlural' => 'Partners',
         ], BrandingLabels::viewData());
+    }
+
+    public function test_login_branding_reads_configured_copy(): void
+    {
+        Config::set('branding.login.page_text', 'Welcome');
+        Config::set('branding.login.button_text', 'Login Now');
+        Config::set('branding.login.forgot_password_link_text', 'Need help?');
+        Config::set('branding.login.forgot_password_page_text', 'Recover access');
+        Config::set('branding.login.forgot_password_button_text', 'Send reset');
+
+        $this->assertSame('Welcome', LoginBranding::pageText());
+        $this->assertSame('Login Now', LoginBranding::buttonText());
+        $this->assertSame('Need help?', LoginBranding::forgotPasswordLinkText());
+        $this->assertSame('Recover access', LoginBranding::forgotPasswordPageText());
+        $this->assertSame('Send reset', LoginBranding::forgotPasswordButtonText());
+        $this->assertSame('Back to login', LoginBranding::returnToLoginText());
+
+        Config::set('branding.login.button_text', 'Sign in');
+
+        $this->assertSame('Return to login', LoginBranding::returnToLoginText());
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void
