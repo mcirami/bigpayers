@@ -65,6 +65,10 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
+            'Runtime source reads environment-backed values through Laravel config.',
+            $output
+        );
+        $this->assertStringContainsString(
             'Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.',
             $output
         );
@@ -992,6 +996,41 @@ PHP,
             $errors->all()
         );
         $this->assertCount(5, $errors);
+    }
+
+    public function test_runtime_env_dependency_errors_report_forbidden_sources(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'runtimeEnvDependencyErrorsFor',
+            [[
+                'app/Http/Controllers/BadController.php' => "return env('DB_DATABASE');",
+                'resources/views/bad.blade.php' => "{{ env('APP_ENV') }}",
+                'routes/bad.php' => "Route::get('/bad', fn () => env('APP_DEBUG'));",
+                'src/BadLegacyHelper.php' => "return env('SALE_LOG_DIRECTORY');",
+                'app/Http/Controllers/CleanController.php' => "return config('database.connections.mysql.database');",
+            ]]
+        );
+
+        $this->assertContains(
+            'app/Http/Controllers/BadController.php: Use Laravel config values instead of reading environment variables directly at runtime.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'resources/views/bad.blade.php: Use Laravel config values instead of reading environment variables directly at runtime.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'routes/bad.php: Use Laravel config values instead of reading environment variables directly at runtime.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'src/BadLegacyHelper.php: Use Laravel config values instead of reading environment variables directly at runtime.',
+            $errors->all()
+        );
+        $this->assertCount(4, $errors);
     }
 
     public function test_legacy_source_classes_do_not_read_native_superglobals_directly(): void
@@ -2082,6 +2121,7 @@ PHP,
             'legacySessionForbiddenPatterns',
             'nativeSessionForbiddenPatterns',
             'nativeSessionAllowedFiles',
+            'runtimeEnvForbiddenPatterns',
             'legacyPermissionsForbiddenPatterns',
             'legacyClickGeoForbiddenPatterns',
             'legacyClickForbiddenPatterns',

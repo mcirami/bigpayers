@@ -157,6 +157,10 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/NativeRequest.php' => 'The dedicated boundary around native PHP request superglobal bridges for legacy classes.',
     ];
 
+    private array $runtimeEnvForbiddenPatterns = [
+        'env(' => 'Use Laravel config values instead of reading environment variables directly at runtime.',
+    ];
+
     private array $legacyPermissionsForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\User\\Permissions' => 'Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
         'Permissions::loadFromSession()' => 'Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
@@ -751,6 +755,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $runtimeEnvDependencyErrors = $this->runtimeEnvDependencyErrors();
+
+        if ($runtimeEnvDependencyErrors->isNotEmpty()) {
+            $this->error('Runtime source still reads environment variables directly:');
+            $runtimeEnvDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacySourceNativeSuperglobalErrors = $this->legacySourceNativeSuperglobalErrors();
 
         if ($legacySourceNativeSuperglobalErrors->isNotEmpty()) {
@@ -1260,6 +1273,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code does not reference the retired legacy company session loader.');
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
         $this->info('Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.');
+        $this->info('Runtime source reads environment-backed values through Laravel config.');
         $this->info('Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.');
         $this->info('Legacy PHP entrypoint files do not execute legacy classes or read native PHP superglobals directly.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
@@ -1731,6 +1745,33 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
+                    if (str_contains($contents, $pattern)) {
+                        $errors[] = "{$relativePath}: {$message}";
+                    }
+                }
+
+                return $errors;
+            })
+            ->values();
+    }
+
+    private function runtimeEnvDependencyErrors()
+    {
+        return $this->runtimeEnvDependencyErrorsFor($this->sourceFilesFromDirectories([
+            'app',
+            'resources/views',
+            'routes',
+            'src',
+        ]));
+    }
+
+    private function runtimeEnvDependencyErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->flatMap(function (string $contents, string $relativePath) {
+                $errors = [];
+
+                foreach ($this->runtimeEnvForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

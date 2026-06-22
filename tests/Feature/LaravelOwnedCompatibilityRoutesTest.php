@@ -1770,6 +1770,31 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_runtime_source_reads_configuration_instead_of_env_directly(): void
+    {
+        foreach ([
+            app_path(),
+            base_path('src'),
+            base_path('routes'),
+        ] as $directory) {
+            foreach (File::allFiles($directory) as $file) {
+                $path = $file->getPathname();
+
+                if ($path === app_path('Console/Commands/AuditLegacyFallbackCoverage.php')) {
+                    continue;
+                }
+
+                $contents = File::get($path);
+
+                $this->assertStringNotContainsString(
+                    'env(',
+                    $contents,
+                    "{$path} should read Laravel config instead of env() directly."
+                );
+            }
+        }
+    }
+
     private function assertRouteAction(string $uri, string $method, string $expectedAction): void
     {
         $this->assertSame(

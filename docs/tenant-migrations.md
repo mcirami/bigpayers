@@ -56,6 +56,7 @@ The schema dump is resolved through `App\Services\BaseInstallSql`. By default it
 uses `base_install.sql` at the project root, then `storage/base_install.sql`. Set
 `TYS_BASE_INSTALL`, surfaced as `provisioning.base_install_sql`, to an absolute
 path or to a storage-relative filename when a specific dump file should be used.
+See `docs/runtime-configuration.md` for the broader runtime configuration map.
 
 Do not use the tenant migration commands as a provisioning substitute; they
 expect the company database to already exist.

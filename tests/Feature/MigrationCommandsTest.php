@@ -124,6 +124,25 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('master_catalog', LegacyDatabaseConfig::master('database'));
     }
 
+    public function test_runtime_configuration_documentation_lists_configured_environment_boundaries(): void
+    {
+        $documentation = File::get(base_path('docs/runtime-configuration.md'));
+
+        foreach ([
+            'TYS_BASE_INSTALL' => 'provisioning.base_install_sql',
+            'SALE_LOG_DIRECTORY' => 'filesystems.sale_log_directory',
+            'GEO_IP_DATABASE' => 'services.geo.ip_database',
+            'SMS_URL' => 'services.sms.base_url',
+            'LOGIN_PAGE_TEXT' => 'branding.login.page_text',
+            'FORGOT_PASS_PAGE_BUTTON_TEXT' => 'branding.login.forgot_password_button_text',
+            'database.connections.mysql' => 'App\Services\LegacyDatabaseConfig',
+            'database.connections.master' => 'App\Services\LegacyDatabaseConfig',
+        ] as $environmentName => $configKey) {
+            $this->assertStringContainsString($environmentName, $documentation);
+            $this->assertStringContainsString($configKey, $documentation);
+        }
+    }
+
     public function test_migration_commands_use_the_company_database_connection_manager(): void
     {
         $commands = [
