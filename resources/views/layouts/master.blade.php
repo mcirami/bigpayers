@@ -52,7 +52,7 @@
     <script type="text/javascript" src="<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-@if(!env('APP_DEBUG') && env('APP_ENV') == 'production')
+@if(!config('app.debug') && config('app.env') == 'production')
     <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127417577-1"></script>
         <script>window.dataLayer = window.dataLayer || [];

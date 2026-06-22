@@ -288,6 +288,20 @@ class PublicCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_blade_views_read_configuration_instead_of_env_directly(): void
+    {
+        foreach (File::allFiles(resource_path('views')) as $file) {
+            $path = $file->getPathname();
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString(
+                'env(',
+                $contents,
+                "{$path} should read Laravel config instead of env() directly."
+            );
+        }
+    }
+
     public function test_chat_log_controller_does_not_load_legacy_company_from_session(): void
     {
         $controller = File::get(app_path('Http/Controllers/ChatLogController.php'));

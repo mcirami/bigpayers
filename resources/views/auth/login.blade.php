@@ -59,7 +59,7 @@
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
             <p class="login-shell__eyebrow">Affiliate login</p>
-            <h1 class="login-shell__title value_span2">{{ env('LOGIN_PAGE_TEXT') }}</h1>
+            <h1 class="login-shell__title value_span2">{{ config('branding.login.page_text') }}</h1>
             <p class="login-shell__copy">
                 Access your dashboard, reporting, offers, and account tools from a login experience that now follows your install’s live brand settings.
             </p>
@@ -112,11 +112,11 @@
                 </label>
 
                 <div class="login-form__row">
-                    <a class="login-form__link value_span5" href="/forgot-password">{{ env('FORGOT_PASS_LINK_TEXT') }}</a>
+                    <a class="login-form__link value_span5" href="/forgot-password">{{ config('branding.login.forgot_password_link_text') }}</a>
                 </div>
 
                 <button type="submit" name="button" class="login-form__submit value_span11 value_span2 value_span4">
-                    {{ env('LOGIN_PAGE_BUTTON_TEXT') }}
+                    {{ config('branding.login.button_text') }}
                 </button>
             </form>
         </div>

@@ -7,6 +7,7 @@ use App\Console\Commands\MigrateAllInstalls;
 use App\Console\Commands\MigrateSingleCompany;
 use App\Services\BaseInstallSql;
 use App\Services\CompanyDatabaseConnectionManager;
+use App\Services\LegacyDatabaseConfig;
 use App\Services\TenantDatabasePdoFactory;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -95,6 +96,32 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('importing', $connectionName);
         $this->assertSame('tenant_import', Config::get('database.connections.importing.database'));
         $this->assertSame('db-host', Config::get('database.connections.importing.host'));
+    }
+
+    public function test_legacy_database_config_reads_laravel_mysql_and_master_connections(): void
+    {
+        Config::set('database.connections.mysql', [
+            'driver' => 'mysql',
+            'host' => 'tenant-db-host',
+            'port' => '3307',
+            'database' => 'tenant_master',
+            'username' => 'tenant-user',
+            'password' => 'tenant-pass',
+        ]);
+        Config::set('database.connections.master', [
+            'driver' => 'mysql',
+            'host' => 'master-db-host',
+            'port' => '3308',
+            'database' => 'master_catalog',
+            'username' => 'master-user',
+            'password' => 'master-pass',
+        ]);
+
+        $this->assertSame('tenant-db-host', LegacyDatabaseConfig::mysql('host'));
+        $this->assertSame('tenant_master', LegacyDatabaseConfig::mysql('database'));
+        $this->assertSame('tenant_master', LegacyDatabaseConfig::primaryDatabase());
+        $this->assertSame('master-db-host', LegacyDatabaseConfig::master('host'));
+        $this->assertSame('master_catalog', LegacyDatabaseConfig::master('database'));
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void

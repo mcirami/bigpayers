@@ -59,7 +59,7 @@
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
             <p class="login-shell__eyebrow">Account recovery</p>
-            <h1 class="login-shell__title value_span2">{{ env('FORGOT_PASS_PAGE_TEXT') }}</h1>
+            <h1 class="login-shell__title value_span2">{{ config('branding.login.forgot_password_page_text') }}</h1>
             <p class="login-shell__copy">
                 Request a password reset link or choose a new password if you already have a valid reset token.
             </p>
@@ -127,11 +127,11 @@
                 @endif
 
                 <div class="login-form__row">
-                    <a class="login-form__link value_span5" href="/login">{{ env('LOGIN_PAGE_BUTTON_TEXT') === 'Login Now' ? 'Back to login' : 'Return to login' }}</a>
+                    <a class="login-form__link value_span5" href="/login">{{ config('branding.login.button_text') === 'Login Now' ? 'Back to login' : 'Return to login' }}</a>
                 </div>
 
                 <button type="submit" name="button" class="login-form__submit value_span11 value_span2 value_span4">
-                    {{ env('FORGOT_PASS_PAGE_BUTTON_TEXT') }}
+                    {{ config('branding.login.forgot_password_button_text') }}
                 </button>
             </form>
         </div>
