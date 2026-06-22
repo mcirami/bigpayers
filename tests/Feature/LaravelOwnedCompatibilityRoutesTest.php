@@ -1065,6 +1065,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             'LeadMax\\TrackYourStats\\Table\\Date',
             File::get(app_path('Support/LegacyDate.php'))
         );
+
+        $legacyDate = File::get(base_path('src/Table/Date.php'));
+
+        $this->assertStringContainsString('App\\Support\\NativeRequest', $legacyDate);
+        $this->assertStringNotContainsString('request()->cookie', $legacyDate);
+        $this->assertStringNotContainsString('$_COOKIE', $legacyDate);
     }
 
     public function test_modern_paginate_reads_use_legacy_paginate_boundary(): void
@@ -1810,6 +1816,25 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                     );
                 }
             }
+        }
+    }
+
+    public function test_legacy_source_reads_request_data_through_native_request_boundary(): void
+    {
+        foreach (File::allFiles(base_path('src')) as $file) {
+            $path = $file->getPathname();
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString(
+                'request(',
+                $contents,
+                "{$path} should use NativeRequest instead of Laravel's request() helper."
+            );
+            $this->assertStringNotContainsString(
+                'request()->',
+                $contents,
+                "{$path} should use NativeRequest instead of Laravel's request() helper."
+            );
         }
     }
 

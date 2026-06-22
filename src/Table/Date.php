@@ -4,6 +4,7 @@ namespace LeadMax\TrackYourStats\Table;
 
 // class to hold date functions
 
+use App\Support\NativeRequest;
 use Carbon\Carbon;
 
 class Date
@@ -17,7 +18,7 @@ class Date
 
     static function today()
     {
-        $timezone = request()->cookie("timezone", "America/New_York");
+        $timezone = NativeRequest::cookie("timezone", "America/New_York");
         $date = Carbon::today($timezone);
 
 
@@ -42,7 +43,7 @@ class Date
 
     static function tomorrow()
     {
-        $timezone = request()->cookie("timezone", "America/New_York");
+        $timezone = NativeRequest::cookie("timezone", "America/New_York");
         $date = Carbon::tomorrow($timezone);
 
         return $date->format("Y-m-d");

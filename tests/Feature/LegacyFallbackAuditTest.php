@@ -1637,7 +1637,7 @@ PHP,
             $errors->all()
         );
         $this->assertContains(
-            'src/Table/Date.php: Use Laravel request cookie helpers instead of reading the timezone cookie directly.',
+            'src/Table/Date.php: Use App\\Support\\NativeRequest::cookie() instead of reading the timezone cookie directly.',
             $errors->all()
         );
         $this->assertCount(3, $errors);
