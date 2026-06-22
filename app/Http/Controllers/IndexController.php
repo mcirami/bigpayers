@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Services\LegacyDatabaseConfig;
 use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
 use App\Support\LegacyIPBlackList as IPBlackList;
 use App\Support\LegacyLander as Lander;
@@ -37,7 +38,7 @@ class IndexController extends Controller
             return redirect('404');
         }
 
-        if (config('database.connections.mysql.database') != "chattrackpro") {
+        if (LegacyDatabaseConfig::primaryDatabase() != "chattrackpro") {
             if ($request->getHttpHost() !== $company->landing_page && $request->getHttpHost() !== $company->login_url) {
                 if ($company->getSubDomain() == "debug") {
                     return redirect('login');

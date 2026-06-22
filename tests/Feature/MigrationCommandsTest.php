@@ -12,6 +12,7 @@ use App\Services\GeoIpDatabase;
 use App\Services\LegacyDatabaseConfig;
 use App\Services\LoginBranding;
 use App\Services\SmsApiEndpoint;
+use App\Services\SmsPoolConfig;
 use App\Services\TenantDatabasePdoFactory;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -122,6 +123,7 @@ class MigrationCommandsTest extends TestCase
         ]);
 
         $this->assertSame('tenant-db-host', LegacyDatabaseConfig::mysql('host'));
+        $this->assertSame('tenant-db-host', LegacyDatabaseConfig::mysqlConnection()['host']);
         $this->assertSame('tenant_master', LegacyDatabaseConfig::mysql('database'));
         $this->assertSame('tenant_master', LegacyDatabaseConfig::primaryDatabase());
         $this->assertSame('master-db-host', LegacyDatabaseConfig::master('host'));
@@ -212,6 +214,17 @@ class MigrationCommandsTest extends TestCase
         Config::set('branding.login.button_text', 'Sign in');
 
         $this->assertSame('Return to login', LoginBranding::returnToLoginText());
+    }
+
+    public function test_sms_pool_config_builds_configured_urls(): void
+    {
+        Config::set('services.smspool.base_url', 'https://pool.example.test/');
+        Config::set('services.smspool.key', 'secret-key');
+
+        $this->assertSame('https://pool.example.test', SmsPoolConfig::baseUrl());
+        $this->assertSame('secret-key', SmsPoolConfig::apiKey());
+        $this->assertSame('https://pool.example.test/purchase/sms', SmsPoolConfig::url('/purchase/sms'));
+        $this->assertSame('https://pool.example.test/sms/check', SmsPoolConfig::url('sms/check'));
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void

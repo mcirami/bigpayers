@@ -1400,7 +1400,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('LegacyDatabaseConfig', $legacyDatabaseConnection);
         $this->assertStringContainsString('LegacyDatabaseConfig', $legacyCompany);
         $this->assertStringContainsString('LegacyDatabaseConfig', $legacyConnection);
-        $this->assertStringContainsString("config('database.connections.mysql.database')", $indexController);
+        $this->assertStringContainsString('LegacyDatabaseConfig', $indexController);
+        $this->assertStringNotContainsString("config('database.connections.mysql.database')", $indexController);
         $this->assertStringNotContainsString('DB_DATABASE', $legacyDatabaseConnection);
         $this->assertStringNotContainsString('DB_DATABASE', $legacyCompany);
         $this->assertStringNotContainsString('DB_DATABASE', $legacyConnection);
@@ -1809,6 +1810,19 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                     );
                 }
             }
+        }
+    }
+
+    public function test_sms_pool_runtime_config_reads_use_shared_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/SmsOrderController.php'),
+            app_path('Services/SmsPoolService.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('SmsPool', $contents);
+            $this->assertStringNotContainsString("config('services.smspool.", $contents);
         }
     }
 

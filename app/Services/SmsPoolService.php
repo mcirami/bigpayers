@@ -13,8 +13,8 @@ class SmsPoolService {
 
 	public function __construct()
 	{
-		$this->baseUrl = rtrim(config('services.smspool.base_url'), '/');
-		$this->apiKey = config('services.smspool.key');
+		$this->baseUrl = SmsPoolConfig::baseUrl();
+		$this->apiKey = SmsPoolConfig::apiKey();
 	}
 
 	protected function post(string $endpoint, array $data = []): array

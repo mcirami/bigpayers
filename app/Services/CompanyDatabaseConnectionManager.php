@@ -32,7 +32,7 @@ class CompanyDatabaseConnectionManager
 
     public function connectionConfig(string $database): array
     {
-        return array_merge(config('database.connections.mysql'), [
+        return array_merge(LegacyDatabaseConfig::mysqlConnection(), [
             'database' => $database,
         ]);
     }

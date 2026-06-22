@@ -4,6 +4,11 @@ namespace App\Services;
 
 class LegacyDatabaseConfig
 {
+    public static function mysqlConnection(): array
+    {
+        return (array) config('database.connections.mysql');
+    }
+
     public static function mysql(string $key)
     {
         return config("database.connections.mysql.{$key}");
