@@ -221,9 +221,13 @@ class PublicCompatibilityRoutesTest extends TestCase
         }
 
         $signup = File::get(resource_path('views/auth/signup.blade.php'));
+        $login = File::get(resource_path('views/auth/login.blade.php'));
 
         $this->assertStringContainsString('action="/signup"', $signup);
         $this->assertStringNotContainsString("request()->path() === 'signup.php'", $signup);
+        $this->assertStringContainsString('$redirectUri', $login);
+        $this->assertStringNotContainsString("request()->has('redirectUri')", $login);
+        $this->assertStringNotContainsString("request('redirectUri')", $login);
     }
 
     public function test_signup_controller_does_not_load_legacy_company_from_session(): void

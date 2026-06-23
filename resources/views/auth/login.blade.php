@@ -90,8 +90,8 @@
 
             <form method="post" action="/login" class="login-form">
                 {!! csrf_field() !!}
-                @if(request()->has('redirectUri'))
-                    <input type="hidden" name="redirectUri" value="{{ request('redirectUri') }}"/>
+                @if($redirectUri)
+                    <input type="hidden" name="redirectUri" value="{{ $redirectUri }}"/>
                 @endif
 
                 @if(isset($error))

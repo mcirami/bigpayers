@@ -34,13 +34,15 @@ class IndexController extends Controller
             return $this->postBackRegistration($request);
         }
 
+        $httpHost = RequestContext::httpHost($request);
+
         // if its an offer url, and there wasn't any parameters for posting or generating clicks..
-        if ($company->isCompanyOfferUrl($request->getHttpHost())) {
+        if ($company->isCompanyOfferUrl($httpHost)) {
             return redirect('404');
         }
 
         if (LegacyDatabaseConfig::primaryDatabase() != "chattrackpro") {
-            if ($request->getHttpHost() !== $company->landing_page && $request->getHttpHost() !== $company->login_url) {
+            if ($httpHost !== $company->landing_page && $httpHost !== $company->login_url) {
                 if ($company->getSubDomain() == "debug") {
                     return redirect('login');
                 }

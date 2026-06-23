@@ -22,7 +22,7 @@ class LegacyLoginController extends Controller
 
 		$user->checkLoginAttempts();
 
-		return $this->loginView($user, $company);
+		return $this->loginView($user, $company, null, $request->query('redirectUri'));
 	}
 
 	public function login(Request $request)
@@ -62,10 +62,10 @@ class LegacyLoginController extends Controller
 			}
 		}
 
-		return $this->loginView($user, $company, $error);
+		return $this->loginView($user, $company, $error, $request->input('redirectUri'));
 	}
 
-	private function loginView(User $user, Company $company, $error = null)
+	private function loginView(User $user, Company $company, $error = null, $redirectUri = null)
 	{
 		$loginTheme = $company->loginTheme();
 
@@ -75,6 +75,7 @@ class LegacyLoginController extends Controller
 			'error' => $error,
 			'company' => $company,
 			'loginTheme' => $loginTheme,
+			'redirectUri' => $redirectUri,
 			'themeCssUrl' => $company->themeCssUrl(),
 		]);
 	}

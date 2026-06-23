@@ -1653,6 +1653,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('request()->getHttpHost()', $contents);
             $this->assertStringNotContainsString('request()->getHost()', $contents);
             $this->assertStringNotContainsString('request()->getSchemeAndHttpHost()', $contents);
+            $this->assertStringNotContainsString('$request->getHttpHost()', $contents);
+            $this->assertStringNotContainsString('$request->getHost()', $contents);
+            $this->assertStringNotContainsString('$request->getSchemeAndHttpHost()', $contents);
             $this->assertStringNotContainsString("request()->server('SERVER_ADDR')", $contents);
             $this->assertStringNotContainsString('$request->server(', $contents);
         }
