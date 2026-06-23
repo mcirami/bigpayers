@@ -2,6 +2,7 @@
 
 namespace App\Support;
 
+use App\User;
 use LeadMax\TrackYourStats\System\Session;
 
 class CurrentUserSession
@@ -18,7 +19,7 @@ class CurrentUserSession
 
     public static function user()
     {
-        return Session::user();
+        return User::query()->where('idrep', '=', self::id())->first();
     }
 
     public static function data()
@@ -34,5 +35,17 @@ class CurrentUserSession
     public static function can(string $permission): bool
     {
         return self::permissions()->can($permission);
+    }
+
+    public static function snapshot(): CurrentUserContext
+    {
+        $id = self::id();
+
+        return new CurrentUserContext(
+            $id,
+            self::type(),
+            self::data(),
+            self::permissions(),
+        );
     }
 }

@@ -26,36 +26,32 @@ class AppServiceProvider extends ServiceProvider
         View::share('webroot', getWebRoot());
         View::share(BrandingLabels::viewData());
         view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
-            $currentUser = CurrentUserSession::data();
-            $currentUserId = CurrentUserSession::id();
-            $currentUserType = CurrentUserSession::type();
-            $currentPermissions = CurrentUserSession::permissions();
-            $navBar = new NavBar($currentUserType, $currentPermissions);
-            $notifications = new Notifications($currentUserId);
+            $currentUserContext = CurrentUserSession::snapshot();
+            $navBar = new NavBar($currentUserContext->type, $currentUserContext->permissions);
+            $notifications = new Notifications($currentUserContext->id);
             $notifications->fetchUsersNotifications();
             $view->with([
                 'company' => Company::instance()->first(),
-                'currentPermissions' => $currentPermissions,
-                'currentUser' => $currentUser,
-                'currentUserId' => $currentUserId,
-                'currentUserType' => $currentUserType,
+                'currentPermissions' => $currentUserContext->permissions,
+                'currentUser' => $currentUserContext->data,
+                'currentUserId' => $currentUserContext->id,
+                'currentUserType' => $currentUserContext->type,
                 'navBar' => $navBar,
                 'notifications' => $notifications,
             ]);
         });
         view()->composer('report.*', function (\Illuminate\View\View $view) {
-            $sessionUserType = CurrentUserSession::type();
-            $permissions = CurrentUserSession::permissions();
+            $currentUserContext = CurrentUserSession::snapshot();
 
             $view->with([
-                'canCreateManagers' => $permissions->can('create_managers'),
-                'canViewFraudData' => $permissions->can('view_fraud_data'),
-                'canViewPayouts' => $permissions->can('view_payouts'),
-                'isAdmin' => $sessionUserType === \App\Privilege::ROLE_ADMIN,
-                'isAffiliate' => $sessionUserType === \App\Privilege::ROLE_AFFILIATE,
-                'isGod' => $sessionUserType === \App\Privilege::ROLE_GOD,
-                'isManager' => $sessionUserType === \App\Privilege::ROLE_MANAGER,
-                'sessionUserType' => $sessionUserType,
+                'canCreateManagers' => $currentUserContext->can('create_managers'),
+                'canViewFraudData' => $currentUserContext->can('view_fraud_data'),
+                'canViewPayouts' => $currentUserContext->can('view_payouts'),
+                'isAdmin' => $currentUserContext->type === \App\Privilege::ROLE_ADMIN,
+                'isAffiliate' => $currentUserContext->type === \App\Privilege::ROLE_AFFILIATE,
+                'isGod' => $currentUserContext->type === \App\Privilege::ROLE_GOD,
+                'isManager' => $currentUserContext->type === \App\Privilege::ROLE_MANAGER,
+                'sessionUserType' => $currentUserContext->type,
             ]);
         });
         view()->composer(['errors.403', 'errors.404', 'errors.500'], function (\Illuminate\View\View $view) {

@@ -1728,6 +1728,23 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('Facades\\Session', $offerController);
     }
 
+    public function test_multi_value_current_user_consumers_use_session_snapshots(): void
+    {
+        foreach ([
+            app_path('Providers/AppServiceProvider.php'),
+            app_path('Http/Controllers/DashboardController.php'),
+            app_path('Http/Controllers/OfferController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('CurrentUserSession::snapshot()', $contents);
+        }
+
+        $boundary = File::get(app_path('Support/CurrentUserSession.php'));
+        $this->assertStringContainsString('public static function snapshot(): CurrentUserContext', $boundary);
+        $this->assertStringNotContainsString('Session::user()', $boundary);
+    }
+
     public function test_click_model_uses_the_request_context_boundary(): void
     {
         $contents = File::get(app_path('Click.php'));

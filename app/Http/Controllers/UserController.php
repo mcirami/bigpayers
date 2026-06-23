@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyBonus as Bonus;
 use App\Support\LegacyPaginate as Paginate;
@@ -748,6 +749,7 @@ class UserController extends Controller
 	public function editUserOffers(User $user) {
 		$userID = $user->idrep;
 		$userFName = $user->first_name;
+        $currentUserContext = CurrentUserSession::snapshot();
 
 		$offers = DB::table('offer')
             ->where('status', '=', 1)
@@ -789,11 +791,11 @@ class UserController extends Controller
             'offers' => $offers,
             'name' => $userFName,
             'managedUser' => $user,
-            'canEditAffiliatePayout' => CurrentUserSession::permissions()->can('edit_aff_payout'),
-            'canManageOfferCaps' => CurrentUserSession::type() === Privilege::ROLE_GOD,
-            'canManageOffers' => CurrentUserSession::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canManageSubIds' => CurrentUserSession::type() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canLoginAsUser' => CurrentUserSession::type() !== Privilege::ROLE_AFFILIATE && $user->idrep !== CurrentUserSession::id(),
+            'canEditAffiliatePayout' => $currentUserContext->can('edit_aff_payout'),
+            'canManageOfferCaps' => $currentUserContext->type === Privilege::ROLE_GOD,
+            'canManageOffers' => $currentUserContext->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canManageSubIds' => $currentUserContext->type === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canLoginAsUser' => $currentUserContext->type !== Privilege::ROLE_AFFILIATE && $user->idrep !== $currentUserContext->id,
         ]);
 	}
 
@@ -872,30 +874,33 @@ class UserController extends Controller
 
     private function authorizeUserCreation()
     {
-        if (CurrentUserSession::type() === Privilege::ROLE_AFFILIATE || CurrentUserSession::type() === Privilege::ROLE_UNKNOWN) {
+        $currentUserContext = CurrentUserSession::snapshot();
+
+        if ($currentUserContext->type === Privilege::ROLE_AFFILIATE || $currentUserContext->type === Privilege::ROLE_UNKNOWN) {
             abort(403);
         }
 
-        if (empty($this->getRoleOptionsForCurrentUser())) {
+        if (empty($this->getRoleOptionsForCurrentUser($currentUserContext))) {
             abort(403);
         }
     }
 
     private function authorizeUserEdit(User $user)
     {
-        $sessionUserId = (int) CurrentUserSession::id();
+        $currentUserContext = CurrentUserSession::snapshot();
+        $sessionUserId = $currentUserContext->id;
         $targetUserId = (int) $user->idrep;
 
-        if (CurrentUserSession::type() === Privilege::ROLE_AFFILIATE) {
+        if ($currentUserContext->type === Privilege::ROLE_AFFILIATE) {
             abort_unless($targetUserId === $sessionUserId, 403);
             return;
         }
 
-        if ($targetUserId !== $sessionUserId && !CurrentUserSession::permissions()->can(Permissions::EDIT_AFFILIATES)) {
+        if ($targetUserId !== $sessionUserId && !$currentUserContext->can(Permissions::EDIT_AFFILIATES)) {
             abort(403);
         }
 
-        if (CurrentUserSession::type() === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
+        if ($currentUserContext->type === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
             abort(403);
         }
     }
@@ -950,19 +955,20 @@ class UserController extends Controller
         ];
     }
 
-    private function getRoleOptionsForCurrentUser(): array
+    private function getRoleOptionsForCurrentUser(?CurrentUserContext $currentUserContext = null): array
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $options = [];
 
-        if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_ADMINS)) {
+        if ($currentUserContext->type === Privilege::ROLE_GOD || $currentUserContext->can(Permissions::CREATE_ADMINS)) {
             $options[Privilege::ROLE_ADMIN] = 'Admin';
         }
 
-        if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_MANAGERS)) {
+        if ($currentUserContext->type === Privilege::ROLE_GOD || $currentUserContext->can(Permissions::CREATE_MANAGERS)) {
             $options[Privilege::ROLE_MANAGER] = BrandingLabels::account();
         }
 
-        if (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::permissions()->can(Permissions::CREATE_AFFILIATES)) {
+        if ($currentUserContext->type === Privilege::ROLE_GOD || $currentUserContext->can(Permissions::CREATE_AFFILIATES)) {
             $options[Privilege::ROLE_AFFILIATE] = BrandingLabels::affiliate();
         }
 

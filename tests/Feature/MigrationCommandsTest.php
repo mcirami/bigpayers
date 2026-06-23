@@ -16,6 +16,7 @@ use App\Services\SmsApiEndpoint;
 use App\Services\SmsPoolConfig;
 use App\Services\TenantDatabasePdoFactory;
 use App\Support\NativeRequest;
+use App\Support\CurrentUserContext;
 use App\Support\RequestContext;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
@@ -30,6 +31,24 @@ use Tests\TestCase;
 
 class MigrationCommandsTest extends TestCase
 {
+    public function test_current_user_context_exposes_a_consistent_session_snapshot(): void
+    {
+        $permissions = new class {
+            public function can(string $permission): bool
+            {
+                return $permission === 'view_reports';
+            }
+        };
+        $data = (object) ['user_name' => 'tester'];
+        $context = new CurrentUserContext(42, 3, $data, $permissions);
+
+        $this->assertSame(42, $context->id);
+        $this->assertSame(3, $context->type);
+        $this->assertSame($data, $context->data);
+        $this->assertTrue($context->can('view_reports'));
+        $this->assertFalse($context->can('edit_users'));
+    }
+
     public function test_company_database_connection_manager_configures_tenant_from_mysql_connection(): void
     {
         Config::set('database.connections.mysql', [

@@ -265,10 +265,11 @@ class OfferController extends Controller
 		$data['urls'] = $urls;
 
 
-		$sessionUser = CurrentUserSession::user();
-		$sessionUserId = CurrentUserSession::id();
-		$sessionUserType = CurrentUserSession::type();
-		$permissions = CurrentUserSession::permissions();
+		$currentUserContext = CurrentUserSession::snapshot();
+		$sessionUser = $currentUserContext->user();
+		$sessionUserId = $currentUserContext->id;
+		$sessionUserType = $currentUserContext->type;
+		$permissions = $currentUserContext->permissions;
 		$canCreateOffers = $permissions->can('create_offers');
 		$canEditAffiliates = $permissions->can('edit_affiliates');
 		$canEditOfferRules = $permissions->can('edit_offer_rules');
