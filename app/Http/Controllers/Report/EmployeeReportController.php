@@ -13,6 +13,7 @@ use App\Support\LegacyManagerEmployeeRepository as ManagerEmployeeRepository;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
 use App\Support\LegacyUserToolTipFilter as UserToolTip;
+use App\Support\RequestContext;
 use Illuminate\Http\Request;
 
 class EmployeeReportController extends ReportController
@@ -26,6 +27,7 @@ class EmployeeReportController extends ReportController
 	    $SmsStatsPermission = CurrentUserSession::can('view_sms_stats');
 
         $reporter = new Reporter($repository);
+        $queryString = http_build_query(RequestContext::queryAll($request));
 
         $totals = [
             'Clicks',
@@ -65,10 +67,9 @@ class EmployeeReportController extends ReportController
             ))
             ->addFilter(new EarningPerClick())
             ->addFilter(new DollarSign($currencyColumns))
-            ->addFilter(new UserToolTip())->addFilter(function ($data) {
+            ->addFilter(new UserToolTip())->addFilter(function ($data) use ($queryString) {
                 foreach ($data as $key => &$row) {
                     if (isset($row['Clicks']) && is_numeric($row['idrep'])) {
-                        $queryString = http_build_query(request()->query());
                         $row['Clicks'] = "<a href='/user/{$row['idrep']}/clicks?{$queryString}'>{$row['Clicks']}</a>";
                     }
                 }

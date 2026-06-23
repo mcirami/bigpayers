@@ -322,6 +322,7 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('reports', RequestContext::path($request));
         $this->assertTrue(RequestContext::hasQuery('role', $request));
         $this->assertSame('3', RequestContext::query('role', null, $request));
+        $this->assertSame(['role' => '3'], RequestContext::queryAll($request));
         $this->assertSame('America/Chicago', RequestContext::cookie('timezone', null, $request));
         $this->assertFalse(RequestContext::expectsJson($request));
         $this->assertSame($request, RequestContext::current($request));

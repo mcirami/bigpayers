@@ -248,11 +248,11 @@ class OfferController extends Controller
 		return back();
 	}
 
-	public function showManage()
+	public function showManage(Request $request)
 	{
 		$data = array();
 
-		$this->validate(request(), [
+		$this->validate($request, [
 			'showInactive' => 'numeric|min:0|max:1'
 		]);
 
@@ -280,7 +280,7 @@ class OfferController extends Controller
 		$isGod = $sessionUserType == Privilege::ROLE_GOD;
 		$showPayoutColumn = $isGod || $canViewPayouts || $isManager;
 
-		$status = request('showInactive', 0) == 1 ? 0 : 1;
+		$status = $request->query('showInactive', 0) == 1 ? 0 : 1;
 		$offers = $sessionUser->offers()
 		                                                        ->where('offer.status','=', $status)
 		                                                        ->leftJoin('campaigns', 'offer.campaign_id', '=', 'campaigns.id')
@@ -943,9 +943,9 @@ class OfferController extends Controller
 			'offers' => 'required|array'
 		]);
 		RepHasOffer::massAssignUsers($request->post('users'), $request->post('offers'),
-			request('role', 3));
+			$request->input('role', 3));
 
-		if (request()->has("updatePayouts")) {
+		if ($request->has("updatePayouts")) {
 			RepHasOffer::massUpdateOfferPayouts($request->post('offers'));
 		}
 
@@ -993,9 +993,9 @@ class OfferController extends Controller
         return redirect("/offer/{$offer->idoffer}/access")->with('message', 'Offer access updated successfully.');
     }
 
-	public function showMassAssign()
+	public function showMassAssign(Request $request)
 	{
-		$users = User::myUsers()->withRole(request('role', 3))->get();
+		$users = User::myUsers()->withRole($request->query('role', 3))->get();
 
 		$offers = CurrentUserSession::user()->offers()->get();
 

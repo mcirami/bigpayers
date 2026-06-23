@@ -8,6 +8,7 @@ use App\Click;
 use App\Offer;
 use App\Privilege;
 use App\Support\CurrentUserSession;
+use App\Support\RequestContext;
 use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
@@ -21,8 +22,8 @@ class ConversionReportController extends ReportController
 	public function showUserConversions($userId) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$offerId = request()->query('offer');
-        $selectedRole = (int) request()->query('role', CurrentUserSession::type());
+		$offerId = RequestContext::query('offer');
+        $selectedRole = (int) RequestContext::query('role', CurrentUserSession::type());
         $resolvedPaid = $selectedRole === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
             : Payouts::sqlForRole($selectedRole, 'offer', 'rep_has_offer');
@@ -68,7 +69,7 @@ class ConversionReportController extends ReportController
     public function showUserConversionsByOffer($userId) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
+		$selectedRole = (int) RequestContext::query('role', Privilege::ROLE_AFFILIATE);
 
         $user = User::findOrFail($userId);
 
@@ -196,7 +197,7 @@ class ConversionReportController extends ReportController
 	public function showGeoByOffer(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$geoCode = request()->query('country');
+		$geoCode = RequestContext::query('country');
 
 		$ipsMissingGeo = Click::missingCountryCodeIps($dates['startDate'], $dates['endDate']);
 		$geoCache->warm($ipsMissingGeo);

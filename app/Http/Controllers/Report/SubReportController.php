@@ -14,6 +14,7 @@ use App\Support\LegacyPayouts as Payouts;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacySubVarRepository as SubVarRepository;
 use App\Support\LegacyTotalFilter as Total;
+use App\Support\RequestContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\ClickTraits;
@@ -29,7 +30,7 @@ class SubReportController extends ReportController
 
         $repo = new SubVarRepository(\DB::getPdo());
 
-        $repo->setSubNumber(request()->query('sub', 1));
+        $repo->setSubNumber(RequestContext::query('sub', 1));
 
 
         $reporter = new Reporter($repo);
@@ -104,7 +105,7 @@ class SubReportController extends ReportController
 	public function showSubIdClicksByOffer(User $user, Offer $offer) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$subId = request()->query('subId');
+		$subId = RequestContext::query('subId');
         $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
             : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
@@ -158,7 +159,7 @@ class SubReportController extends ReportController
 	public function showSubIdConversionsInCountry(User $user, Offer $offer) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$country = request()->query('country');
+		$country = RequestContext::query('country');
 		$userId = $user->idrep;
 		$offerId = $offer->idoffer;
 
@@ -244,8 +245,8 @@ class SubReportController extends ReportController
 	public function showSubIdClicksByOfferInCountry(User $user, Offer $offer) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$subId = request()->query('subid');
-		$country = request()->query('country');
+		$subId = RequestContext::query('subid');
+		$country = RequestContext::query('country');
 		$userId = $user->idrep;
 		$offerId = $offer->idoffer;
         $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
@@ -321,7 +322,7 @@ class SubReportController extends ReportController
 	public function subIdOfferConverisonsByCountry(User $user, Offer $offer, CountryReportBuilderService $countryReportBuilderService) {
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-		$subId = request()->query('subid');
+		$subId = RequestContext::query('subid');
         $userId = $user->idrep;
 		$offerId = $offer->idoffer;
 

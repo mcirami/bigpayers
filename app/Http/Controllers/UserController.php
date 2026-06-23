@@ -66,13 +66,6 @@ class UserController extends Controller
         } else {
             $users->where('status', 1);
         }
-/*
-		if (CurrentUserSession::type() == Privilege::ROLE_ADMIN && (request('role') == null ||  request('role') == '3')) {
-			$userId = CurrentUserSession::id();
-			$managers = DB::table('rep')->where('referrer_repid', '=', $userId)->get()->pluck('idrep')->toArray();
-			$users->whereIn('referrer_repid', $managers);
-		}
-		*/
         $users = $users->get();
 		//$users = $this->getDiffForHumans($users);
 

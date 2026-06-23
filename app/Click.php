@@ -12,6 +12,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
+use App\Support\RequestContext;
 
 /**
  * App\Click
@@ -56,7 +57,7 @@ class Click extends Model
 	protected static function booted()
 	{
 		static::addGlobalScope('ignore_old_records', function (Builder $builder) {
-			$requestedFrom = request()->query('d_from');
+			$requestedFrom = RequestContext::query('d_from');
 
 			if (!empty($requestedFrom)) {
 				try {

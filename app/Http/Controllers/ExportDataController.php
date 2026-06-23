@@ -11,6 +11,7 @@ use App\Privilege;
 use App\Http\Controllers\Report\ReportController;
 use App\Support\LegacyGodEmployeeRepository as GodEmployeeRepository;
 use App\Support\LegacyGodOfferRepository as GodOfferRepository;
+use App\Support\RequestContext;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Traits\ClickTraits;
 use PhpOffice\PhpSpreadsheet\Exception;
@@ -26,7 +27,7 @@ class ExportDataController extends ReportController
 	public function exportUsersClicks($userId) {
 
 		$dates = self::getDates();
-		$selectedRole = (int) request()->query('role', Privilege::ROLE_AFFILIATE);
+		$selectedRole = (int) RequestContext::query('role', Privilege::ROLE_AFFILIATE);
 
 		$reportCollection = Click::query()
 			->userClicksReportByRole($userId, $dates['startDate'], $dates['endDate'], $selectedRole)
@@ -54,7 +55,7 @@ class ExportDataController extends ReportController
 	public function exportAffData() {
 		$dates = self::getDates();
 		$repository = new GodEmployeeRepository(\DB::getPdo());
-		$repository->SHOW_AFF_TYPE = request()->query('role', 3);
+		$repository->SHOW_AFF_TYPE = RequestContext::query('role', 3);
 		$data = $repository->between($dates['startDate'], $dates['endDate']);
 
 		return Excel::download(new AffDataExport($data), 'Aff-data.xlsx');
@@ -66,7 +67,7 @@ class ExportDataController extends ReportController
 	 */
 	public function exportCountryClicks(ClickGeoCacheService $geoCache) {
 		$dates = self::getDates();
-		$geoCode = request()->query('country');
+		$geoCode = RequestContext::query('country');
 
 		$ips = Click::missingCountryCodeIps($dates['startDate'], $dates['endDate']);
 

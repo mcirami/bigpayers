@@ -1692,10 +1692,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_shared_report_request_reads_use_request_context_boundary(): void
     {
         foreach ([
+            app_path('Http/Controllers/ExportDataController.php'),
             app_path('Http/Controllers/Report/ReportController.php'),
             app_path('Http/Controllers/Report/ChatLogReportController.php'),
+            app_path('Http/Controllers/Report/ClickReportController.php'),
+            app_path('Http/Controllers/Report/ConversionReportController.php'),
+            app_path('Http/Controllers/Report/EmployeeReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1704,6 +1709,28 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('\\request()->', $contents);
             $this->assertStringNotContainsString('request()', $contents);
         }
+    }
+
+    public function test_modern_offer_and_user_controllers_do_not_use_global_request_helpers(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/OfferController.php'),
+            app_path('Http/Controllers/UserController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString('request()->', $contents);
+            $this->assertDoesNotMatchRegularExpression('/(?<![A-Za-z_])request\(/', $contents);
+        }
+    }
+
+    public function test_click_model_uses_the_request_context_boundary(): void
+    {
+        $contents = File::get(app_path('Click.php'));
+
+        $this->assertStringContainsString('App\\Support\\RequestContext', $contents);
+        $this->assertStringNotContainsString('request()->', $contents);
+        $this->assertDoesNotMatchRegularExpression('/(?<![A-Za-z_])request\(/', $contents);
     }
 
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void

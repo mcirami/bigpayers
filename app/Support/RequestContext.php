@@ -36,6 +36,11 @@ class RequestContext
         return self::current($request)->query($key, $default);
     }
 
+    public static function queryAll(?Request $request = null): array
+    {
+        return self::current($request)->query->all();
+    }
+
     public static function cookie(string $key, $default = null, ?Request $request = null)
     {
         return self::current($request)->cookie($key, $default);
