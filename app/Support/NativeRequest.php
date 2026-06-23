@@ -54,6 +54,26 @@ class NativeRequest
         return self::server('REMOTE_ADDR', $default);
     }
 
+    public static function referrer($default = null)
+    {
+        return self::server('HTTP_REFERER', $default);
+    }
+
+    public static function userAgent($default = null)
+    {
+        return self::server('HTTP_USER_AGENT', $default);
+    }
+
+    public static function serverPort($default = null)
+    {
+        return self::server('SERVER_PORT', $default);
+    }
+
+    public static function scriptName($default = null)
+    {
+        return self::server('PHP_SELF', $default);
+    }
+
     public static function clientIp($default = null)
     {
         foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {

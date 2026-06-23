@@ -522,7 +522,7 @@ class View
         echo "<script type=\"text/javascript\">
                     function handleSelect(elm)
                     {
-                         window.location = '" . NativeRequest::server('PHP_SELF') . "?url='+ elm.value;
+                         window.location = '" . NativeRequest::scriptName() . "?url='+ elm.value;
                     }
                </script>";
     }

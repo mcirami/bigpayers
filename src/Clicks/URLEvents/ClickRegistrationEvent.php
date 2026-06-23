@@ -94,8 +94,8 @@ class ClickRegistrationEvent extends URLEvent
 	        $click->first_timestamp = date("Y-m-d H:i:s");
             $click->ip_address = $this->ip;
             //$click->country_code = $geo;
-            $click->referer = NativeRequest::server('HTTP_REFERER');
-            $click->browser_agent = NativeRequest::server('HTTP_USER_AGENT');
+            $click->referer = NativeRequest::referrer();
+            $click->browser_agent = NativeRequest::userAgent();
 
             $click->rep_idrep = $this->userId;
             $click->offer_idoffer = $this->offerId;

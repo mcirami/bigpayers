@@ -1601,8 +1601,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $clickRegistrationEvent);
+        $this->assertStringContainsString('NativeRequest::referrer()', $clickRegistrationEvent);
+        $this->assertStringContainsString('NativeRequest::userAgent()', $clickRegistrationEvent);
         $this->assertStringNotContainsString('$_GET', $clickRegistrationEvent);
         $this->assertStringNotContainsString('$_SERVER', $clickRegistrationEvent);
+        $this->assertStringNotContainsString("NativeRequest::server('HTTP_REFERER')", $clickRegistrationEvent);
+        $this->assertStringNotContainsString("NativeRequest::server('HTTP_USER_AGENT')", $clickRegistrationEvent);
         $this->assertStringContainsString('NativeRequest::clientIp()', $clickListener);
         $this->assertStringNotContainsString("NativeRequest::server('HTTP_CLIENT_IP')", $clickListener);
         $this->assertStringNotContainsString("NativeRequest::server('HTTP_X_FORWARDED_FOR')", $clickListener);
@@ -1861,6 +1865,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 "NativeRequest::server('REMOTE_ADDR')",
                 $contents,
                 "{$path} should use NativeRequest::remoteAddress() or NativeRequest::clientIp() instead of reading REMOTE_ADDR directly."
+            );
+            $this->assertStringNotContainsString(
+                "NativeRequest::server('SERVER_PORT')",
+                $contents,
+                "{$path} should use NativeRequest::serverPort() instead of reading SERVER_PORT directly."
+            );
+            $this->assertStringNotContainsString(
+                "NativeRequest::server('PHP_SELF')",
+                $contents,
+                "{$path} should use NativeRequest::scriptName() instead of reading PHP_SELF directly."
             );
         }
     }

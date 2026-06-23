@@ -250,10 +250,18 @@ class MigrationCommandsTest extends TestCase
 
             $_SERVER['HTTP_HOST'] = 'app.example.test';
             $_SERVER['REQUEST_URI'] = '/reports?role=3';
+            $_SERVER['HTTP_REFERER'] = 'https://referrer.example.test/source';
+            $_SERVER['HTTP_USER_AGENT'] = 'Test Browser';
+            $_SERVER['SERVER_PORT'] = '443';
+            $_SERVER['PHP_SELF'] = '/offer/manage';
 
             $this->assertSame('app.example.test', NativeRequest::host());
             $this->assertSame('/reports?role=3', NativeRequest::requestUri());
             $this->assertSame('http://app.example.test/reports?role=3', NativeRequest::currentUrl());
+            $this->assertSame('https://referrer.example.test/source', NativeRequest::referrer());
+            $this->assertSame('Test Browser', NativeRequest::userAgent());
+            $this->assertSame('443', NativeRequest::serverPort());
+            $this->assertSame('/offer/manage', NativeRequest::scriptName());
         } finally {
             $_SERVER = $originalServer;
         }

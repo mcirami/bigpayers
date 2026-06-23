@@ -15,7 +15,7 @@ function findProtocol()
 {
     $protocol = "http://";
 
-    if (NativeRequest::server('SERVER_PORT') == 443) {
+    if (NativeRequest::serverPort() == 443) {
         $protocol = "https://";
     }
 
