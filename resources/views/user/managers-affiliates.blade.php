@@ -55,7 +55,7 @@
 
             <article class="bp-stat-card">
                 <p class="bp-stat-label">Rows Per Page</p>
-                <p class="bp-stat-value">{{ request()->query('rpp', 10) }}</p>
+                <p class="bp-stat-value">{{ $rowsPerPage }}</p>
                 <p class="bp-stat-note">Adjustable through the legacy pagination controls below the directory.</p>
             </article>
         </section>

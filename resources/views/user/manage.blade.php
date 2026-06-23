@@ -12,8 +12,6 @@
 
 @section('content')
     @php
-        $role = (int) request('role', 3);
-        $showInactive = (int) request('showInactive', 0) === 1;
         $roleLabels = [
             \App\Privilege::ROLE_GOD => 'God',
             \App\Privilege::ROLE_ADMIN => 'Admins',

@@ -1644,6 +1644,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/IndexController.php'),
             app_path('Http/Controllers/NotificationController.php'),
             app_path('Http/Controllers/OfferController.php'),
+            resource_path('views/layouts/dashboard-shell.blade.php'),
             resource_path('views/offer/manage.blade.php'),
             resource_path('views/offer/url-form.blade.php'),
         ] as $path) {
@@ -1658,6 +1659,33 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('$request->getSchemeAndHttpHost()', $contents);
             $this->assertStringNotContainsString("request()->server('SERVER_ADDR')", $contents);
             $this->assertStringNotContainsString('$request->server(', $contents);
+            $this->assertStringNotContainsString("request()->has('adminLogin')", $contents);
+            $this->assertStringNotContainsString('request()->path()', $contents);
+            $this->assertStringNotContainsString("request('url'", $contents);
+        }
+    }
+
+    public function test_user_directory_views_receive_simple_request_state_from_controller(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/UserController.php'));
+
+        foreach ([
+            "'role' => \$role",
+            "'showInactive' => \$showInactive",
+            "'rowsPerPage'",
+        ] as $expectedPattern) {
+            $this->assertStringContainsString($expectedPattern, $controller);
+        }
+
+        foreach ([
+            resource_path('views/user/manage.blade.php'),
+            resource_path('views/user/managers-affiliates.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString("request('role'", $contents);
+            $this->assertStringNotContainsString("request('showInactive'", $contents);
+            $this->assertStringNotContainsString("request()->query('rpp'", $contents);
         }
     }
 

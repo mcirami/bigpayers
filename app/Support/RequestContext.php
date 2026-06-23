@@ -21,6 +21,21 @@ class RequestContext
         return self::request($request)->getHost();
     }
 
+    public static function path(?Request $request = null): string
+    {
+        return self::request($request)->path();
+    }
+
+    public static function hasQuery(string $key, ?Request $request = null): bool
+    {
+        return self::request($request)->query->has($key);
+    }
+
+    public static function query(string $key, $default = null, ?Request $request = null)
+    {
+        return self::request($request)->query($key, $default);
+    }
+
     public static function serverAddress(?Request $request = null): string
     {
         $request = self::request($request);

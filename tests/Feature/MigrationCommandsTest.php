@@ -317,6 +317,9 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('https://app.example.test', RequestContext::schemeAndHttpHost($request));
         $this->assertSame('app.example.test', RequestContext::httpHost($request));
         $this->assertSame('app.example.test', RequestContext::host($request));
+        $this->assertSame('reports', RequestContext::path($request));
+        $this->assertTrue(RequestContext::hasQuery('role', $request));
+        $this->assertSame('3', RequestContext::query('role', null, $request));
         $this->assertSame('192.0.2.20', RequestContext::serverAddress($request));
         $this->assertSame('198.51.100.8', RequestContext::clientIp($request));
 

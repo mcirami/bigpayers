@@ -27,38 +27,41 @@ use App\Support\LegacyUser;
 class UserController extends Controller
 {
 
-    public function viewManagersAffiliates($id)
+    public function viewManagersAffiliates(Request $request, $id)
     {
         $manager = User::myUsers()->withRole(Privilege::ROLE_MANAGER)->findOrFail($id);
 
 
         $affiliates = $manager->users()->withRole(Privilege::ROLE_AFFILIATE)->with('referrer');
+        $rowsPerPage = $request->query('rpp', 10);
 
-        $paginate = new Paginate(request('rpp',10), $affiliates->count());
+        $paginate = new Paginate($rowsPerPage, $affiliates->count());
 
-        $affiliates = $affiliates->paginate(request('rpp', 10));
+        $affiliates = $affiliates->paginate($rowsPerPage);
 
-        return view('user.managers-affiliates', compact('manager', 'affiliates','paginate'));
+        return view('user.managers-affiliates', compact('manager', 'affiliates','paginate', 'rowsPerPage'));
     }
 
-    public function viewManageUsers()
+    public function viewManageUsers(Request $request)
     {
 
 	    $userType = CurrentUserSession::type();
 	    $permissions = CurrentUserSession::permissions();
 	    $canViewUsers = $permissions->can('view_all_users');
 
-        $this->validate(request(), [
+        $request->validate([
             'showInactive' => 'numeric|min:0|max:1'
         ]);
+        $role = (int) $request->query('role', Privilege::ROLE_AFFILIATE);
+        $showInactive = (int) $request->query('showInactive', 0) === 1;
 
 	    $users =
 		    ($userType == Privilege::ROLE_ADMIN && $canViewUsers) || $userType == Privilege::ROLE_GOD ?
-			    User::withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer')
+			    User::withRole($role)->with('referrer')
 			    :
-			    User::myUsers()->withRole(request('role', Privilege::ROLE_AFFILIATE))->with('referrer');
+			    User::myUsers()->withRole($role)->with('referrer');
 
-        if (request('showInactive', 0) == 1) {
+        if ($showInactive) {
             $users->where('status', 0);
         } else {
             $users->where('status', 1);
@@ -78,6 +81,8 @@ class UserController extends Controller
             'canCreateAffiliates' => $permissions->can(Permissions::CREATE_AFFILIATES),
             'canCreateManagers' => $permissions->can(Permissions::CREATE_MANAGERS),
             'canEditAffiliates' => $permissions->can(Permissions::EDIT_AFFILIATES),
+            'role' => $role,
+            'showInactive' => $showInactive,
             'users' => $users,
         ]);
     }

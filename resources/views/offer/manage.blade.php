@@ -62,7 +62,7 @@
                             <label class="value_span9" for="offer_url">Offer URLs</label>
                             <select onchange="handleSelect(this);" class="selectBox" id="offer_url" name="offer_url">
                                 @for ($i = 0; $i < count($urls); $i++)
-                                    <option value="{{ $i }}" {{ request('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
+                                    <option value="{{ $i }}" {{ \App\Support\RequestContext::query('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
                                 @endfor
                             </select>
                         </div>
@@ -75,7 +75,7 @@
                             <label class="value_span9" for="offer_url">Offer URLs</label>
                             <select onchange="handleSelect(this);" class="selectBox" id="offer_url" name="offer_url">
                                 @for ($i = 0; $i < count($urls); $i++)
-                                    <option value="{{ $i }}" {{ request('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
+                                    <option value="{{ $i }}" {{ \App\Support\RequestContext::query('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
                                 @endfor
                             </select>
                         </div>
@@ -171,10 +171,10 @@
 
 @section('footer')
     <script type="text/javascript">
-        const adminLoginSuffix = @json(request()->has('adminLogin') ? '&adminLogin' : '');
+        const adminLoginSuffix = @json(\App\Support\RequestContext::hasQuery('adminLogin') ? '&adminLogin' : '');
 
         function handleSelect(elm) {
-            window.location = "/{{ request()->path() }}?url=" + elm.value + adminLoginSuffix;
+            window.location = "/{{ \App\Support\RequestContext::path() }}?url=" + elm.value + adminLoginSuffix;
         }
 
         function requestOffer(id) {
@@ -221,7 +221,7 @@
             const canViewPayouts = @json($canViewPayouts);
             const showPayoutColumn = @json($showPayoutColumn);
             const sessionUser = @json($sessionUserId);
-            const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? \App\Support\RequestContext::httpHost());
+            const selectedUrl = @json($urls[\App\Support\RequestContext::query('url', 0)] ?? $urls[0] ?? \App\Support\RequestContext::httpHost());
             const offers = @json($offers);
             const offerTypeLabels = @json($offerTypeLabels);
             const paginationContainer = "#pagination";

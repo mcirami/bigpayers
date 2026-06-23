@@ -1,7 +1,7 @@
 @php
     /** @var \App\Company $company */
     $user = $currentUser;
-    $isAdminLogin = request()->has('adminLogin');
+    $isAdminLogin = \App\Support\RequestContext::hasQuery('adminLogin');
     $menuSections = isset($navBar) && method_exists($navBar, 'getVisibleMenu') ? $navBar->getVisibleMenu() : [];
     $logoPath = $company->getBrandAssetUrl('logo.png');
     $faviconPath = $company->getBrandAssetUrl('favicon.ico');
