@@ -17,6 +17,7 @@ use App\Support\LegacyGodOfferRepository as GodOfferRepository;
 use App\Support\LegacyManagerOfferRepository as ManagerOfferRepository;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
+use App\Support\RequestContext;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
@@ -88,7 +89,7 @@ class OfferReportController extends ReportController
 
 		$this->applyAffiliateOfferFilters($reporter);
 
-        if (\request()->expectsJson()) {
+        if (RequestContext::expectsJson()) {
             return response($reporter->fetchReport($dates['startDate'], $dates['endDate']));
         }
 
@@ -148,7 +149,7 @@ class OfferReportController extends ReportController
 			->addFilter( new Total( self::OFFER_TOTAL_COLUMNS ) )
 			->addFilter( new EarningPerClick( 'UniqueClicks', 'Revenue' ) )
 			->addFilter( new DollarSign( [ 'Revenue', 'Deductions', 'EPC' ] ) )
-			->addFilter( new ClickLink( request() ) );
+			->addFilter( new ClickLink( RequestContext::current() ) );
 	}
 
 	private function applyAffiliateOfferFilters(Reporter $reporter): void {

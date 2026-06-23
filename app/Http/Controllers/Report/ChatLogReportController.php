@@ -8,8 +8,8 @@ use App\Support\LegacyAffiliateChatLogRepository as AffiliateChatLogRepository;
 use App\Support\LegacyPaginate as Paginate;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacySaleLogRepository as SaleLogRepository;
+use App\Support\RequestContext;
 use App\User;
-use Carbon\Carbon;
 
 class ChatLogReportController extends ReportController
 {
@@ -25,17 +25,18 @@ class ChatLogReportController extends ReportController
         }
 
         $repo = new AffiliateChatLogRepository(\DB::getPdo());
-        $repo->setShowOption(request()->query('show', 'all'));
+        $repo->setShowOption(RequestContext::query('show', 'all'));
         $repo->setUserId($id);
 
         if (CurrentUserSession::type() == Privilege::ROLE_AFFILIATE) {
             $repo->hideConversionId();
         }
 
-        $paginate = new Paginate(request()->query('rpp', 10), $repo->count($dates['startDate'], $dates['endDate']));
+        $rowsPerPage = RequestContext::query('rpp', 10);
+        $paginate = new Paginate($rowsPerPage, $repo->count($dates['startDate'], $dates['endDate']));
 
 
-        $repo->setLimit(\request()->query('rpp', 10));
+        $repo->setLimit($rowsPerPage);
         $repo->setOffset($paginate->offset());
 
         $reporter = new Reporter($repo);
@@ -66,20 +67,16 @@ class ChatLogReportController extends ReportController
 
         $reporter = new Reporter($repo);
 
-        $reporter->addFilter(function ($data) {
-            $dates = [
-                'startDate' => request()->query('d_from', Carbon::today()->format('Y-m-d')),
-                'endDate'   => request()->query('d_to', Carbon::today()->format('Y-m-d')),
-            ];
+        $reporter->addFilter(function ($data) use ($dates) {
             foreach ($data as &$row) {
                 $row["TOTAL"] = $row["PendingSales"];
-                $row["TOTAL"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['startDate']}&d_to={$dates['endDate']}&show=all'>{$row["TOTAL"]}</a>";
+                $row["TOTAL"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['originalStart']}&d_to={$dates['originalEnd']}&show=all'>{$row["TOTAL"]}</a>";
                 if ($row["LoggedSales"] > 0) {
                     $row["PendingSales"] -= $row["LoggedSales"];
                 }
-                $row["LoggedSales"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['startDate']}&d_to={$dates['endDate']}&show=logged'>{$row["LoggedSales"]}</a>";
+                $row["LoggedSales"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['originalStart']}&d_to={$dates['originalEnd']}&show=logged'>{$row["LoggedSales"]}</a>";
 
-                $row["PendingSales"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['startDate']}&d_to={$dates['endDate']}&show=nonelogged'>{$row["PendingSales"]}</a>";
+                $row["PendingSales"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['originalStart']}&d_to={$dates['originalEnd']}&show=nonelogged'>{$row["PendingSales"]}</a>";
             }
 
             return $data;

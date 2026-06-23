@@ -11,6 +11,7 @@ use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
 use App\Support\LegacyAffiliateOfferRepository as AffiliateOfferRepository;
 use App\Support\LegacyReporter as Reporter;
 use App\Support\LegacyTotalFilter as Total;
+use App\Support\RequestContext;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -26,7 +27,7 @@ class PayoutReportController extends ReportController
         $report = $this->reportPayout();
         $historyReport = $this->reportPayoutHistory();
 
-        if (request()->expectsJson()) {
+        if (RequestContext::expectsJson()) {
             return response($report->toArray());
         }
 

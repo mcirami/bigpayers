@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers\Report;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
 use App\Support\LegacyDate as Date;
+use App\Support\RequestContext;
 
 class ReportController extends Controller
 {
 
     public static function getTimezone()
     {
-        return request()->cookie('timezone', "America/New_York");
+        return RequestContext::cookie('timezone', "America/New_York");
     }
 
     /**
@@ -22,8 +22,8 @@ class ReportController extends Controller
      */
     public static function getDates($timezoneConvertDates = true): array
     {
-        $startDate = request()->query('d_from', Carbon::today(self::getTimezone())->format('Y-m-d'));
-        $endDate = request()->query('d_to', Carbon::today(self::getTimezone())->format('Y-m-d'));
+        $startDate = RequestContext::query('d_from', Carbon::today(self::getTimezone())->format('Y-m-d'));
+        $endDate = RequestContext::query('d_to', Carbon::today(self::getTimezone())->format('Y-m-d'));
 
         $data = [
             'originalStart' => $startDate,
@@ -44,7 +44,7 @@ class ReportController extends Controller
             'endDate' => $endDate
         ], $data);
 
-        if (request()->query('debug') == true) {
+        if (RequestContext::query('debug') == true) {
             dump($data);
         }
 
@@ -65,7 +65,7 @@ class ReportController extends Controller
 		return [
 			'startDate' => $dates['originalStart'],
 			'endDate' => $dates['originalEnd'],
-			'dateSelect' => request()->query('dateSelect'),
+			'dateSelect' => RequestContext::query('dateSelect'),
 		];
 	}
 

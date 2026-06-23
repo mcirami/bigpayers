@@ -307,7 +307,9 @@ class MigrationCommandsTest extends TestCase
 
     public function test_request_context_resolves_modern_request_host_and_ip_values(): void
     {
-        $request = Request::create('https://app.example.test/reports?role=3', 'GET', [], [], [], [
+        $request = Request::create('https://app.example.test/reports?role=3', 'GET', [], [
+            'timezone' => 'America/Chicago',
+        ], [], [
             'HTTP_HOST' => 'app.example.test',
             'SERVER_ADDR' => '192.0.2.20',
             'REMOTE_ADDR' => '192.0.2.30',
@@ -320,6 +322,9 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('reports', RequestContext::path($request));
         $this->assertTrue(RequestContext::hasQuery('role', $request));
         $this->assertSame('3', RequestContext::query('role', null, $request));
+        $this->assertSame('America/Chicago', RequestContext::cookie('timezone', null, $request));
+        $this->assertFalse(RequestContext::expectsJson($request));
+        $this->assertSame($request, RequestContext::current($request));
         $this->assertSame('192.0.2.20', RequestContext::serverAddress($request));
         $this->assertSame('198.51.100.8', RequestContext::clientIp($request));
 

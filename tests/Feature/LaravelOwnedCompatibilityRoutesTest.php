@@ -1689,6 +1689,23 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_shared_report_request_reads_use_request_context_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/Report/ReportController.php'),
+            app_path('Http/Controllers/Report/ChatLogReportController.php'),
+            app_path('Http/Controllers/Report/OfferReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\RequestContext', $contents);
+            $this->assertStringNotContainsString('request()->', $contents);
+            $this->assertStringNotContainsString('\\request()->', $contents);
+            $this->assertStringNotContainsString('request()', $contents);
+        }
+    }
+
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void
     {
         foreach ([
