@@ -1,6 +1,6 @@
 @php
 
-    $filterValue = request()->query('filter', "subid");
+    $filterValue = \App\Support\RequestContext::query('filter', "subid");
 
 @endphp
 <label class="bp-form-label flex flex-col gap-2">

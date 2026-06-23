@@ -27,9 +27,9 @@
             </div>
         @endif
 
-        @if (session('message'))
+        @if (\App\Support\RequestContext::hasSessionValue('message'))
             <div class="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                {{ session('message') }}
+                {{ \App\Support\RequestContext::sessionValue('message') }}
             </div>
         @endif
 

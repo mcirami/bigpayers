@@ -13,7 +13,7 @@
     @include('report.options.dates')
 	<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
 			<a class="bp-button-primary"
-	           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}@if(request()->has('role'))&role={{request()->query('role')}}@endif">
+	           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}@if(\App\Support\RequestContext::hasQuery('role'))&role={{\App\Support\RequestContext::query('role')}}@endif">
 				Export Data
 			</a>
 		</div>

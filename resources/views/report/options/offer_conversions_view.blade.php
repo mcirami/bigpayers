@@ -1,6 +1,6 @@
 @php
 
-    $filterValue = request()->query('filter', "affiliate");
+    $filterValue = \App\Support\RequestContext::query('filter', "affiliate");
 
 @endphp
 

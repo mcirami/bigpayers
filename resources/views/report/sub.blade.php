@@ -8,9 +8,9 @@
     <label class="bp-form-label flex flex-col gap-2">
         <span class="bp-form-label">Sub</span>
         <select class='selectBox' id='sub' name='sub'
-                onchange="window.location = '/{{request()->path() . '?' . http_build_query(request()->except(['sub','d_from', 'd_to','timezone','dateSelect']))}}&sub=' + getSubVal() + processDates() ">
+                onchange="window.location = '/{{\App\Support\RequestContext::path() . '?' . http_build_query(\App\Support\RequestContext::queryExcept(['sub','d_from', 'd_to','timezone','dateSelect']))}}&sub=' + getSubVal() + processDates() ">
             @for($i = 1; $i <= 3; $i++)
-                @if(request()->query('sub') == $i)
+                @if(\App\Support\RequestContext::query('sub') == $i)
                     <option selected value="{{$i}}">Sub {{$i}}</option>
                 @else
                     <option value="{{$i}}">Sub {{$i}}</option>

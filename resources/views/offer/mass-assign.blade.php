@@ -33,7 +33,7 @@
         </section>
 
         <section class="bp-card value_span8">
-            <form action="/offer/mass-assign?role={{ request()->query('role', 3) }}" method="post" id="form" enctype="multipart/form-data" class="space-y-6">
+            <form action="/offer/mass-assign?role={{ \App\Support\RequestContext::query('role', 3) }}" method="post" id="form" enctype="multipart/form-data" class="space-y-6">
                 {{ csrf_field() }}
 
                 <div class="bp-inline-toggle">

@@ -7,9 +7,9 @@
 @section('table-options')
 	@php
 		$data = array(
-			'd_from' 		=> request()->query('d_from'),
-			'd_to'			=> request()->query('d_to'),
-			'dateSelect'	=> request()->query('dateSelect'),
+			'd_from' 		=> \App\Support\RequestContext::query('d_from'),
+			'd_to'			=> \App\Support\RequestContext::query('d_to'),
+			'dateSelect'	=> \App\Support\RequestContext::query('dateSelect'),
 			'offerId' 		=> $offer->idoffer
 		);
 	@endphp

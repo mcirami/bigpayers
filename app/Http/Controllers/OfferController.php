@@ -34,8 +34,6 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Request as InputRequest;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule as ValidationRule;
 
 class OfferController extends Controller
@@ -314,9 +312,9 @@ class OfferController extends Controller
 		return view('offer.manage', $data)->with(['data' => $data]);
 	}
 
-	public function showCreate()
+	public function showCreate(Request $request)
 	{
-		$offer = Session::get('offer') ?: new Offer();
+		$offer = $request->session()->get('offer') ?: new Offer();
 		$campaigns = Campaign::query()->orderBy('name')->get();
 
 		return view('offer.create')->with([
@@ -331,9 +329,9 @@ class OfferController extends Controller
 		]);
 	}
 
-	public function getAssignableUsers()
+	public function getAssignableUsers(Request $request)
 	{
-		return User::withRole(InputRequest::get('user_type') === Privilege::ROLE_MANAGER ? Privilege::ROLE_MANAGER : Privilege::ROLE_AFFILIATE)
+		return User::withRole($request->input('user_type') === Privilege::ROLE_MANAGER ? Privilege::ROLE_MANAGER : Privilege::ROLE_AFFILIATE)
 		           ->myUsers()->select(['rep.idrep as id', 'rep.user_name as name'])->get()->toJson();
 	}
 

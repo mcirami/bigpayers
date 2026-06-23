@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class RequestContext
 {
@@ -41,9 +42,24 @@ class RequestContext
         return self::current($request)->query->all();
     }
 
+    public static function queryExcept($keys, ?Request $request = null): array
+    {
+        return Arr::except(self::queryAll($request), $keys);
+    }
+
     public static function cookie(string $key, $default = null, ?Request $request = null)
     {
         return self::current($request)->cookie($key, $default);
+    }
+
+    public static function hasSessionValue(string $key, ?Request $request = null): bool
+    {
+        return self::current($request)->session()->has($key);
+    }
+
+    public static function sessionValue(string $key, $default = null, ?Request $request = null)
+    {
+        return self::current($request)->session()->get($key, $default);
     }
 
     public static function expectsJson(?Request $request = null): bool

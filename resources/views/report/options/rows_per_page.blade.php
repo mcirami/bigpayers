@@ -1,9 +1,9 @@
 <div class="rows_select">
     <label for="rpp">Rows Per Page:</label>
     <select class="selectBoxTheme" id="rpp" name="rpp"
-            onchange="if(this.value !== 'Custom') window.location= '/{{request()->path() . '?' . http_build_query(request()->except(['page','rpp']))}}&rpp='+ this.value + '&page=1'">
+            onchange="if(this.value !== 'Custom') window.location= '/{{\App\Support\RequestContext::path() . '?' . http_build_query(\App\Support\RequestContext::queryExcept(['page','rpp']))}}&rpp='+ this.value + '&page=1'">
 
-        @php($rpp = request()->query('rpp',25))
+        @php($rpp = \App\Support\RequestContext::query('rpp',25))
         <option {{$rpp == 10 ? "selected" :""}} value="10">10</option>
         <option {{$rpp == 15 ? "selected" :""}} value="15">15</option>
         <option {{$rpp == 25 ? "selected": ""}} value="25">25</option>
@@ -15,8 +15,7 @@
 
 
     <input class="rows_select selectBoxTheme" type="number" style="width:40px;"
-           onchange="window.location ='/{{request()->path() . '?' . http_build_query(request()->except(['path','rpp']))}}&rpp='+this.value + '&page=1'"
+           onchange="window.location ='/{{\App\Support\RequestContext::path() . '?' . http_build_query(\App\Support\RequestContext::queryExcept(['path','rpp']))}}&rpp='+this.value + '&page=1'"
 
-           value="{{request()->query('rpp',25)}}" name="rpp" id="rpp"/>
+           value="{{\App\Support\RequestContext::query('rpp',25)}}" name="rpp" id="rpp"/>
 </div>
-

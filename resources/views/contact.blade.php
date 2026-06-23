@@ -100,7 +100,7 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
     <div class="container">
         <div class ="white_box value_span8">
             <div class = "com_acc">
-                @if(session()->has('success'))
+                @if(\App\Support\RequestContext::hasSessionValue('success'))
                     <div class="heading_holder success">
                         <h3>Thanks for contacting CPA Admin!</h3>
                         <p>We will review your application and contact you soon to get you set up.</p>

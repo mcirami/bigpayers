@@ -1722,6 +1722,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('request()->', $contents);
             $this->assertDoesNotMatchRegularExpression('/(?<![A-Za-z_])request\(/', $contents);
         }
+
+        $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
+        $this->assertStringNotContainsString('Facades\\Request', $offerController);
+        $this->assertStringNotContainsString('Facades\\Session', $offerController);
     }
 
     public function test_click_model_uses_the_request_context_boundary(): void
@@ -1731,6 +1735,29 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\RequestContext', $contents);
         $this->assertStringNotContainsString('request()->', $contents);
         $this->assertDoesNotMatchRegularExpression('/(?<![A-Za-z_])request\(/', $contents);
+    }
+
+    public function test_blade_views_do_not_use_global_request_helpers(): void
+    {
+        foreach (File::allFiles(resource_path('views')) as $file) {
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
+
+            $contents = File::get($file->getPathname());
+
+            $this->assertStringNotContainsString('request()->', $contents, $file->getPathname());
+            $this->assertDoesNotMatchRegularExpression(
+                '/(?<![A-Za-z_])request\(/',
+                $contents,
+                $file->getPathname()
+            );
+            $this->assertDoesNotMatchRegularExpression(
+                '/(?<![A-Za-z_])session\(/',
+                $contents,
+                $file->getPathname()
+            );
+        }
     }
 
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void

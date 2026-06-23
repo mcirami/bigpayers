@@ -29,7 +29,7 @@
                 <td>{{$row->total_clicks}}</td>
                 <td>{{$row->unique_clicks}}</td>
                 <td>
-                    @if ($row->conversions != 0 && ((request()->has('role') && request()->query('role') == 3) || !request()->has('role')))
+                    @if ($row->conversions != 0 && ((\App\Support\RequestContext::hasQuery('role') && \App\Support\RequestContext::query('role') == 3) || !\App\Support\RequestContext::hasQuery('role')))
                         <a class="bp-report-link" href='/user/{{$user->idrep}}/{{$row->idoffer}}/conversions-by-subid?{{$params}}'>{{$row->conversions}}</a>
                     @else
                         {{$row->conversions}}

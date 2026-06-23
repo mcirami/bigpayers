@@ -315,6 +315,8 @@ class MigrationCommandsTest extends TestCase
             'REMOTE_ADDR' => '192.0.2.30',
             'HTTP_X_FORWARDED_FOR' => '198.51.100.8, 198.51.100.9',
         ]);
+        $request->setLaravelSession(app('session.store'));
+        $request->session()->put('message', 'Saved');
 
         $this->assertSame('https://app.example.test', RequestContext::schemeAndHttpHost($request));
         $this->assertSame('app.example.test', RequestContext::httpHost($request));
@@ -323,7 +325,10 @@ class MigrationCommandsTest extends TestCase
         $this->assertTrue(RequestContext::hasQuery('role', $request));
         $this->assertSame('3', RequestContext::query('role', null, $request));
         $this->assertSame(['role' => '3'], RequestContext::queryAll($request));
+        $this->assertSame([], RequestContext::queryExcept('role', $request));
         $this->assertSame('America/Chicago', RequestContext::cookie('timezone', null, $request));
+        $this->assertTrue(RequestContext::hasSessionValue('message', $request));
+        $this->assertSame('Saved', RequestContext::sessionValue('message', null, $request));
         $this->assertFalse(RequestContext::expectsJson($request));
         $this->assertSame($request, RequestContext::current($request));
         $this->assertSame('192.0.2.20', RequestContext::serverAddress($request));

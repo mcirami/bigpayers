@@ -131,7 +131,7 @@
 
             <main class="bp-shell-content">
                 @php
-                    $flashMessage = session('message');
+                    $flashMessage = \App\Support\RequestContext::sessionValue('message');
                 @endphp
 
                 @if ($errors->any() || isset($notify) || isset($message) || $flashMessage)
