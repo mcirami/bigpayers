@@ -14,6 +14,7 @@ use App\Services\LoginBranding;
 use App\Services\SmsApiEndpoint;
 use App\Services\SmsPoolConfig;
 use App\Services\TenantDatabasePdoFactory;
+use App\Support\NativeRequest;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Config;
@@ -225,6 +226,28 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('secret-key', SmsPoolConfig::apiKey());
         $this->assertSame('https://pool.example.test/purchase/sms', SmsPoolConfig::url('/purchase/sms'));
         $this->assertSame('https://pool.example.test/sms/check', SmsPoolConfig::url('sms/check'));
+    }
+
+    public function test_native_request_resolves_client_ip_from_forwarded_headers(): void
+    {
+        $originalServer = $_SERVER;
+
+        try {
+            unset($_SERVER['HTTP_CLIENT_IP'], $_SERVER['HTTP_X_FORWARDED_FOR'], $_SERVER['REMOTE_ADDR']);
+
+            $this->assertSame('fallback-ip', NativeRequest::clientIp('fallback-ip'));
+
+            $_SERVER['REMOTE_ADDR'] = '192.0.2.30';
+            $this->assertSame('192.0.2.30', NativeRequest::clientIp());
+
+            $_SERVER['HTTP_X_FORWARDED_FOR'] = '198.51.100.8, 198.51.100.9';
+            $this->assertSame('198.51.100.8', NativeRequest::clientIp());
+
+            $_SERVER['HTTP_CLIENT_IP'] = '203.0.113.15, 203.0.113.16';
+            $this->assertSame('203.0.113.15', NativeRequest::clientIp());
+        } finally {
+            $_SERVER = $originalServer;
+        }
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void

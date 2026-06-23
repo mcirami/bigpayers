@@ -315,22 +315,7 @@ class Geo implements Rule
     private function getISOCode()
     {
 
-	    if (!empty(NativeRequest::server('HTTP_CLIENT_IP'))) {
-		    $ip = NativeRequest::server('HTTP_CLIENT_IP');
-		    if ( str_contains( $ip, ',' ) ) {
-			    $ip = substr($ip, 0, strpos($ip, ","));
-		    }
-	    } elseif (!empty(NativeRequest::server('HTTP_X_FORWARDED_FOR'))) {
-		    $ip = NativeRequest::server('HTTP_X_FORWARDED_FOR');
-		    if ( str_contains( $ip, ',' ) ) {
-			    $ip = substr($ip, 0, strpos($ip, ","));
-		    }
-	    } else {
-		    $ip = NativeRequest::server('REMOTE_ADDR');
-		    if ( str_contains( $ip, ',' ) ) {
-			    $ip = substr($ip, 0, strpos($ip, ","));
-		    }
-	    }
+	    $ip = NativeRequest::clientIp();
 
         try {
             //trys to get their iso code and postal

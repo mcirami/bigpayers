@@ -34,6 +34,21 @@ class NativeRequest
         return $_SERVER[$key] ?? $default;
     }
 
+    public static function clientIp($default = null)
+    {
+        foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {
+            $value = self::server($key);
+
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            return trim(explode(',', (string) $value)[0]);
+        }
+
+        return $default;
+    }
+
     public static function hasCookie(string $key): bool
     {
         return isset($_COOKIE[$key]);

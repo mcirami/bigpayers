@@ -527,9 +527,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $geoRule = File::get(base_path('src/Offer/Rules/Geo.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $geoRule);
+        $this->assertStringContainsString('NativeRequest::clientIp()', $geoRule);
         $this->assertStringContainsString('App\\Services\\GeoIpDatabase', $geoRule);
         $this->assertStringNotContainsString("config('services.geo.ip_database')", $geoRule);
         $this->assertStringNotContainsString('GEO_IP_DATABASE', $geoRule);
+        $this->assertStringNotContainsString("NativeRequest::server('HTTP_CLIENT_IP')", $geoRule);
+        $this->assertStringNotContainsString("NativeRequest::server('HTTP_X_FORWARDED_FOR')", $geoRule);
         $this->assertStringNotContainsString('$_SERVER', $geoRule);
     }
 
@@ -1593,12 +1596,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
 
         $clickRegistrationEvent = File::get(base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'));
+        $clickListener = File::get(base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $clickRegistrationEvent);
         $this->assertStringNotContainsString('$_GET', $clickRegistrationEvent);
         $this->assertStringNotContainsString('$_SERVER', $clickRegistrationEvent);
+        $this->assertStringContainsString('NativeRequest::clientIp()', $clickListener);
+        $this->assertStringNotContainsString("NativeRequest::server('HTTP_CLIENT_IP')", $clickListener);
+        $this->assertStringNotContainsString("NativeRequest::server('HTTP_X_FORWARDED_FOR')", $clickListener);
     }
 
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void
