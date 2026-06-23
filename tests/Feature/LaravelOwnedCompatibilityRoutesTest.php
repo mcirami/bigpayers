@@ -1857,6 +1857,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 $contents,
                 "{$path} should use NativeRequest::requestUri() instead of reading REQUEST_URI directly."
             );
+            $this->assertStringNotContainsString(
+                "NativeRequest::server('REMOTE_ADDR')",
+                $contents,
+                "{$path} should use NativeRequest::remoteAddress() or NativeRequest::clientIp() instead of reading REMOTE_ADDR directly."
+            );
         }
     }
 

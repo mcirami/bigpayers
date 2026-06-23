@@ -88,7 +88,7 @@ class Login
 			        $stmt = $db->prepare($sql);
 			        $stmt->execute();
 			        $whiteListIPs  = $stmt->fetchAll(PDO::FETCH_COLUMN);
-                    $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+                    $remoteAddress = NativeRequest::remoteAddress();
 
 					//$clientIP = $this->getClientIPv4();
 			        //Log::info("Login attempt from IP: " . $clientIP);
@@ -235,7 +235,7 @@ class Login
 
                 $prep->bindParam(":sesh", $oof);
                 $prep->bindParam(":date", $date);
-                $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+                $remoteAddress = NativeRequest::remoteAddress();
 
                 $prep->bindParam(":ip", $remoteAddress);
                 $prep->execute();
@@ -256,7 +256,7 @@ class Login
         $db = DatabaseConnection::getInstance();
         $salt = hash("sha256", NativeSession::get('salt'));
         $repid = NativeSession::get('repid');
-        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+        $remoteAddress = NativeRequest::remoteAddress();
 
 
         $deleteSQL = "UPDATE logins SET success = 2, session_id = :hashUpdate WHERE ip = :ip AND repid = :repid AND session_id = :salt";
@@ -314,7 +314,7 @@ class Login
         $prep = $db->prepare($sql);
 
         $unixTime = date("U");
-        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+        $remoteAddress = NativeRequest::remoteAddress();
 
         $prep->bindParam(":repid", $affid);
         $prep->bindParam(":loginType", $loginType);
@@ -339,7 +339,7 @@ class Login
         $prep = $db->prepare($sql);
 
         $date = date("Y-m-d");
-        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+        $remoteAddress = NativeRequest::remoteAddress();
 
         $prep->bindParam(":ip", $remoteAddress);
         $prep->bindParam(":date", $date);
@@ -373,7 +373,7 @@ class Login
         $sql = "INSERT INTO logins (rep_username, ip, date)  VALUES(:userName, :ip, :date)";
         $prep = $db->prepare($sql);
         $userName = NativeRequest::post('txt_uname_email');
-        $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+        $remoteAddress = NativeRequest::remoteAddress();
 
         $prep->bindParam(":userName", $userName);
         $prep->bindParam(":ip", $remoteAddress);
@@ -439,6 +439,6 @@ class Login
 			}
 		}
 
-		return NativeRequest::server('REMOTE_ADDR');
+		return NativeRequest::remoteAddress();
 	}
 }

@@ -23,7 +23,7 @@ function LogDB($error, $class)
     $time = date("U");
 
     //gets ip of user
-    $ip = NativeRequest::server('REMOTE_ADDR');
+    $ip = NativeRequest::remoteAddress();
 
     $db = DatabaseConnection::getInstance();
 
@@ -74,7 +74,7 @@ function logError($error, $class)
     $time = date("U");
 
     //gets ip of user
-    $ip = NativeRequest::server('REMOTE_ADDR');
+    $ip = NativeRequest::remoteAddress();
 
     $db = DatabaseConnection::getInstance();
 

@@ -63,7 +63,7 @@ class ClickRegistrationEvent extends URLEvent
 
     private function getClickType()
     {
-        $blacklist = new IPBlackList(NativeRequest::server('REMOTE_ADDR'));
+        $blacklist = new IPBlackList(NativeRequest::remoteAddress());
 
         if ($blacklist->isBlackListed()) {
             return Click::TYPE_BLACKLISTED;

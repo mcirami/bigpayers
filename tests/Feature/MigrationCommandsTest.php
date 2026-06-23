@@ -236,8 +236,10 @@ class MigrationCommandsTest extends TestCase
             unset($_SERVER['HTTP_CLIENT_IP'], $_SERVER['HTTP_X_FORWARDED_FOR'], $_SERVER['REMOTE_ADDR']);
 
             $this->assertSame('fallback-ip', NativeRequest::clientIp('fallback-ip'));
+            $this->assertSame('fallback-remote', NativeRequest::remoteAddress('fallback-remote'));
 
             $_SERVER['REMOTE_ADDR'] = '192.0.2.30';
+            $this->assertSame('192.0.2.30', NativeRequest::remoteAddress());
             $this->assertSame('192.0.2.30', NativeRequest::clientIp());
 
             $_SERVER['HTTP_X_FORWARDED_FOR'] = '198.51.100.8, 198.51.100.9';

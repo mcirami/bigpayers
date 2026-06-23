@@ -33,7 +33,7 @@ function checkPasswordResetRequest()
                 $OOF = $db->prepare($SQL);
 
                 $date = date("U");
-                $remoteAddress = NativeRequest::server('REMOTE_ADDR');
+                $remoteAddress = NativeRequest::remoteAddress();
 
 
                 $salt = salt("40");

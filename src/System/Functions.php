@@ -73,7 +73,7 @@ function handle_error($errno, $errstr, $errfile, $errline)
     $time = date("U");
 
     //gets ip of user
-    $ip = NativeRequest::server('REMOTE_ADDR');
+    $ip = NativeRequest::remoteAddress();
 
     $db = DatabaseConnection::getInstance();
 
