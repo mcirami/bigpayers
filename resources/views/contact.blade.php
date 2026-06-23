@@ -38,7 +38,7 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
     <link rel="stylesheet" href="{{$webroot}}css/jquery-ui.min.css"/>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/iscroll.min.js"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/compiled/built.min.js"></script>
-    @if(!config('app.debug') && config('app.env') == 'production')
+    @if(\App\Services\RuntimeEnvironment::runsProductionSnippets())
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127417577-1"></script>
         <script>window.dataLayer = window.dataLayer || [];

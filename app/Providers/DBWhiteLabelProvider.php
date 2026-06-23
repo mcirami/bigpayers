@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Services\CompanyDatabaseConnectionManager;
 use App\Services\DBWhiteLabelService;
+use Illuminate\Http\Request;
 use Illuminate\Support\ServiceProvider;
 
 class DBWhiteLabelProvider extends ServiceProvider
@@ -13,10 +14,10 @@ class DBWhiteLabelProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(Request $request)
     {
         if ( ! app()->runningInConsole()) {
-            $dbWhiteLabel = new DBWhiteLabelService(request()->getHttpHost(), app(CompanyDatabaseConnectionManager::class));
+            $dbWhiteLabel = new DBWhiteLabelService($request->getHttpHost(), app(CompanyDatabaseConnectionManager::class));
             $dbWhiteLabel->findCompanySubDomain();
             $dbWhiteLabel->changeDatabaseHostWithSubDomain();
 

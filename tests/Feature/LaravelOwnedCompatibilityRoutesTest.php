@@ -1830,6 +1830,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
+    public function test_blade_environment_checks_use_runtime_environment_boundary(): void
+    {
+        foreach ([
+            resource_path('views/contact.blade.php'),
+            resource_path('views/layouts/master.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Services\\RuntimeEnvironment', $contents);
+            $this->assertStringNotContainsString("config('app.debug')", $contents);
+            $this->assertStringNotContainsString("config('app.env')", $contents);
+        }
+    }
+
     public function test_legacy_source_reads_request_data_through_native_request_boundary(): void
     {
         foreach (File::allFiles(base_path('src')) as $file) {
@@ -1915,6 +1929,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 );
             }
         }
+    }
+
+    public function test_white_label_database_bootstrap_uses_explicit_request_host_boundary(): void
+    {
+        $provider = File::get(app_path('Providers/DBWhiteLabelProvider.php'));
+        $service = File::get(app_path('Services/DBWhiteLabelService.php'));
+
+        $this->assertStringContainsString('Illuminate\\Http\\Request', $provider);
+        $this->assertStringContainsString('$request->getHttpHost()', $provider);
+        $this->assertStringNotContainsString('request()->getHttpHost()', $provider);
+        $this->assertStringNotContainsString('request()->getHttpHost()', $service);
+        $this->assertStringContainsString('getSubDomain($url)', $service);
     }
 
     private function assertRouteAction(string $uri, string $method, string $expectedAction): void

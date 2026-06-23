@@ -31,9 +31,9 @@ class DBWhiteLabelService
     }
 
 
-    public static function getSubDomain()
+    public static function getSubDomain(string $host)
     {
-        $host = static::normalizeHost(request()->getHttpHost());
+        $host = static::normalizeHost($host);
         $sub = explode(".", $host);
 
         return $sub[0];
@@ -56,7 +56,7 @@ class DBWhiteLabelService
 
         // if it was none of those, default that its a company install e.g. xyz.trackyourstats.com
 
-        $this->subDomain = self::getSubDomain();
+        $this->subDomain = self::getSubDomain($url);
 
 
         // checks if its on live test server (test.trackyourstats.com)
@@ -105,7 +105,7 @@ class DBWhiteLabelService
 
     private function checkAndSetIfStagingServer()
     {
-        if (self::getSubDomain() == 'test') {
+        if ($this->subDomain == 'test') {
             $this->subDomain = 'debug';
         }
 

@@ -11,6 +11,7 @@ use App\Services\CompanyDatabaseConnectionManager;
 use App\Services\GeoIpDatabase;
 use App\Services\LegacyDatabaseConfig;
 use App\Services\LoginBranding;
+use App\Services\RuntimeEnvironment;
 use App\Services\SmsApiEndpoint;
 use App\Services\SmsPoolConfig;
 use App\Services\TenantDatabasePdoFactory;
@@ -215,6 +216,23 @@ class MigrationCommandsTest extends TestCase
         Config::set('branding.login.button_text', 'Sign in');
 
         $this->assertSame('Return to login', LoginBranding::returnToLoginText());
+    }
+
+    public function test_runtime_environment_detects_production_snippet_mode(): void
+    {
+        Config::set('app.debug', false);
+        Config::set('app.env', 'production');
+
+        $this->assertTrue(RuntimeEnvironment::runsProductionSnippets());
+
+        Config::set('app.debug', true);
+
+        $this->assertFalse(RuntimeEnvironment::runsProductionSnippets());
+
+        Config::set('app.debug', false);
+        Config::set('app.env', 'local');
+
+        $this->assertFalse(RuntimeEnvironment::runsProductionSnippets());
     }
 
     public function test_sms_pool_config_builds_configured_urls(): void
@@ -485,6 +503,12 @@ class MigrationCommandsTest extends TestCase
                 'database' => 'tenant_a',
             ],
         ], $connections->configuredNames);
+    }
+
+    public function test_white_label_subdomain_is_derived_from_the_explicit_host(): void
+    {
+        $this->assertSame('tenant-a', \App\Services\DBWhiteLabelService::getSubDomain('Tenant-A.Example.Test:8443'));
+        $this->assertSame('tenant-b', \App\Services\DBWhiteLabelService::getSubDomain('www.tenant-b.example.test.'));
     }
 
     public function test_migration_commands_expose_safe_selection_and_pretend_options(): void
