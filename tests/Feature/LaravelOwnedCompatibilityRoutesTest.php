@@ -1179,6 +1179,28 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_GET', $adminLogin);
     }
 
+    public function test_report_partials_do_not_load_tables_script_before_jquery(): void
+    {
+        foreach (File::allFiles(resource_path('views/report')) as $file) {
+            $path = $file->getPathname();
+            $contents = File::get($path);
+
+            $this->assertStringNotContainsString(
+                'tables.js',
+                $contents,
+                "{$path} should rely on layouts.partials.report-script-assets so jQuery loads before tables.js."
+            );
+        }
+
+        $reportAssets = File::get(resource_path('views/layouts/partials/report-script-assets.blade.php'));
+        $jqueryPosition = strpos($reportAssets, 'jquery_2.1.3_jquery.min.js');
+        $tablesPosition = strpos($reportAssets, 'tables.js');
+
+        $this->assertNotFalse($jqueryPosition);
+        $this->assertNotFalse($tablesPosition);
+        $this->assertLessThan($tablesPosition, $jqueryPosition);
+    }
+
     public function test_modern_notification_layouts_use_legacy_notify_boundary(): void
     {
         $layout = File::get(resource_path('views/layouts/master.blade.php'));
@@ -1404,8 +1426,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $legacySetup = File::get(base_path('src/System/Setup.php'));
         $geoIpUpdater = File::get(base_path('src/System/GeoIPUpdater.php'));
 
-        $this->assertStringContainsString("config(\"database.connections.mysql.{\$key}\")", $legacyDatabaseConfig);
-        $this->assertStringContainsString("config(\"database.connections.master.{\$key}\")", $legacyDatabaseConfig);
+        $this->assertStringContainsString('configIsAvailable()', $legacyDatabaseConfig);
+        $this->assertStringContainsString("config(\"database.connections.{\$connection}.{\$key}\")", $legacyDatabaseConfig);
+        $this->assertStringContainsString("self::databaseConfig()['connections'][\$connection]", $legacyDatabaseConfig);
+        $this->assertStringContainsString("require base_path('config/database.php')", $legacyDatabaseConfig);
         $this->assertStringContainsString('LegacyDatabaseConfig', $legacyDatabaseConnection);
         $this->assertStringContainsString('LegacyDatabaseConfig', $legacyCompany);
         $this->assertStringContainsString('LegacyDatabaseConfig', $legacyConnection);

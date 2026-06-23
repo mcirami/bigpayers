@@ -27,8 +27,6 @@
 
 <script type='text/javascript'>var dateSelect = {{request()->query('dateSelect', 0)}};</script>
 
-<script src='/js/tables.js'></script>
-
 <div class="bp-toolbar-cluster">
     <label class="bp-form-field">
         <span class="bp-form-label">Date Range</span>
@@ -74,4 +72,3 @@
         </button>
     </div>
 </div>
-

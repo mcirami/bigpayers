@@ -132,6 +132,24 @@ class MigrationCommandsTest extends TestCase
         $this->assertSame('master_catalog', LegacyDatabaseConfig::master('database'));
     }
 
+    public function test_legacy_database_config_can_read_database_config_before_laravel_config_is_bootstrapped(): void
+    {
+        $app = app();
+        $config = $app->make('config');
+
+        try {
+            $app->offsetUnset('config');
+
+            $this->assertSame(env('DB_HOST', '127.0.0.1'), LegacyDatabaseConfig::mysql('host'));
+            $this->assertSame(env('DB_DATABASE', 'forge'), LegacyDatabaseConfig::primaryDatabase());
+            $this->assertSame(env('MASTER_DB_HOST', '127.0.0.1'), LegacyDatabaseConfig::master('host'));
+            $this->assertSame(env('MASTER_DB_DATABASE', 'forge'), LegacyDatabaseConfig::master('database'));
+            $this->assertSame(env('DB_USERNAME', 'forge'), LegacyDatabaseConfig::mysqlConnection()['username']);
+        } finally {
+            $app->instance('config', $config);
+        }
+    }
+
     public function test_runtime_configuration_documentation_lists_configured_environment_boundaries(): void
     {
         $documentation = File::get(base_path('docs/runtime-configuration.md'));
