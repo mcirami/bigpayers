@@ -245,6 +245,13 @@ class MigrationCommandsTest extends TestCase
 
             $_SERVER['HTTP_CLIENT_IP'] = '203.0.113.15, 203.0.113.16';
             $this->assertSame('203.0.113.15', NativeRequest::clientIp());
+
+            $_SERVER['HTTP_HOST'] = 'app.example.test';
+            $_SERVER['REQUEST_URI'] = '/reports?role=3';
+
+            $this->assertSame('app.example.test', NativeRequest::host());
+            $this->assertSame('/reports?role=3', NativeRequest::requestUri());
+            $this->assertSame('http://app.example.test/reports?role=3', NativeRequest::currentUrl());
         } finally {
             $_SERVER = $originalServer;
         }

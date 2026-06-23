@@ -98,7 +98,7 @@ class Company
     static function getSub()
     {
 	    return LegacyDatabaseConfig::primaryDatabase();
-       /* $sub = explode(".", NativeRequest::server("HTTP_HOST"));
+       /* $sub = explode(".", NativeRequest::host());
 
 		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
 			return LegacyDatabaseConfig::primaryDatabase();
@@ -117,7 +117,7 @@ class Company
     // OUTPUT: com
     static function getExtension()
     {
-        $sub = explode(".", NativeRequest::server("HTTP_HOST"));
+        $sub = explode(".", NativeRequest::host());
 
         return $sub[count($sub) - 1];
     }

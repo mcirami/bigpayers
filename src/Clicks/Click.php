@@ -104,7 +104,7 @@ class Click
         $this->subVarArray = TrackingParameters::normalize($this->subVarArray);
 
         if (isset($this->queryString) == false) {
-            $this->queryString = NativeRequest::server('REQUEST_URI');
+            $this->queryString = NativeRequest::requestUri();
         }
 
         $db = DatabaseConnection::getInstance();

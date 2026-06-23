@@ -1842,6 +1842,21 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
                 $contents,
                 "{$path} should use NativeRequest instead of Laravel's request() helper."
             );
+            $this->assertStringNotContainsString(
+                "NativeRequest::server('HTTP_HOST')",
+                $contents,
+                "{$path} should use NativeRequest::host() instead of reading HTTP_HOST directly."
+            );
+            $this->assertStringNotContainsString(
+                'NativeRequest::server("HTTP_HOST")',
+                $contents,
+                "{$path} should use NativeRequest::host() instead of reading HTTP_HOST directly."
+            );
+            $this->assertStringNotContainsString(
+                "NativeRequest::server('REQUEST_URI')",
+                $contents,
+                "{$path} should use NativeRequest::requestUri() instead of reading REQUEST_URI directly."
+            );
         }
     }
 

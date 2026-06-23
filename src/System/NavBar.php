@@ -173,7 +173,7 @@ class NavBar
             $this->menu['Reports'] = $reports;
         }
 
-        $this->currentPage = parse_url(NativeRequest::server('REQUEST_URI'))["path"];
+        $this->currentPage = parse_url(NativeRequest::requestUri())["path"];
 
 
     }

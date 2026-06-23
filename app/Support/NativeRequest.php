@@ -34,6 +34,21 @@ class NativeRequest
         return $_SERVER[$key] ?? $default;
     }
 
+    public static function host($default = null)
+    {
+        return self::server('HTTP_HOST', $default);
+    }
+
+    public static function requestUri($default = null)
+    {
+        return self::server('REQUEST_URI', $default);
+    }
+
+    public static function currentUrl(string $protocol = 'http://'): string
+    {
+        return $protocol . self::host('') . self::requestUri('');
+    }
+
     public static function clientIp($default = null)
     {
         foreach (['HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR'] as $key) {

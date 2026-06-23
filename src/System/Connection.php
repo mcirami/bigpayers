@@ -93,7 +93,7 @@ class Connection
         $db = DatabaseConnection::getMasterInstance();
         $sql = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE login_url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $loginURL = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
+        $loginURL = $this->normalizeHost(NativeRequest::host());
         $wwwLoginURL = 'www.' . $loginURL;
         $prep->bindParam(":url", $loginURL);
         $prep->bindParam(":wwwUrl", $wwwLoginURL);
@@ -116,7 +116,7 @@ class Connection
         $db = DatabaseConnection::getMasterInstance();
         $sql = "SELECT * FROM ". LegacyDatabaseConfig::primaryDatabase() . ".offer_urls WHERE url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $host = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
+        $host = $this->normalizeHost(NativeRequest::host());
         $wwwHost = 'www.' . $host;
         $prep->bindParam(":url", $host);
         $prep->bindParam(":wwwUrl", $wwwHost);
@@ -220,7 +220,7 @@ class Connection
         $db = DatabaseConnection::getMasterInstance();
         $sql = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE landing_page IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
-        $loginURL = $this->normalizeHost(NativeRequest::server('HTTP_HOST'));
+        $loginURL = $this->normalizeHost(NativeRequest::host());
         $wwwLoginURL = 'www.' . $loginURL;
         $prep->bindParam(":url", $loginURL);
         $prep->bindParam(":wwwUrl", $wwwLoginURL);

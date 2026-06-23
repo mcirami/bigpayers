@@ -68,7 +68,7 @@ class View
                 : [];
 
             if (count($this->urls) == 0) {
-                array_push($this->urls, array(NativeRequest::server('HTTP_HOST')));
+                array_push($this->urls, array(NativeRequest::host()));
             }
 
             if (!isset($this->url)) {

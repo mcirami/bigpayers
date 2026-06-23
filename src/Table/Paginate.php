@@ -41,7 +41,7 @@ class Paginate
         <label for=\"page\">Page &nbsp;</label>
   
     
-        <select onchange=\"window.location = '".htmlspecialchars(parse_url(NativeRequest::server('REQUEST_URI'))["path"], ENT_QUOTES,
+        <select onchange=\"window.location = '".htmlspecialchars(parse_url(NativeRequest::requestUri())["path"], ENT_QUOTES,
                 "utf-8").$assign->buildAssignments(["page"])."&page='+getElementById('page').value + '';\" id=\"page\" name=\"page\" >
             ";
 
@@ -117,5 +117,4 @@ class Paginate
 
 
 }
-
 

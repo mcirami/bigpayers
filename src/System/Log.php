@@ -10,7 +10,7 @@ use App\Support\NativeRequest;
 
 function LogDB($error, $class)
 {   //gets full url of page that error happened on
-    $actual_link = "http://" . NativeRequest::server('HTTP_HOST') . NativeRequest::server('REQUEST_URI');
+    $actual_link = NativeRequest::currentUrl();
 
     //gets class name of class that error happened, set to null if not in class
     if ($class != null) {
@@ -61,7 +61,7 @@ if (! function_exists('Log')) {
 function logError($error, $class)
 {
     //gets full url of page that error happened on
-    $actual_link = "http://" . NativeRequest::server('HTTP_HOST') . NativeRequest::server('REQUEST_URI');
+    $actual_link = NativeRequest::currentUrl();
 
     //gets class name of class that error happened, set to null if not in class
     if ($class != null) {

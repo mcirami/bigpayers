@@ -397,7 +397,7 @@ class Rules
 
     private function buildRedirectUrl($offid)
     {
-        $url = "http://".NativeRequest::server('HTTP_HOST');
+        $url = "http://".NativeRequest::host();
 
         $params = TrackingParameters::normalize(NativeRequest::queryAll());
         $query = [];

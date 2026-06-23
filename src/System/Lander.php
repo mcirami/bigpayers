@@ -61,7 +61,7 @@ class Lander
 
     public function isLandingPage()
     {
-        return (NativeRequest::server('HTTP_HOST') == $this->company->getLandingPage() && $this->company->getLandingPage());
+        return (NativeRequest::host() == $this->company->getLandingPage() && $this->company->getLandingPage());
         /*return ("liontracking" == $this->company->getLandingPage() && $this->company->getLandingPage());*/
     }
 

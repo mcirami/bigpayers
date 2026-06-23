@@ -28,7 +28,7 @@ function getWebRoot()
 {
     $protocol = findProtocol();
 
-    $host = NativeRequest::server('HTTP_HOST');
+    $host = NativeRequest::host();
 
     if ($host !== null) {
         if (($host == "127.0.0.1" || $host == "localhost")) {

@@ -255,7 +255,7 @@ class Notifications
 
     public function massMail($mailerList)
     {
-        $host = NativeRequest::server("HTTP_HOST");
+        $host = NativeRequest::host();
         $htmlBody = "<html><h3>Notification from {$this->newNotification['user_name']} @ {$host}</h3><br/>{$this->newNotification['body']}</html>";
 
         foreach ($mailerList as $address) {

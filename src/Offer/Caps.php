@@ -195,7 +195,7 @@ class Caps
 
     public function sendToRedirectOffer()
     {
-        $url = findProtocol().NativeRequest::server('HTTP_HOST');
+        $url = findProtocol().NativeRequest::host();
         $params = TrackingParameters::normalize(NativeRequest::queryAll());
         $query = [];
 
