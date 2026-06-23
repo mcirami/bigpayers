@@ -25,6 +25,7 @@ use App\Support\LegacyOfferRules;
 use App\Support\LegacyOfferView;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser;
+use App\Support\RequestContext;
 use App\User;
 use App\UserOffer;
 use Carbon\Carbon;
@@ -259,7 +260,7 @@ class OfferController extends Controller
 		/* @var $urls Collection */
 		if ($urls->isEmpty()) {
 			$url = new OfferURL();
-			$url->url = request()->getHttpHost();
+			$url->url = RequestContext::httpHost();
 			$urls->add($url);
 		}
 		$urls = $urls->pluck('url')->toArray();

@@ -14,7 +14,7 @@
     @php
         $isEdit = $mode === 'edit';
         $activeCount = $activeUrls ?? null;
-        $serverIp = request()->server('SERVER_ADDR') ?: request()->ip();
+        $serverIp = \App\Support\RequestContext::serverAddress();
     @endphp
 
     <div class="space-y-6 lg:space-y-8">

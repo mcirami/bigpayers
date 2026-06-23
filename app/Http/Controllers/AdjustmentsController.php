@@ -8,6 +8,7 @@ use App\Support\CurrentUserSession;
 use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
 use App\Support\LegacyClick as Click;
 use App\Support\LegacyConversion as Conversion;
+use App\Support\RequestContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 
@@ -61,7 +62,7 @@ class AdjustmentsController extends Controller
         $click->rep_idrep = $request->get('affiliate');
         $click->offer_idoffer = $request->get('offer');
         $click->first_timestamp = $request->get('date');
-        $click->ip_address = $request->server('SERVER_ADDR', $request->ip());
+        $click->ip_address = RequestContext::serverAddress($request);
         $click->browser_agent = "TYS_GENERATED";
         $click->click_type = Click::TYPE_GENERATED;
         $click->save();

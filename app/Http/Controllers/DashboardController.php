@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Company;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPermissions as Permissions;
+use App\Support\RequestContext;
 
 class DashboardController extends Controller
 {
@@ -25,7 +26,7 @@ class DashboardController extends Controller
             'firstName' => $currentUser->first_name,
             'email' => $currentUser->email,
 	        'userType' => CurrentUserSession::type(),
-	        'domain' => request()->getSchemeAndHttpHost() . "/signup?mid=",
+	        'domain' => RequestContext::schemeAndHttpHost() . "/signup?mid=",
         ];
 
         return view('home', $with);

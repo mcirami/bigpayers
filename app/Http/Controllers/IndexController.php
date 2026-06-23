@@ -9,6 +9,7 @@ use App\Support\LegacyIPBlackList as IPBlackList;
 use App\Support\LegacyLander as Lander;
 use App\Support\LegacyPostBackURLEventHandler as PostBackURLEventHandler;
 use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\RequestContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -117,21 +118,12 @@ class IndexController extends Controller
 		    }
 	    }
 
-        $ip = $this->clientIp($request);
+        $ip = RequestContext::clientIp($request);
 
         $clickRegistrationEvent = new ClickRegistrationEvent($repId, $offerId, $trackingQuery, $ip);
         if ( ! $clickRegistrationEvent->fire()) {
             return redirect('404');
         }
-    }
-
-    private function clientIp(Request $request): string
-    {
-        $ip = $request->server('HTTP_CLIENT_IP')
-            ?: $request->server('HTTP_X_FORWARDED_FOR')
-            ?: $request->server('REMOTE_ADDR', $request->ip());
-
-        return explode(',', (string) $ip)[0];
     }
 
 }

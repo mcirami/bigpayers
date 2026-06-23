@@ -1636,6 +1636,28 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString("NativeRequest::server('HTTP_X_FORWARDED_FOR')", $clickListener);
     }
 
+    public function test_modern_request_host_and_ip_reads_use_request_context_boundary(): void
+    {
+        foreach ([
+            app_path('Http/Controllers/AdjustmentsController.php'),
+            app_path('Http/Controllers/DashboardController.php'),
+            app_path('Http/Controllers/IndexController.php'),
+            app_path('Http/Controllers/NotificationController.php'),
+            app_path('Http/Controllers/OfferController.php'),
+            resource_path('views/offer/manage.blade.php'),
+            resource_path('views/offer/url-form.blade.php'),
+        ] as $path) {
+            $contents = File::get($path);
+
+            $this->assertStringContainsString('App\\Support\\RequestContext', $contents);
+            $this->assertStringNotContainsString('request()->getHttpHost()', $contents);
+            $this->assertStringNotContainsString('request()->getHost()', $contents);
+            $this->assertStringNotContainsString('request()->getSchemeAndHttpHost()', $contents);
+            $this->assertStringNotContainsString("request()->server('SERVER_ADDR')", $contents);
+            $this->assertStringNotContainsString('$request->server(', $contents);
+        }
+    }
+
     public function test_modern_ip_blacklist_reads_use_legacy_ip_blacklist_boundary(): void
     {
         foreach ([

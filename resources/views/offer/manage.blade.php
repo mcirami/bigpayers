@@ -221,7 +221,7 @@
             const canViewPayouts = @json($canViewPayouts);
             const showPayoutColumn = @json($showPayoutColumn);
             const sessionUser = @json($sessionUserId);
-            const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? request()->getHttpHost());
+            const selectedUrl = @json($urls[request('url', 0)] ?? $urls[0] ?? \App\Support\RequestContext::httpHost());
             const offers = @json($offers);
             const offerTypeLabels = @json($offerTypeLabels);
             const paginationContainer = "#pagination";

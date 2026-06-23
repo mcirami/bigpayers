@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
+use App\Support\RequestContext;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -218,7 +219,7 @@ class NotificationController extends Controller
             ->values();
 
         $author = CurrentUserSession::data()->user_name;
-        $host = request()->getHost();
+        $host = RequestContext::host();
         $htmlBody = "<html><h3>Notification from {$author} @ {$host}</h3><br/>" . nl2br(e($body)) . '</html>';
 
         foreach ($emails as $email) {

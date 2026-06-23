@@ -16,8 +16,10 @@ use App\Services\SmsApiEndpoint;
 use App\Services\SmsPoolConfig;
 use App\Services\TenantDatabasePdoFactory;
 use App\Support\NativeRequest;
+use App\Support\RequestContext;
 use Illuminate\Console\Command;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
@@ -301,6 +303,29 @@ class MigrationCommandsTest extends TestCase
         } finally {
             $_SERVER = $originalServer;
         }
+    }
+
+    public function test_request_context_resolves_modern_request_host_and_ip_values(): void
+    {
+        $request = Request::create('https://app.example.test/reports?role=3', 'GET', [], [], [], [
+            'HTTP_HOST' => 'app.example.test',
+            'SERVER_ADDR' => '192.0.2.20',
+            'REMOTE_ADDR' => '192.0.2.30',
+            'HTTP_X_FORWARDED_FOR' => '198.51.100.8, 198.51.100.9',
+        ]);
+
+        $this->assertSame('https://app.example.test', RequestContext::schemeAndHttpHost($request));
+        $this->assertSame('app.example.test', RequestContext::httpHost($request));
+        $this->assertSame('app.example.test', RequestContext::host($request));
+        $this->assertSame('192.0.2.20', RequestContext::serverAddress($request));
+        $this->assertSame('198.51.100.8', RequestContext::clientIp($request));
+
+        $requestWithoutServerAddress = Request::create('http://tenant.example.test', 'GET', [], [], [], [
+            'REMOTE_ADDR' => '203.0.113.15',
+        ]);
+
+        $this->assertSame('203.0.113.15', RequestContext::serverAddress($requestWithoutServerAddress));
+        $this->assertSame('203.0.113.15', RequestContext::clientIp($requestWithoutServerAddress));
     }
 
     public function test_migration_commands_use_the_company_database_connection_manager(): void
