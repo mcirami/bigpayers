@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAffiliatePayoutReport as AffiliatePayout;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
@@ -24,8 +25,9 @@ class PayoutReportController extends ReportController
 
     public function report()
     {
-        $report = $this->reportPayout();
-        $historyReport = $this->reportPayoutHistory();
+        $currentUserContext = CurrentUserSession::snapshot();
+        $report = $this->reportPayout($currentUserContext);
+        $historyReport = $this->reportPayoutHistory($currentUserContext);
 
         if (RequestContext::expectsJson()) {
             return response($report->toArray());
@@ -36,9 +38,10 @@ class PayoutReportController extends ReportController
 
     public function invoice()
     {
+        $currentUserContext = CurrentUserSession::snapshot();
         $dates = static::getDates();
         $repo = new AffiliateOfferRepository(\DB::getPdo());
-        $repo->setAffiliateId(CurrentUserSession::id());
+        $repo->setAffiliateId($currentUserContext->id);
         $offerReporter = new Reporter($repo);
         $offerReporter
             ->addFilter(new DeductionColumnFilter())
@@ -47,20 +50,21 @@ class PayoutReportController extends ReportController
             ->addFilter(new DollarSign(['Revenue', 'Deductions', 'EPC', 'TOTAL']));
 
         $offerReport = $offerReporter->fetchReport($dates['startDate'], $dates['endDate']);
-        $payoutReport = $this->reportPayout();
-        $affiliateUserName = CurrentUserSession::user()->user_name;
+        $payoutReport = $this->reportPayout($currentUserContext);
+        $affiliateUserName = $currentUserContext->user()->user_name;
         $title = strtoupper($affiliateUserName) . '_' . $dates['startDate'] . '_THROUGH_' . $dates['endDate'];
 
         return \PDF::loadView('pdf.payout-log', compact('affiliateUserName', 'offerReport', 'dates', 'payoutReport', 'title'))->download($title . '.pdf');
     }
 
 
-    private function reportPayoutHistory()
+    private function reportPayoutHistory(?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $dates = self::getDates();
 
         $payoutRepository = new PayoutLogRepository(\DB::getPdo());
-        $payoutRepository->setUserId(CurrentUserSession::id());
+        $payoutRepository->setUserId($currentUserContext->id);
 
         $reporter = new Reporter($payoutRepository);
 
@@ -88,10 +92,11 @@ class PayoutReportController extends ReportController
         return $reporter->fetchReport($dates['startDate'], $dates['endDate']);
     }
 
-    private function reportPayout()
+    private function reportPayout(?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $dates = static::getDates();
-        $report = new  AffiliatePayout(CurrentUserSession::id(), $dates['startDate'], $dates['endDate']);
+        $report = new AffiliatePayout($currentUserContext->id, $dates['startDate'], $dates['endDate']);
 
         $report->fetchReports();
         $report->processReports();

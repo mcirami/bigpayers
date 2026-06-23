@@ -1732,8 +1732,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Providers/AppServiceProvider.php'),
+            app_path('Http/Controllers/BonusController.php'),
             app_path('Http/Controllers/DashboardController.php'),
+            app_path('Http/Controllers/NotificationController.php'),
             app_path('Http/Controllers/OfferController.php'),
+            app_path('Http/Controllers/Report/EmployeeReportController.php'),
+            app_path('Http/Controllers/Report/PayoutReportController.php'),
+            app_path('Http/Controllers/Report/SubReportController.php'),
+            app_path('Http/Controllers/UserController.php'),
+            app_path('Services/Repositories/Offer/OfferAffiliateClicksRepository.php'),
+            app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 

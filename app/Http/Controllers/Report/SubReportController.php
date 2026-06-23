@@ -47,9 +47,10 @@ class SubReportController extends ReportController
 
 		$subID = $request->get('subid');
 		$dates = self::getDates();
-        $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
+        $currentUserContext = CurrentUserSession::snapshot();
+        $resolvedPaid = $currentUserContext->type === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole($currentUserContext->type, 'offer', 'rep_has_offer');
 
 		$subReport = DB::table('click_vars')
 		  ->where('sub1', '=', $subID)
@@ -106,9 +107,10 @@ class SubReportController extends ReportController
 		$dates = self::getDates();
 		['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
 		$subId = RequestContext::query('subId');
-        $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
+        $currentUserContext = CurrentUserSession::snapshot();
+        $resolvedPaid = $currentUserContext->type === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole($currentUserContext->type, 'offer', 'rep_has_offer');
 
 	    $reportCollection = Click::where('rep_idrep', '=', $user->idrep)
 					->where('clicks.offer_idoffer', '=', $offer->idoffer)
@@ -249,9 +251,10 @@ class SubReportController extends ReportController
 		$country = RequestContext::query('country');
 		$userId = $user->idrep;
 		$offerId = $offer->idoffer;
-        $resolvedPaid = CurrentUserSession::type() === Privilege::ROLE_AFFILIATE
+        $currentUserContext = CurrentUserSession::snapshot();
+        $resolvedPaid = $currentUserContext->type === Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole($currentUserContext->type, 'offer', 'rep_has_offer');
 
 		$ipAddresses = Click::where('rep_idrep', '=', $userId)
 		->where('offer_idoffer', '=', $offerId)

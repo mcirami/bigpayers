@@ -51,15 +51,17 @@ class OfferAffiliateClicksRepository implements Repository
      */
     public function query(Carbon $start, Carbon $end): Builder
     {
-	    if( CurrentUserSession::type() == Privilege::ROLE_ADMIN) {
-		    $report = CurrentUserSession::permissions()->can('view_all_users') ?
+        $currentUserContext = CurrentUserSession::snapshot();
+
+	    if ($currentUserContext->type == Privilege::ROLE_ADMIN) {
+		    $report = $currentUserContext->can('view_all_users') ?
 			    $this->getOfferConversionsForGod($start, $end)
 			    :
 			    $this->getOfferConversionsForAdmin($start, $end);
 
-	    } else if( CurrentUserSession::type() == Privilege::ROLE_MANAGER) {
+	    } else if ($currentUserContext->type == Privilege::ROLE_MANAGER) {
             $report = $this->getOfferConversionsForManager($start, $end);
-	    } else if( CurrentUserSession::type() == Privilege::ROLE_AFFILIATE) {
+	    } else if ($currentUserContext->type == Privilege::ROLE_AFFILIATE) {
             $report = $this->getOfferConversionsForAgent($start, $end);
         } else {
             $report = $this->getOfferConversionsForGod($start, $end);

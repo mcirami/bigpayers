@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyBonus;
 use Illuminate\Http\Request;
@@ -14,33 +15,36 @@ class BonusController extends Controller
 {
     public function index()
     {
-        abort_unless($this->canManageBonuses(), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($this->canManageBonuses($currentUserContext), 403);
 
-        $bonuses = collect((new LegacyBonus(CurrentUserSession::id(), true))->bonuses);
+        $bonuses = collect((new LegacyBonus($currentUserContext->id, true))->bonuses);
 
         return view('bonus.index', [
             'bonuses' => $bonuses,
-            'canCreateBonuses' => CurrentUserSession::can(Permissions::CREATE_BONUSES),
-            'canAssignBonuses' => CurrentUserSession::can(Permissions::ASSIGN_BONUSES),
-            'canProcessBonuses' => CurrentUserSession::type() === Privilege::ROLE_GOD,
+            'canCreateBonuses' => $currentUserContext->can(Permissions::CREATE_BONUSES),
+            'canAssignBonuses' => $currentUserContext->can(Permissions::ASSIGN_BONUSES),
+            'canProcessBonuses' => $currentUserContext->type === Privilege::ROLE_GOD,
         ]);
     }
 
     public function create()
     {
-        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::CREATE_BONUSES), 403);
 
         return view('bonus.form', [
             'mode' => 'create',
             'bonus' => null,
             'action' => '/bonuses/create',
-            'userGroups' => $this->userGroupsForBonus(),
+            'userGroups' => $this->userGroupsForBonus(null, $currentUserContext),
         ]);
     }
 
     public function store(Request $request)
     {
-        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::CREATE_BONUSES), 403);
 
         $payload = $this->validateBonus($request);
 
@@ -53,7 +57,11 @@ class BonusController extends Controller
         );
 
         if ($bonusId && ($request->filled('user_ids') || $request->filled('replist'))) {
-            $this->syncBonusUsers((int) $bonusId, $request->input('user_ids', $request->input('replist', [])));
+            $this->syncBonusUsers(
+                (int) $bonusId,
+                $request->input('user_ids', $request->input('replist', [])),
+                $currentUserContext
+            );
         }
 
         return redirect("/bonuses/{$bonusId}/edit")->with('message', 'Bonus created successfully.');
@@ -61,7 +69,8 @@ class BonusController extends Controller
 
     public function edit($bonus)
     {
-        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::CREATE_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
 
@@ -69,13 +78,14 @@ class BonusController extends Controller
             'mode' => 'edit',
             'bonus' => $bonusRecord,
             'action' => "/bonuses/{$bonusRecord->id}/edit",
-            'userGroups' => $this->userGroupsForBonus((int) $bonusRecord->id),
+            'userGroups' => $this->userGroupsForBonus((int) $bonusRecord->id, $currentUserContext),
         ]);
     }
 
     public function update(Request $request, $bonus)
     {
-        abort_unless(CurrentUserSession::can(Permissions::CREATE_BONUSES), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::CREATE_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
         $payload = $this->validateBonus($request);
@@ -89,30 +99,40 @@ class BonusController extends Controller
             $request->boolean('inheritable') ? 1 : 0
         );
 
-        $this->syncBonusUsers((int) $bonusRecord->id, $request->input('user_ids', $request->input('replist', [])));
+        $this->syncBonusUsers(
+            (int) $bonusRecord->id,
+            $request->input('user_ids', $request->input('replist', [])),
+            $currentUserContext
+        );
 
         return redirect("/bonuses/{$bonusRecord->id}/edit")->with('message', 'Bonus updated successfully.');
     }
 
     public function assign($bonus)
     {
-        abort_unless(CurrentUserSession::can(Permissions::ASSIGN_BONUSES), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::ASSIGN_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
 
         return view('bonus.assign', [
             'bonus' => $bonusRecord,
-            'userGroups' => $this->userGroupsForBonus((int) $bonusRecord->id),
+            'userGroups' => $this->userGroupsForBonus((int) $bonusRecord->id, $currentUserContext),
         ]);
     }
 
     public function updateAssignment(Request $request, $bonus)
     {
-        abort_unless(CurrentUserSession::can(Permissions::ASSIGN_BONUSES), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::ASSIGN_BONUSES), 403);
 
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
 
-        $this->syncBonusUsers((int) $bonusRecord->id, $request->input('user_ids', $request->input('replist', [])));
+        $this->syncBonusUsers(
+            (int) $bonusRecord->id,
+            $request->input('user_ids', $request->input('replist', [])),
+            $currentUserContext
+        );
 
         return redirect("/bonuses/{$bonusRecord->id}/assign")->with('message', 'Bonus assignment updated successfully.');
     }
@@ -153,23 +173,27 @@ class BonusController extends Controller
         return $bonus;
     }
 
-    private function userGroupsForBonus(?int $bonusId = null): array
+    private function userGroupsForBonus(
+        ?int $bonusId = null,
+        ?CurrentUserContext $currentUserContext = null
+    ): array
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $assignedUserIds = $bonusId
             ? DB::table('user_has_bonus')->where('bonus_id', '=', $bonusId)->pluck('user_id')->map(fn ($id) => (int) $id)->all()
             : [];
 
         $groups = [];
 
-        if (CurrentUserSession::can(Permissions::CREATE_ADMINS)) {
+        if ($currentUserContext->can(Permissions::CREATE_ADMINS)) {
             $groups[] = $this->userGroup('Admins', LegacyUser::selectAdmins()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
-        if (CurrentUserSession::can(Permissions::CREATE_MANAGERS)) {
+        if ($currentUserContext->can(Permissions::CREATE_MANAGERS)) {
             $groups[] = $this->userGroup('Managers', LegacyUser::selectOwnedManagers()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
-        if (CurrentUserSession::can(Permissions::CREATE_AFFILIATES)) {
+        if ($currentUserContext->can(Permissions::CREATE_AFFILIATES)) {
             $groups[] = $this->userGroup('Affiliates', LegacyUser::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
@@ -191,9 +215,13 @@ class BonusController extends Controller
         ];
     }
 
-    private function syncBonusUsers(int $bonusId, array $selectedUserIds): void
+    private function syncBonusUsers(
+        int $bonusId,
+        array $selectedUserIds,
+        ?CurrentUserContext $currentUserContext = null
+    ): void
     {
-        $visibleUserIds = collect($this->userGroupsForBonus($bonusId))
+        $visibleUserIds = collect($this->userGroupsForBonus($bonusId, $currentUserContext))
             ->flatMap(fn ($group) => $group['users'])
             ->pluck('idrep')
             ->map(fn ($id) => (int) $id)
@@ -222,9 +250,11 @@ class BonusController extends Controller
         }
     }
 
-    private function canManageBonuses(): bool
+    private function canManageBonuses(?CurrentUserContext $currentUserContext = null): bool
     {
-        return CurrentUserSession::can(Permissions::ASSIGN_BONUSES)
-            || CurrentUserSession::can(Permissions::CREATE_BONUSES);
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
+        return $currentUserContext->can(Permissions::ASSIGN_BONUSES)
+            || $currentUserContext->can(Permissions::CREATE_BONUSES);
     }
 }

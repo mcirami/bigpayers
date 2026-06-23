@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Privilege;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
@@ -20,11 +21,12 @@ class EmployeeReportController extends ReportController
 {
 
 
-    private function report($repository, Request $request)
+    private function report($repository, Request $request, ?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $repository->SHOW_AFF_TYPE = $request->query('role', 3);
-        $isGodUser = CurrentUserSession::type() === Privilege::ROLE_GOD;
-	    $SmsStatsPermission = CurrentUserSession::can('view_sms_stats');
+        $isGodUser = $currentUserContext->type === Privilege::ROLE_GOD;
+	    $SmsStatsPermission = $currentUserContext->can('view_sms_stats');
 
         $reporter = new Reporter($repository);
         $queryString = http_build_query(RequestContext::queryAll($request));
@@ -83,12 +85,14 @@ class EmployeeReportController extends ReportController
 
     public function show(Request $request)
     {
-        switch (CurrentUserSession::type()) {
+        $currentUserContext = CurrentUserSession::snapshot();
+
+        switch ($currentUserContext->type) {
             case Privilege::ROLE_GOD:
                 $repository = new GodEmployeeRepository(\DB::getPdo());
                 break;
             case Privilege::ROLE_ADMIN:
-	            $repository = CurrentUserSession::can('view_all_users') ?
+	            $repository = $currentUserContext->can('view_all_users') ?
 		            new GodEmployeeRepository(\DB::getPdo())
 		            :
 		            new AdminEmployeeRepository(\DB::getPdo());
@@ -102,7 +106,7 @@ class EmployeeReportController extends ReportController
 
 	        $dates = self::getDates();
 		    ['startDate' => $startDate, 'endDate' => $endDate, 'dateSelect' => $dateSelect] = $this->reportDateContext($dates);
-	        $reporter = $this->report($repository, $request);
+	        $reporter = $this->report($repository, $request, $currentUserContext);
 
         return view('report.employee',
 	        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));

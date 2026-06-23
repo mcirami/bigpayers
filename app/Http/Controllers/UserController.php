@@ -46,8 +46,9 @@ class UserController extends Controller
     public function viewManageUsers(Request $request)
     {
 
-	    $userType = CurrentUserSession::type();
-	    $permissions = CurrentUserSession::permissions();
+	    $currentUserContext = CurrentUserSession::snapshot();
+	    $userType = $currentUserContext->type;
+	    $permissions = $currentUserContext->permissions;
 	    $canViewUsers = $permissions->can('view_all_users');
 
         $request->validate([
@@ -83,16 +84,16 @@ class UserController extends Controller
 
     public function showCreateUser()
     {
-        $this->authorizeUserCreation();
+        $currentUserContext = $this->authorizeUserCreation();
 
-        return view('user.form', $this->buildUserFormViewData());
+        return view('user.form', $this->buildUserFormViewData(null, $currentUserContext));
     }
 
     public function storeUser(Request $request)
     {
-        $this->authorizeUserCreation();
+        $currentUserContext = $this->authorizeUserCreation();
 
-        $roleOptions = $this->getRoleOptionsForCurrentUser();
+        $roleOptions = $this->getRoleOptionsForCurrentUser($currentUserContext);
         $allowedRoleIds = array_keys($roleOptions);
 
         $validated = $request->validate([
@@ -120,7 +121,7 @@ class UserController extends Controller
         ]);
 
         $targetRole = (int) $validated['priv'];
-        $ownerOptions = $this->getOwnerOptionsForCreate($targetRole);
+        $ownerOptions = $this->getOwnerOptionsForCreate($targetRole, $currentUserContext);
         if (!$ownerOptions->pluck('idrep')->map(fn ($value) => (int) $value)->contains((int) $validated['referrer_repid'])) {
             return back()->withErrors(['referrer_repid' => 'Select a valid owner for the chosen account type.'])->withInput();
         }
@@ -129,7 +130,11 @@ class UserController extends Controller
             return back()->withErrors(['enable_referral' => 'Referral settings are only available for affiliate accounts.'])->withInput();
         }
 
-        $selectedPermissions = $this->filterSelectedPermissions($validated['permissions'] ?? [], $targetRole);
+        $selectedPermissions = $this->filterSelectedPermissions(
+            $validated['permissions'] ?? [],
+            $targetRole,
+            $currentUserContext
+        );
 
         $shouldRebuildTree = (int) $validated['status'] === 1;
 
@@ -172,7 +177,7 @@ class UserController extends Controller
         }
 
         if (
-            CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS) &&
+            $currentUserContext->can(Permissions::EDIT_REFERRALS) &&
             $request->boolean('enable_referral') &&
             !empty($validated['referral_user_id']) &&
             !empty($validated['start_date']) &&
@@ -199,20 +204,20 @@ class UserController extends Controller
     public function showEditUser($id)
     {
         $user = User::query()->with('referrer')->findOrFail($id);
-        $this->authorizeUserEdit($user);
+        $currentUserContext = $this->authorizeUserEdit($user);
 
-        return view('user.form', $this->buildUserFormViewData($user));
+        return view('user.form', $this->buildUserFormViewData($user, $currentUserContext));
     }
 
     public function updateUser(Request $request, $id)
     {
         $user = User::query()->with('role')->findOrFail($id);
-        $this->authorizeUserEdit($user);
+        $currentUserContext = $this->authorizeUserEdit($user);
 
         $targetRole = $user->getRole();
-        $canManageRole = $this->canManageUserRoles($user);
+        $canManageRole = $this->canManageUserRoles($user, $currentUserContext);
         $allowedRoleIds = $canManageRole
-            ? array_keys($this->getRoleOptionsForCurrentUser())
+            ? array_keys($this->getRoleOptionsForCurrentUser($currentUserContext))
             : [$user->getRole()];
 
         $validated = $request->validate([
@@ -224,7 +229,7 @@ class UserController extends Controller
             'telegram' => 'nullable|string|max:255',
             'skype' => 'nullable|string|max:255',
             'user_name' => [
-                Rule::requiredIf(CurrentUserSession::type() === Privilege::ROLE_GOD),
+                Rule::requiredIf($currentUserContext->type === Privilege::ROLE_GOD),
                 'nullable',
                 'string',
                 'max:155',
@@ -252,22 +257,26 @@ class UserController extends Controller
             return back()->withErrors(['priv' => 'This user cannot be upgraded while referral structures are attached to the account.'])->withInput();
         }
 
-        if ((CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN) && $user->getRole() !== Privilege::ROLE_GOD) {
-            $ownerOptions = $this->getOwnerOptionsForEdit($targetRole);
+        if (in_array($currentUserContext->type, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true) && $user->getRole() !== Privilege::ROLE_GOD) {
+            $ownerOptions = $this->getOwnerOptionsForEdit($targetRole, $currentUserContext);
             $requestedOwner = (int) ($validated['referrer_repid'] ?? $user->referrer_repid);
             if (!$ownerOptions->pluck('idrep')->map(fn ($value) => (int) $value)->contains($requestedOwner)) {
                 return back()->withErrors(['referrer_repid' => 'Select a valid owner for the chosen account type.'])->withInput();
             }
         }
 
-        $selectedPermissions = $this->filterSelectedPermissions($validated['permissions'] ?? [], $targetRole);
+        $selectedPermissions = $this->filterSelectedPermissions(
+            $validated['permissions'] ?? [],
+            $targetRole,
+            $currentUserContext
+        );
 
         $requestedOwner = (int) ($validated['referrer_repid'] ?? $user->referrer_repid);
         $requestedStatus = (int) ($validated['status'] ?? $user->status);
         $shouldRebuildTree = $this->shouldRebuildUserTree($user, $requestedOwner, $requestedStatus);
         $shouldReassignBonuses = $this->shouldReassignInheritableBonuses($user, $requestedOwner);
 
-        DB::transaction(function () use ($validated, $user, $targetRole, $canManageRole, $selectedPermissions, $shouldRebuildTree, $shouldReassignBonuses) {
+        DB::transaction(function () use ($validated, $user, $targetRole, $canManageRole, $selectedPermissions, $shouldRebuildTree, $shouldReassignBonuses, $currentUserContext) {
             $updatePayload = [
                 'first_name' => $validated['first_name'] ?? '',
                 'last_name' => $validated['last_name'] ?? '',
@@ -278,11 +287,11 @@ class UserController extends Controller
                 'company_name' => $validated['company_name'] ?? '',
             ];
 
-            if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
+            if ($currentUserContext->type === Privilege::ROLE_GOD) {
                 $updatePayload['user_name'] = $validated['user_name'] ?: $user->user_name;
             }
 
-            if ((CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN) && $user->getRole() !== Privilege::ROLE_GOD) {
+            if (in_array($currentUserContext->type, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true) && $user->getRole() !== Privilege::ROLE_GOD) {
                 $updatePayload['referrer_repid'] = (int) ($validated['referrer_repid'] ?? $user->referrer_repid);
             }
 
@@ -396,14 +405,15 @@ class UserController extends Controller
     {
         $referrer = User::query()->findOrFail($id);
         $this->authorizeReferralEdit($referrer);
+        $currentUserContext = CurrentUserSession::snapshot();
 
         $availableAffiliates = DB::table('rep')
             ->join('privileges', function ($join) {
                 $join->on('privileges.rep_idrep', '=', 'rep.idrep')
                     ->where('privileges.is_rep', 1);
             })
-            ->where('rep.lft', '>', CurrentUserSession::data()->lft)
-            ->where('rep.rgt', '<', CurrentUserSession::data()->rgt)
+            ->where('rep.lft', '>', $currentUserContext->data->lft)
+            ->where('rep.rgt', '<', $currentUserContext->data->rgt)
             ->where('rep.idrep', '!=', $referrer->idrep)
             ->whereNotIn('rep.idrep', function ($query) {
                 $query->select('aff_id')->from('referrals');
@@ -419,6 +429,7 @@ class UserController extends Controller
     {
         $referrer = User::query()->findOrFail($id);
         $this->authorizeReferralEdit($referrer);
+        $currentUserContext = CurrentUserSession::snapshot();
 
         $validated = $request->validate([
             'toRefer' => 'required|integer',
@@ -433,8 +444,8 @@ class UserController extends Controller
                 $join->on('privileges.rep_idrep', '=', 'rep.idrep')
                     ->where('privileges.is_rep', 1);
             })
-            ->where('rep.lft', '>', CurrentUserSession::data()->lft)
-            ->where('rep.rgt', '<', CurrentUserSession::data()->rgt)
+            ->where('rep.lft', '>', $currentUserContext->data->lft)
+            ->where('rep.rgt', '<', $currentUserContext->data->rgt)
             ->where('rep.idrep', '!=', $referrer->idrep)
             ->whereNotIn('rep.idrep', function ($query) {
                 $query->select('aff_id')->from('referrals');
@@ -467,9 +478,10 @@ class UserController extends Controller
 
     public function showActivatePendingUser($id)
     {
+        $currentUserContext = CurrentUserSession::snapshot();
         $user = $this->findPendingAffiliateOrFail($id);
-        $assignableManagers = $this->getAssignableManagersForPendingAffiliate();
-        $hasReferralAccess = CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS);
+        $assignableManagers = $this->getAssignableManagersForPendingAffiliate($currentUserContext);
+        $hasReferralAccess = $currentUserContext->can(Permissions::EDIT_REFERRALS);
         $referralOptions = $hasReferralAccess
             ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('user_name')->get(['rep.idrep', 'rep.user_name'])
             : collect();
@@ -479,8 +491,9 @@ class UserController extends Controller
 
     public function activatePendingUser(Request $request, $id)
     {
+        $currentUserContext = CurrentUserSession::snapshot();
         $user = $this->findPendingAffiliateOrFail($id);
-        $assignableManagers = $this->getAssignableManagersForPendingAffiliate();
+        $assignableManagers = $this->getAssignableManagersForPendingAffiliate($currentUserContext);
 
         $validated = $request->validate([
             'referrer_repid' => 'required|integer',
@@ -521,7 +534,7 @@ class UserController extends Controller
         RepHasOffer::assignAffiliateToPublicOffers($user->idrep);
 
         if (
-            CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS) &&
+            $currentUserContext->can(Permissions::EDIT_REFERRALS) &&
             $request->boolean('enable_referral') &&
             !empty($validated['referral_user_id']) &&
             !empty($validated['start_date']) &&
@@ -872,7 +885,7 @@ class UserController extends Controller
 		return $users;
 	}
 
-    private function authorizeUserCreation()
+    private function authorizeUserCreation(): CurrentUserContext
     {
         $currentUserContext = CurrentUserSession::snapshot();
 
@@ -883,9 +896,11 @@ class UserController extends Controller
         if (empty($this->getRoleOptionsForCurrentUser($currentUserContext))) {
             abort(403);
         }
+
+        return $currentUserContext;
     }
 
-    private function authorizeUserEdit(User $user)
+    private function authorizeUserEdit(User $user): CurrentUserContext
     {
         $currentUserContext = CurrentUserSession::snapshot();
         $sessionUserId = $currentUserContext->id;
@@ -893,7 +908,7 @@ class UserController extends Controller
 
         if ($currentUserContext->type === Privilege::ROLE_AFFILIATE) {
             abort_unless($targetUserId === $sessionUserId, 403);
-            return;
+            return $currentUserContext;
         }
 
         if ($targetUserId !== $sessionUserId && !$currentUserContext->can(Permissions::EDIT_AFFILIATES)) {
@@ -903,6 +918,8 @@ class UserController extends Controller
         if ($currentUserContext->type === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
             abort(403);
         }
+
+        return $currentUserContext;
     }
 
     private function authorizeReferralEdit(User $user)
@@ -911,17 +928,18 @@ class UserController extends Controller
         abort_unless(LegacyUser::hasAffiliate($user->idrep), 403);
     }
 
-    private function buildUserFormViewData(?User $user = null)
+    private function buildUserFormViewData(?User $user = null, ?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $isEdit = $user !== null;
-        $canManageRoles = $isEdit ? $this->canManageUserRoles($user) : true;
-        $roleOptions = $this->getRoleOptionsForCurrentUser();
+        $canManageRoles = $isEdit ? $this->canManageUserRoles($user, $currentUserContext) : true;
+        $roleOptions = $this->getRoleOptionsForCurrentUser($currentUserContext);
         $selectedRole = (int) old('priv', $isEdit ? $user->getRole() : (array_key_first($roleOptions) ?? Privilege::ROLE_AFFILIATE));
         $selectedPermissions = $isEdit ? $this->getSelectedPermissionsForUser($user->idrep) : old('permissions', []);
         $permissionOptionsByRole = [];
         if (!$isEdit || $canManageRoles) {
             foreach (array_keys($roleOptions) as $roleId) {
-                $permissionOptionsByRole[$roleId] = $this->getPermissionOptionsForRole((int) $roleId);
+                $permissionOptionsByRole[$roleId] = $this->getPermissionOptionsForRole((int) $roleId, $currentUserContext);
             }
         }
 
@@ -934,18 +952,18 @@ class UserController extends Controller
             'managedUser' => $user,
             'roleOptions' => $roleOptions,
             'selectedRole' => $selectedRole,
-            'ownerOptionsByRole' => $this->getOwnerOptionsByRoleForView($isEdit),
+            'ownerOptionsByRole' => $this->getOwnerOptionsByRoleForView($isEdit, $currentUserContext),
             'permissionOptionsByRole' => $permissionOptionsByRole,
             'selectedPermissions' => $selectedPermissions,
             'canManageRoles' => $canManageRoles,
-            'canEditUsername' => !$isEdit || CurrentUserSession::type() === Privilege::ROLE_GOD,
-            'canEditOwner' => !$isEdit || (CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN),
-            'canLoginAsUser' => $isEdit && CurrentUserSession::type() !== Privilege::ROLE_AFFILIATE && $user->idrep !== CurrentUserSession::id(),
-            'canManageOffers' => $isEdit && CurrentUserSession::permissions()->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canManageSubIds' => $isEdit && CurrentUserSession::type() === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'canCreateReferrals' => !$isEdit && CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS),
-            'canEditReferrals' => $isEdit && CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS) && $user->getRole() === Privilege::ROLE_AFFILIATE,
-            'referralOptions' => CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS)
+            'canEditUsername' => !$isEdit || $currentUserContext->type === Privilege::ROLE_GOD,
+            'canEditOwner' => !$isEdit || in_array($currentUserContext->type, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true),
+            'canLoginAsUser' => $isEdit && $currentUserContext->type !== Privilege::ROLE_AFFILIATE && $user->idrep !== $currentUserContext->id,
+            'canManageOffers' => $isEdit && $currentUserContext->can(Permissions::EDIT_AFFILIATES) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canManageSubIds' => $isEdit && $currentUserContext->type === Privilege::ROLE_GOD && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'canCreateReferrals' => !$isEdit && $currentUserContext->can(Permissions::EDIT_REFERRALS),
+            'canEditReferrals' => $isEdit && $currentUserContext->can(Permissions::EDIT_REFERRALS) && $user->getRole() === Privilege::ROLE_AFFILIATE,
+            'referralOptions' => $currentUserContext->can(Permissions::EDIT_REFERRALS)
                 ? User::query()->withRole(Privilege::ROLE_AFFILIATE)->myUsers()->orderBy('rep.user_name')->get(['rep.idrep', 'rep.user_name'])
                 : collect(),
             'currentReferralUserId' => $currentReferralUserId,
@@ -975,11 +993,14 @@ class UserController extends Controller
         return $options;
     }
 
-    private function getOwnerOptionsByRoleForView(bool $isEdit): array
+    private function getOwnerOptionsByRoleForView(bool $isEdit, ?CurrentUserContext $currentUserContext = null): array
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $byRole = [];
-        foreach (array_keys($this->getRoleOptionsForCurrentUser()) as $roleId) {
-            $byRole[$roleId] = ($isEdit ? $this->getOwnerOptionsForEdit((int) $roleId) : $this->getOwnerOptionsForCreate((int) $roleId))
+        foreach (array_keys($this->getRoleOptionsForCurrentUser($currentUserContext)) as $roleId) {
+            $byRole[$roleId] = ($isEdit
+                ? $this->getOwnerOptionsForEdit((int) $roleId, $currentUserContext)
+                : $this->getOwnerOptionsForCreate((int) $roleId, $currentUserContext))
                 ->map(fn ($owner) => ['idrep' => (int) $owner->idrep, 'user_name' => $owner->user_name])
                 ->values()
                 ->all();
@@ -988,19 +1009,23 @@ class UserController extends Controller
         return $byRole;
     }
 
-    private function getOwnerOptionsForCreate(int $targetRole)
+    private function getOwnerOptionsForCreate(int $targetRole, ?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
         return match ($targetRole) {
             Privilege::ROLE_ADMIN => $this->getGodOwnersForCreate(),
-            Privilege::ROLE_MANAGER => $this->getAdminOwnersForCreate(),
-            Privilege::ROLE_AFFILIATE => $this->getManagerOwnersForCreate(),
+            Privilege::ROLE_MANAGER => $this->getAdminOwnersForCreate($currentUserContext),
+            Privilege::ROLE_AFFILIATE => $this->getManagerOwnersForCreate($currentUserContext),
             default => collect(),
         };
     }
 
-    private function getOwnerOptionsForEdit(int $targetRole)
+    private function getOwnerOptionsForEdit(int $targetRole, ?CurrentUserContext $currentUserContext = null)
     {
-        if (!(CurrentUserSession::type() === Privilege::ROLE_GOD || CurrentUserSession::type() === Privilege::ROLE_ADMIN)) {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
+        if (!in_array($currentUserContext->type, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true)) {
             return collect();
         }
 
@@ -1017,27 +1042,31 @@ class UserController extends Controller
         return $this->getOwnersByPrivilegeColumn('is_god');
     }
 
-    private function getAdminOwnersForCreate()
+    private function getAdminOwnersForCreate(?CurrentUserContext $currentUserContext = null)
     {
-        if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
+        if ($currentUserContext->type === Privilege::ROLE_GOD) {
             return $this->getOwnersByPrivilegeColumn('is_admin');
         }
 
-        if (CurrentUserSession::type() === Privilege::ROLE_ADMIN) {
-            return collect([(object) ['idrep' => CurrentUserSession::id(), 'user_name' => CurrentUserSession::data()->user_name]]);
+        if ($currentUserContext->type === Privilege::ROLE_ADMIN) {
+            return collect([(object) ['idrep' => $currentUserContext->id, 'user_name' => $currentUserContext->data->user_name]]);
         }
 
-        $parentAdmin = User::query()->find(CurrentUserSession::data()->referrer_repid);
+        $parentAdmin = User::query()->find($currentUserContext->data->referrer_repid);
         return $parentAdmin ? collect([(object) ['idrep' => $parentAdmin->idrep, 'user_name' => $parentAdmin->user_name]]) : collect();
     }
 
-    private function getManagerOwnersForCreate()
+    private function getManagerOwnersForCreate(?CurrentUserContext $currentUserContext = null)
     {
-        if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
+        if ($currentUserContext->type === Privilege::ROLE_GOD) {
             return $this->getOwnersByPrivilegeColumn('is_manager');
         }
 
-        if (CurrentUserSession::type() === Privilege::ROLE_ADMIN) {
+        if ($currentUserContext->type === Privilege::ROLE_ADMIN) {
             return User::query()
                 ->withRole(Privilege::ROLE_MANAGER)
                 ->myUsers()
@@ -1046,7 +1075,7 @@ class UserController extends Controller
                 ->get(['rep.idrep', 'rep.user_name']);
         }
 
-        return collect([(object) ['idrep' => CurrentUserSession::id(), 'user_name' => CurrentUserSession::data()->user_name]]);
+        return collect([(object) ['idrep' => $currentUserContext->id, 'user_name' => $currentUserContext->data->user_name]]);
     }
 
     private function getOwnersByPrivilegeColumn(string $column)
@@ -1059,9 +1088,10 @@ class UserController extends Controller
             ->get(['rep.idrep', 'rep.user_name']);
     }
 
-    private function getPermissionOptionsForRole(int $role): array
+    private function getPermissionOptionsForRole(int $role, ?CurrentUserContext $currentUserContext = null): array
     {
-        $sessionPermissions = CurrentUserSession::permissions();
+        $currentUserContext ??= CurrentUserSession::snapshot();
+        $sessionPermissions = $currentUserContext->permissions;
         $options = [];
 
         foreach (Permissions::$permissionsArray as $permission => $details) {
@@ -1079,7 +1109,7 @@ class UserController extends Controller
             }
 
             if (isset($details['allowed_user_types'])) {
-                if (!in_array(CurrentUserSession::type(), $details['allowed_user_types'], true)) {
+                if (!in_array($currentUserContext->type, $details['allowed_user_types'], true)) {
                     continue;
                 }
                 if (!in_array($role, $details['allowed_user_types'], true)) {
@@ -1114,9 +1144,13 @@ class UserController extends Controller
             ->all();
     }
 
-    private function filterSelectedPermissions(array $selectedPermissions, int $role): array
+    private function filterSelectedPermissions(
+        array $selectedPermissions,
+        int $role,
+        ?CurrentUserContext $currentUserContext = null
+    ): array
     {
-        $allowed = array_keys($this->getPermissionOptionsForRole($role));
+        $allowed = array_keys($this->getPermissionOptionsForRole($role, $currentUserContext));
 
         return array_values(array_intersect($selectedPermissions, $allowed));
     }
@@ -1136,11 +1170,13 @@ class UserController extends Controller
         return $permissionList;
     }
 
-    private function canManageUserRoles(User $user): bool
+    private function canManageUserRoles(User $user, ?CurrentUserContext $currentUserContext = null): bool
     {
-        return in_array(CurrentUserSession::type(), [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true)
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
+        return in_array($currentUserContext->type, [Privilege::ROLE_GOD, Privilege::ROLE_ADMIN], true)
             && $user->getRole() !== Privilege::ROLE_GOD
-            && !empty($this->getRoleOptionsForCurrentUser());
+            && !empty($this->getRoleOptionsForCurrentUser($currentUserContext));
     }
 
     private function userHasChildren(User $user): bool
@@ -1190,9 +1226,11 @@ class UserController extends Controller
         return $user;
     }
 
-    private function getAssignableManagersForPendingAffiliate()
+    private function getAssignableManagersForPendingAffiliate(?CurrentUserContext $currentUserContext = null)
     {
-        if (CurrentUserSession::type() === Privilege::ROLE_GOD) {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
+        if ($currentUserContext->type === Privilege::ROLE_GOD) {
             return User::query()
                 ->withRole(Privilege::ROLE_MANAGER)
                 ->where('rep.status', 1)
@@ -1200,7 +1238,7 @@ class UserController extends Controller
                 ->get(['rep.idrep', 'rep.user_name']);
         }
 
-        if (CurrentUserSession::type() === Privilege::ROLE_ADMIN) {
+        if ($currentUserContext->type === Privilege::ROLE_ADMIN) {
             return User::query()
                 ->withRole(Privilege::ROLE_MANAGER)
                 ->myUsers()
@@ -1211,8 +1249,8 @@ class UserController extends Controller
 
         return collect([
             (object) [
-                'idrep' => CurrentUserSession::id(),
-                'user_name' => CurrentUserSession::data()->user_name,
+                'idrep' => $currentUserContext->id,
+                'user_name' => $currentUserContext->data->user_name,
             ],
         ]);
     }

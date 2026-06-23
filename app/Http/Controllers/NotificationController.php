@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Services\BrandingLabels;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\RequestContext;
 use App\User;
@@ -18,10 +19,11 @@ class NotificationController extends Controller
 {
     public function index()
     {
-        $notifications = $this->notificationsQuery()->get();
+        $currentUserContext = CurrentUserSession::snapshot();
+        $notifications = $this->notificationsQuery($currentUserContext)->get();
 
         return view('notifications.index', [
-            'canCreateNotifications' => CurrentUserSession::can(Permissions::CREATE_NOTIFICATIONS),
+            'canCreateNotifications' => $currentUserContext->can(Permissions::CREATE_NOTIFICATIONS),
             'notificationsList' => $notifications,
             'unreadCount' => $notifications->where('seen', 0)->count(),
             'readCount' => $notifications->where('seen', 1)->count(),
@@ -30,7 +32,7 @@ class NotificationController extends Controller
 
     public function show($id)
     {
-        $notification = $this->findUserNotificationOrFail($id);
+        $notification = $this->findUserNotificationOrFail($id, CurrentUserSession::snapshot());
 
         return view('notifications.show', [
             'notificationItem' => $notification,
@@ -39,11 +41,12 @@ class NotificationController extends Controller
 
     public function markRead($id)
     {
-        $this->findUserNotificationOrFail($id);
+        $currentUserContext = CurrentUserSession::snapshot();
+        $this->findUserNotificationOrFail($id, $currentUserContext);
 
         DB::table('user_has_notification')
             ->where('notification_id', '=', $id)
-            ->where('user_id', '=', CurrentUserSession::id())
+            ->where('user_id', '=', $currentUserContext->id)
             ->update(['seen' => 1]);
 
         return redirect("/notifications/{$id}")->with('message', 'Notification marked as read.');
@@ -51,11 +54,12 @@ class NotificationController extends Controller
 
     public function destroy($id)
     {
-        $this->findUserNotificationOrFail($id);
+        $currentUserContext = CurrentUserSession::snapshot();
+        $this->findUserNotificationOrFail($id, $currentUserContext);
 
         DB::table('user_has_notification')
             ->where('notification_id', '=', $id)
-            ->where('user_id', '=', CurrentUserSession::id())
+            ->where('user_id', '=', $currentUserContext->id)
             ->update(['deleted' => 1]);
 
         return redirect('/notifications')->with('message', 'Notification deleted.');
@@ -63,14 +67,14 @@ class NotificationController extends Controller
 
     public function create()
     {
-        $this->authorizeCreateNotifications();
+        $currentUserContext = $this->authorizeCreateNotifications();
 
-        return view('notifications.create', $this->buildCreateViewData());
+        return view('notifications.create', $this->buildCreateViewData($currentUserContext));
     }
 
     public function store(Request $request)
     {
-        $this->authorizeCreateNotifications();
+        $currentUserContext = $this->authorizeCreateNotifications();
 
         $validated = $request->validate([
             'title' => 'required|string|max:255',
@@ -80,7 +84,7 @@ class NotificationController extends Controller
             'sendEmails' => 'nullable|boolean',
         ]);
 
-        $allowedRecipientIds = $this->getSelectableRecipients()->pluck('id')->map(fn ($id) => (int) $id)->all();
+        $allowedRecipientIds = $this->getSelectableRecipients($currentUserContext)->pluck('id')->map(fn ($id) => (int) $id)->all();
         $requestedRecipientIds = collect($validated['userList'])->map(fn ($id) => (int) $id)->unique()->values();
 
         $invalidRecipientSelected = $requestedRecipientIds->first(fn ($id) => !in_array($id, $allowedRecipientIds, true));
@@ -88,12 +92,12 @@ class NotificationController extends Controller
             return back()->withErrors(['userList' => 'Choose valid recipients for this notification.'])->withInput();
         }
 
-        $notificationId = DB::transaction(function () use ($validated, $requestedRecipientIds) {
+        $notificationId = DB::transaction(function () use ($validated, $requestedRecipientIds, $currentUserContext) {
             $notificationId = DB::table('notifications')->insertGetId([
                 'title' => trim($validated['title']),
                 'body' => trim($validated['body']),
                 'timestamp' => date('U'),
-                'author' => CurrentUserSession::id(),
+                'author' => $currentUserContext->id,
             ]);
 
             $rows = $requestedRecipientIds->map(fn ($userId) => [
@@ -110,19 +114,22 @@ class NotificationController extends Controller
             $this->sendNotificationEmails(
                 $requestedRecipientIds->all(),
                 trim($validated['title']),
-                trim($validated['body'])
+                trim($validated['body']),
+                $currentUserContext
             );
         }
 
         return redirect('/notifications')->with('message', 'Notification sent successfully.');
     }
 
-    private function notificationsQuery()
+    private function notificationsQuery(?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
         return DB::table('user_has_notification')
             ->join('notifications', 'notifications.id', '=', 'user_has_notification.notification_id')
             ->join('rep as author', 'author.idrep', '=', 'notifications.author')
-            ->where('user_has_notification.user_id', '=', CurrentUserSession::id())
+            ->where('user_has_notification.user_id', '=', $currentUserContext->id)
             ->where('user_has_notification.deleted', '=', 0)
             ->orderByDesc('notifications.timestamp')
             ->select([
@@ -135,25 +142,29 @@ class NotificationController extends Controller
             ]);
     }
 
-    private function findUserNotificationOrFail($id)
+    private function findUserNotificationOrFail($id, ?CurrentUserContext $currentUserContext = null)
     {
-        $notification = $this->notificationsQuery()->where('notifications.id', '=', $id)->first();
+        $notification = $this->notificationsQuery($currentUserContext)->where('notifications.id', '=', $id)->first();
 
         abort_if(!$notification, 404);
 
         return $notification;
     }
 
-    private function authorizeCreateNotifications(): void
+    private function authorizeCreateNotifications(): CurrentUserContext
     {
-        abort_unless(CurrentUserSession::can(Permissions::CREATE_NOTIFICATIONS), 403);
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->can(Permissions::CREATE_NOTIFICATIONS), 403);
+
+        return $currentUserContext;
     }
 
-    private function buildCreateViewData(): array
+    private function buildCreateViewData(?CurrentUserContext $currentUserContext = null): array
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $recipientGroups = [];
 
-        if (CurrentUserSession::can(Permissions::CREATE_ADMINS)) {
+        if ($currentUserContext->can(Permissions::CREATE_ADMINS)) {
             $recipientGroups[] = [
                 'label' => 'Admins',
                 'type' => 'Admin',
@@ -164,7 +175,7 @@ class NotificationController extends Controller
             ];
         }
 
-        if (CurrentUserSession::can(Permissions::CREATE_MANAGERS)) {
+        if ($currentUserContext->can(Permissions::CREATE_MANAGERS)) {
             $recipientGroups[] = [
                 'label' => BrandingLabels::accounts(),
                 'type' => BrandingLabels::account(),
@@ -196,9 +207,9 @@ class NotificationController extends Controller
         ];
     }
 
-    private function getSelectableRecipients()
+    private function getSelectableRecipients(?CurrentUserContext $currentUserContext = null)
     {
-        return collect($this->buildCreateViewData()['recipientGroups'])
+        return collect($this->buildCreateViewData($currentUserContext)['recipientGroups'])
             ->flatMap(fn ($group) => $group['users']->map(fn ($user) => [
                 'id' => (int) $user->id,
                 'name' => $user->name,
@@ -209,8 +220,14 @@ class NotificationController extends Controller
             ->values();
     }
 
-    private function sendNotificationEmails(array $recipientIds, string $title, string $body): void
+    private function sendNotificationEmails(
+        array $recipientIds,
+        string $title,
+        string $body,
+        ?CurrentUserContext $currentUserContext = null
+    ): void
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $emails = DB::table('rep')
             ->whereIn('idrep', $recipientIds)
             ->pluck('email')
@@ -218,7 +235,7 @@ class NotificationController extends Controller
             ->unique()
             ->values();
 
-        $author = CurrentUserSession::data()->user_name;
+        $author = $currentUserContext->data->user_name;
         $host = RequestContext::host();
         $htmlBody = "<html><h3>Notification from {$author} @ {$host}</h3><br/>" . nl2br(e($body)) . '</html>';
 

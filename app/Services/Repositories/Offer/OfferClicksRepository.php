@@ -61,9 +61,10 @@ class OfferClicksRepository implements Repository
 	 * @return _IH_Click_C|array|LengthAwarePaginator
 	 */
     public function query(Carbon $start, Carbon $end): _IH_Click_C|array|LengthAwarePaginator {
-        $resolvedPaid = CurrentUserSession::type() === \App\Privilege::ROLE_AFFILIATE
+        $currentUserContext = CurrentUserSession::snapshot();
+        $resolvedPaid = $currentUserContext->type === \App\Privilege::ROLE_AFFILIATE
             ? 'conversions.paid'
-            : Payouts::sqlForRole(CurrentUserSession::type(), 'offer', 'rep_has_offer');
+            : Payouts::sqlForRole($currentUserContext->type, 'offer', 'rep_has_offer');
         $select = [];
         if ($this->showFraudData) {
             $select[] = 'clicks.idclicks as id';
@@ -84,7 +85,7 @@ class OfferClicksRepository implements Repository
 	        'clicks.ip_address as ip_address',
 	        'clicks.country_code as isoCode'
         ]);
-	    if(CurrentUserSession::permissions()->can('view_all_users')) {
+	    if($currentUserContext->can('view_all_users')) {
 		    return Click::leftJoin('click_vars', 'click_vars.click_id', 'clicks.idclicks')
 		                ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks')
                         ->leftJoin('offer', 'offer.idoffer', 'clicks.offer_idoffer')
