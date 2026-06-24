@@ -3,16 +3,10 @@
 namespace App\Http\Controllers\Report;
 
 
-use App\Http\Controllers\Report\ReportController;
 use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
-use App\Support\LegacyAdjustmentsLogRepository as AdjustmentsLogRepository;
-use App\Support\LegacyDollarSignFilter as DollarSign;
-use App\Support\LegacyReporter as Reporter;
-use Carbon\Carbon;
-use Monolog\Handler\StreamHandler;
-use Monolog\Logger;
+use Illuminate\Support\Facades\DB;
 
 class AdjustmentsReportController extends ReportController
 {
@@ -20,17 +14,33 @@ class AdjustmentsReportController extends ReportController
     {
         $currentUserContext = CurrentUserSession::snapshot();
         $dates = self::getDates();
-        $repo = new AdjustmentsLogRepository(\DB::getPdo());
-        $repo->setAction(AdjustmentsLog::ACTION_CREATE_SALE);
+        $query = DB::table('adjustments_log')
+            ->join('conversions', 'conversions.id', '=', 'adjustments_log.conversion_id')
+            ->join('clicks', 'clicks.idclicks', '=', 'conversions.click_id')
+            ->join('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->leftJoin('rep as creator_user', 'creator_user.idrep', '=', 'adjustments_log.user_id')
+            ->leftJoin('rep as affiliate', 'affiliate.idrep', '=', 'conversions.user_id')
+            ->whereBetween('adjustments_log.timestamp', [$dates['startDate'], $dates['endDate']])
+            ->where('adjustments_log.action', '=', AdjustmentsLog::ACTION_CREATE_SALE);
 
         if ($currentUserContext->type == Privilege::ROLE_ADMIN) {
-            $repo->showOnlyWithThisSaleLogUserId($currentUserContext->id);
+            $query->where('adjustments_log.user_id', '=', $currentUserContext->id);
         }
 
-        $reporter = new Reporter($repo);
-        $reporter->addFilter(new DollarSign(['paid']));
+        $report = $query
+            ->orderByDesc('adjustments_log.id')
+            ->get([
+                'adjustments_log.id',
+                'affiliate.user_name as affiliate_user_name',
+                'conversions.click_id',
+                'offer.offer_name',
+                'conversions.id as conversion_id',
+                'conversions.paid',
+                'conversions.timestamp',
+                'creator_user.user_name as creator_user_name',
+            ]);
 
-        return view('report.adjustments', compact('reporter','dates'));
+        return view('report.adjustments', compact('report', 'dates'));
     }
 
 }

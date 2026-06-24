@@ -26,9 +26,19 @@
         </tr>
         </thead>
         <tbody>
-        @php
-            $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\LegacyReportHtml());
-        @endphp
+        @foreach($report as $row)
+            <tr>
+                <td>{{ $row->id }}</td>
+                <td>{{ $row->affiliate_user_name }}</td>
+                <td>{{ $row->click_id }}</td>
+                <td>{{ $row->offer_name }}</td>
+                <td>{{ $row->conversion_id }}</td>
+                <td>${{ number_format((float) $row->paid, 2) }}</td>
+                <td>{{ $row->timestamp }}</td>
+                <td>{{ $row->creator_user_name }}</td>
+                <td>CREATE SALE</td>
+            </tr>
+        @endforeach
         </tbody>
         <tfoot>
         </tfoot>

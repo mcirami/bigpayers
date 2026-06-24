@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
+use App\PayoutLog;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAffiliatePayoutReport as AffiliatePayout;
@@ -17,7 +18,6 @@ use Barryvdh\Snappy\Facades\SnappyPdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use App\Support\LegacyPayoutLogRepository as PayoutLogRepository;
 
 class PayoutReportController extends ReportController
 {
@@ -61,35 +61,35 @@ class PayoutReportController extends ReportController
     private function reportPayoutHistory(?CurrentUserContext $currentUserContext = null)
     {
         $currentUserContext ??= CurrentUserSession::snapshot();
-        $dates = self::getDates();
 
-        $payoutRepository = new PayoutLogRepository(\DB::getPdo());
-        $payoutRepository->setUserId($currentUserContext->id);
+        return PayoutLog::query()
+            ->where('user_id', '=', $currentUserContext->id)
+            ->get()
+            ->map(function (PayoutLog $payoutLog) {
+                $row = $payoutLog->toArray();
+                $row['deductions'] = $row['deductions'] > 0
+                    ? -1 * $row['deductions']
+                    : $row['deductions'];
+                $row['TOTAL'] = array_sum([
+                    $row['revenue'],
+                    $row['deductions'],
+                    $row['bonuses'],
+                    $row['referrals'],
+                ]);
 
-        $reporter = new Reporter($payoutRepository);
+                foreach (['revenue', 'deductions', 'bonuses', 'referrals', 'TOTAL'] as $key) {
+                    $row[$key] = '$' . number_format((float) $row[$key], 2);
+                }
 
-
-        $reporter
-            ->addFilter(new DeductionColumnFilter('deductions'))
-            ->addFilter(new Total([], ['revenue', 'deductions', 'bonuses', 'referrals']))
-            ->addFilter(new DollarSign(['revenue', 'deductions', 'bonuses', 'referrals', 'TOTAL']))
-            ->addFilter(function ($data) {
-                // Remove the total row
-                array_pop($data);
-                foreach ($data as &$row) {
-                    foreach (['start_of_week', 'end_of_week'] as $key) {
-                        if (isset($row[$key])) {
-                            $row[$key] = Carbon::createFromTimeString($row[$key])->format('Y-m-d');
-                        }
+                foreach (['start_of_week', 'end_of_week'] as $key) {
+                    if (isset($row[$key])) {
+                        $row[$key] = Carbon::createFromTimeString($row[$key])->format('Y-m-d');
                     }
                 }
 
-
-                return $data;
-            });
-
-
-        return $reporter->fetchReport($dates['startDate'], $dates['endDate']);
+                return $row;
+            })
+            ->all();
     }
 
     private function reportPayout(?CurrentUserContext $currentUserContext = null)

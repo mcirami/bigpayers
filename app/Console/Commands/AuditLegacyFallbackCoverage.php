@@ -413,7 +413,7 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyUserDomainForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\User\\Bonus' => 'Use App\\Support\\LegacyBonus instead of importing the legacy bonus class directly.',
         'LeadMax\\TrackYourStats\\User\\Salary' => 'Use App\\Support\\LegacySalary instead of importing the legacy salary class directly.',
-        'LeadMax\\TrackYourStats\\User\\PostBackUrl' => 'Use App\\Support\\LegacyPostBackUrl instead of importing the legacy postback URL class directly.',
+        'LeadMax\\TrackYourStats\\User\\PostBackUrl' => 'The legacy global postback URL class is retired; use the Laravel user_postbacks query instead.',
         'LeadMax\\TrackYourStats\\User\\Privileges' => 'Use App\\Support\\LegacyPrivileges instead of importing the legacy privileges class directly.',
         'LeadMax\\TrackYourStats\\User\\Referrals' => 'Use App\\Support\\LegacyReferrals instead of importing the legacy referrals class directly.',
         'LeadMax\\TrackYourStats\\User\\ReportPermissions' => 'Use App\\Support\\LegacyReportPermissions instead of importing the legacy report permissions class directly.',
@@ -422,7 +422,6 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyUserDomainAllowedFiles = [
         'app/Support/LegacyBonus.php' => 'The dedicated boundary around the legacy bonus class.',
         'app/Support/LegacySalary.php' => 'The dedicated boundary around the legacy salary class.',
-        'app/Support/LegacyPostBackUrl.php' => 'The dedicated boundary around the legacy postback URL class.',
         'app/Support/LegacyPrivileges.php' => 'The dedicated boundary around the legacy privileges class.',
         'app/Support/LegacyReferrals.php' => 'The dedicated boundary around the legacy referrals class.',
         'app/Support/LegacyReportPermissions.php' => 'The dedicated boundary around the legacy report permissions class.',
@@ -548,21 +547,18 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyMiscReportRepositoriesForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\AdjustmentsLogRepository' => 'Use App\\Support\\LegacyAdjustmentsLogRepository instead of importing the legacy adjustments-log repository directly.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\AdjustmentsLogRepository' => 'The legacy adjustments-log repository is retired; use the Laravel adjustments report query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\AdvertiserRepository' => 'Use App\\Support\\LegacyAdvertiserRepository instead of importing the legacy advertiser repository directly.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\AffiliateChatLogRepository' => 'Use App\\Support\\LegacyAffiliateChatLogRepository instead of importing the legacy affiliate chat-log repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository' => 'Use App\\Support\\LegacyAggregateReportRepository instead of importing the legacy aggregate report repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository' => 'Use App\\Support\\LegacyPayoutLogRepository instead of importing the legacy payout-log repository directly.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository' => 'The legacy aggregate report repository is retired; use the Laravel aggregate report query instead.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository' => 'The legacy payout-log repository is retired; use the App\\PayoutLog model instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository' => 'Use App\\Support\\LegacySaleLogRepository instead of importing the legacy sale-log repository directly.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository' => 'Use App\\Support\\LegacySubVarRepository instead of importing the legacy sub-var repository directly.',
     ];
 
     private array $legacyMiscReportRepositoriesAllowedFiles = [
-        'app/Support/LegacyAdjustmentsLogRepository.php' => 'The dedicated boundary around the legacy adjustments-log repository.',
         'app/Support/LegacyAdvertiserRepository.php' => 'The dedicated boundary around the legacy advertiser repository.',
         'app/Support/LegacyAffiliateChatLogRepository.php' => 'The dedicated boundary around the legacy affiliate chat-log repository.',
-        'app/Support/LegacyAggregateReportRepository.php' => 'The dedicated boundary around the legacy aggregate report repository.',
-        'app/Support/LegacyPayoutLogRepository.php' => 'The dedicated boundary around the legacy payout-log repository.',
         'app/Support/LegacySaleLogRepository.php' => 'The dedicated boundary around the legacy sale-log repository.',
         'app/Support/LegacySubVarRepository.php' => 'The dedicated boundary around the legacy sub-var repository.',
     ];

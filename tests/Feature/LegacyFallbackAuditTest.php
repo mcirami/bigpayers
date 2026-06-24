@@ -2071,13 +2071,12 @@ PHP,
             'legacyMiscReportRepositoriesDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository;',
-                'app/Support/LegacyPayoutLogRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPayoutLogRepository as PayoutLogRepository;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\PayoutLog;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPayoutLogRepository instead of importing the legacy payout-log repository directly.',
+            'app/Http/Controllers/BadController.php: The legacy payout-log repository is retired; use the App\\PayoutLog model instead.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

@@ -548,12 +548,22 @@ Remaining cleanup is mostly archival and hardening:
   the fallback audit fails on new direct Laravel-side employee report repository
   imports outside those boundaries, including direct typehints against the legacy
   base report repository
-- modern report controllers now resolve remaining legacy report repositories
-  through `App\Support` wrappers; the fallback audit fails on new direct
-  Laravel-side report repository imports outside those boundaries
+- daily aggregate reporting now uses a role-scoped Laravel query, allowing the
+  aggregate report wrapper and legacy repository source to be removed; other
+  remaining legacy report repositories still resolve through audited
+  `App\Support` boundaries
+- adjusted-sales reporting now uses a Laravel join query and Blade rows, allowing
+  the adjustments-log repository wrapper and legacy repository source to be
+  removed while retaining the shared write-side adjustment log boundary
+- payout history now reads and formats `App\PayoutLog` models directly, allowing
+  the thin payout-log repository wrapper and legacy repository source to be
+  removed without changing the separate affiliate payout and invoice reports
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers
+- global postback settings now read and upsert `user_postbacks` through Laravel;
+  the retired `LegacyPostBackUrl` wrapper and legacy source class have been
+  removed while offer-specific postback boundaries remain in place
 - the fallback audit now fails if modern Laravel code imports the legacy mailer
   directly outside the `App\Support\LegacyMail` boundary
 - Apache and IIS rewrite configs route direct public `.php` file requests through

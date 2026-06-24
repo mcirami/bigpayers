@@ -178,8 +178,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $globalPostbackController = File::get(app_path('Http/Controllers/GlobalPostbackController.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyPostBackUrl as PostBackUrl', $globalPostbackController);
+        $this->assertStringContainsString("DB::table('user_postbacks')", $globalPostbackController);
+        $this->assertStringNotContainsString('LegacyPostBackUrl', $globalPostbackController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\PostBackUrl', $globalPostbackController);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyPostBackUrl.php'));
+        $this->assertFileDoesNotExist(base_path('src/User/PostBackUrl.php'));
 
         $userController = File::get(app_path('Http/Controllers/UserController.php'));
 
@@ -219,7 +222,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             'LegacyBonus.php' => 'LeadMax\\TrackYourStats\\User\\Bonus',
             'LegacySalary.php' => 'LeadMax\\TrackYourStats\\User\\Salary',
-            'LegacyPostBackUrl.php' => 'LeadMax\\TrackYourStats\\User\\PostBackUrl',
             'LegacyPrivileges.php' => 'LeadMax\\TrackYourStats\\User\\Privileges',
             'LegacyReferrals.php' => 'LeadMax\\TrackYourStats\\User\\Referrals',
             'LegacyReportPermissions.php' => 'LeadMax\\TrackYourStats\\User\\ReportPermissions',
@@ -236,7 +238,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             base_path('src/User/Create.php'),
             base_path('src/User/CreateUser.php'),
             base_path('src/User/Permissions.php'),
-            base_path('src/User/PostBackUrl.php'),
             base_path('src/User/Privileges.php'),
             base_path('src/User/Referrals.php'),
             base_path('src/User/ReportPermissions.php'),
@@ -994,7 +995,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AdjustmentsController.php'),
             app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
-            base_path('src/Report/Repositories/AdjustmentsLogRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1216,7 +1216,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_report_views_use_legacy_report_html_boundary(): void
     {
         foreach ([
-            resource_path('views/report/adjustments.blade.php'),
             resource_path('views/report/advertiser.blade.php'),
             resource_path('views/report/chat-log-affiliate.blade.php'),
             resource_path('views/report/chat-log.blade.php'),
@@ -1268,9 +1267,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_report_controllers_use_legacy_reporter_boundary(): void
     {
         foreach ([
-            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
             app_path('Http/Controllers/Report/AdvertiserReportController.php'),
-            app_path('Http/Controllers/Report/AggregateReportController.php'),
             app_path('Http/Controllers/Report/ChatLogReportController.php'),
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
@@ -1292,9 +1289,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_report_controllers_use_legacy_report_filter_boundaries(): void
     {
         foreach ([
-            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
             app_path('Http/Controllers/Report/AdvertiserReportController.php'),
-            app_path('Http/Controllers/Report/AggregateReportController.php'),
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
@@ -1516,11 +1511,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_misc_report_repositories_use_legacy_boundaries(): void
     {
         foreach ([
-            app_path('Http/Controllers/Report/AdjustmentsReportController.php'),
             app_path('Http/Controllers/Report/AdvertiserReportController.php'),
-            app_path('Http/Controllers/Report/AggregateReportController.php'),
             app_path('Http/Controllers/Report/ChatLogReportController.php'),
-            app_path('Http/Controllers/Report/PayoutReportController.php'),
             app_path('Http/Controllers/Report/SubReportController.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -1536,11 +1528,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         foreach ([
-            app_path('Support/LegacyAdjustmentsLogRepository.php'),
             app_path('Support/LegacyAdvertiserRepository.php'),
             app_path('Support/LegacyAffiliateChatLogRepository.php'),
-            app_path('Support/LegacyAggregateReportRepository.php'),
-            app_path('Support/LegacyPayoutLogRepository.php'),
             app_path('Support/LegacySaleLogRepository.php'),
             app_path('Support/LegacySubVarRepository.php'),
         ] as $path) {
@@ -1553,6 +1542,24 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $referralRepository);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRepository);
+
+        $aggregateController = File::get(app_path('Http/Controllers/Report/AggregateReportController.php'));
+        $this->assertStringContainsString("DB::table('aggregate_reports')", $aggregateController);
+        $this->assertStringNotContainsString('LegacyAggregateReportRepository', $aggregateController);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyAggregateReportRepository.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/Repositories/AggregateReportRepository.php'));
+
+        $adjustmentsController = File::get(app_path('Http/Controllers/Report/AdjustmentsReportController.php'));
+        $this->assertStringContainsString("DB::table('adjustments_log')", $adjustmentsController);
+        $this->assertStringNotContainsString('LegacyAdjustmentsLogRepository', $adjustmentsController);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyAdjustmentsLogRepository.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/Repositories/AdjustmentsLogRepository.php'));
+
+        $payoutController = File::get(app_path('Http/Controllers/Report/PayoutReportController.php'));
+        $this->assertStringContainsString('PayoutLog::query()', $payoutController);
+        $this->assertStringNotContainsString('LegacyPayoutLogRepository', $payoutController);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyPayoutLogRepository.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/Repositories/PayoutLogRepository.php'));
     }
 
     public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void

@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyPostBackUrl as PostBackUrl;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GlobalPostbackController extends Controller
 {
@@ -14,10 +14,12 @@ class GlobalPostbackController extends Controller
     {
         $currentUserContext = $this->ensureAffiliateAccess();
 
-        $postbackUrl = new PostBackUrl($currentUserContext->id);
+        $postbackUrl = DB::table('user_postbacks')
+            ->where('user_id', '=', $currentUserContext->id)
+            ->value('url');
 
         return view('account.global-postback', [
-            'postbackUrl' => old('postback_url', (string) $postbackUrl->getGlobalPostBackURL(PostBackUrl::GLOBAL_CONVERSION_URL)),
+            'postbackUrl' => old('postback_url', (string) $postbackUrl),
         ]);
     }
 
@@ -29,9 +31,12 @@ class GlobalPostbackController extends Controller
             'postback_url' => 'nullable|string|max:255',
         ]);
 
-        PostBackUrl::updateUserPostBacks(
-            $currentUserContext->id,
-            trim((string) ($validated['postback_url'] ?? ''))
+        DB::table('user_postbacks')->updateOrInsert(
+            ['user_id' => $currentUserContext->id],
+            [
+                'url' => trim((string) ($validated['postback_url'] ?? '')),
+                'free_sign_up_url' => '',
+            ]
         );
 
         return redirect('/global-postback')->with('message', 'Global postback updated successfully.');
