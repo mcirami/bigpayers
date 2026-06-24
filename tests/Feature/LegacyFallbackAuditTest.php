@@ -249,7 +249,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern report controllers build affiliate and blacklist reports through legacy report object wrappers.',
+            'Modern payout reports use the audited legacy payout report boundary.',
             $output
         );
         $this->assertStringContainsString(

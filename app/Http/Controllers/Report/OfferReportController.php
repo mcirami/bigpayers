@@ -11,7 +11,6 @@ use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyDollarSignFilter as DollarSign;
 use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
-use App\Support\LegacyAffiliateReport as Affiliate;
 use App\Support\LegacyAdminOfferRepository as AdminOfferRepository;
 use App\Support\LegacyAffiliateOfferRepository as AffiliateOfferRepository;
 use App\Support\LegacyGodOfferRepository as GodOfferRepository;
@@ -22,6 +21,7 @@ use App\Support\RequestContext;
 use App\Services\CountryReportBuilderService;
 use App\Services\Repositories\Offer\OfferAffiliateClicksRepository;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class OfferReportController extends ReportController
 {
@@ -35,7 +35,7 @@ class OfferReportController extends ReportController
 		'Deductions',
 	];
 
-    public function god() {
+    private function god() {
         $dates = self::getDates();
         $repo = new GodOfferRepository(\DB::getPdo());
 
@@ -48,7 +48,7 @@ class OfferReportController extends ReportController
 		        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
     }
 
-    public function admin()
+    private function admin()
     {
         return $this->adminReport(CurrentUserSession::snapshot());
     }
@@ -70,7 +70,7 @@ class OfferReportController extends ReportController
 		        compact('reporter', 'dates', 'startDate', 'endDate', 'dateSelect'));
     }
 
-    public function manager()
+    private function manager()
     {
         $dates = self::getDates();
         $repo = new ManagerOfferRepository(DatabaseConnection::getInstance());
@@ -82,7 +82,7 @@ class OfferReportController extends ReportController
         return view('report.offer.admin', compact('reporter', 'dates'));
     }
 
-    public function affiliate()
+    private function affiliate()
     {
         return $this->affiliateReport(CurrentUserSession::snapshot());
     }
@@ -90,8 +90,14 @@ class OfferReportController extends ReportController
     private function affiliateReport(CurrentUserContext $currentUserContext)
     {
         $dates = self::getDates();
-        $report = new Affiliate();
-        $report->fetchBonuses($dates['startDate'], $dates['endDate']);
+        $bonusRows = DB::table('click_bonus')
+            ->join('bonus', 'bonus.id', '=', 'click_bonus.bonus_id')
+            ->where('click_bonus.aff_id', '=', $currentUserContext->id)
+            ->whereBetween('click_bonus.timestamp', [
+                Carbon::createFromFormat('Y-m-d H:i:s', $dates['startDate'])->timestamp,
+                Carbon::createFromFormat('Y-m-d H:i:s', $dates['endDate'])->timestamp,
+            ])
+            ->get(['bonus.name', 'click_bonus.payout']);
 
         $repo = new AffiliateOfferRepository(\DB::getPdo());
         $repo->setAffiliateId($currentUserContext->id);
@@ -104,7 +110,7 @@ class OfferReportController extends ReportController
             return response($reporter->fetchReport($dates['startDate'], $dates['endDate']));
         }
 
-        return view('report.offer.affiliate', compact('reporter', 'report', 'dates'));
+        return view('report.offer.affiliate', compact('reporter', 'bonusRows', 'dates'));
     }
 
     public function show()

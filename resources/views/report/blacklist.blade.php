@@ -18,19 +18,20 @@
         </tr>
         </thead>
         <tbody>
-        <?php
-        foreach ($reps as $key => $rep) {
-            if ($key !== count($reps) - 1) {
-                echo "<tr>";
-            } else {
-                echo "<tr class='static'>";
-            }
-            echo "<td>{$rep["idrep"]}</td>";
-            echo "<td>{$rep["user_name"]}</td>";
-            echo "<td><a href=\"/user/{$rep["idrep"]}/clicks?d_from={$assign->d_from}&d_to={$assign->d_to}&dateSelect={$assign->dateSelect}&blacklist=1\" >{$rep["Clicks"]}</a></td>";
-            echo "</tr>";
-        }
-        ?>
+        @foreach($reps as $rep)
+            <tr @class(['static' => $loop->last])>
+                <td>{{ $rep->idrep }}</td>
+                <td>{{ $rep->user_name }}</td>
+                <td>
+                    <a href="/user/{{ $rep->idrep }}/clicks?{{ http_build_query([
+                        'd_from' => $startDate,
+                        'd_to' => $endDate,
+                        'dateSelect' => $dateSelect,
+                        'blacklist' => 1,
+                    ]) }}">{{ $rep->blacklisted_clicks }}</a>
+                </td>
+            </tr>
+        @endforeach
         </tbody>
         <tfoot>
         </tfoot>

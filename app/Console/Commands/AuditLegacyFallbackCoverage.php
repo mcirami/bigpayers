@@ -502,17 +502,14 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyReportObjectsForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Affiliate;' => 'Use App\\Support\\LegacyAffiliateReport instead of importing the legacy affiliate report directly.',
+        'LeadMax\\TrackYourStats\\Report\\Affiliate;' => 'The legacy affiliate report is retired in Laravel-owned code; use the Laravel report queries instead.',
         'LeadMax\\TrackYourStats\\Report\\AffiliatePayout' => 'Use App\\Support\\LegacyAffiliatePayoutReport instead of importing the legacy affiliate payout report directly.',
-        'LeadMax\\TrackYourStats\\Report\\BlackList' => 'Use App\\Support\\LegacyBlackListReport instead of referencing the legacy blacklist report directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository' => 'Use App\\Support\\LegacyBlackListRepository instead of referencing the legacy blacklist repository directly.',
+        'LeadMax\\TrackYourStats\\Report\\BlackList' => 'The legacy blacklist report is retired; use the Laravel blacklist query instead.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository' => 'The legacy blacklist repository is retired; use the Laravel blacklist query instead.',
     ];
 
     private array $legacyReportObjectsAllowedFiles = [
-        'app/Support/LegacyAffiliateReport.php' => 'The dedicated boundary around the legacy affiliate report.',
         'app/Support/LegacyAffiliatePayoutReport.php' => 'The dedicated boundary around the legacy affiliate payout report.',
-        'app/Support/LegacyBlackListReport.php' => 'The dedicated boundary around the legacy blacklist report.',
-        'app/Support/LegacyBlackListRepository.php' => 'The dedicated boundary around the legacy blacklist repository.',
     ];
 
     private array $legacyDatabaseConnectionForbiddenPatterns = [
@@ -1297,7 +1294,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern report views render through LegacyReportHtml.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
         $this->info('Modern report controllers format reports through legacy report filter wrappers.');
-        $this->info('Modern report controllers build affiliate and blacklist reports through legacy report object wrappers.');
+        $this->info('Modern payout reports use the audited legacy payout report boundary.');
         $this->info('Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.');
         $this->info('Modern offer report controllers resolve legacy offer repositories through App\Support boundaries.');
         $this->info('Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.');

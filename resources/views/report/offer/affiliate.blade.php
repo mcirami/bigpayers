@@ -33,7 +33,7 @@
         @endphp
         </tbody>
     </table>
-    @if($report->bonuses)
+    @if($bonusRows->isNotEmpty())
         <table class="table table-bordered table_01">
             <thead>
             <tr>
@@ -42,7 +42,16 @@
             </tr>
             </thead>
             <tbody>
-            @php($report->printBonuses())
+            @foreach($bonusRows as $bonus)
+                <tr>
+                    <td>{{ $bonus->name }}</td>
+                    <td>${{ number_format((float) $bonus->payout, 2) }}</td>
+                </tr>
+            @endforeach
+            <tr>
+                <td>TOTAL</td>
+                <td>${{ number_format((float) $bonusRows->sum('payout'), 2) }}</td>
+            </tr>
             </tbody>
         </table>
     @endif

@@ -1255,6 +1255,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(app_path('Support/LegacyOfferReport.php'));
     }
 
+    public function test_offer_report_role_dispatch_helpers_are_not_public_actions(): void
+    {
+        $controller = File::get(app_path('Http/Controllers/Report/OfferReportController.php'));
+
+        foreach (['god', 'admin', 'manager', 'affiliate'] as $method) {
+            $this->assertStringContainsString("private function {$method}(", $controller);
+            $this->assertStringNotContainsString("public function {$method}(", $controller);
+        }
+    }
+
     public function test_modern_report_controllers_use_legacy_reporter_boundary(): void
     {
         foreach ([
@@ -1315,10 +1325,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_report_controllers_use_legacy_report_object_boundaries(): void
     {
         foreach ([
-            app_path('Http/Controllers/Report/BlackListReportController.php'),
-            app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
-            base_path('src/Report/BlackList.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1330,18 +1337,23 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         foreach ([
-            app_path('Support/LegacyAffiliateReport.php') => 'LeadMax\\TrackYourStats\\Report\\Affiliate',
             app_path('Support/LegacyAffiliatePayoutReport.php') => 'LeadMax\\TrackYourStats\\Report\\AffiliatePayout',
-            app_path('Support/LegacyBlackListReport.php') => 'LeadMax\\TrackYourStats\\Report\\BlackList',
-            app_path('Support/LegacyBlackListRepository.php') => 'LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository',
         ] as $path => $legacyClass) {
             $this->assertStringContainsString($legacyClass, File::get($path));
         }
 
-        $blackListRepository = File::get(base_path('src/Report/Repositories/BlackListRepository.php'));
+        $offerReportController = File::get(app_path('Http/Controllers/Report/OfferReportController.php'));
+        $this->assertStringContainsString("DB::table('click_bonus')", $offerReportController);
+        $this->assertStringNotContainsString('LegacyAffiliateReport', $offerReportController);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyAffiliateReport.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $blackListRepository);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $blackListRepository);
+        $blacklistController = File::get(app_path('Http/Controllers/Report/BlackListReportController.php'));
+        $this->assertStringContainsString("DB::table('rep')", $blacklistController);
+        $this->assertStringNotContainsString('LegacyBlackList', $blacklistController);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyBlackListReport.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyBlackListRepository.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/BlackList.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/Repositories/BlackListRepository.php'));
     }
 
     public function test_modern_report_controllers_use_legacy_database_connection_boundary(): void
