@@ -241,10 +241,6 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern click offer reports build through LegacyOfferReport.',
-            $output
-        );
-        $this->assertStringContainsString(
             'Modern report controllers coordinate reports through LegacyReporter.',
             $output
         );
@@ -644,7 +640,6 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyCompanyUpdaterDependencyErrors',
             'legacyConnectionDependencyErrors',
             'legacyReportHtmlDependencyErrors',
-            'legacyOfferReportDependencyErrors',
             'legacyReporterDependencyErrors',
             'legacyReportFiltersDependencyErrors',
             'legacyReportObjectsDependencyErrors',
@@ -777,7 +772,7 @@ PHP,
             $command,
             'legacySupportWrapperInventoryErrorsFor',
             [[
-                'app/Support/LegacyOfferReport.php',
+                'app/Support/LegacyReporter.php',
                 'app/Support/LegacyMissingBoundary.php',
             ]]
         );
@@ -1916,27 +1911,6 @@ PHP,
         $this->assertCount(1, $errors);
     }
 
-    public function test_legacy_offer_report_dependency_errors_report_forbidden_sources(): void
-    {
-        $command = app(AuditLegacyFallbackCoverage::class);
-
-        $errors = $this->invokeAuditMethod(
-            $command,
-            'legacyOfferReportDependencyErrorsFor',
-            [[
-                'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\Report\\Offer($assign);',
-                'app/Support/LegacyOfferReport.php' => 'use LeadMax\\TrackYourStats\\Report\\Offer;',
-                'app/Http/Controllers/CleanController.php' => 'new LegacyOfferReport($assign);',
-            ]]
-        );
-
-        $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyOfferReport instead of importing the legacy offer report class directly.',
-            $errors->all()
-        );
-        $this->assertCount(1, $errors);
-    }
-
     public function test_legacy_reporter_dependency_errors_report_forbidden_sources(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -2158,7 +2132,6 @@ PHP,
             'legacyCompanyUpdaterForbiddenPatterns',
             'legacyConnectionForbiddenPatterns',
             'legacyReportHtmlForbiddenPatterns',
-            'legacyOfferReportForbiddenPatterns',
             'legacyReporterForbiddenPatterns',
             'legacyReportFiltersForbiddenPatterns',
             'legacyReportObjectsForbiddenPatterns',

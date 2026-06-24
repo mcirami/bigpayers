@@ -1107,7 +1107,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_assignments_reads_use_legacy_assignments_boundary(): void
     {
         foreach ([
-            app_path('Http/Controllers/Report/ClickReportController.php'),
             base_path('src/Offer/Create.php'),
             base_path('src/Offer/Update.php'),
             base_path('src/Report/Filters/ClickLink.php'),
@@ -1246,18 +1245,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
-    public function test_modern_click_offer_reports_use_legacy_offer_report_boundary(): void
+    public function test_retired_click_offer_report_path_stays_removed(): void
     {
         $controller = File::get(app_path('Http/Controllers/Report/ClickReportController.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyOfferReport', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\ID\\Offer', $controller);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Offer', $controller);
-
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Report\\Offer',
-            File::get(app_path('Support/LegacyOfferReport.php'))
-        );
+        $this->assertStringNotContainsString('showOfferClicks', $controller);
+        $this->assertStringNotContainsString('showManagersClicks', $controller);
+        $this->assertStringNotContainsString('LegacyOfferReport', $controller);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyOfferReport.php'));
     }
 
     public function test_modern_report_controllers_use_legacy_reporter_boundary(): void

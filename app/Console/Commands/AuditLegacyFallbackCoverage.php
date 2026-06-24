@@ -480,14 +480,6 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support/LegacyReportHtml.php' => 'The dedicated boundary around the legacy report HTML formatter.',
     ];
 
-    private array $legacyOfferReportForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Offer' => 'Use App\\Support\\LegacyOfferReport instead of importing the legacy offer report class directly.',
-    ];
-
-    private array $legacyOfferReportAllowedFiles = [
-        'app/Support/LegacyOfferReport.php' => 'The dedicated boundary around the legacy offer report class.',
-    ];
-
     private array $legacyReporterForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Report\\Reporter' => 'Use App\\Support\\LegacyReporter instead of importing the legacy reporter class directly.',
     ];
@@ -1106,15 +1098,6 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $legacyOfferReportDependencyErrors = $this->legacyOfferReportDependencyErrors();
-
-        if ($legacyOfferReportDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy offer report class directly:');
-            $legacyOfferReportDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
-
-            return self::FAILURE;
-        }
-
         $legacyReporterDependencyErrors = $this->legacyReporterDependencyErrors();
 
         if ($legacyReporterDependencyErrors->isNotEmpty()) {
@@ -1312,7 +1295,6 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');
         $this->info('Modern report views render through LegacyReportHtml.');
-        $this->info('Modern click offer reports build through LegacyOfferReport.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
         $this->info('Modern report controllers format reports through legacy report filter wrappers.');
         $this->info('Modern report controllers build affiliate and blacklist reports through legacy report object wrappers.');
@@ -3126,33 +3108,6 @@ class AuditLegacyFallbackCoverage extends Command
                 $errors = [];
 
                 foreach ($this->legacyReportHtmlForbiddenPatterns as $pattern => $message) {
-                    if (str_contains($contents, $pattern)) {
-                        $errors[] = "{$relativePath}: {$message}";
-                    }
-                }
-
-                return $errors;
-            })
-            ->values();
-    }
-
-    private function legacyOfferReportDependencyErrors()
-    {
-        return $this->legacyOfferReportDependencyErrorsFor($this->sourceFilesFromDirectories([
-            'app',
-            'resources/views',
-            'routes',
-        ]));
-    }
-
-    private function legacyOfferReportDependencyErrorsFor($sourceFiles)
-    {
-        return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferReportAllowedFiles))
-            ->flatMap(function (string $contents, string $relativePath) {
-                $errors = [];
-
-                foreach ($this->legacyOfferReportForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {
                         $errors[] = "{$relativePath}: {$message}";
                     }

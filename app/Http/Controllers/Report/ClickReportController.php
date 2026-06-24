@@ -9,10 +9,8 @@ use App\Http\Traits\ClickTraits;
 use App\Services\ClickGeoCacheService;
 use App\Services\Repositories\Offer\OfferClicksRepository;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAssignments as Assignments;
 use App\Support\LegacyPermissions as Permissions;
 use App\Support\LegacyPayouts as Payouts;
-use App\Support\LegacyOfferReport;
 use App\Support\RequestContext;
 use App\User;
 use Carbon\Carbon;
@@ -65,31 +63,6 @@ class ClickReportController extends ReportController
 		));
     } 
 
-    public function showOfferClicks($id)
-    {
-        $dates = self::getDates();
-        $offer = Offer::findOrFail($id);
-
-        // TODO: This should REALLY be refactored
-        $myAssignments = array(
-            'd_from' => Carbon::today()->format('Y-m-d'),
-            'd_to' => Carbon::today()->format('Y-m-d'),
-            'dateSelect' => 0,
-            'rpp' => 10,
-            'idoffer' => $id,
-        );
-
-
-        $assign = new Assignments($myAssignments);
-
-        $assign->getAssignments();
-        $report = new LegacyOfferReport($assign);
-
-        $report->fetchReport($dates['startDate'], $dates['endDate']);
-
-        return view('report.clicks.offer', compact('report', 'offer', 'dates'));
-    }
-
     public function showUsersClicks($userId)
     {
         $dates = self::getDates();
@@ -115,43 +88,6 @@ class ClickReportController extends ReportController
 			'selectedRole'
 		));
     }
-
-	public function showManagersClicks($id) {
-
-		$dates = self::getDates();
-		$affClicks = [];
-		$start = Carbon::parse($dates['startDate'], 'America/New_York');
-		$end = Carbon::parse($dates['endDate'], 'America/New_York');
-
-		$managers = User::myUsers()->withRole(Privilege::ROLE_MANAGER)->get();
-		foreach ($managers as $manager) {
-
-			$data = DB::table('clicks')
-			          ->join('rep', function($join) use ($manager){
-						  $join->on('clicks.rep_idrep', '=', 'rep.idrep');
-						  $join->where('rep.referrer_repid', '=', $manager->idrep);
-					  })
-			          ->leftJoin('conversions', 'conversions.click_id', 'clicks.idclicks' )
-			          ->where('offer_idoffer', '=', $id)
-			          ->whereBetween('first_timestamp', array($start, $end))
-			          ->select([
-						  \DB::raw('COUNT(clicks.rep_idrep) as clicks'),
-				          \DB::raw('COUNT(conversions.click_id) as conversions')
-			          ])
-			          ->get();
-
-			$object      = [
-				'user_id' => $manager->idrep,
-				'user_name' => $manager->user_name,
-				'clicks' =>  $data[0]->clicks,
-				'conversions' => $data[0]->conversions
-			];
-			$affClicks[] = (object) $object;
-		}
-
-		return $affClicks;
-
-	}
 
 	public function searchClicks(Request $request, $id) {
 

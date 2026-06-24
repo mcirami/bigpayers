@@ -522,9 +522,10 @@ Remaining cleanup is mostly archival and hardening:
 - modern report Blade views now render legacy report HTML formatters through
   `App\Support\LegacyReportHtml`; the fallback audit fails on new direct
   Laravel-side report HTML formatter imports outside the boundary
-- modern click offer reports now build legacy offer reports through
-  `App\Support\LegacyOfferReport`; the fallback audit fails on new direct
-  Laravel-side legacy offer report imports outside the boundary
+- the unrouted legacy click-offer report implementation and its
+  `App\Support\LegacyOfferReport` wrapper have been removed; offer click reports
+  now use the registered Laravel-owned repository path exclusively, and the
+  unrouted manager-click aggregation action has also been removed
 - modern report controllers now coordinate report repositories through
   `App\Support\LegacyReporter`; the fallback audit fails on new direct
   Laravel-side reporter imports outside the boundary
