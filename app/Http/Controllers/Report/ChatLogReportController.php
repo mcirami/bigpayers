@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Report;
 
 use App\Privilege;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAffiliateChatLogRepository as AffiliateChatLogRepository;
 use App\Support\LegacyPaginate as Paginate;
@@ -14,11 +15,12 @@ use App\User;
 class ChatLogReportController extends ReportController
 {
 
-    private function report_affiliate($id)
+    private function report_affiliate($id, ?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
         $dates = self::getDates();
 
-        if ($id != CurrentUserSession::id()) {
+        if ($id != $currentUserContext->id) {
             if ( ! User::myUsers()->findOrFail($id)->exists) {
                 abort(403);
             }
@@ -28,7 +30,7 @@ class ChatLogReportController extends ReportController
         $repo->setShowOption(RequestContext::query('show', 'all'));
         $repo->setUserId($id);
 
-        if (CurrentUserSession::type() == Privilege::ROLE_AFFILIATE) {
+        if ($currentUserContext->type == Privilege::ROLE_AFFILIATE) {
             $repo->hideConversionId();
         }
 
@@ -46,7 +48,9 @@ class ChatLogReportController extends ReportController
 
     public function affiliate()
     {
-        return view('report.chat-log-affiliate', $this->report_affiliate(CurrentUserSession::id()));
+        $currentUserContext = CurrentUserSession::snapshot();
+
+        return view('report.chat-log-affiliate', $this->report_affiliate($currentUserContext->id, $currentUserContext));
     }
 
     public function admin($userId)

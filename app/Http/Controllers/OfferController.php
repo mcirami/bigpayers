@@ -734,11 +734,12 @@ class OfferController extends Controller
 
     private function findAffiliateOfferOrFail(int $offerId): Offer
     {
-        abort_unless(CurrentUserSession::type() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->type === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
 
         $offer = Offer::query()->findOrFail($offerId);
         $hasOffer = UserOffer::query()
-            ->where('rep_idrep', '=', CurrentUserSession::id())
+            ->where('rep_idrep', '=', $currentUserContext->id)
             ->where('offer_idoffer', '=', $offerId)
             ->exists();
 

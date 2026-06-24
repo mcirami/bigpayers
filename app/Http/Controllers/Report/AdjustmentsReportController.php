@@ -18,12 +18,13 @@ class AdjustmentsReportController extends ReportController
 {
     public function show()
     {
+        $currentUserContext = CurrentUserSession::snapshot();
         $dates = self::getDates();
         $repo = new AdjustmentsLogRepository(\DB::getPdo());
         $repo->setAction(AdjustmentsLog::ACTION_CREATE_SALE);
 
-        if (CurrentUserSession::type() == Privilege::ROLE_ADMIN) {
-            $repo->showOnlyWithThisSaleLogUserId(CurrentUserSession::id());
+        if ($currentUserContext->type == Privilege::ROLE_ADMIN) {
+            $repo->showOnlyWithThisSaleLogUserId($currentUserContext->id);
         }
 
         $reporter = new Reporter($repo);

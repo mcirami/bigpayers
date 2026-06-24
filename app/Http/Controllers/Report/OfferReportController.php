@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Offer;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyClickLinkFilter as ClickLink;
 use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
@@ -49,8 +50,13 @@ class OfferReportController extends ReportController
 
     public function admin()
     {
+        return $this->adminReport(CurrentUserSession::snapshot());
+    }
+
+    private function adminReport(CurrentUserContext $currentUserContext)
+    {
         $dates = self::getDates();
-	    $repo = CurrentUserSession::can('view_all_users') ?
+	    $repo = $currentUserContext->can('view_all_users') ?
 		    new GodOfferRepository(\DB::getPdo())
 		    :
 		    new AdminOfferRepository(\DB::getPdo());
@@ -78,12 +84,17 @@ class OfferReportController extends ReportController
 
     public function affiliate()
     {
+        return $this->affiliateReport(CurrentUserSession::snapshot());
+    }
+
+    private function affiliateReport(CurrentUserContext $currentUserContext)
+    {
         $dates = self::getDates();
         $report = new Affiliate();
         $report->fetchBonuses($dates['startDate'], $dates['endDate']);
 
         $repo = new AffiliateOfferRepository(\DB::getPdo());
-        $repo->setAffiliateId(CurrentUserSession::id());
+        $repo->setAffiliateId($currentUserContext->id);
 
         $reporter = new Reporter($repo);
 
@@ -98,18 +109,20 @@ class OfferReportController extends ReportController
 
     public function show()
     {
-        switch (CurrentUserSession::type()) {
+        $currentUserContext = CurrentUserSession::snapshot();
+
+        switch ($currentUserContext->type) {
             case Privilege::ROLE_GOD:
                 return $this->god();
                 
             case Privilege::ROLE_ADMIN:
-                return $this->admin();
+                return $this->adminReport($currentUserContext);
 
             case Privilege::ROLE_MANAGER:
                 return $this->manager();
 
             case Privilege::ROLE_AFFILIATE:
-                return $this->affiliate();
+                return $this->affiliateReport($currentUserContext);
 
             default:
                 return redirect('/');
@@ -118,13 +131,14 @@ class OfferReportController extends ReportController
 
 	public function showConversionsByUser(Offer $offer)
 	{
+        $currentUserContext = CurrentUserSession::snapshot();
 		$dates = self::getDates();
 		//$offer = Offer::findOrFail($offerId);
 
 		$start = Carbon::parse($dates['startDate'], 'America/New_York');
 		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
-		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, CurrentUserSession::user());
+		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, $currentUserContext->user());
 		$affiliateReport = $affiliateRepo->between($start, $end);
 
 		return view('report.offer.conversions', compact('affiliateReport', 'offer'));
@@ -132,12 +146,13 @@ class OfferReportController extends ReportController
 
 	public function showConversionsByCountry(Offer $offer, CountryReportBuilderService $countryReportBuilderService)
 	{
+        $currentUserContext = CurrentUserSession::snapshot();
 		$dates = self::getDates();
 
 		$start = Carbon::parse($dates['startDate'], 'America/New_York');
 		$end = Carbon::parse($dates['endDate'], 'America/New_York');
 
-		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, CurrentUserSession::user());
+		$affiliateRepo = new OfferAffiliateClicksRepository($offer->idoffer, $currentUserContext->user());
 		$affiliateReport = $affiliateRepo->getOfferConversionsByCountry($countryReportBuilderService, $start, $end);
 
 		return view('report.offer.conversions-by-country', compact('affiliateReport', 'offer'));

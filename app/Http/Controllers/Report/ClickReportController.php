@@ -36,6 +36,7 @@ class ClickReportController extends ReportController
      */
 	    public function offerClicks($id)
 	    {
+            $currentUserContext = CurrentUserSession::snapshot();
 	        $offer = Offer::findOrFail($id);
 
 	        $dates = self::getDates();
@@ -44,8 +45,11 @@ class ClickReportController extends ReportController
 	    $start = Carbon::parse( $dates['startDate'], 'America/New_York' );
 	    $end   = Carbon::parse( $dates['endDate'], 'America/New_York' );
 
-	    $repo          = new OfferClicksRepository( $id, CurrentUserSession::user(),
-		    CurrentUserSession::can( Permissions::VIEW_FRAUD_DATA ) );
+	    $repo = new OfferClicksRepository(
+            $id,
+            $currentUserContext->user(),
+		    $currentUserContext->can(Permissions::VIEW_FRAUD_DATA)
+        );
 	    $reportCollection      = $repo->between( $start, $end );
 		$report                = $reportCollection->items();
 

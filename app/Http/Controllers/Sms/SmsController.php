@@ -11,7 +11,8 @@ class SmsController extends Controller
 
     public function getChattingPage()
     {
-        $smsClient = CurrentUserSession::user()->smsClients()->first();
+        $currentUserContext = CurrentUserSession::snapshot();
+        $smsClient = $currentUserContext->user()->smsClients()->first();
 
 
         if (is_null($smsClient)) {
@@ -19,6 +20,6 @@ class SmsController extends Controller
         }
 
 
-        return view('sms.main')->with(['userId' => CurrentUserSession::id()]);
+        return view('sms.main')->with(['userId' => $currentUserContext->id]);
     }
 }

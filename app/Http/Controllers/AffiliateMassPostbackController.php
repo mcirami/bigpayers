@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Privilege;
+use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyOffer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
@@ -13,16 +14,16 @@ class AffiliateMassPostbackController extends Controller
 {
     public function show()
     {
-        $this->ensureAffiliateAccess();
+        $currentUserContext = $this->ensureAffiliateAccess();
 
         return view('account.mass-postback', [
-            'offers' => $this->ownedOffers(),
+            'offers' => $this->ownedOffers($currentUserContext),
         ]);
     }
 
     public function update(Request $request)
     {
-        $this->ensureAffiliateAccess();
+        $currentUserContext = $this->ensureAffiliateAccess();
 
         $validated = $request->validate([
             'postback_url' => 'nullable|string|max:255',
@@ -30,7 +31,7 @@ class AffiliateMassPostbackController extends Controller
             'offerList.*' => 'integer',
         ]);
 
-        $ownedOfferIds = $this->ownedOffers()
+        $ownedOfferIds = $this->ownedOffers($currentUserContext)
             ->pluck('idoffer')
             ->map(fn ($offerId) => (int) $offerId)
             ->all();
@@ -45,7 +46,7 @@ class AffiliateMassPostbackController extends Controller
 
         $updated = RepHasOffer::assignPostBackToAffiliatesOffers(
             trim((string) ($validated['postback_url'] ?? '')),
-            CurrentUserSession::id(),
+            $currentUserContext->id,
             $offerIds
         );
 
@@ -58,15 +59,20 @@ class AffiliateMassPostbackController extends Controller
         return redirect('/account/mass-postback')->with('message', 'Postback URL assigned successfully.');
     }
 
-    private function ownedOffers()
+    private function ownedOffers(?CurrentUserContext $currentUserContext = null)
     {
+        $currentUserContext ??= CurrentUserSession::snapshot();
+
         return collect(
-            LegacyOffer::selectOwnedOffers(CurrentUserSession::type())->fetchAll(PDO::FETCH_OBJ)
+            LegacyOffer::selectOwnedOffers($currentUserContext->type)->fetchAll(PDO::FETCH_OBJ)
         )->values();
     }
 
-    private function ensureAffiliateAccess(): void
+    private function ensureAffiliateAccess(): CurrentUserContext
     {
-        abort_unless(CurrentUserSession::type() === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+        $currentUserContext = CurrentUserSession::snapshot();
+        abort_unless($currentUserContext->type === Privilege::ROLE_AFFILIATE, 403, 'Incorrect user type');
+
+        return $currentUserContext;
     }
 }
