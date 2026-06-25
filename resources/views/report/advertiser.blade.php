@@ -21,11 +21,16 @@
         </tr>
         </thead>
         <tbody>
-        @php
-            $reporter->between($dates['startDate'],$dates['endDate'], new \App\Support\LegacyReportHtml(true,[
-            'id','name','Clicks','UniqueClicks','Conversions','Revenue'
-            ]));
-        @endphp
+        @foreach($report as $row)
+            <tr>
+                <td>{{ $row['id'] }}</td>
+                <td>{{ $row['name'] }}</td>
+                <td>{{ $row['Clicks'] }}</td>
+                <td>{{ $row['UniqueClicks'] }}</td>
+                <td>{{ $row['Conversions'] }}</td>
+                <td>${{ number_format((float) $row['Revenue'], 2) }}</td>
+            </tr>
+        @endforeach
         </tbody>
     </table>
 @endsection

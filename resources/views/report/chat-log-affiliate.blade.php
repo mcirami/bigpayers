@@ -22,9 +22,23 @@
             </tr>
             </thead>
             <tbody>
-            @php
-                $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\LegacyReportHtml());
-            @endphp
+            @foreach($report as $row)
+                <tr>
+                    @if($sessionUserType !== \App\Privilege::ROLE_AFFILIATE)
+                        <td>{{ $row->conversion_id }}</td>
+                    @endif
+                    <td>{{ $row->offer_name }}</td>
+                    <td>{{ $row->timestamp }}</td>
+                    <td>{{ $row->conversion_timestamp }}</td>
+                    <td>
+                        @if($row->sale_log_id !== null)
+                            <a href="/chat-log/view/{{ $row->sale_log_id }}" class="btn btn-sm btn-default">View Log</a>
+                        @else
+                            <a href="/chat-log/add/{{ $row->pending_conversion_id }}" class="btn btn-sm btn-default">Log Sale</a>
+                        @endif
+                    </td>
+                </tr>
+            @endforeach
             </tbody>
         </table>
         @include('report.options.pagination')

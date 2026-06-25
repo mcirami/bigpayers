@@ -548,18 +548,15 @@ class AuditLegacyFallbackCoverage extends Command
 
     private array $legacyMiscReportRepositoriesForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Report\\Repositories\\AdjustmentsLogRepository' => 'The legacy adjustments-log repository is retired; use the Laravel adjustments report query instead.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\AdvertiserRepository' => 'Use App\\Support\\LegacyAdvertiserRepository instead of importing the legacy advertiser repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\AffiliateChatLogRepository' => 'Use App\\Support\\LegacyAffiliateChatLogRepository instead of importing the legacy affiliate chat-log repository directly.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\AdvertiserRepository' => 'The legacy advertiser repository is retired; use Laravel report queries instead.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\AffiliateChatLogRepository' => 'The legacy affiliate chat-log repository is retired; use the Laravel chat-log detail query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository' => 'The legacy aggregate report repository is retired; use the Laravel aggregate report query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository' => 'The legacy payout-log repository is retired; use the App\\PayoutLog model instead.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository' => 'Use App\\Support\\LegacySaleLogRepository instead of importing the legacy sale-log repository directly.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository' => 'The legacy sale-log summary repository is retired; use the Laravel chat-log summary query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository' => 'Use App\\Support\\LegacySubVarRepository instead of importing the legacy sub-var repository directly.',
     ];
 
     private array $legacyMiscReportRepositoriesAllowedFiles = [
-        'app/Support/LegacyAdvertiserRepository.php' => 'The dedicated boundary around the legacy advertiser repository.',
-        'app/Support/LegacyAffiliateChatLogRepository.php' => 'The dedicated boundary around the legacy affiliate chat-log repository.',
-        'app/Support/LegacySaleLogRepository.php' => 'The dedicated boundary around the legacy sale-log repository.',
         'app/Support/LegacySubVarRepository.php' => 'The dedicated boundary around the legacy sub-var repository.',
     ];
 

@@ -558,6 +558,15 @@ Remaining cleanup is mostly archival and hardening:
 - payout history now reads and formats `App\PayoutLog` models directly, allowing
   the thin payout-log repository wrapper and legacy repository source to be
   removed without changing the separate affiliate payout and invoice reports
+- advertiser summary and offer-conversion reports now use Laravel queries and
+  direct Blade rows, allowing the advertiser repository wrapper and legacy
+  repository source to be removed
+- the admin chat-log summary now uses a role-scoped Laravel query and direct
+  Blade links, allowing the sale-log summary repository wrapper and source to be
+  removed
+- affiliate chat-log details now use Laravel joins with the existing pagination
+  contract and direct Blade actions, allowing the final chat-log repository
+  wrapper and source to be removed
 - notification and forgot-password mail sends now construct the legacy mailer
   through `App\Support\LegacyMail` instead of importing the legacy mail class
   directly in controllers

@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Report;
 
-use App\Privilege;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAffiliateChatLogRepository as AffiliateChatLogRepository;
 use App\Support\LegacyPaginate as Paginate;
-use App\Support\LegacyReporter as Reporter;
-use App\Support\LegacySaleLogRepository as SaleLogRepository;
 use App\Support\RequestContext;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 class ChatLogReportController extends ReportController
 {
@@ -26,24 +23,43 @@ class ChatLogReportController extends ReportController
             }
         }
 
-        $repo = new AffiliateChatLogRepository(\DB::getPdo());
-        $repo->setShowOption(RequestContext::query('show', 'all'));
-        $repo->setUserId($id);
-
-        if ($currentUserContext->type == Privilege::ROLE_AFFILIATE) {
-            $repo->hideConversionId();
-        }
-
         $rowsPerPage = RequestContext::query('rpp', 10);
-        $paginate = new Paginate($rowsPerPage, $repo->count($dates['startDate'], $dates['endDate']));
+        $show = RequestContext::query('show', 'all');
+        $query = DB::table('pending_conversions')
+            ->join('clicks', 'clicks.idclicks', '=', 'pending_conversions.click_id')
+            ->join('offer', 'offer.idoffer', '=', 'clicks.offer_idoffer')
+            ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+            ->leftJoin('sale_log', 'sale_log.conversion_id', '=', 'conversions.id')
+            ->where('clicks.rep_idrep', '=', $id)
+            ->whereBetween('pending_conversions.timestamp', [$dates['startDate'], $dates['endDate']]);
 
+        $paginate = new Paginate($rowsPerPage, (clone $query)->count());
+        $report = $query
+            ->orderByDesc('pending_conversions.timestamp')
+            ->limit($rowsPerPage)
+            ->offset($paginate->offset())
+            ->get([
+                'conversions.id as conversion_id',
+                'offer.offer_name',
+                'pending_conversions.timestamp',
+                'pending_conversions.id as pending_conversion_id',
+                'conversions.timestamp as conversion_timestamp',
+                'sale_log.id as sale_log_id',
+            ])
+            ->filter(function ($row) use ($show) {
+                if ($row->conversion_id === null && $row->sale_log_id === null) {
+                    return $show !== 'logged';
+                }
 
-        $repo->setLimit($rowsPerPage);
-        $repo->setOffset($paginate->offset());
+                if ($row->sale_log_id !== null) {
+                    return $show !== 'nonelogged';
+                }
 
-        $reporter = new Reporter($repo);
+                return false;
+            })
+            ->values();
 
-        return compact('reporter', 'paginate', 'dates');
+        return compact('report', 'paginate', 'dates');
     }
 
     public function affiliate()
@@ -60,34 +76,37 @@ class ChatLogReportController extends ReportController
 
     public function show()
     {
+        $currentUser = CurrentUserSession::snapshot()->user();
         $dates = self::getDates();
+        $report = DB::table('rep')
+            ->leftJoin('clicks', 'clicks.rep_idrep', '=', 'rep.idrep')
+            ->leftJoin('pending_conversions', 'pending_conversions.click_id', '=', 'clicks.idclicks')
+            ->leftJoin('conversions', 'conversions.click_id', '=', 'clicks.idclicks')
+            ->where('rep.lft', '>', $currentUser->lft)
+            ->where('rep.rgt', '<', $currentUser->rgt)
+            ->whereBetween('pending_conversions.timestamp', [$dates['startDate'], $dates['endDate']])
+            ->groupBy('rep.idrep', 'rep.user_name')
+            ->orderByDesc('PendingSales')
+            ->get([
+                'rep.idrep',
+                'rep.user_name',
+                DB::raw('COUNT(pending_conversions.id) AS PendingSales'),
+                DB::raw('SUM(CASE WHEN conversions.id IS NOT NULL THEN 1 ELSE 0 END) AS LoggedSales'),
+            ])
+            ->map(function ($row) {
+                $total = (int) $row->PendingSales;
+                $logged = (int) $row->LoggedSales;
 
-        $repo = new SaleLogRepository(\DB::getPdo());
+                return [
+                    'idrep' => $row->idrep,
+                    'user_name' => $row->user_name,
+                    'pending_sales' => $logged > 0 ? $total - $logged : $total,
+                    'logged_sales' => $logged,
+                    'total' => $total,
+                ];
+            });
 
-
-        // Doesn't look like it was being used in legacy page
-        // Pagination was not used in the legacy page.
-
-
-        $reporter = new Reporter($repo);
-
-        $reporter->addFilter(function ($data) use ($dates) {
-            foreach ($data as &$row) {
-                $row["TOTAL"] = $row["PendingSales"];
-                $row["TOTAL"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['originalStart']}&d_to={$dates['originalEnd']}&show=all'>{$row["TOTAL"]}</a>";
-                if ($row["LoggedSales"] > 0) {
-                    $row["PendingSales"] -= $row["LoggedSales"];
-                }
-                $row["LoggedSales"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['originalStart']}&d_to={$dates['originalEnd']}&show=logged'>{$row["LoggedSales"]}</a>";
-
-                $row["PendingSales"] = "<a target='_blank' href='/report/chat-log/{$row["idrep"]}?d_from={$dates['originalStart']}&d_to={$dates['originalEnd']}&show=nonelogged'>{$row["PendingSales"]}</a>";
-            }
-
-            return $data;
-        });
-
-
-        return view('report.chat-log', compact('reporter', 'dates'));
+        return view('report.chat-log', compact('report', 'dates'));
     }
 
 }
