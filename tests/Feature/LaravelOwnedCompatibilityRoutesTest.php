@@ -1219,7 +1219,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             resource_path('views/report/employee.blade.php'),
             resource_path('views/report/offer/admin.blade.php'),
             resource_path('views/report/offer/affiliate.blade.php'),
-            resource_path('views/report/sub.blade.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1267,7 +1266,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
-            app_path('Http/Controllers/Report/SubReportController.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1287,7 +1285,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
-            app_path('Http/Controllers/Report/SubReportController.php'),
             base_path('src/Report/AffiliatePayout.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -1504,29 +1501,26 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
     public function test_modern_misc_report_repositories_use_legacy_boundaries(): void
     {
-        foreach ([
-            app_path('Http/Controllers/Report/SubReportController.php'),
-        ] as $path) {
-            $contents = File::get($path);
+        $subReportController = File::get(app_path('Http/Controllers/Report/SubReportController.php'));
 
-            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AdjustmentsLogRepository', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AdvertiserRepository', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AffiliateChatLogRepository', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository', $contents);
-        }
+        $this->assertStringContainsString("DB::table('clicks')", $subReportController);
+        $this->assertStringContainsString("DB::table('conversions')", $subReportController);
+        $this->assertStringNotContainsString('LegacySubVarRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AdjustmentsLogRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AdvertiserRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AffiliateChatLogRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository', $subReportController);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository', $subReportController);
 
-        foreach ([
-            app_path('Support/LegacySubVarRepository.php'),
-        ] as $path) {
-            $this->assertStringContainsString(
-                'LeadMax\\TrackYourStats\\Report\\Repositories',
-                File::get($path)
-            );
-        }
+        $subReportView = File::get(resource_path('views/report/sub.blade.php'));
+
+        $this->assertStringContainsString('@foreach($report as $row)', $subReportView);
+        $this->assertStringNotContainsString('LegacyReportHtml', $subReportView);
+        $this->assertFalse(File::exists(app_path('Support/LegacySubVarRepository.php')));
+        $this->assertFalse(File::exists(base_path('src/Report/Repositories/SubVarRepository.php')));
+
         $referralRepository = File::get(base_path('src/Report/Repositories/ReferralRepository.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $referralRepository);
@@ -1918,7 +1912,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             base_path('src/Report/Repositories/Offer/AdminOfferRepository.php'),
             base_path('src/Report/Repositories/Offer/GodOfferRepository.php'),
             base_path('src/Report/Repositories/Offer/ManagerOfferRepository.php'),
-            base_path('src/Report/Repositories/SubVarRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 

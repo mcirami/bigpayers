@@ -11,9 +11,6 @@ use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyClickGeo as ClickGeo;
 use App\Support\LegacyPayouts as Payouts;
-use App\Support\LegacyReporter as Reporter;
-use App\Support\LegacySubVarRepository as SubVarRepository;
-use App\Support\LegacyTotalFilter as Total;
 use App\Support\RequestContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,20 +24,97 @@ class SubReportController extends ReportController
     public function show()
     {
         $dates = self::getDates();
+        $subColumn = $this->subReportColumn(RequestContext::query('sub', 1));
+        $userId = CurrentUserSession::snapshot()->id;
 
-        $repo = new SubVarRepository(\DB::getPdo());
+        $clickRows = DB::table('clicks')
+            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+            ->where('clicks.rep_idrep', $userId)
+            ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED)
+            ->whereBetween('clicks.first_timestamp', [$dates['startDate'], $dates['endDate']])
+            ->groupBy("click_vars.{$subColumn}")
+            ->select([
+                "click_vars.{$subColumn} as sub",
+                DB::raw('COUNT(clicks.idclicks) as clicks'),
+                DB::raw('SUM(clicks.click_type = ' . Click::TYPE_UNIQUE . ') as unique_clicks'),
+            ])
+            ->get();
 
-        $repo->setSubNumber(RequestContext::query('sub', 1));
+        $revenueRows = DB::table('conversions')
+            ->join('clicks', function ($join) use ($userId) {
+                $join->on('clicks.idclicks', '=', 'conversions.click_id')
+                    ->where('clicks.rep_idrep', '=', $userId)
+                    ->where('clicks.click_type', '!=', Click::TYPE_BLACKLISTED);
+            })
+            ->join('click_vars', 'click_vars.click_id', '=', 'clicks.idclicks')
+            ->whereBetween('conversions.timestamp', [$dates['startDate'], $dates['endDate']])
+            ->groupBy("click_vars.{$subColumn}")
+            ->select([
+                "click_vars.{$subColumn} as sub",
+                DB::raw('SUM(conversions.paid) as revenue'),
+                DB::raw('COUNT(conversions.paid) as conversions'),
+            ])
+            ->get();
 
+        $report = $this->mergeSubReportRows($clickRows, $revenueRows);
 
-        $reporter = new Reporter($repo);
+        return view('report.sub', compact('report', 'dates'));
+    }
 
-        $reporter
-            ->addFilter(new Total(['clicks','unique','conversions']));
-            //->addFilter(new Filters\EarningPerClick('unique', 'revenue'))
-            //->addFilter(new Filters\DollarSign(['EPC', 'revenue', 'TOTAL', 'Total']));
+    private function subReportColumn($subNumber): string
+    {
+        $subNumber = (int) $subNumber;
 
-        return view('report.sub', compact('reporter', 'dates'));
+        return in_array($subNumber, [1, 2, 3], true) ? "sub{$subNumber}" : 'sub1';
+    }
+
+    private function mergeSubReportRows($clickRows, $revenueRows): array
+    {
+        $report = [];
+
+        foreach ($clickRows as $row) {
+            $sub = $this->normalizeSubReportKey($row->sub);
+
+            $report[$sub] = [
+                'sub' => $sub,
+                'clicks' => (int) $row->clicks,
+                'unique' => (int) $row->unique_clicks,
+                'conversions' => 0,
+                'revenue' => 0,
+            ];
+        }
+
+        foreach ($revenueRows as $row) {
+            $sub = $this->normalizeSubReportKey($row->sub);
+
+            if (! isset($report[$sub])) {
+                $report[$sub] = [
+                    'sub' => $sub,
+                    'clicks' => 0,
+                    'unique' => 0,
+                    'conversions' => 0,
+                    'revenue' => 0,
+                ];
+            }
+
+            $report[$sub]['conversions'] = (int) $row->conversions;
+            $report[$sub]['revenue'] = (float) $row->revenue;
+        }
+
+        $report[] = [
+            'sub' => 'TOTAL',
+            'clicks' => array_sum(array_column($report, 'clicks')),
+            'unique' => array_sum(array_column($report, 'unique')),
+            'conversions' => array_sum(array_column($report, 'conversions')),
+            'revenue' => '',
+        ];
+
+        return $report;
+    }
+
+    private function normalizeSubReportKey($sub): string
+    {
+        return $sub === null || $sub === '' ? '(empty)' : (string) $sub;
     }
 
 	public function showSubConversions(Request $request): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application {

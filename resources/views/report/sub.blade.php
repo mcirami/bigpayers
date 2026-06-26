@@ -34,8 +34,33 @@
         </thead>
         <tbody>
         @php
-            $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\LegacyReportHtml(true));
+            $linkParams = [];
+
+            foreach (['d_from', 'd_to', 'dateSelect', 'role'] as $queryKey) {
+                $queryValue = \App\Support\RequestContext::query($queryKey);
+
+                if ($queryValue !== null) {
+                    $linkParams[$queryKey] = $queryValue;
+                }
+            }
         @endphp
+        @foreach($report as $row)
+            <tr @class(['static' => $row['sub'] === 'TOTAL'])>
+                <td>{{ $row['sub'] }}</td>
+                <td>{{ $row['clicks'] }}</td>
+                <td>{{ $row['unique'] }}</td>
+                <td>
+                    @if($row['conversions'] > 0 && ! in_array($row['sub'], ['TOTAL', '(empty)'], true))
+                        <a class="bp-report-link" href="{{ '/report/sub/conversions?' . http_build_query(array_merge(['subid' => $row['sub']], $linkParams)) }}">
+                            {{ $row['conversions'] }}
+                        </a>
+                    @else
+                        {{ $row['conversions'] }}
+                    @endif
+                </td>
+                <td>{{ is_numeric($row['revenue']) ? number_format($row['revenue'], 2) : $row['revenue'] }}</td>
+            </tr>
+        @endforeach
         </tbody>
     </table>
 @endsection

@@ -532,6 +532,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern report controllers now format report rows through `App\Support`
   wrappers for legacy report filters; the fallback audit fails on new direct
   Laravel-side report filter imports outside those boundaries
+- affiliate sub reports now use Laravel query-builder aggregation and direct
+  Blade row rendering; the retired legacy sub-var repository and its wrapper
+  have been removed
 - affiliate offer-report bonus rows now use a Laravel query and the retired
   `App\Support\LegacyAffiliateReport` wrapper has been removed; blacklist
   reporting now also uses a Laravel aggregate query, allowing both blacklist

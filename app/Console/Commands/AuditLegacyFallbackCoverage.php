@@ -553,12 +553,10 @@ class AuditLegacyFallbackCoverage extends Command
         'LeadMax\\TrackYourStats\\Report\\Repositories\\AggregateReportRepository' => 'The legacy aggregate report repository is retired; use the Laravel aggregate report query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository' => 'The legacy payout-log repository is retired; use the App\\PayoutLog model instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository' => 'The legacy sale-log summary repository is retired; use the Laravel chat-log summary query instead.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository' => 'Use App\\Support\\LegacySubVarRepository instead of importing the legacy sub-var repository directly.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository' => 'The legacy sub-var repository is retired; use the Laravel sub report query instead.',
     ];
 
-    private array $legacyMiscReportRepositoriesAllowedFiles = [
-        'app/Support/LegacySubVarRepository.php' => 'The dedicated boundary around the legacy sub-var repository.',
-    ];
+    private array $legacyMiscReportRepositoriesAllowedFiles = [];
 
     private array $legacyMailForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
