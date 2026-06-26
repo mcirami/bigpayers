@@ -1,74 +1,107 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@section('page-title', 'Log Sale')
+
 @section('content')
-    <!--right_panel-->
-    <div class="right_panel">
-        <div class="white_box_outer">
-            <div class="heading_holder value_span9"><span class="lft">Log Sale for '<?= $offer->offer_name ?>'</span>
+    <div class="space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Chat Log</p>
+                    <h2 class="bp-section-title value_span9">Log sale for {{ $offer->offer_name }}</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                        Attach proof images to the pending conversion before it is recorded as a sale log.
+                    </p>
+                </div>
+
+                <a href="/report/chat-log" class="bp-button-secondary">Chat reports</a>
             </div>
-            <div class="white_box value_span8">
+        </section>
 
-                <form action="/chat-log/upload" method="post" id="form" enctype="multipart/form-data">
-                    {{csrf_field()}}
+        <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
+            <section class="bp-card value_span8">
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <p class="bp-section-kicker">Upload</p>
+                        <h3 class="bp-section-title value_span9">Proof images</h3>
+                    </div>
 
-                    <input type="hidden" name="pendingConversionId" value="{{$pendingConversion->id}}">
+                    <button type="button" class="bp-button-secondary" onclick="addImageInput()">Add image</button>
+                </div>
 
-                    <div class="left_con01">
+                <form action="/chat-log/upload" method="post" id="form" enctype="multipart/form-data" class="mt-6 space-y-6">
+                    @csrf
+                    <input type="hidden" name="pendingConversionId" value="{{ $pendingConversion->id }}">
 
-                        <p>
-                            <label class="value_span9">Sale Timestamp</label>
-                            <input type="text" value="{{$pendingConversion->timestamp}} " disabled>
-                        </p>
+                    <div class="bp-form-field">
+                        <label class="bp-form-label" for="saleTimestamp">Sale Timestamp</label>
+                        <input id="saleTimestamp" class="bp-form-input" type="text" value="{{ $pendingConversion->timestamp }}" disabled>
+                    </div>
 
-
-                        <p id="imageContainer">
-
-                            <label class="value_span9">Add Images</label>
-                            <button class="btn btn-default btn-sm" style="margin-bottom: 5px;"
-                                    onclick="addImageInput(); return false;">Add Image
-                            </button>
-                        <div class="input-group ">
-                            <input class="form-control " type="file" name="images[]" accept="image/*"><br>
+                    <div class="bp-form-field">
+                        <label class="bp-form-label">Images</label>
+                        <div id="imageContainer" class="space-y-3">
+                            <input class="bp-form-input" type="file" name="images[]" accept="image/*">
                         </div>
-
-                        </p>
-
+                        <p class="bp-form-note">Upload screenshots or image proof for this pending conversion.</p>
                     </div>
 
-
-                    <div class="right_con01">
-                    <span class="btn_yellow"> <input type="submit" name="button"
-                                                     class="value_span6-2 value_span2 value_span1-2" value="Log Sale"
-                                                     onclick=""/></span>
+                    <div class="flex justify-end">
+                        <button type="submit" name="button" value="Log Sale" class="bp-button-primary">Log sale</button>
                     </div>
-            </div>
+                </form>
+            </section>
 
+            <section class="bp-card value_span8">
+                <div>
+                    <p class="bp-section-kicker">Pending Conversion</p>
+                    <h3 class="bp-section-title value_span9">Sale details</h3>
+                </div>
+
+                <div class="mt-6">
+                    <div class="bp-detail-row">
+                        <span class="bp-detail-label">Offer</span>
+                        <span class="bp-detail-value">{{ $offer->offer_name }}</span>
+                    </div>
+                    <div class="bp-detail-row">
+                        <span class="bp-detail-label">Pending ID</span>
+                        <span class="bp-detail-value">{{ $pendingConversion->id }}</span>
+                    </div>
+                    <div class="bp-detail-row">
+                        <span class="bp-detail-label">Timestamp</span>
+                        <span class="bp-detail-value">{{ $pendingConversion->timestamp }}</span>
+                    </div>
+                </div>
+            </section>
         </div>
     </div>
-
-
 @endsection
+
 @section('footer')
     <script type="text/javascript">
-      var counter = 1;
+        let counter = 1;
 
-      function addImageInput() {
-        counter++;
-        if (counter >= 15) {
-          alert('yarly');
+        function addImageInput() {
+            if (counter >= 15) {
+                return;
+            }
+
+            counter++;
+
+            const container = document.getElementById('imageContainer');
+            const wrapper = document.createElement('div');
+            wrapper.id = 'img_' + counter;
+            wrapper.className = 'flex flex-col gap-3 sm:flex-row sm:items-center';
+            wrapper.innerHTML = '<input class="bp-form-input" type="file" name="images[]" accept="image/*"><button type="button" class="bp-button-secondary" onclick="removeImageInput(' + counter + ')">Remove</button>';
+            container.appendChild(wrapper);
         }
-        $('#imageContainer').append('\t<div class = "input-group " id="img_' + counter + '">\n' +
-            '\t\t\t\t\t\t\t<input class = "form-control " type = "file" name = "images[]" accept = "image/*"><br>\n' +
-            '\t\t\t\t\t\t\t<span class = "input-group-btn">\n' +
-            '\t\t\t\t\t\t\t\t<a href = "#" class = "btn btn-sm btn-danger" onclick=\'removeImageInput(' + counter +
-            ');\'>X</a>\n' +
-            '\t\t\t\t\t\t</span>\n' +
-            '\t\t\t\t\t\t</div>');
-      }
 
-      function removeImageInput(num) {
-        $('#img_' + num).remove();
-      }
+        function removeImageInput(num) {
+            const field = document.getElementById('img_' + num);
 
+            if (field) {
+                field.remove();
+            }
+        }
     </script>
-
 @endsection
