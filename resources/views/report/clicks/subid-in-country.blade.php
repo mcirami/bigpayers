@@ -9,26 +9,15 @@
 @endsection
 @section('table-options')
     @include('report.options.dates')
-	{{-- <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
-		<a style="
-		width: 170px; 
-		border:none; 
-		padding: 10px;
-    	font-size: 18px;
-    	border-radius: 6px;
-    	color: #676767;" 
-		class="btn btn-default btn-sm" href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
-			Export Data
-		</a>
-	</div> --}}
 @endsection
 
 @section('table')
-	<div class="form-group searchDiv">
-		@if ($canViewFraudData)
+	@if ($canViewFraudData)
+		<div class="bp-report-toolbar searchDiv">
 			<form action="/user/{{$user->idrep}}/search-clicks" method="GET">
+				<label for="searchBox">Search Click ID</label>
 				<input id="searchBox"
-					   class="form-control"
+					   class="bp-form-input"
 					   type="text"
 					   name="searchValue"
 					   placeholder="Search Click ID"
@@ -38,8 +27,8 @@
 				<input type="hidden" name="dateSelect" value="{{$dateSelect}}">
 				<input type="hidden" name="searchType" value="user">
 			</form>
-		@endif
-	</div>
+		</div>
+	@endif
 	<div class="table_wrap">
 		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>

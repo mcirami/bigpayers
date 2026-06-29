@@ -68,11 +68,12 @@
 
 		</form>
 	</div>--}}
-	<div class="form-group searchDiv">
-		@if ($canViewFraudData)
+	@if ($canViewFraudData)
+		<div class="bp-report-toolbar searchDiv">
 			<form action="/offer/{{$offer->idoffer}}/search-clicks" method="GET">
+				<label for="searchBox">Search Click ID</label>
 				<input id="searchBox"
-					   class="form-control"
+					   class="bp-form-input"
 					   type="text"
 					   name="searchValue"
 					   placeholder="Search Click ID"
@@ -83,8 +84,8 @@
 				<input type="hidden" name="searchType" value="offer">
 
 			</form>
-		@endif
-	</div>
+		</div>
+	@endif
     <div class="white_box_x_scroll white_box manage_aff large_table value_span8  one_hungee_table adjust_overflow"
          style="width:100%;!important;">
 		<div class="table_wrap">

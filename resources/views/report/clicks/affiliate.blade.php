@@ -20,11 +20,12 @@
 @endsection
 
 @section('table')
-	<div class="form-group searchDiv">
-		@if ($canViewFraudData)
+	@if ($canViewFraudData)
+		<div class="bp-report-toolbar searchDiv">
 			<form action="/user/{{$user->idrep}}/search-clicks" method="GET">
+				<label for="searchBox">Search Click ID</label>
 				<input id="searchBox"
-					   class="form-control"
+					   class="bp-form-input"
 					   type="text"
 					   name="searchValue"
 					   placeholder="Search Click ID"
@@ -34,8 +35,8 @@
 				<input type="hidden" name="dateSelect" value="{{$dateSelect}}">
 				<input type="hidden" name="searchType" value="user">
 			</form>
-		@endif
-	</div>
+		</div>
+	@endif
 	<div class="table_wrap">
 		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
