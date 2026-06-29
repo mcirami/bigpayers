@@ -153,7 +153,7 @@
                                 <td>{{ $offer->campaign_name }}</td>
                                 <td>Requires Offer</td>
                                 <td>
-                                    <button id="btn_{{ $offer->idoffer }}" class="btn btn-sm btn-default" onclick="requestOffer({{ $offer->idoffer }})">
+                                    <button id="btn_{{ $offer->idoffer }}" class="bp-action-link" onclick="requestOffer({{ $offer->idoffer }})">
                                         Request Offer
                                     </button>
                                 </td>
@@ -297,12 +297,12 @@
                             html += "<td class='value_span10'>" +
                                 "<button data-url='https://" + selectedUrl +
                                 "/?rid=" + sessionUser +
-                                "&oid=" + offer.idoffer + "&s1=' data-toggle='tooltip' title='Copy' class='copy_button btn btn-default'>Copy</button></td>";
+                                "&oid=" + offer.idoffer + "&s1=' data-toggle='tooltip' title='Copy' class='copy_button bp-action-link'>Copy</button></td>";
                         }
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
                             html += "<td class='value_span10'>" +
-                                "<a target='_blank' class='btn btn-sm btn-default value_span5-1' href='/offer/" + offer.idoffer + "/access'>Affiliate Access</a>" +
+                                "<a target='_blank' class='bp-action-link' href='/offer/" + offer.idoffer + "/access'>Affiliate Access</a>" +
                                 "</td>";
                         }
 
@@ -337,11 +337,11 @@
                         if (userType === 0) {
                             /*html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";*/
                             html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
-                            html += "<a class='btn btn-default btn-sm value_span6-1 value_span4' data-toggle='tooltip' title='Duplicate Offer' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
-                                "<a class='delete_offer btn btn-default btn-sm value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer.idoffer + "' title='Delete Offer' href='#'>Delete</a>";
+                            html += "<a class='bp-action-link' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
+                            html += "<a class='bp-action-link' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
+                            html += "<a class='bp-action-link' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
+                            html += "<a class='bp-action-link' data-toggle='tooltip' title='Duplicate Offer' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
+                                "<a class='delete_offer bp-action-link value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer.idoffer + "' title='Delete Offer' href='#'>Delete</a>";
                             html += "</div></td>";
                         }
 

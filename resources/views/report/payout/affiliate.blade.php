@@ -50,19 +50,19 @@
                             <td>{{$row['referrals']}}</td>
                             <td>
                                 <button v-if="this.activeIds.indexOf({{$row['id']}}) == -1"
-                                        class="btn btn-default btn-sm"
+                                        class="bp-action-link"
                                         @click="fetchHistoryReport('{{$row['start_of_week']}}', '{{$row['end_of_week']}}', {{$row['id']}})">
                                     Expand
                                 </button>
 
                                 <button v-if="this.activeIds.indexOf({{$row['id']}}) > -1"
-                                        class="btn btn-default btn-sm"
+                                        class="bp-action-link"
                                         @click="deActiveReport({{$row['id']}})">Minimize
                                 </button>
 
                             </td>
                             <td>
-                                <a class="btn btn-sm btn-primary"
+                                <a class="bp-action-link"
                                    :href="'/report/payout/pdf?d_from={{$row['start_of_week']}}&d_to={{$row['end_of_week']}}&adminLogin'">Download</a>
                             </td>
                         </tr>

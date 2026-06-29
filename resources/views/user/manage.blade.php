@@ -142,13 +142,13 @@
 
                 if (canEditAffiliates) {
                     actions.push(
-                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/edit">Edit</a>`
+                        `<a class="bp-action-link" href="/user/${user.idrep}/edit">Edit</a>`
                     );
                 }
 
                 if (canCreateAffiliates) {
                     actions.push(
-                        `<a class="btn btn-default btn-sm value_span5-1" href="#" onclick="adminLogin(${user.idrep}); return false;">Login</a>`
+                        `<a class="bp-action-link" href="#" onclick="adminLogin(${user.idrep}); return false;">Login</a>`
                     );
                 }
 
@@ -160,7 +160,7 @@
 
                 if (canBanUsers) {
                     actions.push(
-                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/ban">Ban</a>`
+                        `<a class="bp-action-link" href="/user/${user.idrep}/ban">Ban</a>`
                     );
                 }
 

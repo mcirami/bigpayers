@@ -95,10 +95,10 @@
                                 <td>{{ (int) $row->is_active === 1 ? 'Active' : 'Inactive' }}</td>
                                 <td class="actions">
                                     <div class="bp-table-actions">
-                                        <button type="button" class="btn btn-default btn-sm value_span6-1 value_span4 js-load-referral" data-affiliate="{{ $row->aff_id }}">Edit</button>
+                                        <button type="button" class="bp-action-link js-load-referral" data-affiliate="{{ $row->aff_id }}">Edit</button>
                                         <form action="/user/{{ $referrer->idrep }}/referrals/{{ $row->aff_id }}/delete" method="post" onsubmit="return confirm('Delete this referral structure?');">
                                             {{ csrf_field() }}
-                                            <button type="submit" class="btn btn-default btn-sm value_span5-1 value_span2 value_span4">Remove</button>
+                                            <button type="submit" class="bp-action-link value_span11 value_span2">Remove</button>
                                         </form>
                                     </div>
                                 </td>

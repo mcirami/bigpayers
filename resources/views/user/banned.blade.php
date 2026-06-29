@@ -89,7 +89,7 @@
                             <td>{{ $isActive ? 'Active' : 'Inactive' }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">
-                                    <a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/{{ $ban->user_id }}/ban/edit">Ban settings</a>
+                                    <a class="bp-action-link" href="/user/{{ $ban->user_id }}/ban/edit">Ban settings</a>
                                 </div>
                             </td>
                         </tr>

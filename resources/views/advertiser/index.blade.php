@@ -81,7 +81,7 @@
                             <td>{{ $campaign->offers_count }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">
-                                    <a class="btn btn-default btn-sm value_span6-1 value_span4" href="/advertisers/{{ $campaign->id }}/edit">Edit</a>
+                                    <a class="bp-action-link" href="/advertisers/{{ $campaign->id }}/edit">Edit</a>
                                 </div>
                             </td>
                         </tr>

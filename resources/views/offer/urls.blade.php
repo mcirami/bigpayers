@@ -85,7 +85,7 @@
                             <td>{{ \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $url['timestamp'])->toFormattedDateString() }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">
-                                    <a class="btn btn-default btn-sm value_span6-1 value_span4" href="/offer/urls/{{ $url['id'] }}/edit">Edit</a>
+                                    <a class="bp-action-link" href="/offer/urls/{{ $url['id'] }}/edit">Edit</a>
                                 </div>
                             </td>
                         </tr>

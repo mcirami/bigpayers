@@ -513,14 +513,14 @@
                                 <div class="bp-table-actions bp-subid-actions">
                                     <button
                                         type="button"
-                                        class="btn btn-default btn-sm ${isBlocked ? '' : 'value_span6-2 value_span2 value_span1-2'} js-block-subid"
+                                        class="bp-action-link js-block-subid"
                                         data-subid="${subId.subId}"
                                         ${isBlocked ? 'disabled' : ''}>
                                         ${isBlocked ? 'Blocked' : 'Block ID'}
                                     </button>
                                     <button
                                         type="button"
-                                        class="btn btn-default btn-sm value_span6-1 value_span4 js-unblock-subid"
+                                        class="bp-action-link js-unblock-subid"
                                         data-subid="${subId.subId}"
                                         ${isBlocked ? '' : 'disabled'}>
                                         Unblock
