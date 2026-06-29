@@ -25,21 +25,21 @@
                 <td>{{ $row['idrep'] }}</td>
                 <td>{{ $row['user_name'] }}</td>
                 <td>
-                    <a target="_blank" href="/report/chat-log/{{ $row['idrep'] }}?{{ http_build_query([
+                    <a class="bp-report-link" target="_blank" href="/report/chat-log/{{ $row['idrep'] }}?{{ http_build_query([
                         'd_from' => $dates['originalStart'],
                         'd_to' => $dates['originalEnd'],
                         'show' => 'nonelogged',
                     ]) }}">{{ $row['pending_sales'] }}</a>
                 </td>
                 <td>
-                    <a target="_blank" href="/report/chat-log/{{ $row['idrep'] }}?{{ http_build_query([
+                    <a class="bp-report-link" target="_blank" href="/report/chat-log/{{ $row['idrep'] }}?{{ http_build_query([
                         'd_from' => $dates['originalStart'],
                         'd_to' => $dates['originalEnd'],
                         'show' => 'logged',
                     ]) }}">{{ $row['logged_sales'] }}</a>
                 </td>
                 <td>
-                    <a target="_blank" href="/report/chat-log/{{ $row['idrep'] }}?{{ http_build_query([
+                    <a class="bp-report-link" target="_blank" href="/report/chat-log/{{ $row['idrep'] }}?{{ http_build_query([
                         'd_from' => $dates['originalStart'],
                         'd_to' => $dates['originalEnd'],
                         'show' => 'all',

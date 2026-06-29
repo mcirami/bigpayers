@@ -31,11 +31,13 @@
                     <td>{{ $row->timestamp }}</td>
                     <td>{{ $row->conversion_timestamp }}</td>
                     <td>
-                        @if($row->sale_log_id !== null)
-                            <a href="/chat-log/view/{{ $row->sale_log_id }}" class="btn btn-sm btn-default">View Log</a>
-                        @else
-                            <a href="/chat-log/add/{{ $row->pending_conversion_id }}" class="btn btn-sm btn-default">Log Sale</a>
-                        @endif
+                        <div class="bp-table-actions">
+                            @if($row->sale_log_id !== null)
+                                <a href="/chat-log/view/{{ $row->sale_log_id }}" class="bp-action-link">View Log</a>
+                            @else
+                                <a href="/chat-log/add/{{ $row->pending_conversion_id }}" class="bp-action-link">Log Sale</a>
+                            @endif
+                        </div>
                     </td>
                 </tr>
             @endforeach

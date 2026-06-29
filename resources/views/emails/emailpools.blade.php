@@ -1,59 +1,108 @@
-@extends('layouts.master')
+@extends('layouts.dashboard-shell')
+
+@section('page-title', 'Email Pools')
 
 @section('content')
+    <div class="space-y-6 lg:space-y-8">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Lead Inventory</p>
+                    <h2 class="bp-section-title value_span9">Email pools</h2>
+                    <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
+                        Download pools already assigned to you or claim an available pool from the shared inventory.
+                    </p>
+                </div>
 
-    <!--right_panel-->
-    <div class="right_panel">
-        <div class="white_box_outer large_table ">
-            <div class="heading_holder">
-                <span class="lft value_span9">Email Pools</span>
+                <div class="grid gap-3 sm:grid-cols-2">
+                    <article class="bp-link-card">
+                        <p class="bp-link-label">Owned</p>
+                        <p class="bp-link-value">{{ $ownedPools->count() }}</p>
+                    </article>
+                    <article class="bp-link-card">
+                        <p class="bp-link-label">Available</p>
+                        <p class="bp-link-value">{{ $availablePools->count() }}</p>
+                    </article>
+                </div>
+            </div>
+        </section>
 
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Owned Pools</p>
+                    <h3 class="bp-section-title value_span9">Ready to download</h3>
+                    <p class="bp-table-meta mt-3">These pools are already assigned to your account.</p>
+                </div>
             </div>
 
-
-            <h3>Owned Pools</h3>
-            <div class="clear"></div>
-            <div class="white_box_x_scroll white_box manage_aff  value_span8  ">
-                <table class="table table-bordered">
+            <div class="mt-6 overflow-x-auto">
+                <table class="table table-bordered table_01">
                     <thead>
-                    <th>Pool</th>
-                    <th>Timestamp</th>
-                    <th>Actions</th>
+                    <tr>
+                        <th>Pool</th>
+                        <th>Timestamp</th>
+                        <th>Actions</th>
+                    </tr>
                     </thead>
                     <tbody>
-                    @foreach($ownedPools as $pool)
+                    @forelse($ownedPools as $pool)
                         <tr>
-                            <td>Pool #{{$pool->id}}</td>
-                            <td>{{$pool->timestamp}}</td>
-                            <td><a href="/email/pools/{{$pool->id}}/download">Download</a></td>
+                            <td>Pool #{{ $pool->id }}</td>
+                            <td>{{ $pool->timestamp }}</td>
+                            <td>
+                                <div class="bp-table-actions">
+                                    <a class="bp-action-link" href="/email/pools/{{ $pool->id }}/download">Download</a>
+                                </div>
+                            </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="3" class="bp-table-empty">No email pools have been claimed yet.</td>
+                        </tr>
+                    @endforelse
                     </tbody>
                 </table>
+            </div>
+        </section>
 
-
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Available Pools</p>
+                    <h3 class="bp-section-title value_span9">Open inventory</h3>
+                    <p class="bp-table-meta mt-3">Claiming a pool assigns it to your account for download.</p>
+                </div>
             </div>
 
-            <div class="clear"></div>
-            <h3>Available Pools</h3>
-            <div class="white_box_x_scroll white_box manage_aff   value_span8  ">
-                <table class="table table-bordered">
+            <div class="mt-6 overflow-x-auto">
+                <table class="table table-bordered table_01">
                     <thead>
-                    <th>Pool</th>
-                    <th>Timestamp</th>
-                    <th>Actions</th>
+                    <tr>
+                        <th>Pool</th>
+                        <th>Timestamp</th>
+                        <th>Actions</th>
+                    </tr>
                     </thead>
                     <tbody>
-                    @foreach($availablePools as $pool)
+                    @forelse($availablePools as $pool)
                         <tr>
-                            <td>Pool #{{$pool->id}}</td>
-                            <td>{{$pool->timestamp}}</td>
-                            <td><a href="/email/pools/{{$pool->id}}/claim">Claim</a></td>
+                            <td>Pool #{{ $pool->id }}</td>
+                            <td>{{ $pool->timestamp }}</td>
+                            <td>
+                                <div class="bp-table-actions">
+                                    <a class="bp-action-link" href="/email/pools/{{ $pool->id }}/claim">Claim</a>
+                                </div>
+                            </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="3" class="bp-table-empty">No email pools are available right now.</td>
+                        </tr>
+                    @endforelse
                     </tbody>
                 </table>
             </div>
-        </div>
-
+        </section>
+    </div>
 @endsection
