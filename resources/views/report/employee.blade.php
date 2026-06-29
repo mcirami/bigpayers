@@ -35,7 +35,7 @@
     @include('report.options.user-type')
     @include('report.options.dates')
     @if ($sessionUserType == Privilege::ROLE_GOD || $sessionUserType == Privilege::ROLE_ADMIN)
-        <div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
+        <div class="bp-toolbar-actions">
             <a class="bp-button-primary" href="/report/aff-data/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}">
                 Export Data
             </a>

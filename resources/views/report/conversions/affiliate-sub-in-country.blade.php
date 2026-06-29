@@ -23,7 +23,6 @@
 @endsection
 
 @section('table')
-<div class="table_wrap">
     <table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
         <thead>
         <tr>
@@ -52,6 +51,5 @@
         @endforeach
         </tbody>
     </table>
-</div>
 {{ $reportCollection->links() }}
 @endsection

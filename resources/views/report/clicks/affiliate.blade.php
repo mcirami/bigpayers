@@ -11,7 +11,7 @@
 
 @section('table-options')
     @include('report.options.dates')
-	<div class="button_wrap" style="width: 100%; display:inline-block; margin-top: 10px;">
+	<div class="bp-toolbar-actions">
 			<a class="bp-button-primary"
 	           href="/user/{{$user->idrep}}/clicks/export?d_from={{$startDate}}&d_to={{$endDate}}&dateSelect={{$dateSelect}}@if(\App\Support\RequestContext::hasQuery('role'))&role={{\App\Support\RequestContext::query('role')}}@endif">
 				Export Data
@@ -37,8 +37,7 @@
 			</form>
 		</div>
 	@endif
-	<div class="table_wrap">
-		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+	<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
@@ -112,8 +111,7 @@
 
 			@endforeach
 			</tbody>
-		</table>
-	</div>
+	</table>
 		{{ $reportCollection->withQueryString()->links() }}
 
 @endsection

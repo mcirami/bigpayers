@@ -29,8 +29,7 @@
 			</form>
 		</div>
 	@endif
-	<div class="table_wrap">
-		<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+	<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
@@ -91,8 +90,7 @@
 
 			@endforeach
 			</tbody>
-		</table>
-	</div>
+	</table>
 	{{ $reportCollection->links() }}
 
 @endsection
