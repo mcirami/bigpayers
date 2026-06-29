@@ -36,7 +36,7 @@
         >
     </label>
 
-    <div class="button_wrap bp-toolbar-actions">
+    <div class="bp-toolbar-actions">
         <button
             id='searchBtn'
             class="bp-button-secondary"

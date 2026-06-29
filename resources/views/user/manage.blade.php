@@ -152,12 +152,6 @@
                     );
                 }
 
-                /*if (canCreateManagers && Number(role) === {{ \App\Privilege::ROLE_MANAGER }}) {
-                    actions.push(
-                        `<a class="btn btn-default btn-sm value_span6-1 value_span4" href="/user/${user.idrep}/affiliates">View {{ $affiliateTypeLabelPlural }}</a>`
-                    );
-                }*/
-
                 if (canBanUsers) {
                     actions.push(
                         `<a class="bp-action-link" href="/user/${user.idrep}/ban">Ban</a>`

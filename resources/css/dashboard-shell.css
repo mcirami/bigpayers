@@ -603,8 +603,6 @@
 
   .bp-report-toolbar .form-group,
   .bp-report-filter-panel .form-group,
-  .bp-report-toolbar .button_wrap,
-  .bp-report-filter-panel .button_wrap,
   .bp-report-toolbar .controls,
   .bp-report-filter-panel .controls {
     margin: 0;

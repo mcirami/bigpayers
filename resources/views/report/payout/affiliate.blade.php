@@ -29,8 +29,17 @@
 @section('extra')
     <div id="apptwo">
 
-        <div class="white_box manage_aff large_table value_span8">
-            <table class="table table-striped table-bordered  table_01">
+        <section class="bp-card value_span8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="bp-section-kicker">Payout History</p>
+                    <h3 class="bp-section-title value_span9">Weekly payout snapshots</h3>
+                </div>
+                <p class="bp-table-meta">Expand a week to inspect the offer, salary, bonus, referral, deduction, and net breakdown.</p>
+            </div>
+
+            <div class="mt-6 bp-report-table-wrap">
+                <table class="table table-striped table-bordered  table_01">
                 <thead>
                 <tr>
                     <th>Week range</th>
@@ -236,7 +245,8 @@
                 @endforeach
                 </tbody>
             </table>
-        </div>
+            </div>
+        </section>
     </div>
 
 

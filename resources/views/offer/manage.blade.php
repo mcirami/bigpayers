@@ -328,12 +328,6 @@
 		                    html += "<td class='value_span10'>" + offer.campaign_name + "</td>";
 	                    }
 
-                        /*if (userType === 3) {
-                            html += "<td class='value_span10'>" +
-                                "<a class='btn btn-default value_span6-1 value_span4' data-toggle='tooltip' title='Offer PostBack Options' href='/offer/" + offer.idoffer + "/postback'>Edit Post Back</a>" +
-                                "</td>";
-                        }*/
-
                         if (userType === 0) {
                             /*html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";*/
                             html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";

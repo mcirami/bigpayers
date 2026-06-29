@@ -12,62 +12,7 @@
     @include('report.options.dates')
 @endsection
 
-{{--@section('filters')
-	@include('report.options.filters')
-@endsection--}}
-
 @section('table')
-	{{--<div class="table_wrap">
-		<table id="reps" class="table table-striped table-bordered table-condensed table_01 tablesorter offer_clicks">
-			<thead>
-			<tr>
-				<th class="value_span9">Affiliate ID</th>
-				<th class="value_span9">Username</th>
-				<th class="value_span9">Clicks</th>
-				<th class="value_span9">Conversions</th>
-			</tr>
-			</thead>
-			<tbody>
-
-			@foreach($affiliateReport as $row)
-				<tr>
-					<td>{{$row->user_id}}</td>
-					<td>{{$row->user_name}}</td>
-					<td>{{$row->clicks}}</td>
-					<td>{{$row->conversions}}</td>
-				</tr>
-			@endforeach
-			</tbody>
-		</table>
-	</div>
-	<div id="pager" class="pager">
-		<form>
-			<div class="navigation">
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-bar-left first" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M11.854 3.646a.5.5 0 0 1 0 .708L8.207 8l3.647 3.646a.5.5 0 0 1-.708.708l-4-4a.5.5 0 0 1 0-.708l4-4a.5.5 0 0 1 .708 0zM4.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/>
-				</svg>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-left prev" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
-				</svg>
-				<!-- the "pagedisplay" can be any element, including an input -->
-				<span class="pagedisplay" data-pager-output-filtered="{startRow:input} &ndash; {endRow} / {filteredRows} of {totalRows} total rows"></span>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-right next" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-				</svg>
-				<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" class="bi bi-chevron-bar-right last" viewBox="0 0 16 16">
-					<path fill-rule="evenodd" d="M4.146 3.646a.5.5 0 0 0 0 .708L7.793 8l-3.647 3.646a.5.5 0 0 0 .708.708l4-4a.5.5 0 0 0 0-.708l-4-4a.5.5 0 0 0-.708 0zM11.5 1a.5.5 0 0 1 .5.5v13a.5.5 0 0 1-1 0v-13a.5.5 0 0 1 .5-.5z"/>
-				</svg>
-				<select class="pagesize">
-					<option value="10">10</option>
-					<option value="20">20</option>
-					<option value="30">30</option>
-					<option value="40">40</option>
-					<option value="all">All Rows</option>
-				</select>
-			</div>
-
-		</form>
-	</div>--}}
 	@if ($canViewFraudData)
 		<div class="bp-report-toolbar searchDiv">
 			<form action="/offer/{{$offer->idoffer}}/search-clicks" method="GET">
@@ -86,10 +31,7 @@
 			</form>
 		</div>
 	@endif
-    <div class="white_box_x_scroll white_box manage_aff large_table value_span8  one_hungee_table adjust_overflow"
-         style="width:100%;!important;">
-		<div class="table_wrap">
-			<table id="clicks" class="table table-striped table-bordered table_01 tablesorter">
+	<table id="clicks" class="table table-striped table-bordered table_01 tablesorter">
 				<thead>
 				<tr>
 					@if ($canViewFraudData)
@@ -170,12 +112,15 @@
 				<tr>
 				</tr>
 				</tbody>
-			</table>
-		</div>
+	</table>
 @endsection
 
 @section('extra')
+	<div class="bp-card value_span8">
+		<div class="bp-legacy-pagination">
 			{{ $reportCollection->links() }}
+		</div>
+	</div>
 @endsection
 
 @section('footer')
