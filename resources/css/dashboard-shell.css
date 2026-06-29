@@ -2252,6 +2252,210 @@
   opacity: 0.32 !important;
 }
 
+  .bp-sms-workspace {
+    display: grid;
+    gap: 1.5rem;
+  }
+
+  .bp-sms-panel {
+    min-width: 0;
+  }
+
+  .bp-sms-tabs {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    padding: 0.25rem;
+    border: 1px solid rgba(148, 163, 184, 0.22);
+    border-radius: 999px;
+    background: rgba(248, 250, 252, 0.86);
+  }
+
+  .bp-sms-tab,
+  .bp-sms-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.25rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-weight: 800;
+    line-height: 1;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .bp-sms-tab {
+    padding: 0 0.95rem;
+    color: #475569;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+  }
+
+  .bp-sms-tab:hover,
+  .bp-sms-chip:hover {
+    transform: translateY(-1px);
+  }
+
+  .bp-sms-tab.is-active {
+    background: #0f172a;
+    color: #fff;
+    box-shadow: 0 14px 28px -20px rgba(15, 23, 42, 0.7);
+  }
+
+  .bp-sms-list,
+  .bp-sms-messages {
+    overflow: auto;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 1.15rem;
+    background: rgba(248, 250, 252, 0.7);
+  }
+
+  .bp-sms-list {
+    max-height: 46rem;
+  }
+
+  .bp-sms-messages {
+    display: flex;
+    min-height: 28rem;
+    max-height: 34rem;
+    flex-direction: column;
+    gap: 0.85rem;
+    padding: 1rem;
+  }
+
+  .bp-sms-empty {
+    padding: 1.5rem;
+    color: #64748b;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+  .bp-sms-conversation {
+    display: grid;
+    gap: 0.9rem;
+    padding: 1rem;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    transition: background 180ms ease, box-shadow 180ms ease;
+  }
+
+  .bp-sms-conversation:last-child {
+    border-bottom: 0;
+  }
+
+  .bp-sms-conversation.is-active {
+    background: rgba(14, 165, 233, 0.08);
+    box-shadow: inset 3px 0 0 var(--brand-strong);
+  }
+
+  .bp-sms-conversation-main {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    gap: 0.35rem;
+    text-align: left;
+  }
+
+  .bp-sms-number {
+    color: #0f172a;
+    font-size: 1rem;
+    font-weight: 900;
+  }
+
+  .bp-sms-time {
+    color: #64748b;
+    font-size: 0.84rem;
+  }
+
+  .bp-sms-unread {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    min-height: 1.55rem;
+    padding: 0 0.6rem;
+    border-radius: 999px;
+    background: rgba(245, 158, 11, 0.14);
+    color: #92400e;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .bp-sms-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .bp-sms-chip {
+    min-height: 2rem;
+    padding: 0 0.7rem;
+    background: #fff;
+    color: #334155;
+    font-size: 0.78rem;
+    text-transform: capitalize;
+  }
+
+  .bp-sms-chip:hover {
+    border-color: rgba(148, 163, 184, 0.34);
+    box-shadow: 0 14px 28px -22px rgba(15, 23, 42, 0.55);
+  }
+
+  .bp-sms-chip-primary {
+    background: var(--brand-strong);
+    color: #fff;
+  }
+
+  .bp-sms-message {
+    width: min(100%, 42rem);
+    padding: 0.9rem 1rem;
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 1.1rem;
+    background: #fff;
+    box-shadow: 0 18px 36px -30px rgba(15, 23, 42, 0.5);
+  }
+
+  .bp-sms-message.is-outbound {
+    align-self: flex-end;
+    border-color: rgba(15, 118, 110, 0.2);
+    background: rgba(240, 253, 250, 0.9);
+  }
+
+  .bp-sms-message-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    color: #64748b;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+
+  .bp-sms-message p {
+    margin-top: 0.45rem;
+    color: #0f172a;
+    font-size: 0.95rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+  }
+
+  .bp-sms-media {
+    display: block;
+    margin-top: 0.75rem;
+  }
+
+  .bp-sms-media img {
+    max-width: min(100%, 18rem);
+    height: auto;
+    border-radius: 0.9rem;
+  }
+
+  .bp-sms-composer {
+    display: grid;
+    gap: 1rem;
+  }
+
 @media (min-width: 640px) {
   .bp-shell-content {
     padding-left: 1.5rem;
@@ -2340,6 +2544,11 @@
 }
 
 @media (min-width: 1199px) {
+  .bp-sms-workspace {
+    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.35fr);
+    align-items: start;
+  }
+
   .bp-settings-main-grid {
     grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
   }
