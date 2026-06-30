@@ -341,7 +341,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+                    <div class="mt-6 bp-report-table-wrap">
                         <table class="table table-striped table_01 large_table" id="subIdTable">
                             <thead>
                             <tr>

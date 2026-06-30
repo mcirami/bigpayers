@@ -111,7 +111,7 @@
                 <p class="text-sm text-slate-500">Table sorting and pagination are still powered by the legacy scripts underneath.</p>
             </div>
 
-            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+            <div class="mt-6 bp-report-table-wrap">
                 <table class="table table-condensed table-bordered table_01 bp-offer-manage-table" id="mainTable">
                     <thead>
                     <tr>

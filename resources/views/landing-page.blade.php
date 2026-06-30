@@ -1,14 +1,18 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+@php
+    $company = \App\Company::instance()->first();
+    $companyName = $company ? ($company->getShortHand() ?: 'Chat Track Pro') : 'Chat Track Pro';
+    $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('favicon.ico');
+@endphp
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="css/style.css" rel="stylesheet" type="text/css"/>
 
-    <link rel="shortcut icon" type="image/ico" href="http://chattrackpto.com/resources/views/favicon.ico"/>
+    <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
 
-    <title>Chat Track Pro</title>
+    <title>{{ $companyName }}</title>
 </head>
 <body>
 <!--header-->
@@ -162,8 +166,6 @@
         <span class="footer_txt">&copy; ChatTrackPro</span>
     </div>
 </footer>
-
-<script src='http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 
 </body>
 </html>

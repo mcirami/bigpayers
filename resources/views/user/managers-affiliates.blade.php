@@ -79,7 +79,7 @@
                 >
             </div>
 
-            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+            <div class="mt-6 bp-report-table-wrap">
                 <table class="table table-bordered table-striped table_01" id="managerAffiliatesTable">
                     <thead>
                     <tr>

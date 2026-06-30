@@ -63,7 +63,7 @@
                 <p class="bp-table-meta">Activate moves the signup into the live tree and applies the standard affiliate setup.</p>
             </div>
 
-            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+            <div class="mt-6 bp-report-table-wrap">
                 <table class="table table-striped table_01 tablesorter" id="mainTable">
                     <thead>
                     <tr>

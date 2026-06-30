@@ -99,7 +99,7 @@
                 <p class="bp-table-meta">Payout changes save on enter or blur, and access toggles continue using the existing AJAX handlers.</p>
             </div>
 
-            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+            <div class="mt-6 bp-report-table-wrap">
                 <table class="table table-striped table_01 large_table bp-user-offers-table" id="mainTable">
                     <thead>
                     <tr>
@@ -211,7 +211,6 @@
 @endsection
 
 @section('footer')
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script type="text/javascript">
         (() => {
             const searchInput = document.getElementById('offerSearch');

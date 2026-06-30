@@ -63,7 +63,7 @@
                 <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the page layout is upgraded.</p>
             </div>
 
-            <div class="mt-6 bp-report-table-wrap white_box_x_scroll">
+            <div class="mt-6 bp-report-table-wrap">
                 <table class="table table-bordered table_01 tablesorter" id="mainTable">
                     <thead>
                     <tr>
