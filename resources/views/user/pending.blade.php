@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Pending Users')
 
 @section('content')
@@ -64,7 +56,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01 tablesorter" id="mainTable">
+                <table class="table table-striped table_01" id="mainTable" data-sortable-table data-sort-default="5:desc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -100,12 +92,5 @@
 @endsection
 
 @section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter({
-                sortList: [[5, 1]],
-                widgets: ['staticRow']
-            });
-        });
-    </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Offer Access')
 
 @section('content')
@@ -99,7 +91,11 @@
 @section('footer')
     <script type="text/javascript">
         function setOfferAccess(checked) {
-            $("#users input[type='checkbox'], input[name='userList[]']").prop('checked', checked);
+            document
+                .querySelectorAll("#users input[type='checkbox'], input[name='userList[]']")
+                .forEach((checkbox) => {
+                    checkbox.checked = checked;
+                });
         }
     </script>
 @endsection

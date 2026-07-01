@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Advertisers')
 
 @section('content')
@@ -60,11 +52,11 @@
                     <p class="bp-section-kicker">Advertiser Registry</p>
                     <h3 class="bp-section-title value_span9">Searchable advertiser table</h3>
                 </div>
-                <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the page layout is upgraded.</p>
+                <p class="bp-table-meta">Select a column header to sort the advertiser list.</p>
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-condensed table-bordered table_01 tablesorter" id="mainTable">
+                <table class="table table-condensed table-bordered table_01" id="mainTable" data-sortable-table>
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -94,11 +86,5 @@
 @endsection
 
 @section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter({
-                widgets: ['staticRow']
-            });
-        });
-    </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

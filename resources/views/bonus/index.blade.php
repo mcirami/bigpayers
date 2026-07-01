@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Bonuses')
 
 @section('content')

@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Offer URLs')
 
 @section('content')
@@ -60,11 +52,11 @@
                     <p class="bp-section-kicker">URL Registry</p>
                     <h3 class="bp-section-title value_span9">Searchable offer URL table</h3>
                 </div>
-                <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the page layout is upgraded.</p>
+                <p class="bp-table-meta">Select a column header to sort the offer URL list.</p>
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-bordered table_01 tablesorter" id="mainTable">
+                <table class="table table-bordered table_01" id="mainTable" data-sortable-table data-sort-default="2:desc">
                     <thead>
                     <tr>
                         <th class="value_span9">URL</th>
@@ -98,12 +90,5 @@
 @endsection
 
 @section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter({
-                sortList: [[2, 1]],
-                widgets: ['staticRow']
-            });
-        });
-    </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

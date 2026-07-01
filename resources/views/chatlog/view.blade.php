@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'View Sale Log')
 
 @section('content')
@@ -115,9 +107,12 @@
                 return;
             }
 
-            $("#imageInputs").append(
-                "<input class=\"bp-form-input\" type=\"file\" name=\"images[]\" accept=\"image/*\">"
-            );
+            const input = document.createElement('input');
+            input.className = 'bp-form-input';
+            input.type = 'file';
+            input.name = 'images[]';
+            input.accept = 'image/*';
+            document.getElementById('imageInputs').appendChild(input);
         }
     </script>
 @endsection
