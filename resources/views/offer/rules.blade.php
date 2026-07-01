@@ -6,8 +6,6 @@
 
 @push('scripts')
     <script type="text/javascript" src="{{ $webroot }}js/jquery_2.1.3_jquery.min.js"></script>
-    <script type="text/javascript" src="{{ $webroot }}js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="{{ $webroot }}js/bootstrap.min.js"></script>
 @endpush
 
 @section('page-title', 'Offer Rules')
@@ -380,15 +378,67 @@
 
         document.querySelectorAll('[data-open-modal]').forEach((button) => {
             button.addEventListener('click', () => {
-                $('#' + button.dataset.openModal).modal('show');
+                showRulesModal(button.dataset.openModal);
             });
         });
 
         document.querySelectorAll('[data-close-modal]').forEach((button) => {
             button.addEventListener('click', () => {
-                $('#' + button.dataset.closeModal).modal('hide');
+                hideRulesModal(button.dataset.closeModal);
             });
         });
+
+        document.querySelectorAll('.modal').forEach((modal) => {
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    hideRulesModal(modal.id);
+                }
+            });
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key !== 'Escape') {
+                return;
+            }
+
+            document.querySelectorAll('.modal.is-open').forEach((modal) => {
+                hideRulesModal(modal.id);
+            });
+        });
+
+        function showRulesModal(modalID) {
+            const modal = document.getElementById(modalID);
+
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.add('is-open', 'show');
+            modal.removeAttribute('aria-hidden');
+            modal.setAttribute('aria-modal', 'true');
+            document.body.classList.add('bp-modal-open');
+
+            const modalBody = modal.querySelector('.modal-body');
+            if (modalBody) {
+                modalBody.style.maxHeight = '100%';
+            }
+        }
+
+        function hideRulesModal(modalID) {
+            const modal = document.getElementById(modalID);
+
+            if (!modal) {
+                return;
+            }
+
+            modal.classList.remove('is-open', 'show');
+            modal.setAttribute('aria-hidden', 'true');
+            modal.removeAttribute('aria-modal');
+
+            if (!document.querySelector('.modal.is-open')) {
+                document.body.classList.remove('bp-modal-open');
+            }
+        }
 
         $("#searchCountryList").on('propertychange change keyup paste input', function () {
             searchCountryList($("#searchCountryList").val());
@@ -413,13 +463,13 @@
                     resetGeoModal();
                     $("#geoRuleID").val(ruleID);
                     loadGeoRule(ruleID);
-                    $('#geoModal').modal('show');
+                    showRulesModal('geoModal');
                     break;
                 case "device":
                     resetDeviceModal();
                     $("#deviceRuleID").val(ruleID);
                     loadDeviceRule(ruleID);
-                    $('#deviceModal').modal('show');
+                    showRulesModal('deviceModal');
                     break;
             }
         }
@@ -591,7 +641,7 @@
                 success: function () {
                     const shouldSavePredefined = $("#geoShouldSavePredefined").is(":checked");
                     const finalize = function () {
-                        $("#geoModal").modal("hide");
+                        hideRulesModal("geoModal");
                         location.reload();
                     };
 
@@ -637,7 +687,7 @@
                 success: function () {
                     const shouldSavePredefined = $("#deviceShouldSavePredefined").is(":checked");
                     const finalize = function () {
-                        $("#deviceModal").modal("hide");
+                        hideRulesModal("deviceModal");
                         location.reload();
                     };
 
@@ -725,7 +775,7 @@
                 success: function () {
                     const shouldSavePredefined = $("#geoShouldSavePredefined").is(":checked");
                     const finalize = function () {
-                        $("#geoModal").modal("hide");
+                        hideRulesModal("geoModal");
                         location.reload();
                     };
 
@@ -786,7 +836,7 @@
                 success: function () {
                     const shouldSavePredefined = $("#deviceShouldSavePredefined").is(":checked");
                     const finalize = function () {
-                        $("#deviceModal").modal("hide");
+                        hideRulesModal("deviceModal");
                         location.reload();
                     };
 
@@ -1092,11 +1142,6 @@
             }
         }
 
-        $('.modal-dialog').draggable();
-
-        $('#geoModal').on('show.bs.modal', function () {
-            $(this).find('.modal-body').css({ 'max-height': '100%' });
-        });
     </script>
     @include('layouts.partials.sortable-table-script')
 @endsection
