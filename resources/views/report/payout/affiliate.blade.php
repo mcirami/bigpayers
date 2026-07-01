@@ -27,8 +27,7 @@
     </table>
 @endsection
 @section('extra')
-    <div id="apptwo">
-
+    <div id="payout-history">
         <section class="bp-card value_span8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -39,249 +38,278 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table-bordered  table_01">
-                <thead>
-                <tr>
-                    <th>Week range</th>
-                    <th>Revenue</th>
-                    <th>Bonuses</th>
-                    <th>Referrals</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                @foreach($historyReport as $row)
-                    @if(!empty($row))
-                        <tr>
-                            <td>{{$row["start_of_week"]}} - {{$row["end_of_week"]}}</td>
-                            <td>{{$row['revenue']}}</td>
-                            <td>{{$row['bonuses']}}</td>
-                            <td>{{$row['referrals']}}</td>
-                            <td>
-                                <button v-if="this.activeIds.indexOf({{$row['id']}}) == -1"
-                                        class="bp-action-link"
-                                        @click="fetchHistoryReport('{{$row['start_of_week']}}', '{{$row['end_of_week']}}', {{$row['id']}})">
-                                    Expand
-                                </button>
-
-                                <button v-if="this.activeIds.indexOf({{$row['id']}}) > -1"
-                                        class="bp-action-link"
-                                        @click="deActiveReport({{$row['id']}})">Minimize
-                                </button>
-
-                            </td>
-                            <td>
-                                <a class="bp-action-link"
-                                   :href="'/report/payout/pdf?d_from={{$row['start_of_week']}}&d_to={{$row['end_of_week']}}&adminLogin'">Download</a>
-                            </td>
-                        </tr>
-
-
-                        <tr v-if="this.activeIds.indexOf({{$row['id']}}) > -1 " class="">
-                            <td></td>
-                            <td><b>Type</b></td>
-                            <td><b>Notes</b></td>
-                            <td><b>Revenue</b></td>
-                            <td><b>Date Achieved</b></td>
-                            <td></td>
-                        </tr>
-
-
-                        {{--Detailed Offer Report for Week Range--}}
-                        <tr v-if="this.activeIds.indexOf({{$row['id']}}) > -1 " class="">
-                            <td></td>
-                            <td>Offer Breakdown</td>
-                        </tr>
-
-                        {{--Detailed Offer Report for Week Range--}}
-                        <tr v-if="this.activeIds.indexOf({{$row['id']}}) > -1 " class="">
-                            <td>
-                            </td>
-                            <td>
-                                <table class="table table-sm table-striped table-bordered  table_01">
-                                    <thead>
-                                    <tr>
-                                        <th class="value_span9">ID</th>
-                                        <th class="value_span9">Name</th>
-                                        <th class="value_span9">Raw</th>
-                                        <th class="value_span9">Unique</th>
-                                        <th class="value_span9">FreeSignUps</th>
-                                        <th class="value_span9">Pending Conversions</th>
-                                        <th class="value_span9">Conversions</th>
-                                        <th class="value_span9">Revenue</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    <tr v-for="(row, key) in this.reportData[{{$row['id']}}].offerReport">
-                                        <td v-text="row.idoffer"></td>
-                                        <td v-text="row.offer_name"></td>
-                                        <td v-text="row.Clicks"></td>
-                                        <td v-text="row.UniqueClicks"></td>
-                                        <td v-text="row.FreeSignUps"></td>
-                                        <td v-text="row.PendingConversions"></td>
-                                        <td v-text="row.Conversions"></td>
-                                        <td v-text="row.Revenue"></td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-
-                        {{--Total Offer Revenue--}}
-                        <template v-if="this.activeIds.indexOf({{$row['id']}}) > -1 ">
-                            <tr class="tr_row_space">
-                                <td></td>
-                                <td>Total Offer Revenue</td>
-                                <td></td>
-                                <td v-text="this.reportData[{{$row['id']}}].offer_revenue"></td>
-                                <td></td>
-                            </tr>
-                        </template>
-
-
-                        {{-- Salary --}}
-                        <template v-if="this.activeIds.indexOf({{$row['id']}}) > -1 ">
-
-                            <tr v-for="(salary, key) in this.reportData[{{$row['id']}}].salary"
-                                :class="{ tr_row_space: key == 'total' }">
-                                <td></td>
-                                <template v-if="salary.reason != undefined">
-                                    <td>Salary</td>
-                                    <td>@{{salary.reason}}</td>
-                                    <td>@{{salary.payout}}</td>
-                                    <td>@{{salary.timestamp}}</td>
-                                </template>
-
-                                <template v-if="key == 'total'">
-                                    <td>Total Salary</td>
-                                    <td></td>
-                                    <td>@{{salary}}</td>
-                                    <td></td>
-                                </template>
-                                <td></td>
-                                <td></td>
-                            </tr>
-
-                        </template>
-
-
-
-                        {{-- Bonuses --}}
-                        <template v-if="this.activeIds.indexOf({{$row['id']}}) > -1 ">
-                            <tr v-for="(bonus, key) in this.reportData[{{$row['id']}}].bonuses"
-                                :class="{ tr_row_space: key == 'total' }">
-                                <td></td>
-                                <template v-if="bonus.name != undefined">
-                                    <td>Bonus</td>
-                                    <td>@{{bonus.name}}</td>
-                                    <td>@{{bonus.payout}}</td>
-                                    <td>@{{bonus.timestamp}}</td>
-                                </template>
-                                <template v-if="key == 'total'">
-                                    <td>Bonus Total</td>
-                                    <td></td>
-                                    <td>@{{bonus}}</td>
-                                    <td></td>
-                                </template>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </template>
-
-
-
-                        {{-- Referral Revenue --}}
-                        <template v-if="this.activeIds.indexOf({{$row['id']}}) > -1 ">
-                            <tr v-for="(ref, key) in this.reportData[{{$row['id']}}].referrals"
-                                :class="{ tr_row_space: key == 'total' }">
-                                <td></td>
-                                <template v-if="ref.user_name != undefined">
-                                    <td>Referral</td>
-                                    <td>@{{ref.user_name}}</td>
-                                    <td>@{{ref.Referral_Revenue}}</td>
-                                    <td></td>
-                                </template>
-                                <template v-if="key == 'total'">
-                                    <td>Total Referral Revenue</td>
-                                    <td></td>
-                                    <td>@{{ref}}</td>
-                                    <td></td>
-                                </template>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </template>
-
-
-
-
-                        {{-- Deductions --}}
-                        <template v-if="this.activeIds.indexOf({{$row['id']}}) > -1 ">
-                            <tr v-for="item in this.reportData[{{$row['id']}}].deductions">
-                                <td></td>
-                                <td>Deduction</td>
-                                <td></td>
-                                <td v-text="item"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </template>
-
-                        {{-- Net --}}
-                        <template v-if="this.activeIds.indexOf({{$row['id']}}) > -1 ">
+                <table class="table table-striped table-bordered table_01">
+                    <thead>
+                    <tr>
+                        <th>Week range</th>
+                        <th>Revenue</th>
+                        <th>Bonuses</th>
+                        <th>Referrals</th>
+                        <th>Actions</th>
+                        <th>Download</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($historyReport as $row)
+                        @if(!empty($row))
                             <tr>
-                                <td></td>
-                                <td>Net</td>
-                                <td></td>
-                                <td v-text="this.reportData[{{$row['id']}}].net"></td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <td>{{$row["start_of_week"]}} - {{$row["end_of_week"]}}</td>
+                                <td>{{$row['revenue']}}</td>
+                                <td>{{$row['bonuses']}}</td>
+                                <td>{{$row['referrals']}}</td>
+                                <td>
+                                    <button type="button"
+                                            class="bp-action-link"
+                                            data-history-expand
+                                            data-row-id="{{$row['id']}}"
+                                            data-start-date="{{$row['start_of_week']}}"
+                                            data-end-date="{{$row['end_of_week']}}">
+                                        Expand
+                                    </button>
+                                    <button type="button"
+                                            class="bp-action-link"
+                                            data-history-collapse="{{$row['id']}}"
+                                            hidden>
+                                        Minimize
+                                    </button>
+                                </td>
+                                <td>
+                                    <a class="bp-action-link"
+                                       href="/report/payout/pdf?d_from={{$row['start_of_week']}}&d_to={{$row['end_of_week']}}&adminLogin">Download</a>
+                                </td>
                             </tr>
-                        </template>
-
-                    @endif
-                @endforeach
-                </tbody>
-            </table>
+                            <tr data-history-details="{{$row['id']}}" hidden>
+                                <td colspan="6">
+                                    <div class="bp-table-meta">Loading payout details...</div>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                    </tbody>
+                </table>
             </div>
         </section>
     </div>
-
-
-
 @endsection
 @section('footer')
     <script type="text/javascript" defer>
-        new Vue({
-            'el': '#apptwo',
-            data: {
-                reportData: [],
-                activeIds: []
-            },
-            methods: {
-                fetchHistoryReport(startDate, endDate, rowId) {
-                    let payout = axios.get('/report/payout?d_from=' + startDate + '&d_to=' + endDate + '&adminLogin');
-                    let offer = axios.get('/report/offer?d_from=' + startDate + '&d_to=' + endDate + '&adminLogin');
+        (function () {
+            const history = document.getElementById('payout-history');
+            const reportCache = {};
 
-                    axios.all([payout, offer])
-                        .then(
-                            axios.spread((payoutData, offerData) => {
-                                this.reportData[rowId] = payoutData.data;
-                                this.reportData[rowId].offerReport = offerData.data;
-                                this.activeIds.push(rowId);
-                            })
-                        ).catch(err => console.log(err));
+            if (!history) {
+                return;
+            }
 
-                },
+            function detailRow(rowId) {
+                return history.querySelector('[data-history-details="' + rowId + '"]');
+            }
 
-                deActiveReport(id) {
-                    this.activeIds.splice(this.activeIds.indexOf(id), 1);
+            function collapseButton(rowId) {
+                return history.querySelector('[data-history-collapse="' + rowId + '"]');
+            }
+
+            function showRow(rowId, show) {
+                const row = detailRow(rowId);
+                const collapse = collapseButton(rowId);
+                const expand = history.querySelector('[data-history-expand][data-row-id="' + rowId + '"]');
+
+                if (row) {
+                    row.hidden = !show;
                 }
 
+                if (expand) {
+                    expand.hidden = show;
+                }
 
+                if (collapse) {
+                    collapse.hidden = !show;
+                }
             }
-        });
+
+            function appendCell(row, value) {
+                const cell = document.createElement('td');
+                cell.textContent = value == null ? '' : value;
+                row.appendChild(cell);
+            }
+
+            function appendSummaryRow(body, label, value) {
+                const row = document.createElement('tr');
+                row.className = 'tr_row_space';
+                appendCell(row, '');
+                appendCell(row, label);
+                appendCell(row, '');
+                appendCell(row, value);
+                appendCell(row, '');
+                body.appendChild(row);
+            }
+
+            function appendDetailRow(body, type, notes, revenue, date) {
+                const row = document.createElement('tr');
+                appendCell(row, '');
+                appendCell(row, type);
+                appendCell(row, notes);
+                appendCell(row, revenue);
+                appendCell(row, date);
+                body.appendChild(row);
+            }
+
+            function appendMappedRows(body, items, detailKey, labels) {
+                Object.entries(items || {}).forEach(function ([key, item]) {
+                    if (key === 'total') {
+                        appendSummaryRow(body, labels.total, item);
+                        return;
+                    }
+
+                    if (item && item[detailKey] !== undefined) {
+                        appendDetailRow(body, labels.type, item[detailKey], item[labels.amountKey], item.timestamp || '');
+                    }
+                });
+            }
+
+            function renderOfferTable(offerReport) {
+                const table = document.createElement('table');
+                const head = document.createElement('thead');
+                const body = document.createElement('tbody');
+                const header = document.createElement('tr');
+
+                table.className = 'table table-sm table-striped table-bordered table_01';
+                ['ID', 'Name', 'Raw', 'Unique', 'FreeSignUps', 'Pending Conversions', 'Conversions', 'Revenue'].forEach(function (label) {
+                    const cell = document.createElement('th');
+                    cell.className = 'value_span9';
+                    cell.textContent = label;
+                    header.appendChild(cell);
+                });
+
+                (offerReport || []).forEach(function (offer) {
+                    const row = document.createElement('tr');
+                    appendCell(row, offer.idoffer);
+                    appendCell(row, offer.offer_name);
+                    appendCell(row, offer.Clicks);
+                    appendCell(row, offer.UniqueClicks);
+                    appendCell(row, offer.FreeSignUps);
+                    appendCell(row, offer.PendingConversions);
+                    appendCell(row, offer.Conversions);
+                    appendCell(row, offer.Revenue);
+                    body.appendChild(row);
+                });
+
+                head.appendChild(header);
+                table.appendChild(head);
+                table.appendChild(body);
+
+                return table;
+            }
+
+            function renderReport(data) {
+                const wrapper = document.createElement('div');
+                const table = document.createElement('table');
+                const head = document.createElement('thead');
+                const header = document.createElement('tr');
+                const body = document.createElement('tbody');
+                const offerRow = document.createElement('tr');
+                const offerTableCell = document.createElement('td');
+
+                table.className = 'table table-striped table-bordered table_01';
+                ['Type', 'Notes', 'Revenue', 'Date Achieved', ''].forEach(function (label) {
+                    const cell = document.createElement('th');
+                    cell.textContent = label;
+                    header.appendChild(cell);
+                });
+
+                appendCell(offerRow, 'Offer Breakdown');
+                offerTableCell.colSpan = 4;
+                offerTableCell.appendChild(renderOfferTable(data.offerReport));
+                offerRow.appendChild(offerTableCell);
+                body.appendChild(offerRow);
+
+                appendSummaryRow(body, 'Total Offer Revenue', data.offer_revenue);
+                appendMappedRows(body, data.salary, 'reason', {
+                    type: 'Salary',
+                    total: 'Total Salary',
+                    amountKey: 'payout'
+                });
+                appendMappedRows(body, data.bonuses, 'name', {
+                    type: 'Bonus',
+                    total: 'Bonus Total',
+                    amountKey: 'payout'
+                });
+                appendMappedRows(body, data.referrals, 'user_name', {
+                    type: 'Referral',
+                    total: 'Total Referral Revenue',
+                    amountKey: 'Referral_Revenue'
+                });
+
+                Object.values(data.deductions || {}).forEach(function (item) {
+                    appendDetailRow(body, 'Deduction', '', item, '');
+                });
+
+                appendSummaryRow(body, 'Net', data.net);
+
+                head.appendChild(header);
+                table.appendChild(head);
+                table.appendChild(body);
+                wrapper.appendChild(table);
+
+                return wrapper;
+            }
+
+            function setRowContent(rowId, content) {
+                const row = detailRow(rowId);
+
+                if (!row) {
+                    return;
+                }
+
+                row.cells[0].replaceChildren(content);
+            }
+
+            async function fetchHistoryReport(startDate, endDate, rowId) {
+                if (reportCache[rowId]) {
+                    setRowContent(rowId, renderReport(reportCache[rowId]));
+                    showRow(rowId, true);
+                    return;
+                }
+
+                showRow(rowId, true);
+
+                const query = '?d_from=' + encodeURIComponent(startDate) + '&d_to=' + encodeURIComponent(endDate) + '&adminLogin';
+                const [payoutResponse, offerResponse] = await Promise.all([
+                    fetch('/report/payout' + query, {headers: {'X-Requested-With': 'XMLHttpRequest'}}),
+                    fetch('/report/offer' + query, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+                ]);
+
+                if (!payoutResponse.ok || !offerResponse.ok) {
+                    throw new Error('Unable to load payout history.');
+                }
+
+                const data = await payoutResponse.json();
+                data.offerReport = await offerResponse.json();
+                reportCache[rowId] = data;
+                setRowContent(rowId, renderReport(data));
+            }
+
+            history.addEventListener('click', function (event) {
+                const expand = event.target.closest('[data-history-expand]');
+                const collapse = event.target.closest('[data-history-collapse]');
+
+                if (expand) {
+                    event.preventDefault();
+                    fetchHistoryReport(expand.dataset.startDate, expand.dataset.endDate, expand.dataset.rowId)
+                        .catch(function (error) {
+                            const message = document.createElement('div');
+                            message.className = 'bp-table-meta';
+                            message.textContent = error.message;
+                            setRowContent(expand.dataset.rowId, message);
+                        });
+                    return;
+                }
+
+                if (collapse) {
+                    event.preventDefault();
+                    showRow(collapse.dataset.historyCollapse, false);
+                }
+            });
+        })();
     </script>
 @endsection
