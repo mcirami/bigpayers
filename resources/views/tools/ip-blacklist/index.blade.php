@@ -50,7 +50,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01 large_table" id="mainTable">
+                <table class="table table-striped table_01 large_table" id="mainTable" data-sortable-table data-sort-default="3:desc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -90,10 +90,5 @@
 @endsection
 
 @section('footer')
-    <script>
-        $('#mainTable').tablesorter({
-            sortList: [[3, 1]],
-            widgets: ['staticRow']
-        });
-    </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

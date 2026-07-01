@@ -22,7 +22,7 @@
 @endsection
 
 @section('table')
-    <table id="mainTable" class="table table-bordered table_01 tablesorter">
+    <table id="mainTable"  data-sortable-table data-sort-default="1:desc" class="table table-bordered table_01">
         <thead>
         <tr>
             <th class="value_span9">Click</th>
@@ -57,16 +57,4 @@
     <div class="mt-4 bp-legacy-pagination">
         {{ $report->withQueryString()->links() }}
     </div>
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter(
-                {
-                    sortList: [[1, 1]],
-                    widgets: ['staticRow']
-                });
-        });
-    </script>
 @endsection

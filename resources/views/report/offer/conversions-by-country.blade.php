@@ -18,7 +18,7 @@
 @endsection
 
 @section('table')
-	<table class="table table-bordered table_01 tablesorter" id="mainTable">
+	<table  id="mainTable" data-sortable-table data-sort-default="3:desc" class="table table-bordered table_01">
 		<thead>
 
 		<tr>
@@ -42,18 +42,4 @@
 		@endif
 		</tbody>
 	</table>
-@endsection
-
-
-@section('footer')
-    <script type="text/javascript">
-
-		$(document).ready(function () {
-			$('#mainTable').tablesorter(
-				{
-					sortList: [[3, 1]],
-					widgets: ['staticRow'],
-				});
-		});
-    </script>
 @endsection

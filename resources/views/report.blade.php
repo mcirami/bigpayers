@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', $title)
 
 @section('content')
@@ -46,7 +38,7 @@
 
         <section class="bp-card value_span8">
             <div class="bp-report-table-wrap">
-                <table class="table table-bordered table_01 tablesorter" id="mainTable">
+                <table class="table table-bordered table_01" id="mainTable" data-sortable-table data-sort-default="6:desc">
                     <thead>
                     <tr>
                         @foreach($tableHeaders as $header)
@@ -70,13 +62,5 @@
 @endsection
 
 @section('footer')
-    <script type="text/javascript">
-		$(document).ready(function () {
-			$("#mainTable").tablesorter(
-				{
-					sortList: [[6, 1]],
-					widgets: ['staticRow']
-				});
-		});
-    </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

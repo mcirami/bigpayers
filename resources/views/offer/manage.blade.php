@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Offers')
 
 @section('content')
@@ -49,7 +41,7 @@
                     <div class="bp-report-toolbar w-full">
                         <div class="bp-select-group">
                             <label class="value_span9" for="offer_url">Offer URLs</label>
-                            <select onchange="handleSelect(this);" class="selectBox" id="offer_url" name="offer_url">
+                            <select class="selectBox" id="offer_url" name="offer_url">
                                 @for ($i = 0; $i < count($urls); $i++)
                                     <option value="{{ $i }}" {{ \App\Support\RequestContext::query('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
                                 @endfor
@@ -84,11 +76,15 @@
                     <p class="bp-section-kicker">Offer Directory</p>
                     <h3 class="bp-section-title value_span9">Searchable offer table</h3>
                 </div>
-                <p class="text-sm text-slate-500">Table sorting and pagination are still powered by the legacy scripts underneath.</p>
+                <p class="text-sm text-slate-500">Search, copy, request, and sort offers directly from this table.</p>
+            </div>
+
+            <div id="offerManageStatus" class="bp-toast bp-toast-info hidden mt-4">
+                <p class="bp-toast-title"></p>
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-condensed table-bordered table_01 bp-offer-manage-table" id="mainTable">
+                <table class="table table-condensed table-bordered table_01 bp-offer-manage-table" id="mainTable" data-sortable-table data-sort-default="1:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -125,7 +121,7 @@
                                 <td>{{ $offer->campaign_name }}</td>
                                 <td>Requires Offer</td>
                                 <td>
-                                    <button id="btn_{{ $offer->idoffer }}" class="bp-action-link" onclick="requestOffer({{ $offer->idoffer }})">
+                                    <button id="btn_{{ $offer->idoffer }}" class="bp-action-link" data-request-offer="{{ $offer->idoffer }}">
                                         Request Offer
                                     </button>
                                 </td>
@@ -143,49 +139,8 @@
 
 @section('footer')
     <script type="text/javascript">
-        const adminLoginSuffix = @json(\App\Support\RequestContext::hasQuery('adminLogin') ? '&adminLogin' : '');
-
-        function handleSelect(elm) {
-            window.location = "/{{ \App\Support\RequestContext::path() }}?url=" + elm.value + adminLoginSuffix;
-        }
-
-        function requestOffer(id) {
-            $("#btn_" + id).attr('disabled', true);
-
-            $.ajax({
-                url: "/offer/" + id + "/request?" + adminLoginSuffix.replace(/^&/, ""),
-                success: function () {
-                    $.notify(
-                        {
-                            title: "Successfully",
-                            message: " requested offer!"
-                        },
-                        {
-                            placement: { from: "top", align: "center" },
-                            type: "info",
-                            animate: { enter: "animated fadeInDown", exit: "animated fadeOutUp" }
-                        }
-                    );
-                },
-                error: function () {
-                    $("#btn_" + id).attr('disabled', false);
-
-                    $.notify(
-                        {
-                            title: "Failed to request offer!",
-                            message: " Please try again later or contact an admin."
-                        },
-                        {
-                            placement: { from: "top", align: "center" },
-                            type: "danger",
-                            animate: { enter: "animated fadeInDown", exit: "animated fadeOutUp" }
-                        }
-                    );
-                }
-            });
-        }
-
-        $(document).ready(function () {
+        (() => {
+            const adminLoginSuffix = @json(\App\Support\RequestContext::hasQuery('adminLogin') ? '&adminLogin=1' : '');
             const userType = {{ (int) $sessionUserType }};
             const canCreateOffers = @json($canCreateOffers);
             const canEditAffiliates = @json($canEditAffiliates);
@@ -199,6 +154,23 @@
             const paginationContainer = "#pagination";
             const itemsContainer = document.querySelector("#offers_container");
             const searchBox = document.getElementById("searchBox");
+            const offerUrlSelect = document.getElementById("offer_url");
+            const statusBox = document.getElementById("offerManageStatus");
+            const statusText = statusBox ? statusBox.querySelector(".bp-toast-title") : null;
+
+            const showStatus = (message, isError = false) => {
+                if (!statusBox || !statusText) {
+                    return;
+                }
+
+                statusText.textContent = message;
+                statusBox.classList.remove("hidden", "bp-toast-info", "bp-toast-danger");
+                statusBox.classList.add(isError ? "bp-toast-danger" : "bp-toast-info");
+
+                setTimeout(() => {
+                    statusBox.classList.add("hidden");
+                }, 5000);
+            };
 
             function escapeHtml(value) {
                 return String(value ?? "")
@@ -209,13 +181,48 @@
                     .replace(/'/g, "&#039;");
             }
 
-            document.querySelectorAll(".delete_offer").forEach((offer) => {
-                offer.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    const offerID = e.target.dataset.offer;
-                    confirmSendTo("Are you sure you want to delete this offer?", "/offer/" + offerID + "/delete");
+            const confirmSendTo = (message, sendTo) => {
+                if (window.confirm(message)) {
+                    window.location = sendTo;
+                }
+            };
+
+            const requestOffer = async (id, button) => {
+                button.disabled = true;
+
+                try {
+                    const query = adminLoginSuffix ? "?" + adminLoginSuffix.replace(/^&/, "") : "";
+                    const response = await fetch("/offer/" + id + "/request" + query, {
+                        headers: {
+                            "Accept": "application/json",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        credentials: "same-origin"
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Failed to request offer. Please try again later or contact an admin.");
+                    }
+
+                    showStatus("Successfully requested offer.");
+                } catch (error) {
+                    button.disabled = false;
+                    showStatus(error.message || "Failed to request offer. Please try again later or contact an admin.", true);
+                }
+            };
+
+            document.querySelectorAll("[data-request-offer]").forEach((button) => {
+                button.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    requestOffer(button.dataset.requestOffer, button);
                 });
             });
+
+            if (offerUrlSelect) {
+                offerUrlSelect.addEventListener("change", () => {
+                    window.location = "/{{ \App\Support\RequestContext::path() }}?url=" + offerUrlSelect.value + adminLoginSuffix;
+                });
+            }
 
             searchBox.addEventListener("input", (e) => {
                 const userInput = e.target.value.trim().toLowerCase();
@@ -253,7 +260,7 @@
                             : "<span class='bp-table-meta'>Not set</span>";
                         html += "<tr>" +
                             "<td>" + offer.idoffer + "</td>" +
-                            "<td>" + offer.offer_name + "</td>";
+                            "<td>" + escapeHtml(offer.offer_name) + "</td>";
 
                         if (userType === 3) {
                             const affiliatePayout = offer.affiliate_payout !== null && offer.affiliate_payout !== undefined
@@ -269,7 +276,7 @@
                             html += "<td class='value_span10'>" +
                                 "<button data-url='https://" + selectedUrl +
                                 "/?rid=" + sessionUser +
-                                "&oid=" + offer.idoffer + "&s1=' data-toggle='tooltip' title='Copy' class='copy_button bp-action-link'>Copy</button></td>";
+                                "&oid=" + offer.idoffer + "&s1=' class='copy_button bp-action-link'>Copy</button></td>";
                         }
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
@@ -297,17 +304,17 @@
                         }
 
 	                    if (userType === 0) {
-		                    html += "<td class='value_span10'>" + offer.campaign_name + "</td>";
+		                    html += "<td class='value_span10'>" + escapeHtml(offer.campaign_name) + "</td>";
 	                    }
 
                         if (userType === 0) {
                             /*html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";*/
                             html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
-                            html += "<a class='bp-action-link' data-toggle='tooltip' title='Edit Offer' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
-                            html += "<a class='bp-action-link' data-toggle='tooltip' title='Edit Offer Rules' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
-                            html += "<a class='bp-action-link' data-toggle='tooltip' title='View Offer' href='/offer/view/" + offer.idoffer + "'>View</a>";
-                            html += "<a class='bp-action-link' data-toggle='tooltip' title='Duplicate Offer' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
-                                "<a class='delete_offer bp-action-link value_span11 value_span4' data-toggle='tooltip' data-offer='" + offer.idoffer + "' title='Delete Offer' href='#'>Delete</a>";
+                            html += "<a class='bp-action-link' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
+                            html += "<a class='bp-action-link' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
+                            html += "<a class='bp-action-link' href='/offer/view/" + offer.idoffer + "'>View</a>";
+                            html += "<a class='bp-action-link' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
+                                "<a class='delete_offer bp-action-link value_span11 value_span4' data-offer='" + offer.idoffer + "' href='#'>Delete</a>";
                             html += "</div></td>";
                         }
 
@@ -410,14 +417,12 @@
                         } else {
                             unsecuredCopyToClipboard(url);
                         }
+
+                        showStatus("Tracking link copied.");
                     });
                 });
             }
-
-            $("#mainTable").tablesorter({
-                sortList: [[1, 0]],
-                widgets: ["staticRow"]
-            });
-        });
+        })();
     </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

@@ -1,11 +1,13 @@
 @extends('layouts.dashboard-shell')
 
 @push('head')
-    @include('layouts.partials.report-head-assets')
+    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/bootstrap.min.css">
 @endpush
 
 @push('scripts')
-    @include('layouts.partials.report-script-assets')
+    <script type="text/javascript" src="{{ $webroot }}js/jquery_2.1.3_jquery.min.js"></script>
+    <script type="text/javascript" src="{{ $webroot }}js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="{{ $webroot }}js/bootstrap.min.js"></script>
 @endpush
 
 @section('page-title', 'Offer Rules')
@@ -63,10 +65,10 @@
                 </div>
 
                 <div class="flex flex-wrap gap-3">
-                    <button type="button" class="bp-button-secondary" data-toggle="modal" data-target="#geoModal">
+                    <button type="button" class="bp-button-secondary" data-open-modal="geoModal">
                         Add geo rule
                     </button>
-                    <button type="button" class="bp-button-secondary" data-toggle="modal" data-target="#deviceModal">
+                    <button type="button" class="bp-button-secondary" data-open-modal="deviceModal">
                         Add device rule
                     </button>
                     <a class="bp-button-secondary" href="/offer/rules/{{ $offer->idoffer }}/none-unique/create">Add none-unique rule</a>
@@ -74,7 +76,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table id="rules" class="table table-bordered table_01 tablesorter bp-rules-table">
+                <table id="rules" class="table table-bordered table_01 bp-rules-table" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">Rule</th>
@@ -97,7 +99,7 @@
         <div class="modal-dialog modal-lg bp-rules-modal" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-close-modal="geoModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="geoRuleTitle">New Geo Rule</h4>
@@ -207,7 +209,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="geoCancelButton" type="button" class="bp-button-secondary" data-dismiss="modal">Cancel</button>
+                    <button id="geoCancelButton" type="button" class="bp-button-secondary" data-close-modal="geoModal">Cancel</button>
                     <button id="geoCreateButton" type="button" class="bp-button-primary">Create</button>
                     <button id="geoUpdateButton" type="button" class="bp-button-primary" style="display:none;">Update</button>
                 </div>
@@ -219,7 +221,7 @@
         <div class="modal-dialog modal-lg bp-rules-modal" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close" data-close-modal="deviceModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="deviceRuleTitle">New Device Rule</h4>
@@ -348,7 +350,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button id="deviceCancelButton" type="button" class="bp-button-secondary" data-dismiss="modal">Cancel</button>
+                    <button id="deviceCancelButton" type="button" class="bp-button-secondary" data-close-modal="deviceModal">Cancel</button>
                     <button id="deviceCreateButton" type="button" class="bp-button-primary">Create</button>
                     <button id="deviceUpdateButton" type="button" class="bp-button-primary" style="display:none;">Update</button>
                 </div>
@@ -376,9 +378,15 @@
             }
         });
 
-        $(document).ready(function () {
-            $("#rules").tablesorter({
-                sortList: [[0, 0]]
+        document.querySelectorAll('[data-open-modal]').forEach((button) => {
+            button.addEventListener('click', () => {
+                $('#' + button.dataset.openModal).modal('show');
+            });
+        });
+
+        document.querySelectorAll('[data-close-modal]').forEach((button) => {
+            button.addEventListener('click', () => {
+                $('#' + button.dataset.closeModal).modal('hide');
             });
         });
 
@@ -1090,4 +1098,5 @@
             $(this).find('.modal-body').css({ 'max-height': '100%' });
         });
     </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

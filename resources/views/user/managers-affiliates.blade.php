@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', $accountTypeLabel . ' Team')
 
 @section('content')
@@ -126,6 +118,10 @@
 
 @section('footer')
     <script type="text/javascript">
+        function adminLogin(id) {
+            window.open('/login/' + id);
+        }
+
         (() => {
             const searchInput = document.getElementById('affiliateSearch');
             const rows = Array.from(document.querySelectorAll('#affiliateRows tr'));

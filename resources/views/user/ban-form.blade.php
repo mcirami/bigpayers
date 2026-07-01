@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', $pageTitle)
 
 @section('content')
@@ -74,8 +66,8 @@
                             class="bp-form-input"
                             id="expires"
                             name="expires"
-                            type="text"
-                            value="{{ old('expires', optional($ban)->expires) }}"
+                            type="date"
+                            value="{{ \Illuminate\Support\Str::substr((string) old('expires', optional($ban)->expires), 0, 10) }}"
                             required
                         >
                     </label>
@@ -105,12 +97,4 @@
             </div>
         </form>
     </div>
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#expires").datepicker({dateFormat: 'yy-mm-dd'});
-        });
-    </script>
 @endsection

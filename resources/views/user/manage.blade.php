@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Users')
 
 @section('content')
@@ -93,11 +85,11 @@
                     <p class="bp-section-kicker">Directory</p>
                     <h3 class="bp-section-title value_span9">Searchable user table</h3>
                 </div>
-                <p class="bp-table-meta">Sorting is still powered by the existing tablesorter scripts while the layout is upgraded.</p>
+                <p class="bp-table-meta">Use search to filter the directory, then sort any column in place.</p>
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01 manage_user_table" id="mainTable">
+                <table class="table table-striped table_01 manage_user_table" id="mainTable" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -116,7 +108,7 @@
 
 @section('footer')
     <script type="text/javascript">
-        $(document).ready(function () {
+        (() => {
             const canEditAffiliates = @json($canEditAffiliates);
             const canCreateAffiliates = @json($canCreateAffiliates);
             const canCreateManagers = @json($canCreateManagers);
@@ -125,7 +117,10 @@
             const users = @json($users);
             const itemsContainer = document.querySelector("#users_container");
             const searchBox = document.getElementById("searchBox");
-            const table = $("#mainTable");
+
+            window.adminLogin = (id) => {
+                window.open('/login/' + id);
+            };
 
             const escapeHtml = (value) => {
                 return String(value ?? '')
@@ -180,7 +175,6 @@
                 }).join('');
 
                 itemsContainer.innerHTML = html;
-                table.trigger("update");
             };
 
             searchBox.addEventListener("input", (event) => {
@@ -194,12 +188,8 @@
                 showUsers(filteredUsers);
             });
 
-            table.tablesorter({
-                sortList: [[0, 0]],
-                widgets: ['staticRow']
-            });
-
             showUsers(users);
-        });
+        })();
     </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

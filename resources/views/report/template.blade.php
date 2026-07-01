@@ -1,11 +1,7 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
 @push('scripts')
-    @include('layouts.partials.report-script-assets')
+    @include('layouts.partials.sortable-table-script')
 @endpush
 
 @php

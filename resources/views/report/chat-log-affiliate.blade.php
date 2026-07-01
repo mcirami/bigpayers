@@ -9,7 +9,7 @@
 @endsection
 
 @section('table')
-        <table class="table table-bordered table_01 tablesorter" id="mainTable">
+        <table  id="mainTable" data-sortable-table data-sort-default="2:desc" class="table table-bordered table_01">
             <thead>
             <tr>
                 @if($sessionUserType !== \App\Privilege::ROLE_AFFILIATE)
@@ -44,19 +44,4 @@
             </tbody>
         </table>
         @include('report.options.pagination')
-@endsection
-
-
-
-
-        @section('footer')
-            <script type="text/javascript">
-                $(document).ready(function() {
-                    $('#mainTable').tablesorter(
-                        {
-                            sortList: [[2, 1]],
-                            widgets: ['staticRow'],
-                        });
-                });
-            </script>
 @endsection

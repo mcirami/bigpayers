@@ -9,7 +9,7 @@
 @endsection
 
 @section('table')
-    <table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+    <table id="clicks"  data-sortable-table class="table table-condensed table-bordered table_01">
         <thead>
         <tr>
             <th class="value_span9">Country</th>

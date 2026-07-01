@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'User Offers')
 
 @section('content')
@@ -96,11 +88,11 @@
                     <p class="bp-section-kicker">Offer Controls</p>
                     <h3 class="bp-section-title value_span9">User offer matrix</h3>
                 </div>
-                <p class="bp-table-meta">Payout changes save on enter or blur, and access toggles continue using the existing AJAX handlers.</p>
+                <p class="bp-table-meta">Payout changes save on enter or blur, and access toggles update immediately.</p>
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01 large_table bp-user-offers-table" id="mainTable">
+                <table class="table table-striped table_01 large_table bp-user-offers-table" id="mainTable" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -213,8 +205,54 @@
 @section('footer')
     <script type="text/javascript">
         (() => {
+            const csrfToken = @json(csrf_token());
             const searchInput = document.getElementById('offerSearch');
             const rows = Array.from(document.querySelectorAll('#userOfferRows tr'));
+            const errorBanner = document.getElementById('error_message');
+            const errorText = errorBanner ? errorBanner.querySelector('p') : null;
+
+            const showError = (message) => {
+                if (!errorBanner || !errorText) {
+                    return;
+                }
+
+                errorText.textContent = message || 'Unable to save this change.';
+                errorBanner.classList.add('active');
+
+                setTimeout(() => {
+                    errorBanner.classList.remove('active');
+                }, 5000);
+            };
+
+            const postJson = async (url, packets) => {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify(packets)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Unable to save this change.');
+                }
+
+                return response.json();
+            };
+
+            const saveOnEnterOrBlur = (input, callback) => {
+                ['keydown', 'focusout'].forEach((eventName) => {
+                    input.addEventListener(eventName, (event) => {
+                        if (eventName === 'keydown' && event.key !== 'Enter') {
+                            return;
+                        }
+
+                        callback(event);
+                    });
+                });
+            };
 
             if (searchInput && rows.length) {
                 searchInput.addEventListener('input', (event) => {
@@ -227,21 +265,129 @@
                 });
             }
 
-            $('#mainTable').tablesorter({
-                sortList: [[0, 0]],
-                widgets: ['staticRow']
+            document.querySelectorAll('.update_aff_payout').forEach((input) => {
+                saveOnEnterOrBlur(input, async (event) => {
+                    const target = event.target;
+                    const payout = target.value.trim();
+
+                    try {
+                        const data = await postJson('/user/change-aff-payout', {
+                            payout: payout,
+                            offer_id: target.dataset.offer,
+                            rep: target.dataset.rep
+                        });
+
+                        if (!data.success) {
+                            showError(data.message);
+                            return;
+                        }
+
+                        const field = target.closest('.bp-custom-payout-field');
+                        const hint = field ? field.querySelector('.bp-custom-payout-hint') : null;
+                        const fallbackDisplay = target.dataset.fallbackDisplay || 'default payout';
+                        const hasCustomPayout = payout !== '';
+
+                        if (field) {
+                            field.classList.toggle('is-custom', hasCustomPayout);
+                            field.classList.toggle('is-fallback', !hasCustomPayout);
+                        }
+
+                        if (hint) {
+                            hint.textContent = hasCustomPayout
+                                ? 'Custom override active'
+                                : `Using fallback: ${fallbackDisplay}`;
+                        }
+
+                        target.classList.add('updated_animation');
+                        setTimeout(() => {
+                            target.classList.remove('updated_animation');
+                        }, 3000);
+                    } catch (error) {
+                        showError(error.message);
+                    }
+                });
             });
 
             document.querySelectorAll('.offer_access_check').forEach((checkbox) => {
-                checkbox.addEventListener('change', (event) => {
-                    const label = event.target.closest('.offer_access');
+                checkbox.addEventListener('change', async (event) => {
+                    const target = event.target;
+                    const label = target.closest('.offer_access');
                     const text = label ? label.querySelector('span') : null;
+                    const offerId = target.dataset.offer;
 
                     if (text) {
-                        text.textContent = event.target.checked ? 'Enabled' : 'Disabled';
+                        text.textContent = target.checked ? 'Enabled' : 'Disabled';
+                    }
+
+                    const packets = {
+                        access: target.checked,
+                        rep: target.dataset.rep,
+                        offer_id: offerId
+                    };
+                    const payoutInput = document.getElementById('offer_' + offerId);
+
+                    if (target.checked && payoutInput) {
+                        packets.payout = payoutInput.value;
+                    }
+
+                    try {
+                        const data = await postJson('/user/update-offer-access', packets);
+
+                        if (!data.success) {
+                            showError(data.message);
+                        }
+                    } catch (error) {
+                        showError(error.message);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.enable_offer_cap').forEach((checkbox) => {
+                checkbox.addEventListener('change', async (event) => {
+                    const target = event.target;
+
+                    try {
+                        const data = await postJson('/user/enable-user-offer-cap', {
+                            offer_id: target.dataset.offer,
+                            rep: target.dataset.rep,
+                            status: target.checked
+                        });
+
+                        if (!data.success) {
+                            showError(data.message);
+                        }
+                    } catch (error) {
+                        showError(error.message);
+                    }
+                });
+            });
+
+            document.querySelectorAll('.user_offer_cap').forEach((input) => {
+                saveOnEnterOrBlur(input, async (event) => {
+                    const target = event.target;
+
+                    try {
+                        const data = await postJson('/user/set-user-offer-cap', {
+                            offer_id: target.dataset.offer,
+                            rep: target.dataset.rep,
+                            cap: target.value
+                        });
+
+                        if (!data.success) {
+                            showError(data.message);
+                            return;
+                        }
+
+                        target.classList.add('updated_animation');
+                        setTimeout(() => {
+                            target.classList.remove('updated_animation');
+                        }, 3000);
+                    } catch (error) {
+                        showError(error.message);
                     }
                 });
             });
         })();
     </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

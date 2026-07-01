@@ -44,7 +44,7 @@
 @endsection
 
 @section('table')
-    <table class="table table-bordered table-striped table_01 tablesorter" id="mainTable">
+    <table  id="mainTable" data-sortable-table class="table table-bordered table-striped table_01">
         <thead>
         <tr>
             <th class="value_span9">ID</th>
@@ -109,22 +109,3 @@
         </circle>
     </svg>
 </div>
-
-@section('footer')
-    <script type="text/javascript">
-		$(document).ready(function() {
-			const loadClick = document.getElementsByClassName('load_click');
-			for (const item of loadClick)
-			{
-				item.addEventListener('click', function() {
-					document.getElementById('loading_spinner').style.display = 'flex';
-				});
-			}
-			$("#mainTable").tablesorter(
-				{
-					sortList: [[Math.max($("#mainTable thead th").length - 1, 0), 1]],
-					widgets: ['staticRow']
-				});
-		});
-    </script>
-@endsection

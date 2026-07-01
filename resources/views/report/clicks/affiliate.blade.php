@@ -37,7 +37,7 @@
 			</form>
 		</div>
 	@endif
-	<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+	<table id="clicks"  data-sortable-table data-sort-default="4:desc" class="table table-condensed table-bordered table_01">
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
@@ -114,35 +114,4 @@
 	</table>
 		{{ $reportCollection->withQueryString()->links() }}
 
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-		$(document).ready(function () {
-
-			$("#clicks")
-
-				// Initialize tablesorter
-				// ***********************
-				.tablesorter({
-					sortList: [[4, 1]],
-					widgets: ['staticRow']
-				})
-
-				// bind to pager events
-				// *********************
-				/*.bind('pagerChange pagerComplete pagerInitialized pageMoved', function(e, c) {
-					var msg = '"</span> event triggered, ' + (e.type === 'pagerChange' ? 'going to' : 'now on') +
-						' page <span class="typ">' + (c.page + 1) + '/' + c.totalPages + '</span>';
-					$('#display')
-					.append('<li><span class="str">"' + e.type + msg + '</li>')
-					.find('li:first').remove();
-				})*/
-
-				// initialize the pager plugin
-				// ****************************
-				//.tablesorterPager(pagerOptions);
-		});
-
-    </script>
 @endsection

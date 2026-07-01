@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Add Referral')
 
 @section('content')
@@ -73,12 +65,12 @@
 
                         <label class="bp-form-field">
                             <span class="bp-form-label">Start Date</span>
-                            <input class="bp-form-input" id="start_date" name="start_date" type="text" value="{{ old('start_date') }}" required>
+                            <input class="bp-form-input" id="start_date" name="start_date" type="date" value="{{ old('start_date') }}" required>
                         </label>
 
                         <label class="bp-form-field">
                             <span class="bp-form-label">End Date</span>
-                            <input class="bp-form-input" id="end_date" name="end_date" type="text" value="{{ old('end_date') }}">
+                            <input class="bp-form-input" id="end_date" name="end_date" type="date" value="{{ old('end_date') }}">
                         </label>
 
                         <label class="bp-form-field">
@@ -108,12 +100,4 @@
             @endif
         </section>
     </div>
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#start_date, #end_date").datepicker({dateFormat: 'yy-mm-dd'});
-        });
-    </script>
 @endsection

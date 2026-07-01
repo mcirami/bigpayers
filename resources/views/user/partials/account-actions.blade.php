@@ -26,6 +26,6 @@
     @endif
 
     @if($showLoginAsUser && isset($managedUser))
-        <a href="#" class="bp-button-primary {{ ($currentWorkspace ?? '') === 'offers' ? 'bp-offer-action-button' : '' }}" onclick="adminLogin({{ $managedUser->idrep }}); return false;">Login as user</a>
+        <a href="/login/{{ $managedUser->idrep }}" target="_blank" rel="noopener" class="bp-button-primary {{ ($currentWorkspace ?? '') === 'offers' ? 'bp-offer-action-button' : '' }}">Login as user</a>
     @endif
 </div>

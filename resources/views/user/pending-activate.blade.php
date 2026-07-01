@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Activate User')
 
 @section('content')
@@ -156,12 +148,12 @@
 
                             <label class="bp-form-field">
                                 <span class="bp-form-label">Start Date</span>
-                                <input class="bp-form-input" id="start_date" name="start_date" type="text" disabled>
+                                <input class="bp-form-input" id="start_date" name="start_date" type="date" disabled>
                             </label>
 
                             <label class="bp-form-field">
                                 <span class="bp-form-label">End Date</span>
-                                <input class="bp-form-input" id="end_date" name="end_date" type="text" disabled>
+                                <input class="bp-form-input" id="end_date" name="end_date" type="date" disabled>
                             </label>
 
                             <label class="bp-form-field bp-form-field-full">
@@ -183,14 +175,22 @@
 
 @section('footer')
     <script type="text/javascript">
-        $(document).ready(function () {
-            $("#start_date, #end_date").datepicker({dateFormat: 'yy-mm-dd'});
+        (() => {
+            const enableReferral = document.getElementById('enable_referral');
+            const referralFields = document.getElementById('referral_fields');
+            const controlledFields = document.querySelectorAll('#referral_user_id, #referral_type, #start_date, #end_date, #amount');
 
-            $("#enable_referral").on("change", function () {
-                const enabled = $(this).is(":checked");
-                $("#referral_fields").stop(true, true)[enabled ? "slideDown" : "slideUp"]("fast");
-                $("#referral_user_id, #referral_type, #start_date, #end_date, #amount").prop("disabled", !enabled);
+            if (!enableReferral || !referralFields) {
+                return;
+            }
+
+            enableReferral.addEventListener('change', () => {
+                const enabled = enableReferral.checked;
+                referralFields.style.display = enabled ? '' : 'none';
+                controlledFields.forEach((field) => {
+                    field.disabled = !enabled;
+                });
             });
-        });
+        })();
     </script>
 @endsection

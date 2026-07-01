@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', 'Referral Settings')
 
 @section('content')
@@ -72,7 +64,7 @@
                 </div>
 
                 <div class="mt-6 bp-report-table-wrap">
-                    <table class="table table-bordered table-striped table_01 tablesorter" id="referralTable">
+                    <table class="table table-bordered table-striped table_01" id="referralTable" data-sortable-table data-sort-default="0:asc">
                         <thead>
                         <tr>
                             <th class="value_span9">{{ $affiliateTypeLabel }}</th>
@@ -131,12 +123,12 @@
 
                             <label class="bp-form-field">
                                 <span class="bp-form-label">Start Date</span>
-                                <input class="bp-form-input" id="start_date" name="start_date" type="text" value="{{ $defaultReferral->start_date }}" required>
+                                <input class="bp-form-input" id="start_date" name="start_date" type="date" value="{{ \Illuminate\Support\Str::substr((string) $defaultReferral->start_date, 0, 10) }}" required>
                             </label>
 
                             <label class="bp-form-field">
                                 <span class="bp-form-label">End Date</span>
-                                <input class="bp-form-input" id="end_date" name="end_date" type="text" value="{{ $defaultReferral->end_date === '3000-01-01' ? '' : $defaultReferral->end_date }}">
+                                <input class="bp-form-input" id="end_date" name="end_date" type="date" value="{{ $defaultReferral->end_date === '3000-01-01' ? '' : \Illuminate\Support\Str::substr((string) $defaultReferral->end_date, 0, 10) }}">
                             </label>
 
                             <label class="bp-form-field">
@@ -178,16 +170,11 @@
 @endsection
 
 @section('footer')
+    @include('layouts.partials.sortable-table-script')
     <script type="text/javascript">
         (() => {
             const referralMap = @json($referrals->keyBy('aff_id'));
             const rows = Array.from(document.querySelectorAll('.js-load-referral'));
-
-            $("#start_date, #end_date").datepicker({dateFormat: 'yy-mm-dd'});
-            $('#referralTable').tablesorter({
-                sortList: [[0, 0]],
-                widgets: ['staticRow']
-            });
 
             const loadReferral = (affiliateId) => {
                 const referral = referralMap[String(affiliateId)];
@@ -197,8 +184,8 @@
 
                 document.getElementById('affid').value = referral.aff_id;
                 document.getElementById('selected_affiliate_name').value = referral.user_name;
-                document.getElementById('start_date').value = referral.start_date || '';
-                document.getElementById('end_date').value = referral.end_date === '3000-01-01' ? '' : (referral.end_date || '');
+                document.getElementById('start_date').value = (referral.start_date || '').slice(0, 10);
+                document.getElementById('end_date').value = referral.end_date === '3000-01-01' ? '' : (referral.end_date || '').slice(0, 10);
                 document.getElementById('referral_type').value = referral.referral_type;
                 document.getElementById('amount').value = referral.payout;
                 document.getElementById('is_active').value = Number(referral.is_active) === 1 ? 'active' : 'unactive';

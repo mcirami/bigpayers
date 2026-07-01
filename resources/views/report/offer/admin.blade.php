@@ -22,7 +22,7 @@
 @endsection
 
 @section('table')
-    <table class="table table-bordered table_01 tablesorter" id="mainTable">
+    <table  id="mainTable" data-sortable-table data-sort-default="5:desc" class="table table-bordered table_01">
         <thead>
 
         <tr>
@@ -51,15 +51,4 @@
 
         </tbody>
     </table>
-@endsection
-@section('footer')
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#mainTable").tablesorter(
-                {
-                    sortList: [[5, 1]],
-                    widgets: ['staticRow']
-                });
-        });
-    </script>
 @endsection

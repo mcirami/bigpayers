@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    @include('layouts.partials.report-head-assets')
-@endpush
-
-@push('scripts')
-    @include('layouts.partials.report-script-assets')
-@endpush
-
 @section('page-title', $pageTitle)
 
 @section('content')
@@ -259,12 +251,12 @@
 
                             <label class="bp-form-field">
                                 <span class="bp-form-label">Start Date</span>
-                                <input class="bp-form-input" id="start_date" name="start_date" type="text" value="{{ old('start_date') }}">
+                                <input class="bp-form-input" id="start_date" name="start_date" type="date" value="{{ old('start_date') }}">
                             </label>
 
                             <label class="bp-form-field">
                                 <span class="bp-form-label">End Date</span>
-                                <input class="bp-form-input" id="end_date" name="end_date" type="text" value="{{ old('end_date') }}">
+                                <input class="bp-form-input" id="end_date" name="end_date" type="date" value="{{ old('end_date') }}">
                             </label>
 
                             <label class="bp-form-field bp-form-field-full">
@@ -342,7 +334,7 @@
                     </div>
 
                     <div class="mt-6 bp-report-table-wrap">
-                        <table class="table table-striped table_01 large_table" id="subIdTable">
+                        <table class="table table-striped table_01 large_table" id="subIdTable" data-sortable-table>
                             <thead>
                             <tr>
                                 <th class="value_span9">Sub ID</th>
@@ -387,7 +379,6 @@
             const subIdSearch = document.getElementById('subIdSearch');
             const subIdContainer = document.getElementById('subid_content');
             const subIdStatus = document.getElementById('subid_status');
-            const subIdTable = $('#subIdTable');
             const managedUserId = @json((int) ($managedUser->idrep ?? 0));
             const affiliateRole = @json(\App\Privilege::ROLE_AFFILIATE);
             let subIds = [];
@@ -467,8 +458,6 @@
                 referralToggle.addEventListener('change', refreshReferralPanel);
             }
 
-            $("#start_date, #end_date").datepicker({dateFormat: 'yy-mm-dd'});
-
             const setSubIdMessage = (message = '', isError = true) => {
                 if (!subIdStatus) {
                     return;
@@ -493,9 +482,6 @@
                             <td colspan="3"><span class="bp-table-empty">No sub IDs matched this search.</span></td>
                         </tr>
                     `;
-                    if (subIdTable.length) {
-                        subIdTable.trigger('update');
-                    }
                     return;
                 }
 
@@ -530,10 +516,6 @@
                         </tr>
                     `;
                 }).join('');
-
-                if (subIdTable.length) {
-                    subIdTable.trigger('update');
-                }
             };
 
             const filterSubIds = () => {
@@ -620,13 +602,6 @@
                     .then((payload) => {
                         subIds = Array.isArray(payload) ? payload : [];
                         filterSubIds();
-
-                        if (subIdTable.length) {
-                            subIdTable.tablesorter({
-                                sortList: [[0, 0]],
-                                widgets: ['staticRow']
-                            });
-                        }
                     })
                     .catch(() => {
                         subIdContainer.innerHTML = `
@@ -643,4 +618,5 @@
             refreshReferralPanel();
         })();
     </script>
+    @include('layouts.partials.sortable-table-script')
 @endsection

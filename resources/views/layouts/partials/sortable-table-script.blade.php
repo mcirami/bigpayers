@@ -50,6 +50,10 @@
             const defaultSort = (table.dataset.sortDefault || '').split(':');
 
             headers.forEach((header, index) => {
+                if (header.dataset.sorter === 'false') {
+                    return;
+                }
+
                 header.tabIndex = 0;
                 header.style.cursor = 'pointer';
                 header.title = 'Sort column';

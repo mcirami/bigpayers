@@ -26,7 +26,7 @@
 			</form>
 		</div>
 	@endif
-	<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+	<table id="clicks"  data-sortable-table data-sort-default="2:desc" class="table table-condensed table-bordered table_01">
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
@@ -72,21 +72,4 @@
 	</table>
 	{{ $reportCollection->links() }}
 
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-		$(document).ready(function () {
-
-			$("#clicks")
-
-				// Initialize tablesorter
-				// ***********************
-				.tablesorter({
-					sortList: [[2, 1]],
-					widgets: ['staticRow']
-				})
-		});
-
-    </script>
 @endsection

@@ -20,7 +20,7 @@
 @endsection
 
 @section('table')
-	<table id="clicks" class="table table-condensed table-bordered table_01 tablesorter">
+	<table id="clicks"  data-sortable-table data-sort-default="3:desc" class="table table-condensed table-bordered table_01">
 			<thead>
 			<tr>
 				<th class="value_span9">Sub Id</th>
@@ -60,21 +60,4 @@
 	</table>
 	{{ $report->links() }}
 
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-		$(document).ready(function () {
-
-			$("#clicks")
-
-				// Initialize tablesorter
-				// ***********************
-				.tablesorter({
-					sortList: [[3, 1]],
-					widgets: ['staticRow']
-				})
-		});
-
-    </script>
 @endsection

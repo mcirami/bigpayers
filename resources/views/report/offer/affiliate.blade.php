@@ -9,7 +9,7 @@
 @endsection
 
 @section('table')
-    <table class="table table-bordered table-striped table_01 tablesorter" id="mainTable">
+    <table  id="mainTable" data-sortable-table data-sort-default="6:desc" class="table table-bordered table-striped table_01">
         <thead>
         <tr>
             <th class="value_span9">ID</th>
@@ -55,19 +55,4 @@
             </tbody>
         </table>
     @endif
-@endsection
-
-
-
-@section('footer')
-    <script type="text/javascript">
-
-        $(document).ready(function () {
-            $('#mainTable').tablesorter(
-                {
-                    sortList: [[6, 1]],
-                    widgets: ['staticRow'],
-                });
-        });
-    </script>
 @endsection

@@ -10,7 +10,7 @@
 
 @section('table')
 
-    <table class="table-sm table-bordered table-striped table_01 tablesorter" id="mainTable">
+    <table  id="mainTable" data-sortable-table data-sort-default="3:desc" class="table-sm table-bordered table-striped table_01">
         <thead>
         <tr>
             <th class="value_span9">Offer</th>
@@ -35,16 +35,4 @@
         @endforeach
         </tbody>
     </table>
-@endsection
-
-@section('footer')
-    <script type="text/javascript">
-		$(document).ready(function () {
-			$("#mainTable").tablesorter(
-				{
-					sortList: [[3, 1]],
-					widgets: ['staticRow']
-				});
-		});
-    </script>
 @endsection
