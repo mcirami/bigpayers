@@ -1,7 +1,3 @@
-<?php
-//ini_set('display_errors', 1);
-
-?>
 @php
     /** @var \App\Company $company */
     $currentUser = $currentUser ?? null;
@@ -12,7 +8,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -20,10 +16,7 @@
 
     <link rel="shortcut icon" type="image/ico"
           href="{{ $faviconPath }}"/>
-    <link rel="shortcut icon" type="image/ico"
-          href="{{ $faviconPath }}"/>
     <link href="{{$webroot}}css/bootstrap.min.css" rel="stylesheet">
-    <!--    <link href="css/bootstrap-theme.min.css" rel="stylesheet">-->
     <link href="{{$webroot}}css/animate.css" rel="stylesheet">
 
 
@@ -50,7 +43,6 @@
 
     <script type="text/javascript" src="<?php echo $webroot; ?>js/tables.js?v=1.1"></script>
     <script type="text/javascript" src="<?php echo $webroot; ?>js/bootstrap-notify.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 @if(\App\Services\RuntimeEnvironment::runsProductionSnippets())
     <!-- Global site tag (gtag.js) - Google Analytics -->

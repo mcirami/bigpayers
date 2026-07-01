@@ -1,5 +1,4 @@
 <?php
-//ini_set('display_errors', 1);
 $webroot = getWebRoot();
 $company = \App\Company::instance()->first();
 $companyName = $company ? ($company->getShortHand() ?: 'BigPayers') : 'BigPayers';

@@ -45,30 +45,6 @@
             </div>
 
             <div class="mt-6">
-                {{--<div class="bp-report-toolbar">
-                    @if (!$isAffiliate)
-                        @include('report.options.active')
-                    @endif
-
-                    @if ($isAffiliate)
-                        <div class="bp-inline-note">
-                            Add up to 5 Sub variables:
-                            <span>http://domain.com/?rid=1&oid=1&s1=XXX&s2=YYY&s3=ZZZ&s4=AAA&s5=BBB</span>
-                        </div>
-                    @endif
-
-                    @if ($isAffiliate)
-                        <div class="bp-select-group">
-                            <label class="value_span9" for="offer_url">Offer URLs</label>
-                            <select onchange="handleSelect(this);" class="selectBox" id="offer_url" name="offer_url">
-                                @for ($i = 0; $i < count($urls); $i++)
-                                    <option value="{{ $i }}" {{ \App\Support\RequestContext::query('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                    @endif
-                </div>--}}
-
                 @if ($isAffiliate)
                     <div class="bp-report-toolbar w-full">
                         <div class="bp-select-group">
@@ -133,10 +109,6 @@
                         @if ($isGod)
                             <th class="value_span9">Adv</th>
                         @endif
-
-                        {{--@if ($isAffiliate)
-                            <th class="value_span9">Postback</th>
-                        @endif--}}
 
                         @if ($isGod)
                             <th class="value_span9">Actions</th>

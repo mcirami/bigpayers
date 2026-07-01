@@ -27,9 +27,6 @@
                 </div>
             </div>
 
-           {{-- <div class="mt-6 bp-report-toolbar">
-                @include('report.options.user-type')
-            </div>--}}
         </section>
 
         <section class="bp-card value_span8">

@@ -50,8 +50,6 @@
 					<th class="value_span9">Sub 1</th>
 					<th class="value_span9">Sub 2</th>
 					<th class="value_span9">Sub 3</th>
-					{{-- <th class="value_span9">Sub 4</th>
-					<th class="value_span9">Sub 5</th> --}}
 					<th class="value_span9">Affiliate</th>
 					<th class="value_span9">Offer</th>
                     @if ($canViewFraudData)

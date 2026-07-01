@@ -47,7 +47,6 @@
             <div class="mt-6 grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
                 <div class="bp-report-toolbar">
                     @include('report.options.user-type')
-                    {{--@include('report.options.active')--}}
                 </div>
 
                 <div class="bp-offer-search">

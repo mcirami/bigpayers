@@ -5,17 +5,6 @@
 @endsection
 
 @section('table-options')
-	{{-- @php
-		$data = array(
-			'd_from' 		=> $startDate,
-			'd_to'			=> $endDate,
-			'dateSelect'	=> $dateSelect,
-			'user' 			=> $user->idrep,
-			'offerId' 		=> $offerId
-		);
-
-	@endphp
-	@include('report.options.user-clicks-view', $data) --}}
     @include('report.options.dates')
 @endsection
 

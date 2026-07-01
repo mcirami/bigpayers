@@ -8,17 +8,6 @@
     @php 
         $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&country=$country";
     @endphp
-    {{-- @php
-		$data = array(
-			'd_from' 		=> $startDate,
-			'd_to'			=> $endDate,
-			'dateSelect'	=> $dateSelect,
-			'user' 			=> $user->idrep,
-			'offerId' 		=> $offer->idoffer
-		);
-
-	@endphp
-	@include('report.options.user-clicks-view', $data) --}}
     @include('report.options.dates')
 @endsection
 
