@@ -15,16 +15,28 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
 
     <link rel="shortcut icon" type="image/ico"
           href="{{ $faviconPath }}"/>
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css?v=1.1"/>
     <link rel="stylesheet" media="screen" type="text/css"
           href="<?php echo $webroot; ?>css/company.css"/>
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/font-awesome/css/all.css">
 
     <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
         .contact-page {
+            margin: 0;
             min-height: 100vh;
             background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+            color: #0f172a;
+            font-family: Lato, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        .contact-page img {
+            max-width: 100%;
         }
 
         .contact-header {

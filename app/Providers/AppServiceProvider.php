@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::share('webroot', getWebRoot());
         View::share(BrandingLabels::viewData());
-        view()->composer(['layouts.master', 'layouts.dashboard-shell'], function (\Illuminate\View\View $view) {
+        view()->composer('layouts.dashboard-shell', function (\Illuminate\View\View $view) {
             $currentUserContext = CurrentUserSession::snapshot();
             $navBar = new NavBar($currentUserContext->type, $currentUserContext->permissions);
             $notifications = new Notifications($currentUserContext->id);

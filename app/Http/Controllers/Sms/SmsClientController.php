@@ -68,8 +68,7 @@ class SmsClientController extends Controller
     }
 
     /**
-     * Gets the current user's SMSClient, assigned to a route and used by
-     * SMS Vue components
+     * Gets the current user's SMSClient for the dashboard client tools.
      * @return array
      */
     public function getUsersClient()

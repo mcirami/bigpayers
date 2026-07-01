@@ -2,18 +2,56 @@
 <html>
 <head>
     <title>{{$title}}</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <style>
+        * {
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+
+        body {
+            margin: 0;
+            color: #111827;
+            font-family: DejaVu Sans, Arial, sans-serif;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto 10px;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+        }
+
+        label {
+            display: inline-block;
+            margin-bottom: 4px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            margin-bottom: 14px;
+            border-collapse: collapse;
+        }
+
         tr {
             page-break-inside: avoid;
         }
 
-        * {
-            font-size: 12px;
+        th,
+        td {
+            padding: 4px 6px;
+            border: 1px solid #d1d5db;
+            line-height: 1.35;
+            text-align: left;
+            vertical-align: top;
         }
 
-
+        th {
+            background: #f3f4f6;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
