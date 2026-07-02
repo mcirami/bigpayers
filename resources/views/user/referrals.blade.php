@@ -64,7 +64,7 @@
                 </div>
 
                 <div class="mt-6 bp-report-table-wrap">
-                    <table class="table table-bordered table-striped table_01" id="referralTable" data-sortable-table data-sort-default="0:asc">
+                    <table  id="referralTable" data-sortable-table data-sort-default="0:asc">
                         <thead>
                         <tr>
                             <th class="value_span9">{{ $affiliateTypeLabel }}</th>

@@ -18,7 +18,7 @@
 @endsection
 
 @section('table')
-	<table  id="mainTable" data-sortable-table data-sort-default="4:desc" class="table table-bordered table_01">
+	<table  id="mainTable" data-sortable-table data-sort-default="4:desc" >
 		<thead>
 
 		<tr>

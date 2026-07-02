@@ -26,7 +26,7 @@
 			</form>
 		</div>
 	@endif
-	<table id="clicks"  data-sortable-table data-sort-default="2:desc" class="table table-condensed table-bordered table_01">
+	<table id="clicks"  data-sortable-table data-sort-default="2:desc" >
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
@@ -46,7 +46,7 @@
 			@php $myReport = new \App\Support\LegacyDate;  @endphp
 			@foreach($report as $row)
 				@php
-					$convertionTimeStamp = "";
+					$convertionTimeStamp ="";
 					if ($row->conversion_timestamp) {
 						$convertionTimeStamp = $myReport->convertToEST($row->conversion_timestamp);
 					}

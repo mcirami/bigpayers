@@ -56,7 +56,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01" id="mainTable" data-sortable-table data-sort-default="5:desc">
+                <table  id="mainTable" data-sortable-table data-sort-default="5:desc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>

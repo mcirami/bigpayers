@@ -9,7 +9,7 @@
 @endsection
 
 @section('table')
-    <table  id="mainTable" data-sortable-table class="table table-bordered table-striped table_01">
+    <table  id="mainTable" data-sortable-table >
         <thead>
         <tr>
             <th class="value_span9">Aff ID</th>

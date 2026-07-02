@@ -84,7 +84,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-condensed table-bordered table_01 bp-offer-manage-table" id="mainTable" data-sortable-table data-sort-default="1:asc">
+                <table class="bp-offer-manage-table" id="mainTable" data-sortable-table data-sort-default="1:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>
@@ -151,7 +151,7 @@
             const selectedUrl = @json($urls[\App\Support\RequestContext::query('url', 0)] ?? $urls[0] ?? \App\Support\RequestContext::httpHost());
             const offers = @json($offers);
             const offerTypeLabels = @json($offerTypeLabels);
-            const paginationContainer = "#pagination";
+            const paginationContainer ="#pagination";
             const itemsContainer = document.querySelector("#offers_container");
             const searchBox = document.getElementById("searchBox");
             const offerUrlSelect = document.getElementById("offer_url");
@@ -164,8 +164,8 @@
                 }
 
                 statusText.textContent = message;
-                statusBox.classList.remove("hidden", "bp-toast-info", "bp-toast-danger");
-                statusBox.classList.add(isError ? "bp-toast-danger" : "bp-toast-info");
+                statusBox.classList.remove("hidden","bp-toast-info","bp-toast-danger");
+                statusBox.classList.add(isError ?"bp-toast-danger" :"bp-toast-info");
 
                 setTimeout(() => {
                     statusBox.classList.add("hidden");
@@ -173,12 +173,12 @@
             };
 
             function escapeHtml(value) {
-                return String(value ?? "")
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
+                return String(value ??"")
+                    .replace(/&/g,"&amp;")
+                    .replace(/</g,"&lt;")
+                    .replace(/>/g,"&gt;")
+                    .replace(/"/g,"&quot;")
+                    .replace(/'/g,"&#039;");
             }
 
             const confirmSendTo = (message, sendTo) => {
@@ -191,13 +191,11 @@
                 button.disabled = true;
 
                 try {
-                    const query = adminLoginSuffix ? "?" + adminLoginSuffix.replace(/^&/, "") : "";
-                    const response = await fetch("/offer/" + id + "/request" + query, {
-                        headers: {
-                            "Accept": "application/json",
-                            "X-Requested-With": "XMLHttpRequest"
+                    const query = adminLoginSuffix ?"?" + adminLoginSuffix.replace(/^&/,"") :"";
+                    const response = await fetch("/offer/" + id +"/request" + query, {
+                        headers: {"Accept":"application/json","X-Requested-With":"XMLHttpRequest"
                         },
-                        credentials: "same-origin"
+                        credentials:"same-origin"
                     });
 
                     if (!response.ok) {
@@ -207,7 +205,7 @@
                     showStatus("Successfully requested offer.");
                 } catch (error) {
                     button.disabled = false;
-                    showStatus(error.message || "Failed to request offer. Please try again later or contact an admin.", true);
+                    showStatus(error.message ||"Failed to request offer. Please try again later or contact an admin.", true);
                 }
             };
 
@@ -220,7 +218,7 @@
 
             if (offerUrlSelect) {
                 offerUrlSelect.addEventListener("change", () => {
-                    window.location = "/{{ \App\Support\RequestContext::path() }}?url=" + offerUrlSelect.value + adminLoginSuffix;
+                    window.location ="/{{ \App\Support\RequestContext::path() }}?url=" + offerUrlSelect.value + adminLoginSuffix;
                 });
             }
 
@@ -244,81 +242,69 @@
                     const endIndex = startIndex + itemsPerPage;
                     const pageItems = items.slice(startIndex, endIndex);
 
-                    itemsContainer.innerHTML = "";
+                    itemsContainer.innerHTML ="";
 
-                    let html = "";
+                    let html ="";
 
                     pageItems.forEach((offer) => {
-                        const categoryLabel = offerTypeLabels[offer.offer_type] ?? "Unknown";
-                        const countriesText = (offer.description || "").trim();
+                        const categoryLabel = offerTypeLabels[offer.offer_type] ??"Unknown";
+                        const countriesText = (offer.description ||"").trim();
                         const countriesMarkup = countriesText.length
-                            ? "<div class='bp-offer-country-cell'>" +
-                                "<span class='bp-offer-country-preview'>" + escapeHtml(countriesText) + "</span>" +
-                                "<span class='bp-offer-country-hint' hidden>Hover for more...</span>" +
-                                "<div class='bp-offer-country-popover'>" + escapeHtml(countriesText) + "</div>" +
-                              "</div>"
-                            : "<span class='bp-table-meta'>Not set</span>";
-                        html += "<tr>" +
-                            "<td>" + offer.idoffer + "</td>" +
-                            "<td>" + escapeHtml(offer.offer_name) + "</td>";
+                            ?"<div class='bp-offer-country-cell'>" +"<span class='bp-offer-country-preview'>" + escapeHtml(countriesText) +"</span>" +"<span class='bp-offer-country-hint' hidden>Hover for more...</span>" +"<div class='bp-offer-country-popover'>" + escapeHtml(countriesText) +"</div>" +"</div>"
+                            :"<span class='bp-table-meta'>Not set</span>";
+                        html +="<tr>" +"<td>" + offer.idoffer +"</td>" +"<td>" + escapeHtml(offer.offer_name) +"</td>";
 
                         if (userType === 3) {
                             const affiliatePayout = offer.affiliate_payout !== null && offer.affiliate_payout !== undefined
                                 ? offer.affiliate_payout
                                 : offer.payout;
 
-                            html += "<td>" + categoryLabel + "</td>";
-                            html += "<td>" + countriesMarkup + "</td>";
-                            html += "<td class='value_span10'>$" + affiliatePayout + "</td>";
+                            html +="<td>" + categoryLabel +"</td>";
+                            html +="<td>" + countriesMarkup +"</td>";
+                            html +="<td class='value_span10'>$" + affiliatePayout +"</td>";
                         }
 
                         if (userType === 3) {
-                            html += "<td class='value_span10'>" +
-                                "<button data-url='https://" + selectedUrl +
-                                "/?rid=" + sessionUser +
-                                "&oid=" + offer.idoffer + "&s1=' class='copy_button bp-action-link'>Copy</button></td>";
+                            html +="<td class='value_span10'>" +"<button data-url='https://" + selectedUrl +"/?rid=" + sessionUser +"&oid=" + offer.idoffer +"&s1=' class='copy_button bp-action-link'>Copy</button></td>";
                         }
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
-                            html += "<td class='value_span10'>" +
-                                "<a target='_blank' class='bp-action-link' href='/offer/" + offer.idoffer + "/access'>Affiliate Access</a>" +
-                                "</td>";
+                            html +="<td class='value_span10'>" +"<a target='_blank' class='bp-action-link' href='/offer/" + offer.idoffer +"/access'>Affiliate Access</a>" +"</td>";
                         }
 
                         if (showPayoutColumn) {
                             if (userType === 3) {
-                                html += "";
+                                html +="";
                             } else if (userType === 1) {
                                 const adminPayout = offer.admin_payout !== null && offer.admin_payout !== undefined
                                     ? offer.admin_payout
                                     : offer.payout;
-                                html += "<td class='value_span10'>$" + adminPayout + "</td>";
+                                html +="<td class='value_span10'>$" + adminPayout +"</td>";
                             } else if (userType === 2) {
                                 const managerPayout = offer.manager_payout !== null && offer.manager_payout !== undefined
                                     ? offer.manager_payout
                                     : offer.payout;
-                                html += "<td class='value_span10'>$" + managerPayout + "</td>";
+                                html +="<td class='value_span10'>$" + managerPayout +"</td>";
                             } else {
-                                html += "<td class='value_span10'>$" + offer.payout + "</td>";
+                                html +="<td class='value_span10'>$" + offer.payout +"</td>";
                             }
                         }
 
 	                    if (userType === 0) {
-		                    html += "<td class='value_span10'>" + escapeHtml(offer.campaign_name) + "</td>";
+		                    html +="<td class='value_span10'>" + escapeHtml(offer.campaign_name) +"</td>";
 	                    }
 
                         if (userType === 0) {
-                            /*html += "<td class='value_span10'>" + offer.offer_timestamp + "</td>";*/
-                            html += "<td class='value_span10 action_column'><div class='bp-table-actions'>";
-                            html += "<a class='bp-action-link' href='/offer/edit/" + offer.idoffer + "'>Edit</a>";
-                            html += "<a class='bp-action-link' href='/offer/rules/" + offer.idoffer + "'>Rules</a>";
-                            html += "<a class='bp-action-link' href='/offer/view/" + offer.idoffer + "'>View</a>";
-                            html += "<a class='bp-action-link' href='/offer/" + offer.idoffer + "/dupe'>Duplicate</a>" +
-                                "<a class='delete_offer bp-action-link value_span11 value_span4' data-offer='" + offer.idoffer + "' href='#'>Delete</a>";
-                            html += "</div></td>";
+                            /*html +="<td class='value_span10'>" + offer.offer_timestamp +"</td>";*/
+                            html +="<td class='value_span10 action_column'><div class='bp-table-actions'>";
+                            html +="<a class='bp-action-link' href='/offer/edit/" + offer.idoffer +"'>Edit</a>";
+                            html +="<a class='bp-action-link' href='/offer/rules/" + offer.idoffer +"'>Rules</a>";
+                            html +="<a class='bp-action-link' href='/offer/view/" + offer.idoffer +"'>View</a>";
+                            html +="<a class='bp-action-link' href='/offer/" + offer.idoffer +"/dupe'>Duplicate</a>" +"<a class='delete_offer bp-action-link value_span11 value_span4' data-offer='" + offer.idoffer +"' href='#'>Delete</a>";
+                            html +="</div></td>";
                         }
 
-                        html += "</tr>";
+                        html +="</tr>";
                     });
 
                     itemsContainer.innerHTML = html;
@@ -328,7 +314,7 @@
 
                 function setupPagination() {
                     const pagination = document.querySelector(paginationContainer);
-                    pagination.innerHTML = "";
+                    pagination.innerHTML ="";
 
                     if (totalPages <= 1) {
                         return;
@@ -336,12 +322,12 @@
 
                     for (let i = 1; i <= totalPages; i++) {
                         const link = document.createElement("a");
-                        link.href = "#";
+                        link.href ="#";
                         link.innerText = i;
-                        link.classList.add("value_span2-2", "value_span3-2", "value_span6-1", "value_span2", "value_span6", "bp-pagination-link");
+                        link.classList.add("value_span2-2","value_span3-2","value_span6-1","value_span2","value_span6","bp-pagination-link");
 
                         if (i === currentPage) {
-                            link.classList.add("value_span4", "active");
+                            link.classList.add("value_span4","active");
                         }
 
                         link.addEventListener("click", (event) => {
@@ -351,10 +337,10 @@
 
                             const currentActive = pagination.querySelector(".active");
                             if (currentActive) {
-                                currentActive.classList.remove("active", "value_span4");
+                                currentActive.classList.remove("active","value_span4");
                             }
 
-                            link.classList.add("active", "value_span4");
+                            link.classList.add("active","value_span4");
                         });
 
                         pagination.appendChild(link);
@@ -385,7 +371,7 @@
                     offer.addEventListener("click", (e) => {
                         e.preventDefault();
                         const offerID = e.target.dataset.offer;
-                        confirmSendTo("Are you sure you want to delete this offer?", "/offer/" + offerID + "/delete");
+                        confirmSendTo("Are you sure you want to delete this offer?","/offer/" + offerID +"/delete");
                     });
                 });
             }

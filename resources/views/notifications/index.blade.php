@@ -52,7 +52,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01 large_table" id="mainTable" data-sortable-table data-sort-default="2:desc">
+                <table  id="mainTable" data-sortable-table data-sort-default="2:desc">
                     <thead>
                     <tr>
                         <th class="value_span9">Title</th>

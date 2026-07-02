@@ -6,13 +6,13 @@
 
 @section('table-options')
     @php 
-        $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&country=$country";
+        $params ="d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&country=$country";
     @endphp
     @include('report.options.dates')
 @endsection
 
 @section('table')
-    <table id="clicks"  data-sortable-table class="table table-condensed table-bordered table_01">
+    <table id="clicks"  data-sortable-table >
         <thead>
         <tr>
             <th class="value_span9">SubId</th>

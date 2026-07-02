@@ -37,7 +37,7 @@
             </div>
 
             <div class="mt-6 overflow-x-auto">
-                <table class="table table-bordered table_01">
+                <table>
                     <thead>
                     <tr>
                         <th>Pool</th>
@@ -76,7 +76,7 @@
             </div>
 
             <div class="mt-6 overflow-x-auto">
-                <table class="table table-bordered table_01">
+                <table>
                     <thead>
                     <tr>
                         <th>Pool</th>

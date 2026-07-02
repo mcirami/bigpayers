@@ -44,7 +44,7 @@
 @endsection
 
 @section('table')
-    <table  id="mainTable" data-sortable-table class="table table-bordered table-striped table_01">
+    <table  id="mainTable" data-sortable-table >
         <thead>
         <tr>
             <th class="value_span9">ID</th>
@@ -53,7 +53,7 @@
             <th class="value_span9">Unique</th>
             <th class="value_span9">Conversions</th>
             @if($showRevenueColumns)
-                <th class="value_span9  headers ">Revenue</th>
+                <th class="value_span9 headers">Revenue</th>
             @endif
         </tr>
         </thead>

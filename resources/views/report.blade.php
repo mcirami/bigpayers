@@ -38,7 +38,7 @@
 
         <section class="bp-card value_span8">
             <div class="bp-report-table-wrap">
-                <table class="table table-bordered table_01" id="mainTable" data-sortable-table data-sort-default="6:desc">
+                <table  id="mainTable" data-sortable-table data-sort-default="6:desc">
                     <thead>
                     <tr>
                         @foreach($tableHeaders as $header)

@@ -1,116 +1,52 @@
-﻿<?php
-
-
-$webroot = getWebRoot();
-
-
-
-
-?>
-
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/default.css"/>
-    <link rel="stylesheet" media="screen" type="text/css"
-          href="<?php echo $webroot; ?>css/company.php?>"/>
-    <link href="<?php echo $webroot; ?>css/responsive_table.css" rel="stylesheet" type="text/css"/>
-    <link href="<?php echo $webroot; ?>css/drawer.min.css" rel="stylesheet">
-
+    <title>Page Not Found</title>
     <style>
-        .right_panel{
-            width:100%;
+        html {
+            color-scheme: light;
         }
 
-        .not_found_page {
-            width: 100%;
-            float: left;
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: #eef2f7;
+            color: #0f172a;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        main {
+            width: min(100% - 2rem, 42rem);
+            border: 1px solid rgba(148, 163, 184, 0.24);
+            border-radius: 8px;
+            background: #ffffff;
+            box-shadow: 0 24px 60px -42px rgba(15, 23, 42, 0.42);
+            padding: clamp(2rem, 6vw, 4rem);
             text-align: center;
-            height: 100%;
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-orient: horizontal;
-            -webkit-box-direction: normal;
-            -ms-flex-direction: row;
-            flex-direction: row;
-            -ms-flex-wrap: nowrap;
-            flex-wrap: nowrap;
-            align-items: center;
         }
 
-        .not_found_page .content_wrap {
-            display: -webkit-box;
-            display: -ms-flexbox;
-            display: flex;
-            -webkit-box-orient: vertical;
-            -webkit-box-direction: normal;
-            -ms-flex-direction: column;
-            flex-direction: column;
-            -ms-flex-wrap: nowrap;
-            flex-wrap: nowrap;
-            width: 100%;
-            padding: 0 20px 15%;
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 6vw, 4rem);
+            line-height: 1.05;
         }
 
-        .not_found_page h2 {
-            font-size: 34px;
+        p {
+            margin: 1rem 0 0;
+            color: #475569;
+            font-size: 1rem;
+            line-height: 1.7;
         }
-
-        .not_found_page p {
-            font-size: 18px;
-            margin-top: 40px;
-        }
-
-        @media all and (max-width: 1023px) {
-
-            ￼.not_found_page h2 {
-                font-size: 28px;
-            }
-
-            .not_found_page p {
-                font-size: 16px;
-                margin-top: 30px;
-            }
-        }
-
-        @media all and (max-width: 768px) {
-
-            .not_found_page .content_wrap {
-                padding: 0 20px 30%;
-            }
-
-            .not_found_page h2 {
-                font-size: 24px;
-            }
-
-            .not_found_page p {
-                font-size: 14px;
-                margin-top: 20px;
-            }
-
-        }
-
     </style>
-
-    <title>Not Good!</title>
 </head>
-<body style="background-color:#EAEEF1;">
-
-<div class="right_panel">
-
-    <section class="not_found_page">
-        <div class="content_wrap">
-            <h2>404 Error.</h2>
-            <p>Whatever you're after, sure aint here!</p>
-        </div>
-
-
-    </section>
-
-</div>
+<body>
+<main>
+    <h1>404 Error.</h1>
+    <p>Whatever you're after, sure aint here.</p>
+</main>
 </body>
 </html>

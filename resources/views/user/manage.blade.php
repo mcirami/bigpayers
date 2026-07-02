@@ -89,7 +89,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table_01 manage_user_table" id="mainTable" data-sortable-table data-sort-default="0:asc">
+                <table class="manage_user_table" id="mainTable" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>

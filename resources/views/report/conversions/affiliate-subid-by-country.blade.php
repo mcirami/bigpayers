@@ -9,7 +9,7 @@
 @endsection
 
 @section('table')
-    <table id="clicks"  data-sortable-table class="table table-condensed table-bordered table_01">
+    <table id="clicks"  data-sortable-table >
         <thead>
         <tr>
             <th class="value_span9">Country</th>
@@ -20,7 +20,7 @@
         </thead>
         <tbody>
         @php 
-            $params = "d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&subid=$subId";
+            $params ="d_from=$startDate&d_to=$endDate&dateSelect=$dateSelect&subid=$subId";
         @endphp
         @foreach($reports as $key => $row)
             <tr role="row">

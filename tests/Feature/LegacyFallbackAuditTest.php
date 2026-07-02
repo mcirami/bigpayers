@@ -221,7 +221,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern layout assets append admin-login scripts through LegacyAdminLogin.',
+            'Modern layouts preserve admin-login state through Laravel request boundaries.',
             $output
         );
         $this->assertStringContainsString(

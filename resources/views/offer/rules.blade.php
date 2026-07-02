@@ -471,20 +471,20 @@
             for (let i = 0; i < rows.length; i++) {
                 const td = rows[i].getElementsByTagName("td")[0];
                 if (td) {
-                    rows[i].style.display = td.innerHTML.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                    rows[i].style.display = td.innerHTML.toUpperCase().indexOf(filter) > -1 ?"" :"none";
                 }
             }
         }
 
         function editRule(ruleID, ruleType) {
             switch (ruleType) {
-                case "geo":
+                case"geo":
                     resetGeoModal();
                     setValue("geoRuleID", ruleID);
                     loadGeoRule(ruleID);
                     showRulesModal('geoModal');
                     break;
-                case "device":
+                case"device":
                     resetDeviceModal();
                     setValue("deviceRuleID", ruleID);
                     loadDeviceRule(ruleID);
@@ -499,7 +499,7 @@
             get(fieldID)?.classList.toggle("bp-hidden", !shouldSave);
 
             if (!shouldSave) {
-                setValue(inputID, "");
+                setValue(inputID,"");
             }
         }
 
@@ -511,8 +511,8 @@
                 row.querySelector('td.caps')?.remove();
                 countryListBody.append(row);
                 const button = get("_" + row.id);
-                button?.setAttribute("onclick", "addCountry('" + row.id + "');");
-                setRuleActionState(button, "add");
+                button?.setAttribute("onclick","addCountry('" + row.id +"');");
+                setRuleActionState(button,"add");
             });
 
             sortCountries();
@@ -525,13 +525,13 @@
             rows.forEach((row) => {
                 deviceListBody.append(row);
                 const button = get("_" + row.id);
-                button?.setAttribute("onclick", "addDevice('" + row.id + "')");
-                setRuleActionState(button, "add");
+                button?.setAttribute("onclick","addDevice('" + row.id +"')");
+                setRuleActionState(button,"add");
             });
         }
 
         function fillGeoRuleForm(rule) {
-            setValue("geoRuleName", rule.name || rule.rule_name || "");
+            setValue("geoRuleName", rule.name || rule.rule_name ||"");
             syncSelectValue(get("geoRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
             setChecked("geoIsAllowed", Number(rule.deny) === 1 || rule.deny === true);
             setChecked("geoIsActive", Number(rule.is_active) === 1 || rule.is_active === true);
@@ -550,7 +550,7 @@
         }
 
         function fillDeviceRuleForm(rule) {
-            setValue("deviceRuleName", rule.name || rule.rule_name || "");
+            setValue("deviceRuleName", rule.name || rule.rule_name ||"");
             syncSelectValue(get("deviceRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
             setChecked("deviceIsAllowed", Number(rule.deny) === 1 || rule.deny === true);
             setChecked("deviceIsActive", Number(rule.is_active) === 1 || rule.is_active === true);
@@ -656,7 +656,7 @@
 
         function persistPredefinedRule(payload) {
             return request("/offer/rules/predefined", {
-                method: "POST",
+                method:"POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
@@ -669,7 +669,7 @@
                 return true;
             }
 
-            if (valueOf(inputID).trim() !== "") {
+            if (valueOf(inputID).trim() !=="") {
                 return true;
             }
 
@@ -695,7 +695,7 @@
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("geoShouldSavePredefined", "geoPredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("geoShouldSavePredefined","geoPredefinedRuleName")) {
                 return;
             }
 
@@ -708,14 +708,14 @@
                     try {
                         await persistPredefinedRule(buildGeoPredefinedRulePayload());
                     } catch (error) {
-                        alert(error.message || "Rule saved, but predefined rule could not be created.");
+                        alert(error.message ||"Rule saved, but predefined rule could not be created.");
                     }
                 }
 
                 hideRulesModal("geoModal");
                 location.reload();
             } catch (error) {
-                alert(error.message || "Request failed.");
+                alert(error.message ||"Request failed.");
             } finally {
                 setGeoSubmitting(false);
             }
@@ -726,7 +726,7 @@
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("deviceShouldSavePredefined", "devicePredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("deviceShouldSavePredefined","devicePredefinedRuleName")) {
                 return;
             }
 
@@ -739,14 +739,14 @@
                     try {
                         await persistPredefinedRule(buildDevicePredefinedRulePayload());
                     } catch (error) {
-                        alert(error.message || "Rule saved, but predefined rule could not be created.");
+                        alert(error.message ||"Rule saved, but predefined rule could not be created.");
                     }
                 }
 
                 hideRulesModal("deviceModal");
                 location.reload();
             } catch (error) {
-                alert(error.message || "Request failed.");
+                alert(error.message ||"Request failed.");
             } finally {
                 setDeviceSubmitting(false);
             }
@@ -759,9 +759,9 @@
                 return;
             }
 
-            setText("geoRuleTitle", "Edit Rule");
+            setText("geoRuleTitle","Edit Rule");
             setValue("geoRuleID", ruleID);
-            setValue("geoRuleName", rule.name || "");
+            setValue("geoRuleName", rule.name ||"");
             fillGeoRuleForm(rule);
             showElement("geoCreateButton", false);
             showElement("geoUpdateButton", true);
@@ -774,7 +774,7 @@
                 return;
             }
 
-            setText("deviceRuleTitle", "Edit Rule");
+            setText("deviceRuleTitle","Edit Rule");
             setValue("deviceRuleID", ruleID);
             fillDeviceRuleForm(rule);
             showElement("deviceCreateButton", false);
@@ -786,7 +786,7 @@
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("geoShouldSavePredefined", "geoPredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("geoShouldSavePredefined","geoPredefinedRuleName")) {
                 return;
             }
 
@@ -811,14 +811,14 @@
                     try {
                         await persistPredefinedRule(buildGeoPredefinedRulePayload());
                     } catch (error) {
-                        alert(error.message || "Rule updated, but predefined rule could not be created.");
+                        alert(error.message ||"Rule updated, but predefined rule could not be created.");
                     }
                 }
 
                 hideRulesModal("geoModal");
                 location.reload();
             } catch (error) {
-                alert(error.message || "Request failed.");
+                alert(error.message ||"Request failed.");
             } finally {
                 setGeoSubmitting(false);
             }
@@ -829,7 +829,7 @@
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("deviceShouldSavePredefined", "devicePredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("deviceShouldSavePredefined","devicePredefinedRuleName")) {
                 return;
             }
 
@@ -856,29 +856,29 @@
                     try {
                         await persistPredefinedRule(buildDevicePredefinedRulePayload());
                     } catch (error) {
-                        alert(error.message || "Rule updated, but predefined rule could not be created.");
+                        alert(error.message ||"Rule updated, but predefined rule could not be created.");
                     }
                 }
 
                 hideRulesModal("deviceModal");
                 location.reload();
             } catch (error) {
-                alert(error.message || "Request failed.");
+                alert(error.message ||"Request failed.");
             } finally {
                 setDeviceSubmitting(false);
             }
         });
 
         function resetDeviceModal() {
-            setValue("deviceRuleName", "");
-            setValue("deviceRuleID", "");
-            setValue("deviceRedirectOffer", "");
-            setValue("devicePredefinedRuleSelect", "");
+            setValue("deviceRuleName","");
+            setValue("deviceRuleID","");
+            setValue("deviceRedirectOffer","");
+            setValue("devicePredefinedRuleSelect","");
             setChecked("deviceShouldSavePredefined", false);
-            setValue("devicePredefinedRuleName", "");
+            setValue("devicePredefinedRuleName","");
             setDisabled("devicePredefinedRuleName", true);
             get("devicePredefinedRuleNameField")?.classList.add("bp-hidden");
-            setText("deviceRuleTitle", "New Device Rule");
+            setText("deviceRuleTitle","New Device Rule");
             setChecked("deviceIsAllowed", false);
             setChecked("deviceIsActive", true);
             setChecked("capIsActive", {{ $activeCap ? 'true' : 'false' }});
@@ -890,18 +890,18 @@
         }
 
         function resetGeoModal() {
-            setValue("geoRuleName", "");
-            setValue("geoRuleID", "");
-            setValue("geoRedirectOffer", "");
-            setValue("geoPredefinedRuleSelect", "");
+            setValue("geoRuleName","");
+            setValue("geoRuleID","");
+            setValue("geoRedirectOffer","");
+            setValue("geoPredefinedRuleSelect","");
             setChecked("geoShouldSavePredefined", false);
-            setValue("geoPredefinedRuleName", "");
+            setValue("geoPredefinedRuleName","");
             setDisabled("geoPredefinedRuleName", true);
             get("geoPredefinedRuleNameField")?.classList.add("bp-hidden");
-            setText("geoRuleTitle", "New Geo Rule");
+            setText("geoRuleTitle","New Geo Rule");
             setChecked("geoIsAllowed", false);
             setChecked("geoIsActive", true);
-            setValue("searchCountryList", "");
+            setValue("searchCountryList","");
             showElement("geoCreateButton", true);
             showElement("geoUpdateButton", false);
             setGeoSubmitting(false);
@@ -915,11 +915,11 @@
         document.querySelector("#deviceModal .bp-rules-modal-close")?.addEventListener('click', resetDeviceModal);
 
         get("geoShouldSavePredefined")?.addEventListener('change', () => {
-            togglePredefinedNameField("geoShouldSavePredefined", "geoPredefinedRuleName", "geoPredefinedRuleNameField");
+            togglePredefinedNameField("geoShouldSavePredefined","geoPredefinedRuleName","geoPredefinedRuleNameField");
         });
 
         get("deviceShouldSavePredefined")?.addEventListener('change', () => {
-            togglePredefinedNameField("deviceShouldSavePredefined", "devicePredefinedRuleName", "devicePredefinedRuleNameField");
+            togglePredefinedNameField("deviceShouldSavePredefined","devicePredefinedRuleName","devicePredefinedRuleNameField");
         });
 
         get("geoPredefinedRuleSelect")?.addEventListener('change', (event) => {
@@ -954,8 +954,8 @@
             selectedDeviceTR.remove();
             document.querySelector("#deviceToAdd tbody")?.append(selectedDeviceTR);
             const button = get("_" + deviceName);
-            button?.setAttribute("onclick", "removeDevice('" + deviceName + "');");
-            setRuleActionState(button, "remove");
+            button?.setAttribute("onclick","removeDevice('" + deviceName +"');");
+            setRuleActionState(button,"remove");
         }
 
         function removeDevice(deviceName) {
@@ -968,8 +968,8 @@
             selectedDevice.remove();
             get("deviceListBody")?.append(selectedDevice);
             const button = get("_" + deviceName);
-            button?.setAttribute("onclick", "addDevice('" + deviceName + "')");
-            setRuleActionState(button, "add");
+            button?.setAttribute("onclick","addDevice('" + deviceName +"')");
+            setRuleActionState(button,"add");
         }
 
         function parseDevices(tableName, onlyCountries = false) {
@@ -1146,8 +1146,8 @@
 
             document.querySelector("#toAdd tbody")?.append(row);
             const button = get("_" + normalizedCode);
-            button?.setAttribute("onclick", "removeCountry('" + normalizedCode + "');");
-            setRuleActionState(button, "remove");
+            button?.setAttribute("onclick","removeCountry('" + normalizedCode +"');");
+            setRuleActionState(button,"remove");
 
             if (sortTableAfter) {
                 sortTable(get('toAdd'), 'asc');
@@ -1166,8 +1166,8 @@
             selectedCountry.querySelector('td.caps')?.remove();
             get("countryListBody")?.append(selectedCountry);
             const button = get("_" + normalizedCode);
-            button?.setAttribute("onclick", "addCountry('" + normalizedCode + "');");
-            setRuleActionState(button, "add");
+            button?.setAttribute("onclick","addCountry('" + normalizedCode +"');");
+            setRuleActionState(button,"add");
 
             if (sortTableAfter) {
                 sortCountries('asc');

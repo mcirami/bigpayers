@@ -1154,17 +1154,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $tree);
     }
 
-    public function test_modern_admin_login_scripts_use_legacy_admin_login_boundary(): void
+    public function test_modern_admin_login_state_uses_laravel_boundaries(): void
     {
-        foreach ([
-            resource_path('views/layouts/footer.blade.php'),
-            resource_path('views/layouts/partials/report-script-assets.blade.php'),
-        ] as $path) {
-            $contents = File::get($path);
+        $dashboardShell = File::get(resource_path('views/layouts/dashboard-shell.blade.php'));
 
-            $this->assertStringContainsString('App\\Support\\LegacyAdminLogin', $contents);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\AdminLogin', $contents);
-        }
+        $this->assertStringContainsString('App\\Support\\RequestContext::hasQuery', $dashboardShell);
+        $this->assertStringContainsString('adminLogin=1', $dashboardShell);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\AdminLogin', $dashboardShell);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\User\\AdminLogin',
@@ -1178,26 +1174,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_GET', $adminLogin);
     }
 
-    public function test_report_partials_do_not_load_tables_script_before_jquery(): void
+    public function test_report_views_do_not_reference_retired_jquery_table_assets(): void
     {
         foreach (File::allFiles(resource_path('views/report')) as $file) {
             $path = $file->getPathname();
             $contents = File::get($path);
 
-            $this->assertStringNotContainsString(
-                'tables.js',
-                $contents,
-                "{$path} should rely on layouts.partials.report-script-assets so jQuery loads before tables.js."
-            );
+            foreach (['tables.js', 'jquery_2.1.3_jquery.min.js', 'jquery.tablesorter.min.js'] as $asset) {
+                $this->assertStringNotContainsString($asset, $contents, "{$path} should not load retired {$asset}.");
+            }
         }
-
-        $reportAssets = File::get(resource_path('views/layouts/partials/report-script-assets.blade.php'));
-        $jqueryPosition = strpos($reportAssets, 'jquery_2.1.3_jquery.min.js');
-        $tablesPosition = strpos($reportAssets, 'tables.js');
-
-        $this->assertNotFalse($jqueryPosition);
-        $this->assertNotFalse($tablesPosition);
-        $this->assertLessThan($tablesPosition, $jqueryPosition);
     }
 
     public function test_modern_notification_layouts_use_legacy_notify_boundary(): void

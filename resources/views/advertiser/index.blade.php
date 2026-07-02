@@ -56,7 +56,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-condensed table-bordered table_01" id="mainTable" data-sortable-table>
+                <table  id="mainTable" data-sortable-table>
                     <thead>
                     <tr>
                         <th class="value_span9">ID</th>

@@ -110,7 +110,7 @@
                 </div>
 
                 <div class="mt-6 bp-report-table-wrap">
-                    <table class="table table-striped table_01 large_table">
+                    <table>
                         <thead>
                         <tr>
                             @foreach (array_keys($clickData) as $label)
@@ -137,7 +137,7 @@
                     </div>
 
                     <div class="mt-6 bp-report-table-wrap">
-                        <table class="table table-striped table_01 large_table">
+                        <table>
                             <thead>
                             <tr>
                                 @foreach (array_keys($geoData) as $label)
@@ -164,7 +164,7 @@
 
                     @if ($conversionData)
                         <div class="mt-6 bp-report-table-wrap">
-                            <table class="table table-striped table_01 large_table">
+                            <table>
                                 <thead>
                                 <tr>
                                     @foreach (array_keys($conversionData) as $label)
@@ -200,7 +200,7 @@
                 </div>
 
                 <div class="mt-6 bp-report-table-wrap">
-                    <table class="table table-striped table_01 large_table">
+                    <table>
                         <thead>
                         <tr>
                             @foreach (array_keys($queryVars) as $label)

@@ -8,7 +8,7 @@
     Payout Report
 @endsection
 @section('table')
-    <table class="table table-striped table-bordered  table_01">
+    <table>
         <thead>
         <tr>
             <th class="value_span9">Payout Type</th>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table class="table table-striped table-bordered table_01">
+                <table>
                     <thead>
                     <tr>
                         <th>Week range</th>
@@ -173,7 +173,6 @@
                 const body = document.createElement('tbody');
                 const header = document.createElement('tr');
 
-                table.className = 'table table-sm table-striped table-bordered table_01';
                 ['ID', 'Name', 'Raw', 'Unique', 'FreeSignUps', 'Pending Conversions', 'Conversions', 'Revenue'].forEach(function (label) {
                     const cell = document.createElement('th');
                     cell.className = 'value_span9';
@@ -210,7 +209,6 @@
                 const offerRow = document.createElement('tr');
                 const offerTableCell = document.createElement('td');
 
-                table.className = 'table table-striped table-bordered table_01';
                 ['Type', 'Notes', 'Revenue', 'Date Achieved', ''].forEach(function (label) {
                     const cell = document.createElement('th');
                     cell.textContent = label;

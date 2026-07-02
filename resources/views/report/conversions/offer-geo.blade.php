@@ -20,7 +20,7 @@
 @endsection
 
 @section('table')
-    <table id="mainTable"  data-sortable-table data-sort-default="3:desc" class="table table-bordered table_01">
+    <table id="mainTable"  data-sortable-table data-sort-default="3:desc" >
         <thead>
         <tr>
             <th class="value_span9">Name</th>

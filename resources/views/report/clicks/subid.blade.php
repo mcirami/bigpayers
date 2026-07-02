@@ -30,7 +30,7 @@
 			</form>
 		</div>
 	@endif
-	<table id="clicks"  data-sortable-table data-sort-default="4:desc" class="table table-condensed table-bordered table_01">
+	<table id="clicks"  data-sortable-table data-sort-default="4:desc" >
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
@@ -63,7 +63,7 @@
 			@foreach($report as $row)
 				@php 
 					$timestamp = $myReport->convertToEST($row->timestamp);
-					$convertionTimeStamp = "";
+					$convertionTimeStamp ="";
 					if ($row->conversion_timestamp) {
 						$convertionTimeStamp = $myReport->convertToEST($row->conversion_timestamp);
 					}

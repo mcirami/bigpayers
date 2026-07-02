@@ -31,7 +31,7 @@
 			</form>
 		</div>
 	@endif
-	<table id="clicks"  data-sortable-table data-sort-default="3:desc" class="table table-striped table-bordered table_01">
+	<table id="clicks"  data-sortable-table data-sort-default="3:desc" >
 				<thead>
 				<tr>
 					@if ($canViewFraudData)
@@ -72,7 +72,7 @@
 				
 					@php 
 						$timestamp = $myReport->convertToEST($row['timestamp']);
-						$convertionTimeStamp = "";
+						$convertionTimeStamp ="";
 						if ($row->conversion_timestamp) {
 							$convertionTimeStamp = $myReport->convertToEST($row['conversion_timestamp']);
 						}
@@ -97,14 +97,14 @@
 						<td>{{$row['offer_id']}}</td>
 						@if ($canViewFraudData)
                                 <td>{{$row['referer']}}</td>
-                                <td>{{isset($row['ip_address']) ? $row['ip_address'] : ""}}</td>
-                                <td>{{isset($row['subDivision']) ? $row['subDivision'] : ""}}</td>
-                                <td>{{isset($row['city']) ? $row['city'] : ""}}</td>
-                                <td>{{isset($row['postal']) ? $row['postal'] : ""}}</td>
-                                <td>{{isset($row['latitude']) ? $row['postal'] : ""}}</td>
-                                <td>{{isset($row['longitude']) ? $row['longitude'] : ""}}</td>
+                                <td>{{isset($row['ip_address']) ? $row['ip_address'] :""}}</td>
+                                <td>{{isset($row['subDivision']) ? $row['subDivision'] :""}}</td>
+                                <td>{{isset($row['city']) ? $row['city'] :""}}</td>
+                                <td>{{isset($row['postal']) ? $row['postal'] :""}}</td>
+                                <td>{{isset($row['latitude']) ? $row['postal'] :""}}</td>
+                                <td>{{isset($row['longitude']) ? $row['longitude'] :""}}</td>
 						@endif
-                            <td>{{isset($row['isoCode']) ? $row['isoCode'] : ""}}</td>
+                            <td>{{isset($row['isoCode']) ? $row['isoCode'] :""}}</td>
 					</tr>
 				@endforeach
 				<tr>

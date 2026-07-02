@@ -1278,7 +1278,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern signup flows use LegacyAffiliateSignUp.');
         $this->info('Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.');
         $this->info('Modern offer postback URL flows use App\Support boundaries.');
-        $this->info('Modern layout assets append admin-login scripts through LegacyAdminLogin.');
+        $this->info('Modern layouts preserve admin-login state through Laravel request boundaries.');
         $this->info('Modern layouts render legacy notifications through LegacyNotify.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');

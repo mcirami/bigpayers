@@ -10,7 +10,7 @@
 
 
 @section('table')
-    <table id="mainTable"  data-sortable-table data-sort-default="3:desc" class="table table-bordered table_01">
+    <table id="mainTable"  data-sortable-table data-sort-default="3:desc" >
         <thead>
         <tr>
             <th class="value_span9">Name</th>
@@ -21,7 +21,7 @@
         </thead>
         <tbody>
         @php
-            $params = "d_from=" . $startDate . "&d_to=" . $endDate . "&dateSelect=" . $dateSelect;
+            $params ="d_from=" . $startDate ."&d_to=" . $endDate ."&dateSelect=" . $dateSelect;
         @endphp
         @foreach($report as $row)
             <tr role="row">

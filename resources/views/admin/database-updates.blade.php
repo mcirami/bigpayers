@@ -66,7 +66,7 @@
                 </div>
 
                 <div class="mt-6 bp-report-table-wrap">
-                    <table class="table table-bordered table_01 table-sm">
+                    <table>
                         <thead>
                         <tr>
                             <th>Install</th>
