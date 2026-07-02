@@ -2,170 +2,147 @@
     $company = \App\Company::instance()->first();
     $companyName = $company ? ($company->getShortHand() ?: 'Chat Track Pro') : 'Chat Track Pro';
     $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('favicon.ico');
+    $dashboardShellCssPath = public_path('css/dashboard-shell.css');
+    $dashboardShellCssUrl = asset('css/dashboard-shell.css') . (file_exists($dashboardShellCssPath) ? '?v=' . filemtime($dashboardShellCssPath) : '');
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="css/style.css" rel="stylesheet" type="text/css"/>
-
+    <link href="{{ $dashboardShellCssUrl }}" rel="stylesheet" type="text/css"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
-
     <title>{{ $companyName }}</title>
 </head>
-<body>
-<!--header-->
-<div class="main_bg">
-    <div class="top_sec">
-        <div class="holder">
-            <div class="logo">
-                <a href="#">
-                    <img src="images/logo.png" alt="Chat Track Pro" title="Chat Track Pro"/>
-                </a>
-            </div>
-            <div class="header_right">
-                <ul>
-                    <li><a href="#about">About us</a></li>
-                    <li><a href="#content">Features</a></li>
-                    <li><a href="#contact">Contact Us</a></li>
-                </ul>
-                <a class="btn" href="/login">Login</a>
-            </div>
-            
-        </div>
-    </div>
-    <div class="header_sec">
-        <div class="holder">
-                <h2>Custom Tracking for Serious Marketers!</h2>
-            <br/>
-            <div class="text_wrap column">
-                <h3>Monitor productivity of all your employees and traffic in one easy place.</h3>
-                <p>Our platform offers tiered management, agent tracking, privatized domain names, and unique design services that will make us a one stop shop for your affiliate tracking and help you stand out! Get in touch today for more information!</p>
-                <a class="btn" href="skype:live:.cid.1a53fdcac7cdeced?chat">Contact Us</a>
-            </div>
-            <div class="column">
-                <img src="images/header_img.jpg" alt="">
-            </div>
-        </div>
-        <div class="whiteDiagonal"></div>
-    </div>
-    
-</div>
-<!--header-->
-<!--section2-->
-<div class="section2" id="content">
-    <div class="holder">
-        <h2>Our Features</h2>
-        <h3>Here are a few features that make us stand out!</h3>
-        <p>Join one of the most comprehensive tracking platforms on earth. Designed with you in mind, we offer real time postbacks, tracking for unlimited {{ strtolower($affiliateTypeLabelPlural) }}, tiered and unlimited {{ $accountTypeLabel }} and Admin accounts, add your own custom offers or allow us to provide offers for you. Track accurately in real time, every time with Chat Track Pro!</p>
-        <div class="three_col_section">
-            <div class="sub">
-                <h2>Unlimited {{ $affiliateTypeLabelPlural }}</h2>
-            </div>
+<body class="bp-public-landing">
+    <header class="bp-public-hero">
+        <nav class="bp-public-nav" aria-label="Primary">
+            <a class="bp-public-logo" href="/">
+                <img src="{{ asset('images/logo.png') }}" alt="{{ $companyName }}">
+            </a>
 
-            <div class="sub">
-                <h2>Unlimited {{ $accountTypeLabelPlural }}</h2>
+            <div class="bp-public-nav-links">
+                <a href="#about">About</a>
+                <a href="#features">Features</a>
+                <a href="#contact">Contact</a>
+                <a class="bp-public-button bp-public-button-quiet" href="/login">Login</a>
             </div>
+        </nav>
 
-            <div class="sub">
-                <h2>Unlimited Admins</h2>
-            </div>
-        </div>
-        <div class="three_col_section">
-            <div class="sub">
-                <h2>Private Offers</h2>
-            </div>
-
-            <div class="sub">
-                <h2>Public Offers</h2>
-            </div>
-
-            <div class="sub">
-                <h2>Requestable Offers</h2>
-            </div>
-        </div>
-        <div class="three_col_section">
-            <div class="sub">
-                <h2>Real Time Stats</h2>
-            </div>
-
-            <div class="sub">
-                <h2>Unique Domains</h2>
-            </div>
-
-            <div class="sub">
-                <h2>Postback URL</h2>
-            </div>
-        </div>
-
-    </div>
-</div>
-<!--section2-->
-<!--section3-->
-
-<!--section3-->
-<!--section4-->
-<div class="section4">
-    <div class="dark_slant"></div>
-    <div class="top_section">
-        <div class="holder">
-            <div class="column">
-                <img src="images/dark-section-image.png" alt="">
-            </div>
-            <div class="column" id="about">
-                <h2>Straight from the Pros!</h2>
-                <h3>Get the best when you</br>work with the best!</h3>
-                <p>After decades of experience, we feel like we were able to truly design a software that will fit all of your tracking needs. Whether you are managing a small group or several offices in a large firm, we've got you covered. The ability to provide custom designs, offers, and permissions to control a tiered Userbase and track everything in real time gives us a competitive edge over many other softwares. Contact Us today to find out why Chat Track Pro manages to remain one of the best affiliate stats tracking software on the internet!</p>
-            </div>
-        </div>
-    </div>
-    <div class="bottom_section">
-        <div class="holder">
-            <h2>Chat Track Pro</h2>
-            <h3>Tiered User Setup Explained</h3>
-            <div class="three_col_section">
-                <div class="column">
-                    <img src="images/img_networkowner.png" alt="">
-                    <h4>Admins</h4>
-                    <p>An Admin is a User who has full access to all other Users in their network, whether those Users are {{ $accountTypeLabelPlural }} or {{ $affiliateTypeLabelPlural }}. Admins can track all traffic generated inside their network as well by any {{ strtolower($affiliateTypeLabel) }} of any {{ strtolower($accountTypeLabel) }}. Track it all in one place!</p>
-                </div>
-
-                <div class="column">
-                    <img src="images/img_merchant.png" alt="">
-                    <h4>{{ $accountTypeLabelPlural }}</h4>
-                    <p>{{ $accountTypeLabelPlural }} can create an unlimited amount of {{ strtolower($affiliateTypeLabel) }} accounts for anyone they want to send traffic. Every {{ $accountTypeLabel }} can see all traffic and monies earned from their {{ strtolower($affiliateTypeLabelPlural) }} but not any information of any other {{ strtolower($accountTypeLabel) }} or their {{ strtolower($affiliateTypeLabelPlural) }} under an Admin.</p>
-                </div>
-
-                <div class="column">
-                    <img src="images/img_affiliate.png" alt="">
-                    <h4>{{ $affiliateTypeLabelPlural }}</h4>
-                    <p>A {{ $affiliateTypeLabel }} is the only type of User that will have an offer link to promote and generate sales using their unique marketing methods. Each {{ strtolower($affiliateTypeLabel) }} will be able to track all clicks and sales to any offers they promote in real time inside their account.</p>
+        <div class="bp-public-hero-inner">
+            <div class="bp-public-hero-copy">
+                <p class="bp-public-kicker">Affiliate tracking workspace</p>
+                <h1>{{ $companyName }}</h1>
+                <p>
+                    Custom tracking for serious marketers, with real-time reporting, tiered user management,
+                    private domains, and offer controls in one focused platform.
+                </p>
+                <div class="bp-public-actions">
+                    <a class="bp-public-button" href="skype:live:.cid.1a53fdcac7cdeced?chat">Contact Us</a>
+                    <a class="bp-public-link" href="#features">Explore Features</a>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
-<!--section4-->
-<div class="section5">
-    <div class="holder" id="contact">
-        <p>Interested in Your Own Network?</p>
-        <h2>Get in Touch!</h2>
-        <p>We'll walk you through each stage of the process to make sure you have the tools you need to be successful.</p>
-        <a class="btn" href="skype:live:.cid.1a53fdcac7cdeced?chat">Contact Us</a>
-    </div>
-</div>
-<footer>
-    <div class="holder">
-        <h2>ChatTrackPro</h2>
-        <ul>
-            <li><a href="#about">About Us</a></li>
-            <li><a href="#content">Features</a></li>
-            <li><a href="#contact">Contact Us</a></li>
-        </ul>
-        <span class="footer_txt">&copy; ChatTrackPro</span>
-    </div>
-</footer>
 
+            <div class="bp-public-hero-media" aria-hidden="true">
+                <img src="{{ asset('images/header_img.jpg') }}" alt="">
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="bp-public-section" id="features">
+            <div class="bp-public-section-heading">
+                <p class="bp-public-kicker">Features</p>
+                <h2>Built for operators who need the numbers now</h2>
+                <p>
+                    Track offers, users, clicks, postbacks, and sales across your network without splitting the workflow
+                    across disconnected tools.
+                </p>
+            </div>
+
+            <div class="bp-public-feature-grid">
+                <article class="bp-public-feature">
+                    <h3>Unlimited {{ $affiliateTypeLabelPlural }}</h3>
+                    <p>Support every promoter in your network with live visibility into clicks, conversions, and payouts.</p>
+                </article>
+                <article class="bp-public-feature">
+                    <h3>Unlimited {{ $accountTypeLabelPlural }}</h3>
+                    <p>Give each {{ strtolower($accountTypeLabel) }} the structure they need while preserving admin-level oversight.</p>
+                </article>
+                <article class="bp-public-feature">
+                    <h3>Public and Private Offers</h3>
+                    <p>Run public, private, and requestable campaigns with routing and assignment controls.</p>
+                </article>
+                <article class="bp-public-feature">
+                    <h3>Real-Time Stats</h3>
+                    <p>Monitor performance as traffic moves through your offers, postbacks, and user tree.</p>
+                </article>
+                <article class="bp-public-feature">
+                    <h3>Unique Domains</h3>
+                    <p>Use custom network domains and branded paths that fit the way your operation presents itself.</p>
+                </article>
+                <article class="bp-public-feature">
+                    <h3>Postback URLs</h3>
+                    <p>Keep conversion tracking accurate with flexible postback URLs and offer-level controls.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="bp-public-split" id="about">
+            <div class="bp-public-split-media">
+                <img src="{{ asset('images/dark-section-image.png') }}" alt="">
+            </div>
+            <div class="bp-public-split-copy">
+                <p class="bp-public-kicker">About</p>
+                <h2>Straight from the pros</h2>
+                <p>
+                    Whether you are managing a small group or several offices in a large firm, {{ $companyName }} gives
+                    you custom designs, offer controls, permissions, and real-time tracking in one place.
+                </p>
+            </div>
+        </section>
+
+        <section class="bp-public-section">
+            <div class="bp-public-section-heading">
+                <p class="bp-public-kicker">Structure</p>
+                <h2>Tiered user setup</h2>
+            </div>
+
+            <div class="bp-public-role-grid">
+                <article class="bp-public-role">
+                    <img src="{{ asset('images/img_networkowner.png') }}" alt="">
+                    <h3>Admins</h3>
+                    <p>Admins can manage users, offers, traffic, and performance across the full network.</p>
+                </article>
+                <article class="bp-public-role">
+                    <img src="{{ asset('images/img_merchant.png') }}" alt="">
+                    <h3>{{ $accountTypeLabelPlural }}</h3>
+                    <p>{{ $accountTypeLabelPlural }} can create and manage their own {{ strtolower($affiliateTypeLabel) }} accounts.</p>
+                </article>
+                <article class="bp-public-role">
+                    <img src="{{ asset('images/img_affiliate.png') }}" alt="">
+                    <h3>{{ $affiliateTypeLabelPlural }}</h3>
+                    <p>{{ $affiliateTypeLabelPlural }} promote offers and track their clicks and sales in real time.</p>
+                </article>
+            </div>
+        </section>
+
+        <section class="bp-public-cta" id="contact">
+            <p class="bp-public-kicker">Interested in your own network?</p>
+            <h2>Get in touch</h2>
+            <p>We will walk you through each stage so you have the tracking tools you need to be successful.</p>
+            <a class="bp-public-button" href="skype:live:.cid.1a53fdcac7cdeced?chat">Contact Us</a>
+        </section>
+    </main>
+
+    <footer class="bp-public-footer">
+        <h2>{{ $companyName }}</h2>
+        <nav aria-label="Footer">
+            <a href="#about">About</a>
+            <a href="#features">Features</a>
+            <a href="#contact">Contact</a>
+        </nav>
+        <p>&copy; {{ $companyName }}</p>
+    </footer>
 </body>
 </html>
