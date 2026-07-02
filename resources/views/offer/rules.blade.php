@@ -1,13 +1,5 @@
 @extends('layouts.dashboard-shell')
 
-@push('head')
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/bootstrap.min.css">
-@endpush
-
-@push('scripts')
-    <script type="text/javascript" src="{{ $webroot }}js/jquery_2.1.3_jquery.min.js"></script>
-@endpush
-
 @section('page-title', 'Offer Rules')
 
 @section('content')
@@ -74,7 +66,7 @@
             </div>
 
             <div class="mt-6 bp-report-table-wrap">
-                <table id="rules" class="table table-bordered table_01 bp-rules-table" data-sortable-table data-sort-default="0:asc">
+                <table id="rules" class="bp-rules-table" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
                         <th class="value_span9">Rule</th>
@@ -93,24 +85,24 @@
         </section>
     </div>
 
-    <div class="modal fade" id="geoModal" tabindex="-1" role="dialog" aria-labelledby="geoModalLabel">
-        <div class="modal-dialog modal-lg bp-rules-modal" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-close-modal="geoModal" aria-label="Close">
+    <div class="bp-rules-modal-shell" id="geoModal" tabindex="-1" role="dialog" aria-labelledby="geoModalLabel">
+        <div class="bp-rules-modal" role="document">
+            <div class="bp-rules-modal-content">
+                <div class="bp-rules-modal-header">
+                    <button type="button" class="bp-rules-modal-close" data-close-modal="geoModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="geoRuleTitle">New Geo Rule</h4>
+                    <h4 class="bp-rules-modal-title" id="geoRuleTitle">New Geo Rule</h4>
                 </div>
-                <div class="modal-body">
+                <div class="bp-rules-modal-body">
                     <div class="bp-rules-modal-grid">
                         <div class="bp-rules-panel">
                             <div class="bp-rules-panel-head">
-                                <label class="control-label">Country List</label>
+                                <label class="bp-rules-panel-label">Country List</label>
                                 <input type="text" id="searchCountryList" class="bp-form-input bp-rules-search" placeholder="Search countries...">
                             </div>
                             <div class="bp-rules-table-scroll">
-                                <table id="countryList" class="table table-bordered table-striped bp-rules-modal-table">
+                                <table id="countryList" class="bp-rules-modal-table">
                                     <colgroup>
                                         <col>
                                         <col class="bp-rules-col-action">
@@ -130,11 +122,11 @@
 
                         <div class="bp-rules-panel">
                             <div class="bp-rules-panel-head">
-                                <label class="control-label">Items</label>
+                                <label class="bp-rules-panel-label">Items</label>
                                 <p class="bp-rules-panel-note">Add selected countries to this rule and optionally apply caps.</p>
                             </div>
                             <div class="bp-rules-table-scroll">
-                                <table id="toAdd" class="table table-bordered table-striped bp-rules-modal-table">
+                                <table id="toAdd" class="bp-rules-modal-table">
                                     <colgroup>
                                         <col>
                                         <col class="bp-rules-col-action">
@@ -206,7 +198,7 @@
                         <input type="hidden" id="geoRuleID" value="">
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="bp-rules-modal-footer">
                     <button id="geoCancelButton" type="button" class="bp-button-secondary" data-close-modal="geoModal">Cancel</button>
                     <button id="geoCreateButton" type="button" class="bp-button-primary">Create</button>
                     <button id="geoUpdateButton" type="button" class="bp-button-primary" style="display:none;">Update</button>
@@ -215,24 +207,24 @@
         </div>
     </div>
 
-    <div class="modal fade" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="deviceModalLabel">
-        <div class="modal-dialog modal-lg bp-rules-modal" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-close-modal="deviceModal" aria-label="Close">
+    <div class="bp-rules-modal-shell" id="deviceModal" tabindex="-1" role="dialog" aria-labelledby="deviceModalLabel">
+        <div class="bp-rules-modal" role="document">
+            <div class="bp-rules-modal-content">
+                <div class="bp-rules-modal-header">
+                    <button type="button" class="bp-rules-modal-close" data-close-modal="deviceModal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="deviceRuleTitle">New Device Rule</h4>
+                    <h4 class="bp-rules-modal-title" id="deviceRuleTitle">New Device Rule</h4>
                 </div>
-                <div class="modal-body">
+                <div class="bp-rules-modal-body">
                     <div class="bp-rules-modal-grid">
                         <div class="bp-rules-panel">
                             <div class="bp-rules-panel-head">
-                                <label class="control-label">Device List</label>
+                                <label class="bp-rules-panel-label">Device List</label>
                                 <p class="bp-rules-panel-note">Move devices into the rule to allow or deny them.</p>
                             </div>
                             <div class="bp-rules-table-scroll">
-                                <table id="deviceList" class="table table-bordered table-striped bp-rules-modal-table">
+                                <table id="deviceList" class="bp-rules-modal-table">
                                     <colgroup>
                                         <col>
                                         <col class="bp-rules-col-action">
@@ -259,11 +251,11 @@
 
                         <div class="bp-rules-panel">
                             <div class="bp-rules-panel-head">
-                                <label class="control-label">Items</label>
+                                <label class="bp-rules-panel-label">Items</label>
                                 <p class="bp-rules-panel-note">Selected devices will be included in this rule configuration.</p>
                             </div>
                             <div class="bp-rules-table-scroll">
-                                <table id="deviceToAdd" class="table table-bordered table-striped bp-rules-modal-table">
+                                <table id="deviceToAdd" class="bp-rules-modal-table">
                                     <colgroup>
                                         <col>
                                         <col class="bp-rules-col-action">
@@ -347,7 +339,7 @@
                         <input type="hidden" id="deviceRuleID" value="">
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="bp-rules-modal-footer">
                     <button id="deviceCancelButton" type="button" class="bp-button-secondary" data-close-modal="deviceModal">Cancel</button>
                     <button id="deviceCreateButton" type="button" class="bp-button-primary">Create</button>
                     <button id="deviceUpdateButton" type="button" class="bp-button-primary" style="display:none;">Update</button>
@@ -370,11 +362,39 @@
         let geoSubmitting = false;
         let deviceSubmitting = false;
 
-        $.ajaxSetup({
-            headers: {
-                'X-CSRF-TOKEN': csrfToken
+        const get = (id) => document.getElementById(id);
+        const valueOf = (id) => get(id)?.value || '';
+        const setValue = (id, value) => {
+            const element = get(id);
+            if (element) {
+                element.value = value ?? '';
             }
-        });
+        };
+        const isChecked = (id) => Boolean(get(id)?.checked);
+        const setChecked = (id, value) => {
+            const element = get(id);
+            if (element) {
+                element.checked = Boolean(value);
+            }
+        };
+        const setDisabled = (id, value) => {
+            const element = get(id);
+            if (element) {
+                element.disabled = Boolean(value);
+            }
+        };
+        const setText = (id, value) => {
+            const element = get(id);
+            if (element) {
+                element.textContent = value;
+            }
+        };
+        const showElement = (id, shouldShow) => {
+            const element = get(id);
+            if (element) {
+                element.style.display = shouldShow ? '' : 'none';
+            }
+        };
 
         document.querySelectorAll('[data-open-modal]').forEach((button) => {
             button.addEventListener('click', () => {
@@ -388,7 +408,7 @@
             });
         });
 
-        document.querySelectorAll('.modal').forEach((modal) => {
+        document.querySelectorAll('.bp-rules-modal-shell').forEach((modal) => {
             modal.addEventListener('click', (event) => {
                 if (event.target === modal) {
                     hideRulesModal(modal.id);
@@ -401,7 +421,7 @@
                 return;
             }
 
-            document.querySelectorAll('.modal.is-open').forEach((modal) => {
+            document.querySelectorAll('.bp-rules-modal-shell.is-open').forEach((modal) => {
                 hideRulesModal(modal.id);
             });
         });
@@ -418,7 +438,7 @@
             modal.setAttribute('aria-modal', 'true');
             document.body.classList.add('bp-modal-open');
 
-            const modalBody = modal.querySelector('.modal-body');
+            const modalBody = modal.querySelector('.bp-rules-modal-body');
             if (modalBody) {
                 modalBody.style.maxHeight = '100%';
             }
@@ -435,19 +455,18 @@
             modal.setAttribute('aria-hidden', 'true');
             modal.removeAttribute('aria-modal');
 
-            if (!document.querySelector('.modal.is-open')) {
+            if (!document.querySelector('.bp-rules-modal-shell.is-open')) {
                 document.body.classList.remove('bp-modal-open');
             }
         }
 
-        $("#searchCountryList").on('propertychange change keyup paste input', function () {
-            searchCountryList($("#searchCountryList").val());
+        get('searchCountryList')?.addEventListener('input', (event) => {
+            searchCountryList(event.target.value);
         });
 
         function searchCountryList(searchWords) {
             const filter = searchWords.toUpperCase();
-            const table = document.getElementById("countryListBody");
-            const rows = table.getElementsByTagName("tr");
+            const rows = get("countryListBody").getElementsByTagName("tr");
 
             for (let i = 0; i < rows.length; i++) {
                 const td = rows[i].getElementsByTagName("td")[0];
@@ -461,59 +480,61 @@
             switch (ruleType) {
                 case "geo":
                     resetGeoModal();
-                    $("#geoRuleID").val(ruleID);
+                    setValue("geoRuleID", ruleID);
                     loadGeoRule(ruleID);
                     showRulesModal('geoModal');
                     break;
                 case "device":
                     resetDeviceModal();
-                    $("#deviceRuleID").val(ruleID);
+                    setValue("deviceRuleID", ruleID);
                     loadDeviceRule(ruleID);
                     showRulesModal('deviceModal');
                     break;
             }
         }
 
-        function togglePredefinedNameField(toggleSelector, inputSelector, fieldSelector) {
-            const shouldSave = $(toggleSelector).is(":checked");
-            $(inputSelector).prop("disabled", !shouldSave);
-            $(fieldSelector).toggleClass("bp-hidden", !shouldSave);
+        function togglePredefinedNameField(toggleID, inputID, fieldID) {
+            const shouldSave = isChecked(toggleID);
+            setDisabled(inputID, !shouldSave);
+            get(fieldID)?.classList.toggle("bp-hidden", !shouldSave);
 
             if (!shouldSave) {
-                $(inputSelector).val("");
+                setValue(inputID, "");
             }
         }
 
         function clearGeoSelections() {
-            const rows = $('#toAdd > tbody > tr').toArray();
+            const rows = Array.from(document.querySelectorAll('#toAdd > tbody > tr'));
+            const countryListBody = get("countryListBody");
 
-            rows.forEach(function (row) {
-                const rowElement = $(row);
-                rowElement.find('td.caps').remove();
-                $("#countryListBody").append(rowElement);
-                $("#_" + row.id).attr("onclick", "addCountry('" + row.id + "');");
-                setRuleActionState($("#_" + row.id), "add");
+            rows.forEach((row) => {
+                row.querySelector('td.caps')?.remove();
+                countryListBody.append(row);
+                const button = get("_" + row.id);
+                button?.setAttribute("onclick", "addCountry('" + row.id + "');");
+                setRuleActionState(button, "add");
             });
 
-            sortCountries("a", "asc");
+            sortCountries();
         }
 
         function clearDeviceSelections() {
-            const rows = $('#deviceToAdd > tbody > tr').toArray();
+            const rows = Array.from(document.querySelectorAll('#deviceToAdd > tbody > tr'));
+            const deviceListBody = get("deviceListBody");
 
-            rows.forEach(function (row) {
-                const rowElement = $(row);
-                $("#deviceListBody").append(rowElement);
-                $("#_" + row.id).attr("onclick", "addDevice('" + row.id + "')");
-                setRuleActionState($("#_" + row.id), "add");
+            rows.forEach((row) => {
+                deviceListBody.append(row);
+                const button = get("_" + row.id);
+                button?.setAttribute("onclick", "addDevice('" + row.id + "')");
+                setRuleActionState(button, "add");
             });
         }
 
         function fillGeoRuleForm(rule) {
-            $("#geoRuleName").val(rule.name || rule.rule_name || "");
-            syncSelectValue($("#geoRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
-            $("#geoIsAllowed").prop("checked", Number(rule.deny) === 1 || rule.deny === true);
-            $("#geoIsActive").prop("checked", Number(rule.is_active) === 1 || rule.is_active === true);
+            setValue("geoRuleName", rule.name || rule.rule_name || "");
+            syncSelectValue(get("geoRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
+            setChecked("geoIsAllowed", Number(rule.deny) === 1 || rule.deny === true);
+            setChecked("geoIsActive", Number(rule.is_active) === 1 || rule.is_active === true);
             clearGeoSelections();
 
             (rule.countries || rule.items || []).forEach((country) => {
@@ -525,16 +546,16 @@
                 );
             });
 
-            sortTable($('#toAdd'), 'asc');
+            sortTable(get('toAdd'), 'asc');
         }
 
         function fillDeviceRuleForm(rule) {
-            $("#deviceRuleName").val(rule.name || rule.rule_name || "");
-            syncSelectValue($("#deviceRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
-            $("#deviceIsAllowed").prop("checked", Number(rule.deny) === 1 || rule.deny === true);
-            $("#deviceIsActive").prop("checked", Number(rule.is_active) === 1 || rule.is_active === true);
-            $("#capIsActive").prop("checked", Number(rule.capStatus ?? rule.cap_status) === 1 || rule.capStatus === true || rule.cap_status === true);
-            $("#deviceCap").val(rule.capAmount ?? rule.cap_amount ?? 0);
+            setValue("deviceRuleName", rule.name || rule.rule_name || "");
+            syncSelectValue(get("deviceRedirectOffer"), rule.redirectOffer || rule.redirect_offer, redirectOfferMap);
+            setChecked("deviceIsAllowed", Number(rule.deny) === 1 || rule.deny === true);
+            setChecked("deviceIsActive", Number(rule.is_active) === 1 || rule.is_active === true);
+            setChecked("capIsActive", Number(rule.capStatus ?? rule.cap_status) === 1 || rule.capStatus === true || rule.cap_status === true);
+            setValue("deviceCap", rule.capAmount ?? rule.cap_amount ?? 0);
             clearDeviceSelections();
 
             (rule.devices || rule.items || []).forEach((deviceName) => {
@@ -543,7 +564,7 @@
         }
 
         function getGeoItems() {
-            return $('#toAdd > tbody > tr').toArray().map(function (row) {
+            return Array.from(document.querySelectorAll('#toAdd > tbody > tr')).map((row) => {
                 return {
                     country_code: normalizeCountryCode(row.id),
                     country_name: row.children[0].innerText,
@@ -554,7 +575,7 @@
         }
 
         function getDeviceItems() {
-            return $('#deviceToAdd > tbody > tr').toArray().map(function (row) {
+            return Array.from(document.querySelectorAll('#deviceToAdd > tbody > tr')).map((row) => {
                 return row.id;
             });
         }
@@ -563,11 +584,11 @@
             return {
                 _token: csrfToken,
                 type: 'geo',
-                name: $("#geoPredefinedRuleName").val().trim(),
-                rule_name: $("#geoRuleName").val().trim(),
-                redirect_offer: $("#geoRedirectOffer").val(),
-                deny: $("#geoIsAllowed").is(":checked") ? 1 : 0,
-                is_active: $("#geoIsActive").is(":checked") ? 1 : 0,
+                name: valueOf("geoPredefinedRuleName").trim(),
+                rule_name: valueOf("geoRuleName").trim(),
+                redirect_offer: valueOf("geoRedirectOffer"),
+                deny: isChecked("geoIsAllowed") ? 1 : 0,
+                is_active: isChecked("geoIsActive") ? 1 : 0,
                 cap_amount: 0,
                 cap_status: 0,
                 items: getGeoItems()
@@ -578,140 +599,157 @@
             return {
                 _token: csrfToken,
                 type: 'device',
-                name: $("#devicePredefinedRuleName").val().trim(),
-                rule_name: $("#deviceRuleName").val().trim(),
-                redirect_offer: $("#deviceRedirectOffer").val(),
-                deny: $("#deviceIsAllowed").is(":checked") ? 1 : 0,
-                is_active: $("#deviceIsActive").is(":checked") ? 1 : 0,
-                cap_amount: $("#deviceCap").val() || 0,
-                cap_status: $("#capIsActive").is(":checked") ? 1 : 0,
+                name: valueOf("devicePredefinedRuleName").trim(),
+                rule_name: valueOf("deviceRuleName").trim(),
+                redirect_offer: valueOf("deviceRedirectOffer"),
+                deny: isChecked("deviceIsAllowed") ? 1 : 0,
+                is_active: isChecked("deviceIsActive") ? 1 : 0,
+                cap_amount: valueOf("deviceCap") || 0,
+                cap_status: isChecked("capIsActive") ? 1 : 0,
                 items: getDeviceItems()
             };
         }
 
-        function persistPredefinedRule(payload) {
-            return $.ajax({
-                type: "POST",
-                url: "/offer/rules/predefined",
-                data: payload,
-                cache: false
+        async function request(url, options) {
+            const response = await fetch(url, {
+                headers: {
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                    ...(options.headers || {})
+                },
+                ...options
+            });
+
+            const text = await response.text();
+            let body = null;
+
+            if (text) {
+                try {
+                    body = JSON.parse(text);
+                } catch (error) {
+                    body = { message: text };
+                }
+            }
+
+            if (!response.ok) {
+                throw new Error(body?.message || text || 'Request failed.');
+            }
+
+            return body;
+        }
+
+        function postForm(url, data) {
+            const formData = new URLSearchParams();
+
+            Object.entries(data).forEach(([key, value]) => {
+                formData.append(key, value);
+            });
+
+            return request(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                },
+                body: formData.toString()
             });
         }
 
-        function validatePredefinedRuleRequest(toggleSelector, inputSelector) {
-            if (!$(toggleSelector).is(":checked")) {
+        function persistPredefinedRule(payload) {
+            return request("/offer/rules/predefined", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+        }
+
+        function validatePredefinedRuleRequest(toggleID, inputID) {
+            if (!isChecked(toggleID)) {
                 return true;
             }
 
-            if ($(inputSelector).val().trim() !== "") {
+            if (valueOf(inputID).trim() !== "") {
                 return true;
             }
 
             alert("Please enter a predefined rule name.");
-            $(inputSelector).focus();
+            get(inputID)?.focus();
             return false;
         }
 
         function setGeoSubmitting(isSubmitting) {
             geoSubmitting = isSubmitting;
-            $("#geoCreateButton, #geoUpdateButton").prop("disabled", isSubmitting);
+            setDisabled("geoCreateButton", isSubmitting);
+            setDisabled("geoUpdateButton", isSubmitting);
         }
 
         function setDeviceSubmitting(isSubmitting) {
             deviceSubmitting = isSubmitting;
-            $("#deviceCreateButton, #deviceUpdateButton").prop("disabled", isSubmitting);
+            setDisabled("deviceCreateButton", isSubmitting);
+            setDisabled("deviceUpdateButton", isSubmitting);
         }
 
-        $("#geoCreateButton").click(function () {
+        get("geoCreateButton")?.addEventListener('click', async () => {
             if (geoSubmitting) {
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("#geoShouldSavePredefined", "#geoPredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("geoShouldSavePredefined", "geoPredefinedRuleName")) {
                 return;
             }
 
             setGeoSubmitting(true);
 
-            $.ajax({
-                type: "POST",
-                url: "/offer/rules/geo",
-                data: { data: parseCountries("toAdd") },
-                cache: false,
-                success: function () {
-                    const shouldSavePredefined = $("#geoShouldSavePredefined").is(":checked");
-                    const finalize = function () {
-                        hideRulesModal("geoModal");
-                        location.reload();
-                    };
+            try {
+                await postForm("/offer/rules/geo", { data: parseCountries("toAdd") });
 
-                    if (shouldSavePredefined) {
-                        const payload = buildGeoPredefinedRulePayload();
-
-                        persistPredefinedRule(payload)
-                            .fail(function (result) {
-                                alert(result.responseJSON?.message || result.responseText || "Rule saved, but predefined rule could not be created.");
-                            })
-                            .always(finalize);
-
-                        return;
+                if (isChecked("geoShouldSavePredefined")) {
+                    try {
+                        await persistPredefinedRule(buildGeoPredefinedRulePayload());
+                    } catch (error) {
+                        alert(error.message || "Rule saved, but predefined rule could not be created.");
                     }
-
-                    finalize();
-                },
-                error: function (result) {
-                    alert(result.responseText || result);
-                },
-                complete: function () {
-                    setGeoSubmitting(false);
                 }
-            });
+
+                hideRulesModal("geoModal");
+                location.reload();
+            } catch (error) {
+                alert(error.message || "Request failed.");
+            } finally {
+                setGeoSubmitting(false);
+            }
         });
 
-        $("#deviceCreateButton").click(function () {
+        get("deviceCreateButton")?.addEventListener('click', async () => {
             if (deviceSubmitting) {
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("#deviceShouldSavePredefined", "#devicePredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("deviceShouldSavePredefined", "devicePredefinedRuleName")) {
                 return;
             }
 
             setDeviceSubmitting(true);
 
-            $.ajax({
-                type: "POST",
-                url: "/offer/rules/device",
-                data: { data: parseDevices("deviceToAdd") },
-                cache: false,
-                success: function () {
-                    const shouldSavePredefined = $("#deviceShouldSavePredefined").is(":checked");
-                    const finalize = function () {
-                        hideRulesModal("deviceModal");
-                        location.reload();
-                    };
+            try {
+                await postForm("/offer/rules/device", { data: parseDevices("deviceToAdd") });
 
-                    if (shouldSavePredefined) {
-                        const payload = buildDevicePredefinedRulePayload();
-
-                        persistPredefinedRule(payload)
-                            .fail(function (result) {
-                                alert(result.responseJSON?.message || result.responseText || "Rule saved, but predefined rule could not be created.");
-                            })
-                            .always(finalize);
-
-                        return;
+                if (isChecked("deviceShouldSavePredefined")) {
+                    try {
+                        await persistPredefinedRule(buildDevicePredefinedRulePayload());
+                    } catch (error) {
+                        alert(error.message || "Rule saved, but predefined rule could not be created.");
                     }
-
-                    finalize();
-                },
-                error: function (result) {
-                    alert(result.responseText || result);
-                },
-                complete: function () {
-                    setDeviceSubmitting(false);
                 }
-            });
+
+                hideRulesModal("deviceModal");
+                location.reload();
+            } catch (error) {
+                alert(error.message || "Request failed.");
+            } finally {
+                setDeviceSubmitting(false);
+            }
         });
 
         function loadGeoRule(ruleID) {
@@ -721,12 +759,12 @@
                 return;
             }
 
-            $("#geoRuleTitle").text("Edit Rule");
-            $("#geoRuleID").val(ruleID);
-            $("#geoRuleName").val(rule.name || "");
+            setText("geoRuleTitle", "Edit Rule");
+            setValue("geoRuleID", ruleID);
+            setValue("geoRuleName", rule.name || "");
             fillGeoRuleForm(rule);
-            $("#geoCreateButton").hide();
-            $("#geoUpdateButton").show();
+            showElement("geoCreateButton", false);
+            showElement("geoUpdateButton", true);
         }
 
         function loadDeviceRule(ruleID) {
@@ -736,191 +774,157 @@
                 return;
             }
 
-            $("#deviceRuleTitle").text("Edit Rule");
-            $("#deviceRuleID").val(ruleID);
+            setText("deviceRuleTitle", "Edit Rule");
+            setValue("deviceRuleID", ruleID);
             fillDeviceRuleForm(rule);
-            $("#deviceCreateButton").hide();
-            $("#deviceUpdateButton").show();
+            showElement("deviceCreateButton", false);
+            showElement("deviceUpdateButton", true);
         }
 
-        $("#geoUpdateButton").click(function () {
+        get("geoUpdateButton")?.addEventListener('click', async () => {
             if (geoSubmitting) {
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("#geoShouldSavePredefined", "#geoPredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("geoShouldSavePredefined", "geoPredefinedRuleName")) {
                 return;
             }
 
             setGeoSubmitting(true);
 
             const ruleData = {
-                name: $("#geoRuleName").val(),
-                ruleID: $("#geoRuleID").val(),
-                redirectOffer: $("#geoRedirectOffer").val(),
-                deny: document.getElementById("geoIsAllowed").checked,
-                is_active: document.getElementById("geoIsActive").checked,
+                name: valueOf("geoRuleName"),
+                ruleID: valueOf("geoRuleID"),
+                redirectOffer: valueOf("geoRedirectOffer"),
+                deny: isChecked("geoIsAllowed"),
+                is_active: isChecked("geoIsActive"),
             };
 
-            $.ajax({
-                type: "POST",
-                url: "/offer/rules/geo/" + ruleData.ruleID,
-                data: {
+            try {
+                await postForm("/offer/rules/geo/" + ruleData.ruleID, {
                     data: parseCountries("toAdd", true),
                     ruleData: JSON.stringify(ruleData),
                     ruleID: ruleData.ruleID,
-                },
-                cache: false,
-                traditional: true,
-                success: function () {
-                    const shouldSavePredefined = $("#geoShouldSavePredefined").is(":checked");
-                    const finalize = function () {
-                        hideRulesModal("geoModal");
-                        location.reload();
-                    };
+                });
 
-                    if (shouldSavePredefined) {
-                        const payload = buildGeoPredefinedRulePayload();
-
-                        persistPredefinedRule(payload)
-                            .fail(function (result) {
-                                alert(result.responseJSON?.message || result.responseText || "Rule updated, but predefined rule could not be created.");
-                            })
-                            .always(finalize);
-
-                        return;
+                if (isChecked("geoShouldSavePredefined")) {
+                    try {
+                        await persistPredefinedRule(buildGeoPredefinedRulePayload());
+                    } catch (error) {
+                        alert(error.message || "Rule updated, but predefined rule could not be created.");
                     }
-
-                    finalize();
-                },
-                error: function (result) {
-                    alert(result.responseText || result);
-                },
-                complete: function () {
-                    setGeoSubmitting(false);
                 }
-            });
+
+                hideRulesModal("geoModal");
+                location.reload();
+            } catch (error) {
+                alert(error.message || "Request failed.");
+            } finally {
+                setGeoSubmitting(false);
+            }
         });
 
-        $("#deviceUpdateButton").click(function () {
+        get("deviceUpdateButton")?.addEventListener('click', async () => {
             if (deviceSubmitting) {
                 return;
             }
 
-            if (!validatePredefinedRuleRequest("#deviceShouldSavePredefined", "#devicePredefinedRuleName")) {
+            if (!validatePredefinedRuleRequest("deviceShouldSavePredefined", "devicePredefinedRuleName")) {
                 return;
             }
 
             setDeviceSubmitting(true);
 
             const ruleData = {
-                name: $("#deviceRuleName").val(),
-                ruleID: $("#deviceRuleID").val(),
-                redirectOffer: $("#deviceRedirectOffer").val(),
-                deny: document.getElementById("deviceIsAllowed").checked,
-                is_active: document.getElementById("deviceIsActive").checked,
-                capAmount: document.getElementById("deviceCap").value,
-                capStatus: document.getElementById("capIsActive").checked,
+                name: valueOf("deviceRuleName"),
+                ruleID: valueOf("deviceRuleID"),
+                redirectOffer: valueOf("deviceRedirectOffer"),
+                deny: isChecked("deviceIsAllowed"),
+                is_active: isChecked("deviceIsActive"),
+                capAmount: valueOf("deviceCap"),
+                capStatus: isChecked("capIsActive"),
             };
 
-            $.ajax({
-                type: "POST",
-                url: "/offer/rules/device/" + ruleData.ruleID,
-                data: {
+            try {
+                await postForm("/offer/rules/device/" + ruleData.ruleID, {
                     data: parseDevices("deviceToAdd", true),
                     ruleData: JSON.stringify(ruleData),
                     ruleID: ruleData.ruleID,
-                },
-                cache: false,
-                traditional: true,
-                success: function () {
-                    const shouldSavePredefined = $("#deviceShouldSavePredefined").is(":checked");
-                    const finalize = function () {
-                        hideRulesModal("deviceModal");
-                        location.reload();
-                    };
+                });
 
-                    if (shouldSavePredefined) {
-                        const payload = buildDevicePredefinedRulePayload();
-
-                        persistPredefinedRule(payload)
-                            .fail(function (result) {
-                                alert(result.responseJSON?.message || result.responseText || "Rule updated, but predefined rule could not be created.");
-                            })
-                            .always(finalize);
-
-                        return;
+                if (isChecked("deviceShouldSavePredefined")) {
+                    try {
+                        await persistPredefinedRule(buildDevicePredefinedRulePayload());
+                    } catch (error) {
+                        alert(error.message || "Rule updated, but predefined rule could not be created.");
                     }
-
-                    finalize();
-                },
-                error: function (result) {
-                    alert(result.responseText || result);
-                },
-                complete: function () {
-                    setDeviceSubmitting(false);
                 }
-            });
+
+                hideRulesModal("deviceModal");
+                location.reload();
+            } catch (error) {
+                alert(error.message || "Request failed.");
+            } finally {
+                setDeviceSubmitting(false);
+            }
         });
 
         function resetDeviceModal() {
-            $("#deviceRuleName").val("");
-            $("#deviceRuleID").val("");
-            $("#deviceRedirectOffer").val("");
-            $("#devicePredefinedRuleSelect").val("");
-            $("#deviceShouldSavePredefined").prop("checked", false);
-            $("#devicePredefinedRuleName").val("").prop("disabled", true);
-            $("#devicePredefinedRuleNameField").addClass("bp-hidden");
-            $("#deviceRuleTitle").text("New Device Rule");
-            $("#deviceIsAllowed").prop("checked", false);
-            $("#deviceIsActive").prop("checked", true);
-            $("#capIsActive").prop("checked", {{ $activeCap ? 'true' : 'false' }});
-            $("#deviceCap").val({{ $capAmount ?: 0 }});
-            $("#deviceCreateButton").show();
-            $("#deviceUpdateButton").hide();
+            setValue("deviceRuleName", "");
+            setValue("deviceRuleID", "");
+            setValue("deviceRedirectOffer", "");
+            setValue("devicePredefinedRuleSelect", "");
+            setChecked("deviceShouldSavePredefined", false);
+            setValue("devicePredefinedRuleName", "");
+            setDisabled("devicePredefinedRuleName", true);
+            get("devicePredefinedRuleNameField")?.classList.add("bp-hidden");
+            setText("deviceRuleTitle", "New Device Rule");
+            setChecked("deviceIsAllowed", false);
+            setChecked("deviceIsActive", true);
+            setChecked("capIsActive", {{ $activeCap ? 'true' : 'false' }});
+            setValue("deviceCap", {{ $capAmount ?: 0 }});
+            showElement("deviceCreateButton", true);
+            showElement("deviceUpdateButton", false);
             setDeviceSubmitting(false);
             clearDeviceSelections();
         }
 
         function resetGeoModal() {
-            $("#geoRuleName").val("");
-            $("#geoRuleID").val("");
-            $("#geoRedirectOffer").val("");
-            $("#geoPredefinedRuleSelect").val("");
-            $("#geoShouldSavePredefined").prop("checked", false);
-            $("#geoPredefinedRuleName").val("").prop("disabled", true);
-            $("#geoPredefinedRuleNameField").addClass("bp-hidden");
-            $("#geoRuleTitle").text("New Geo Rule");
-            $("#geoIsAllowed").prop("checked", false);
-            $("#geoIsActive").prop("checked", true);
-            $("#searchCountryList").val("");
-            $("#geoCreateButton").show();
-            $("#geoUpdateButton").hide();
+            setValue("geoRuleName", "");
+            setValue("geoRuleID", "");
+            setValue("geoRedirectOffer", "");
+            setValue("geoPredefinedRuleSelect", "");
+            setChecked("geoShouldSavePredefined", false);
+            setValue("geoPredefinedRuleName", "");
+            setDisabled("geoPredefinedRuleName", true);
+            get("geoPredefinedRuleNameField")?.classList.add("bp-hidden");
+            setText("geoRuleTitle", "New Geo Rule");
+            setChecked("geoIsAllowed", false);
+            setChecked("geoIsActive", true);
+            setValue("searchCountryList", "");
+            showElement("geoCreateButton", true);
+            showElement("geoUpdateButton", false);
             setGeoSubmitting(false);
             clearGeoSelections();
         }
 
-        $("#geoCancelButton, #geoModal .close").click(function () {
-            resetGeoModal();
+        get("geoCancelButton")?.addEventListener('click', resetGeoModal);
+        document.querySelector("#geoModal .bp-rules-modal-close")?.addEventListener('click', resetGeoModal);
+
+        get("deviceCancelButton")?.addEventListener('click', resetDeviceModal);
+        document.querySelector("#deviceModal .bp-rules-modal-close")?.addEventListener('click', resetDeviceModal);
+
+        get("geoShouldSavePredefined")?.addEventListener('change', () => {
+            togglePredefinedNameField("geoShouldSavePredefined", "geoPredefinedRuleName", "geoPredefinedRuleNameField");
         });
 
-        $("#deviceCancelButton, #deviceModal .close").click(function () {
-            resetDeviceModal();
+        get("deviceShouldSavePredefined")?.addEventListener('change', () => {
+            togglePredefinedNameField("deviceShouldSavePredefined", "devicePredefinedRuleName", "devicePredefinedRuleNameField");
         });
 
-        $("#geoShouldSavePredefined").change(function () {
-            togglePredefinedNameField("#geoShouldSavePredefined", "#geoPredefinedRuleName", "#geoPredefinedRuleNameField");
-        });
-
-        $("#deviceShouldSavePredefined").change(function () {
-            togglePredefinedNameField("#deviceShouldSavePredefined", "#devicePredefinedRuleName", "#devicePredefinedRuleNameField");
-        });
-
-        $("#geoPredefinedRuleSelect").change(function () {
-            const ruleID = $(this).val();
-            const rule = predefinedGeoRules.find(function (item) {
-                return String(item.id) === String(ruleID);
-            });
+        get("geoPredefinedRuleSelect")?.addEventListener('change', (event) => {
+            const ruleID = event.target.value;
+            const rule = predefinedGeoRules.find((item) => String(item.id) === String(ruleID));
 
             if (!rule) {
                 return;
@@ -929,11 +933,9 @@
             fillGeoRuleForm(rule);
         });
 
-        $("#devicePredefinedRuleSelect").change(function () {
-            const ruleID = $(this).val();
-            const rule = predefinedDeviceRules.find(function (item) {
-                return String(item.id) === String(ruleID);
-            });
+        get("devicePredefinedRuleSelect")?.addEventListener('change', (event) => {
+            const ruleID = event.target.value;
+            const rule = predefinedDeviceRules.find((item) => String(item.id) === String(ruleID));
 
             if (!rule) {
                 return;
@@ -943,29 +945,41 @@
         });
 
         function addDevice(deviceName) {
-            const selectedDeviceTR = $("#" + deviceName);
-            selectedDeviceTR.detach();
-            $("#deviceToAdd tbody").append(selectedDeviceTR);
-            $("#_" + deviceName).attr("onclick", "removeDevice('" + deviceName + "');");
-            setRuleActionState($("#_" + deviceName), "remove");
+            const selectedDeviceTR = get(deviceName);
+
+            if (!selectedDeviceTR) {
+                return;
+            }
+
+            selectedDeviceTR.remove();
+            document.querySelector("#deviceToAdd tbody")?.append(selectedDeviceTR);
+            const button = get("_" + deviceName);
+            button?.setAttribute("onclick", "removeDevice('" + deviceName + "');");
+            setRuleActionState(button, "remove");
         }
 
         function removeDevice(deviceName) {
-            const selectedDevice = $("#" + deviceName);
-            $(selectedDevice).remove();
-            $("#deviceListBody").append('<tr id="' + deviceName + '">' + selectedDevice.html() + '</tr>');
-            $("#_" + deviceName).attr("onclick", "addDevice('" + deviceName + "')");
-            setRuleActionState($("#_" + deviceName), "add");
+            const selectedDevice = get(deviceName);
+
+            if (!selectedDevice) {
+                return;
+            }
+
+            selectedDevice.remove();
+            get("deviceListBody")?.append(selectedDevice);
+            const button = get("_" + deviceName);
+            button?.setAttribute("onclick", "addDevice('" + deviceName + "')");
+            setRuleActionState(button, "add");
         }
 
         function parseDevices(tableName, onlyCountries = false) {
-            const rows = $('#' + tableName + ' > tbody > tr');
-            const offerID = $("#offerID").val();
-            const redirectOffer = $("#deviceRedirectOffer").val();
-            const ruleName = $("#deviceRuleName").val();
-            const notAllowed = document.getElementById("deviceIsAllowed").checked;
-            const capAmount = $("#deviceCap").val();
-            const capStatus = $("#capIsActive").is(":checked");
+            const rows = document.querySelectorAll('#' + tableName + ' > tbody > tr');
+            const offerID = valueOf("offerID");
+            const redirectOffer = valueOf("deviceRedirectOffer");
+            const ruleName = valueOf("deviceRuleName");
+            const notAllowed = isChecked("deviceIsAllowed");
+            const capAmount = valueOf("deviceCap");
+            const capStatus = isChecked("capIsActive");
 
             let parsed = [];
             if (!onlyCountries) {
@@ -980,11 +994,11 @@
         }
 
         function parseCountries(tableName, onlyCountries = false) {
-            const rows = $('#' + tableName + ' > tbody > tr');
-            const offerID = $("#offerID").val();
-            const redirectOffer = $("#geoRedirectOffer").val();
-            const geoRuleName = $("#geoRuleName").val();
-            const countriesNotAllowed = document.getElementById("geoIsAllowed").checked;
+            const rows = document.querySelectorAll('#' + tableName + ' > tbody > tr');
+            const offerID = valueOf("offerID");
+            const redirectOffer = valueOf("geoRedirectOffer");
+            const geoRuleName = valueOf("geoRuleName");
+            const countriesNotAllowed = isChecked("geoIsAllowed");
 
             let parsed = [];
             if (!onlyCountries) {
@@ -1008,24 +1022,28 @@
 
         function sortTable(table, order) {
             const asc = order === 'asc';
-            const tbody = table.find('tbody');
+            const tbody = table?.querySelector('tbody');
 
-            tbody.find('tr').sort(function (a, b) {
+            Array.from(tbody?.querySelectorAll('tr') || []).sort((a, b) => {
+                const aText = a.querySelector('td:first-child')?.textContent || '';
+                const bText = b.querySelector('td:first-child')?.textContent || '';
                 return asc
-                    ? $('td:first', a).text().localeCompare($('td:first', b).text())
-                    : $('td:first', b).text().localeCompare($('td:first', a).text());
-            }).appendTo(tbody);
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            }).forEach((row) => tbody.append(row));
         }
 
-        function sortCountries(table, order) {
+        function sortCountries(order = 'asc') {
             const asc = order === 'asc';
-            const tbody = $("#countryListBody");
+            const tbody = get("countryListBody");
 
-            tbody.find('tr').sort(function (a, b) {
+            Array.from(tbody?.querySelectorAll('tr') || []).sort((a, b) => {
+                const aText = a.querySelector('td:first-child')?.textContent || '';
+                const bText = b.querySelector('td:first-child')?.textContent || '';
                 return asc
-                    ? $('td:first', a).text().localeCompare($('td:first', b).text())
-                    : $('td:first', b).text().localeCompare($('td:first', a).text());
-            }).appendTo(tbody);
+                    ? aText.localeCompare(bText)
+                    : bText.localeCompare(aText);
+            }).forEach((row) => tbody.append(row));
         }
 
         function normalizeCountryCode(countryCode) {
@@ -1036,64 +1054,71 @@
             const normalizedCode = normalizeCountryCode(countryCode);
             const countryLabel = countryMap[normalizedCode] || normalizedCode;
 
-            return $(
-                '<tr id="' + normalizedCode + '">' +
-                    '<td>' + countryLabel + '</td>' +
-                    '<td><button type="button" id="_' + normalizedCode + '" class="bp-rule-action-button" onclick="addCountry(\'' + normalizedCode + '\');"><span class="bp-rule-action-button-text">Add</span></button></td>' +
-                '</tr>'
-            );
+            const row = document.createElement('tr');
+            row.id = normalizedCode;
+            row.innerHTML =
+                '<td>' + countryLabel + '</td>' +
+                '<td><button type="button" id="_' + normalizedCode + '" class="bp-rule-action-button" onclick="addCountry(\'' + normalizedCode + '\');"><span class="bp-rule-action-button-text">Add</span></button></td>';
+
+            return row;
         }
 
         function getCountryRow(countryCode) {
             const normalizedCode = normalizeCountryCode(countryCode);
-            let row = $('#' + normalizedCode);
+            let row = get(normalizedCode);
 
-            if (!row.length) {
-                row = $('#' + normalizedCode.toLowerCase());
+            if (!row) {
+                row = get(normalizedCode.toLowerCase());
             }
 
-            if (!row.length) {
+            if (!row) {
                 row = buildCountryRow(normalizedCode);
             }
 
             return row;
         }
 
-        function setRuleActionState(actionLink, mode) {
-            const isRemove = mode === 'remove';
-            actionLink.toggleClass('is-remove', isRemove);
-            actionLink.find('.bp-rule-action-button-text').text(isRemove ? 'Remove' : 'Add');
-        }
-
-        function syncSelectValue(selectElement, rawValue, optionMap = {}) {
-            const normalizedValue = String(rawValue || '').trim();
-
-            if (!normalizedValue || normalizedValue === '0') {
-                selectElement.val('');
+        function setRuleActionState(actionButton, mode) {
+            if (!actionButton) {
                 return;
             }
 
-            let option = selectElement.find('option').filter(function () {
-                return String($(this).val()).trim() === normalizedValue;
-            }).first();
+            const isRemove = mode === 'remove';
+            actionButton.classList.toggle('is-remove', isRemove);
+            const label = actionButton.querySelector('.bp-rule-action-button-text');
+            if (label) {
+                label.textContent = isRemove ? 'Remove' : 'Add';
+            }
+        }
 
-            if (!option.length && optionMap[normalizedValue]) {
-                selectElement.append(
-                    $('<option>', {
-                        value: normalizedValue,
-                        text: optionMap[normalizedValue]
-                    })
-                );
-
-                option = selectElement.find('option').filter(function () {
-                    return String($(this).val()).trim() === normalizedValue;
-                }).first();
+        function syncSelectValue(selectElement, rawValue, optionMap = {}) {
+            if (!selectElement) {
+                return;
             }
 
-            if (option.length) {
-                selectElement.find('option').prop('selected', false);
-                option.prop('selected', true);
-                selectElement.val(normalizedValue).trigger('change');
+            const normalizedValue = String(rawValue || '').trim();
+
+            if (!normalizedValue || normalizedValue === '0') {
+                selectElement.value = '';
+                return;
+            }
+
+            let option = Array.from(selectElement.options).find((item) => {
+                return String(item.value).trim() === normalizedValue;
+            });
+
+            if (!option && optionMap[normalizedValue]) {
+                option = new Option(optionMap[normalizedValue], normalizedValue);
+                selectElement.append(option);
+            }
+
+            if (option) {
+                Array.from(selectElement.options).forEach((item) => {
+                    item.selected = false;
+                });
+                option.selected = true;
+                selectElement.value = normalizedValue;
+                selectElement.dispatchEvent(new Event('change'));
             }
         }
 
@@ -1102,7 +1127,7 @@
             const capIsChecked = Number(capStatus) ? ' checked' : '';
             const row = getCountryRow(normalizedCode);
 
-            row.detach();
+            row.remove();
 
             if (!document.getElementById(normalizedCode + '_capIsActive')) {
                 const html =
@@ -1116,29 +1141,36 @@
                             '<input class="cap_amount" type="number" id="' + normalizedCode + '_geoCap" value="' + cap + '">' +
                         '</label>' +
                     '</td>';
-                row.append(html);
+                row.insertAdjacentHTML('beforeend', html);
             }
 
-            $("#toAdd tbody").append(row);
-            $("#_" + normalizedCode).attr("onclick", "removeCountry('" + normalizedCode + "');");
-            setRuleActionState($("#_" + normalizedCode), "remove");
+            document.querySelector("#toAdd tbody")?.append(row);
+            const button = get("_" + normalizedCode);
+            button?.setAttribute("onclick", "removeCountry('" + normalizedCode + "');");
+            setRuleActionState(button, "remove");
 
             if (sortTableAfter) {
-                sortTable($('#toAdd'), 'asc');
+                sortTable(get('toAdd'), 'asc');
             }
         }
 
         function removeCountry(countryName, sortTableAfter = true) {
             const normalizedCode = normalizeCountryCode(countryName);
-            const selectedCountry = $("#" + normalizedCode);
-            $(selectedCountry).remove();
-            selectedCountry[0].lastChild.remove();
-            $("#countryListBody").append('<tr id="' + normalizedCode + '">' + selectedCountry.html() + '</tr>');
-            $("#_" + normalizedCode).attr("onclick", "addCountry('" + normalizedCode + "');");
-            setRuleActionState($("#_" + normalizedCode), "add");
+            const selectedCountry = get(normalizedCode);
+
+            if (!selectedCountry) {
+                return;
+            }
+
+            selectedCountry.remove();
+            selectedCountry.querySelector('td.caps')?.remove();
+            get("countryListBody")?.append(selectedCountry);
+            const button = get("_" + normalizedCode);
+            button?.setAttribute("onclick", "addCountry('" + normalizedCode + "');");
+            setRuleActionState(button, "add");
 
             if (sortTableAfter) {
-                sortCountries($('#countryList'), 'asc');
+                sortCountries('asc');
             }
         }
 
