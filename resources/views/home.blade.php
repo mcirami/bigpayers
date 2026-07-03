@@ -18,7 +18,6 @@
             : null;
         $menuSections = $dashboardNavBar ? $dashboardNavBar->getVisibleMenu() : [];
         $workspaceSectionCount = count($menuSections);
-        $signupLink = $userType == 2 ? $domain . $userId : null;
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
@@ -105,37 +104,6 @@
                     </div>
                 </article>
 
-                {{--<article class="bp-card">
-                    <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                        <div>
-                            <p class="bp-section-kicker">Navigation</p>
-                            <h3 class="bp-section-title">Main work areas</h3>
-                        </div>
-                        <p class="text-sm text-slate-500">Built from your current permissions</p>
-                    </div>
-
-                    <div class="mt-6 bp-mini-list">
-                        @forelse($menuSections as $section)
-                            <div class="bp-mini-list-item">
-                                <div>
-                                    <p class="bp-mini-title">{{ $section['name'] }}</p>
-                                    <p class="bp-mini-copy">
-                                        {{ implode(' • ', collect($section['items'])->pluck('name')->take(3)->all()) }}
-                                        @if(count($section['items']) > 3)
-                                            • +{{ count($section['items']) - 3 }} more
-                                        @endif
-                                    </p>
-                                </div>
-                                <span class="bp-mini-badge">{{ count($section['items']) }}</span>
-                            </div>
-                        @empty
-                            <div class="bp-link-card">
-                                <p class="bp-link-label">Availability</p>
-                                <p class="bp-link-value">Navigation sections will appear here once access is available for this account.</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </article>--}}
             </div>
 
             <div class="space-y-6">
@@ -169,42 +137,6 @@
                         </a>
                     </div>
                 </article>
-
-                {{--<article class="bp-card">
-                    <p class="bp-section-kicker">Tracking Links</p>
-                    <h3 class="bp-section-title">Copy-ready endpoints</h3>
-
-                    <div class="mt-6 space-y-4">
-                        @if ($canViewPostback)
-                            <div class="bp-link-card">
-                                <div>
-                                    <p class="bp-link-label">Postback URL</p>
-                                    <p class="bp-link-value" data-copy-source="postback">{{ $postBackURL }}</p>
-                                </div>
-                                <button type="button" class="bp-copy-button" data-copy-button="postback">Copy link</button>
-                            </div>
-                        @endif
-
-                        @if ($signupLink)
-                            <div class="bp-link-card">
-                                <div>
-                                    <p class="bp-link-label">{{ $accountTypeLabel }} Signup Link</p>
-                                    <p class="bp-link-value" data-copy-source="signup">{{ $signupLink }}</p>
-                                </div>
-                                <button type="button" class="bp-copy-button" data-copy-button="signup">Copy link</button>
-                            </div>
-                        @endif
-
-                        @unless ($canViewPostback || $signupLink)
-                            <div class="bp-link-card">
-                                <div>
-                                    <p class="bp-link-label">Availability</p>
-                                    <p class="bp-link-value">No copy-ready links are exposed for this account right now.</p>
-                                </div>
-                            </div>
-                        @endunless
-                    </div>
-                </article>--}}
             </div>
         </section>
     </div>
