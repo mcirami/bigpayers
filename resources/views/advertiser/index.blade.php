@@ -16,7 +16,7 @@
                     <p class="bp-section-kicker">Advertisers Workspace</p>
                     <h2 class="bp-section-title value_span9">Advertiser directory</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Review advertiser accounts, see how many offers each one currently owns, and jump into edits without leaving the new shell.
+                        Review advertiser accounts, see how many offers each one currently owns, and jump into edits quickly.
                     </p>
                 </div>
 

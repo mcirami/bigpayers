@@ -86,7 +86,7 @@
                             <p class="bp-section-kicker">Assigned Offers</p>
                             <h3 class="bp-section-title value_span9">Current offer list</h3>
                         </div>
-                        <p class="bp-table-meta">This is read-only for now and mirrors the legacy editor’s assigned offer view.</p>
+                        <p class="bp-table-meta">This read-only list shows the offers currently assigned to this advertiser.</p>
                     </div>
 
                     <div class="mt-6">

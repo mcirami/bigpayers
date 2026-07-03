@@ -46,7 +46,7 @@
                     <p class="bp-section-kicker">Referral Setup</p>
                     <h3 class="bp-section-title value_span9">Create a referral structure</h3>
                 </div>
-                <p class="bp-table-meta">The legacy flow ignored the active dropdown on create, so this form keeps the behavior focused on the actual saved fields.</p>
+                <p class="bp-table-meta">Set the affiliate, referral window, commission type, and payout value for this structure.</p>
             </div>
 
             @if($availableAffiliates->isNotEmpty())

@@ -27,7 +27,7 @@
                     <p class="bp-section-kicker">Users Workspace</p>
                     <h2 class="bp-section-title value_span9">User account directory</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Review account access, jump into edits, and log into downstream users without leaving the new shell.
+                        Review account access, jump into edits, and log into downstream users.
                     </p>
                 </div>
 

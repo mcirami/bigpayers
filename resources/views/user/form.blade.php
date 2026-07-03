@@ -25,8 +25,8 @@
                     <h2 class="bp-section-title value_span9">{{ $pageTitle }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         {{ $isEdit
-                            ? 'Update account details, assignment, permissions, and workflow shortcuts from one page in the new shell.'
-                            : 'Create a new account with the right role, owner, and permissions without dropping back into the legacy editor.' }}
+                            ? 'Update account details, assignment, permissions, and workflow shortcuts from one page.'
+                            : 'Create a new account with the right role, owner, and permissions.' }}
                     </p>
                 </div>
 
@@ -130,7 +130,7 @@
                         <p class="bp-section-kicker">Access Settings</p>
                         <h3 class="bp-section-title value_span9">Account credentials and ownership</h3>
                     </div>
-                    <p class="bp-table-meta">Role and owner controls stay aligned with the legacy permission rules behind the scenes.</p>
+                    <p class="bp-table-meta">Role and owner controls determine the permissions available to this account.</p>
                 </div>
 
                 <div class="bp-form-grid mt-6 md:grid-cols-2">
@@ -318,7 +318,7 @@
                         <div class="rounded-3xl border border-slate-200/70 bg-white/70 p-4 shadow-sm">
                             <p class="bp-detail-label">Workflow</p>
                             <p class="mt-2 text-sm leading-7 text-slate-500">
-                                The buttons below use the existing block and unblock endpoints, so this panel stays aligned with the legacy moderation logic while living in the new shell.
+                                The buttons below update this account's block status and keep the moderation workflow in one place.
                             </p>
                         </div>
 

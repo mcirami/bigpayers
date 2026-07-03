@@ -10,7 +10,7 @@
                     <p class="bp-section-kicker">Lookup Workspace</p>
                     <h2 class="bp-section-title value_span9">Click search</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Search by either the raw click ID or the encoded tracking ID, then inspect the click record, geo resolution, stored query vars, and any attached conversion without dropping into the legacy page.
+                        Search by either the raw click ID or the encoded tracking ID, then inspect the click record, geo resolution, stored query vars, and any attached conversion.
                     </p>
                 </div>
 
@@ -52,7 +52,7 @@
                         placeholder="Encoded or decoded click ID..."
                         autocomplete="off"
                     >
-                    <p class="bp-form-note">Supports the same encoded IDs the legacy tool accepted.</p>
+                    <p class="bp-form-note">Supports encoded tracking IDs and raw numeric click IDs.</p>
                 </div>
 
                 <div class="flex flex-wrap items-center gap-3">

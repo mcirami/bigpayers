@@ -40,7 +40,7 @@
                 <div class="rounded-3xl border border-slate-200/70 bg-white/70 p-4 shadow-sm">
                     <p class="bp-detail-label">Workflow</p>
                     <p class="mt-2 text-sm leading-7 text-slate-500">
-                        Payout and access updates still use the existing account-management endpoints, so this page remains fully compatible with the legacy admin logic.
+                        Review offer access, update payout values, and manage account-specific offer settings from this workspace.
                     </p>
                 </div>
 

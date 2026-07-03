@@ -40,7 +40,7 @@
                         <p class="bp-section-kicker">Theme Tokens</p>
                         <h3 class="bp-section-title value_span9">Color system</h3>
                     </div>
-                    <p class="bp-table-meta">These values are saved back into the existing company color string, so the legacy class hooks continue to work untouched.</p>
+                    <p class="bp-table-meta">These values update the company color palette used across the application.</p>
                 </div>
 
                 <div class="mt-6 bp-settings-color-grid">

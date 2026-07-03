@@ -115,7 +115,7 @@
 
 @section('extra')
 	<div class="bp-card value_span8">
-		<div class="bp-legacy-pagination">
+		<div class="bp-report-pagination">
 			{{ $reportCollection->links() }}
 		</div>
 	</div>

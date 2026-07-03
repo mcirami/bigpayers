@@ -666,21 +666,6 @@
     min-width: 12.5rem;
   }
 
-  .bp-legacy-frame-wrap {
-    overflow: hidden;
-    border: 1px solid rgba(226, 232, 240, 0.9);
-    border-radius: 1.35rem;
-    background: rgba(255, 255, 255, 0.88);
-  }
-
-  .bp-legacy-frame {
-    display: block;
-    width: 100%;
-    min-height: 72rem;
-    border: 0;
-    background: #ffffff;
-  }
-
   .bp-rules-table td,
   .bp-rules-table th {
     vertical-align: middle;
@@ -1860,21 +1845,21 @@
     flex-wrap: wrap;
   }
 
-  .bp-legacy-pagination {
+  .bp-report-pagination {
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid rgba(148, 163, 184, 0.12);
   }
 
-  .bp-legacy-pagination .controls {
+  .bp-report-pagination .controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.85rem;
   }
 
-  .bp-legacy-pagination .pages,
-  .bp-legacy-pagination .rows_select {
+  .bp-report-pagination .pages,
+  .bp-report-pagination .rows_select {
     display: inline-flex;
     align-items: center;
     flex-wrap: wrap;
@@ -1884,7 +1869,7 @@
     font-weight: 700;
   }
 
-  .bp-legacy-pagination a {
+  .bp-report-pagination a {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -1897,13 +1882,13 @@
     box-shadow: 0 12px 28px -22px rgba(15, 23, 42, 0.28);
   }
 
-  .bp-legacy-pagination a img {
+  .bp-report-pagination a img {
     width: 1rem;
     height: 1rem;
   }
 
-  .bp-legacy-pagination select,
-  .bp-legacy-pagination input {
+  .bp-report-pagination select,
+  .bp-report-pagination input {
     min-height: 2.5rem;
     border: 1px solid rgba(148, 163, 184, 0.24);
     border-radius: 0.85rem;
@@ -1912,7 +1897,7 @@
     box-shadow: 0 12px 28px -24px rgba(15, 23, 42, 0.3);
   }
 
-  .bp-legacy-pagination input {
+  .bp-report-pagination input {
     padding-left: 0.75rem;
     padding-right: 0.75rem;
   }

@@ -17,7 +17,7 @@
                     <h2 class="bp-section-title value_span9">{{ $pageTitle }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         {{ $isEdit
-                            ? 'Update the branded domain settings for this offer URL without leaving the new shell.'
+                            ? 'Update the branded domain settings for this offer URL.'
                             : 'Add a branded domain for outbound offer links and keep the URL registry current.' }}
                     </p>
                 </div>

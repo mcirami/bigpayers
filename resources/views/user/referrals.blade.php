@@ -16,7 +16,7 @@
                     <p class="bp-section-kicker">Users Workspace</p>
                     <h2 class="bp-section-title value_span9">{{ $referrer->user_name }} referral workspace</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Manage which affiliates are referred by this user, update referral timing and payout settings, and remove structures without dropping back into the legacy editor.
+                        Manage which affiliates are referred by this user, update referral timing and payout settings, and remove referral structures.
                     </p>
                 </div>
 

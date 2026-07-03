@@ -16,7 +16,7 @@
                     <p class="bp-section-kicker">Users Workspace</p>
                     <h2 class="bp-section-title value_span9">{{ $manager->user_name }}'s {{ strtolower($affiliateTypeLabelPlural) }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Review the {{ strtolower($affiliateTypeLabelPlural) }} assigned to this {{ strtolower($accountTypeLabel) }}, jump into edits, and use the existing pagination controls without leaving the new shell.
+                        Review the {{ strtolower($affiliateTypeLabelPlural) }} assigned to this {{ strtolower($accountTypeLabel) }}, jump into edits, and use the existing pagination controls.
                     </p>
                 </div>
 
@@ -48,7 +48,7 @@
             <article class="bp-stat-card">
                 <p class="bp-stat-label">Rows Per Page</p>
                 <p class="bp-stat-value">{{ $rowsPerPage }}</p>
-                <p class="bp-stat-note">Adjustable through the legacy pagination controls below the directory.</p>
+                <p class="bp-stat-note">Adjustable through the pagination controls below the directory.</p>
             </article>
         </section>
 
@@ -109,7 +109,7 @@
                 </table>
             </div>
 
-            <div class="bp-legacy-pagination">
+            <div class="bp-report-pagination">
                 @include('report.options.pagination')
             </div>
         </section>

@@ -24,7 +24,7 @@
                     <p class="bp-section-kicker">Offers Workspace</p>
                     <h2 class="bp-section-title value_span9">Offer management</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Browse active offers, request access, copy tracking URLs, and move into the deeper legacy offer tools when needed.
+                        Browse active offers, request access, copy tracking URLs, and open detailed offer tools when needed.
                     </p>
                 </div>
 

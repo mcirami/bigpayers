@@ -10,7 +10,7 @@
                     <p class="bp-section-kicker">Offers Workspace</p>
                     <h2 class="bp-section-title value_span9">Rules for {{ $offer->offer_name ?: 'Offer #' . $offer->idoffer }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Manage geo, device, and cap rules for this offer without dropping into the old page shell.
+                        Manage geo, device, and cap rules for this offer from one focused workspace.
                     </p>
                 </div>
 

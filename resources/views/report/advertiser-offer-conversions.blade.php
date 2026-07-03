@@ -32,7 +32,7 @@
         @endforeach
         </tbody>
     </table>
-    <div class="mt-4 bp-legacy-pagination">
+    <div class="mt-4 bp-report-pagination">
         {{ $affiliateReport->links() }}
     </div>
 

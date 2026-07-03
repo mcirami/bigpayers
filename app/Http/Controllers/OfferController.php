@@ -352,7 +352,7 @@ class OfferController extends Controller
 			'mode' => 'edit',
 			'pageTitle' => 'Edit Offer',
 			'pageHeading' => 'Edit offer',
-			'pageCopy' => 'Update the main offer details, payout, visibility, and advertiser assignment without dropping back into the legacy editor.',
+			'pageCopy' => 'Update the main offer details, payout, visibility, and advertiser assignment.',
 			'formAction' => "/offer/edit/{$offer->idoffer}",
 			'submitLabel' => 'Save changes',
 			'offer' => $offer,

@@ -16,7 +16,7 @@
                     <p class="bp-section-kicker">Users Workspace</p>
                     <h2 class="bp-section-title value_span9">Pending {{ strtolower($affiliateTypeLabelPlural) }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Review new signups waiting for approval and activate them into the right {{ strtolower($accountTypeLabel) }} without leaving the new shell.
+                        Review new signups waiting for approval and activate them into the right {{ strtolower($accountTypeLabel) }} workflow.
                     </p>
                 </div>
 

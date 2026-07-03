@@ -10,7 +10,7 @@
                     <p class="bp-section-kicker">Inbox Workspace</p>
                     <h2 class="bp-section-title value_span9">Notification center</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Review system messages, open the full detail view, and clear inbox items without dropping back into the legacy notification pages.
+                        Review system messages, open the full detail view, and clear inbox items from one workspace.
                     </p>
                 </div>
 

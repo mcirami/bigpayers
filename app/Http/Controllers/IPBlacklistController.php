@@ -73,7 +73,7 @@ class IPBlacklistController extends Controller
             'formAction' => "/ip-blacklist/{$entry->id}/edit",
             'pageHeading' => 'Edit IP range',
             'submitLabel' => 'Update range',
-            'introCopy' => 'Adjust the stored start and end bounds for this blacklist range without using the legacy edit screen.',
+            'introCopy' => 'Adjust the stored start and end bounds for this blacklist range.',
             'values' => [
                 'start' => old('start', $entry->start),
                 'end' => old('end', $entry->end),
