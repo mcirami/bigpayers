@@ -63,7 +63,7 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
 
 	    Paginator::defaultView('vendor/pagination/default');
-	    Paginator::defaultSimpleView('default');
+	    Paginator::defaultSimpleView('vendor/pagination/simple-default');
     }
 
     /**

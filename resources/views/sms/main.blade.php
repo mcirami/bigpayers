@@ -168,7 +168,7 @@
                 return 'just now';
             };
 
-            const request = async (url, options = {}) => {
+            const httpRequest = async (url, options = {}) => {
                 const response = await fetch(url + adminSuffix, {
                     ...options,
                     credentials: 'same-origin',
@@ -290,12 +290,12 @@
 
                 try {
                     const [conversationDetails, messages] = await Promise.all([
-                        request(`/sms/api/conversations/${conversationId}`),
-                        request(`/sms/api/conversations/${conversationId}/messages`),
+                        httpRequest(`/sms/api/conversations/${conversationId}`),
+                        httpRequest(`/sms/api/conversations/${conversationId}/messages`),
                     ]);
 
                     activeConversation = { ...conversation, ...conversationDetails };
-                    await request(`/sms/api/conversations/${conversationId}/read-new-messages`, { method: 'PATCH' });
+                    await httpRequest(`/sms/api/conversations/${conversationId}/read-new-messages`, { method: 'PATCH' });
                     conversation.unread_messages = 0;
                     renderConversations();
                     renderMessages(Array.isArray(messages) ? messages : []);
@@ -310,7 +310,7 @@
                 }
 
                 try {
-                    const data = await request('/sms/api/conversations');
+                    const data = await httpRequest('/sms/api/conversations');
                     conversations = Array.isArray(data) ? data : [];
 
                     if (activeConversation) {
@@ -340,7 +340,7 @@
                     const group = moveButton.getAttribute('data-move-group');
 
                     try {
-                        await request('/sms/api/conversations', {
+                        await httpRequest('/sms/api/conversations', {
                             method: 'PATCH',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ id, group }),
@@ -398,7 +398,7 @@
                 setStatus('Sending');
 
                 try {
-                    await request('/sms/api/messages/send', {
+                    await httpRequest('/sms/api/messages/send', {
                         method: 'POST',
                         body: formData,
                     });

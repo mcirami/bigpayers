@@ -610,7 +610,7 @@
             };
         }
 
-        async function request(url, options) {
+        async function httpRequest(url, options) {
             const response = await fetch(url, {
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
@@ -645,7 +645,7 @@
                 formData.append(key, value);
             });
 
-            return request(url, {
+            return httpRequest(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
@@ -655,7 +655,7 @@
         }
 
         function persistPredefinedRule(payload) {
-            return request("/offer/rules/predefined", {
+            return httpRequest("/offer/rules/predefined", {
                 method:"POST",
                 headers: {
                     'Content-Type': 'application/json'
