@@ -1516,8 +1516,6 @@ class AuditLegacyFallbackCoverage extends Command
         $errors = collect();
         $directories = [
             'resources/views',
-            'resources/assets',
-            'public/js',
             'src',
         ];
 
@@ -1552,7 +1550,6 @@ class AuditLegacyFallbackCoverage extends Command
         $sourceFiles = collect();
         $directories = [
             'resources/views',
-            'public/js',
             'public/css',
         ];
 

@@ -543,7 +543,7 @@ class LegacyFallbackAuditTest extends TestCase
             'modernLegacyPhpUrlReferenceErrorsFor',
             [[
                 'resources/views/bad.blade.php' => '<form action="/signup.php"></form>',
-                'public/js/bad.js' => 'window.location = "/offer_update.php?idoffer=1";',
+                'public/css/bad.css' => 'body { background-image: url("/offer_update.php?idoffer=1"); }',
                 'resources/views/clean.blade.php' => '<form action="/signup"></form>',
             ]]
         );
@@ -553,7 +553,7 @@ class LegacyFallbackAuditTest extends TestCase
             $errors->all()
         );
         $this->assertContains(
-            'public/js/bad.js: replace legacy PHP URL offer_update.php with its modern Laravel route.',
+            'public/css/bad.css: replace legacy PHP URL offer_update.php with its modern Laravel route.',
             $errors->all()
         );
         $this->assertCount(2, $errors);
