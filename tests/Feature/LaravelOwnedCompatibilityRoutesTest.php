@@ -1186,11 +1186,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
-    public function test_modern_notification_layouts_use_legacy_notify_boundary(): void
+    public function test_modern_notification_boundary_is_isolated_from_layouts(): void
     {
-        $layout = File::get(resource_path('views/layouts/master.blade.php'));
+        $layout = File::get(resource_path('views/layouts/dashboard-shell.blade.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyNotify::info', $layout);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Notify', $layout);
 
         $this->assertStringContainsString(
@@ -2010,7 +2009,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             resource_path('views/contact.blade.php'),
-            resource_path('views/layouts/master.blade.php'),
         ] as $path) {
             $contents = File::get($path);
 

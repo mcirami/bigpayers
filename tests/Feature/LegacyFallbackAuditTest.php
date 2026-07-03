@@ -225,7 +225,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern layouts render legacy notifications through LegacyNotify.',
+            'Modern Laravel code keeps legacy notifications behind the LegacyNotify boundary.',
             $output
         );
         $this->assertStringContainsString(

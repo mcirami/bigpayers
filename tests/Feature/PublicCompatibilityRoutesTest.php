@@ -260,7 +260,6 @@ class PublicCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/DashboardController.php'),
             resource_path('views/home.blade.php'),
             resource_path('views/layouts/dashboard-shell.blade.php'),
-            resource_path('views/layouts/master.blade.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -290,7 +289,6 @@ class PublicCompatibilityRoutesTest extends TestCase
         foreach ([
             resource_path('views/home.blade.php'),
             resource_path('views/layouts/dashboard-shell.blade.php'),
-            resource_path('views/layouts/master.blade.php'),
             resource_path('views/errors/403.blade.php'),
             resource_path('views/errors/404.blade.php'),
             resource_path('views/errors/500.blade.php'),
