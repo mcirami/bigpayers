@@ -25,16 +25,16 @@
     <table id="mainTable"  data-sortable-table data-sort-default="1:desc" >
         <thead>
         <tr>
-            <th class="value_span9">Click</th>
-            <th class="value_span9">Click Time</th>
-            <th class="value_span9">Conv Time</th>
-            <th class="value_span9">Paid</th>
-            <th class="value_span9">Sub 1</th>
-            <th class="value_span9">Sub 2</th>
-            <th class="value_span9">Sub 3</th>
-            <th class="value_span9">Affiliate</th>
-            <th class="value_span9">Offer</th>
-            <th class="value_span9">IP</th>
+            <th>Click</th>
+            <th>Click Time</th>
+            <th>Conv Time</th>
+            <th>Paid</th>
+            <th>Sub 1</th>
+            <th>Sub 2</th>
+            <th>Sub 3</th>
+            <th>Affiliate</th>
+            <th>Offer</th>
+            <th>IP</th>
         </tr>
         </thead>
         <tbody>

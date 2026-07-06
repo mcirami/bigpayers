@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Affiliate access for {{ $offer->offer_name ?: 'Offer #' . $offer->idoffer }}</h2>
+                    <h2 class="bp-section-title">Affiliate access for {{ $offer->offer_name ?: 'Offer #' . $offer->idoffer }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Choose which owned affiliates can run this offer.
                     </p>
@@ -41,14 +41,14 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <form action="/offer/{{ $offer->idoffer }}/access" method="post" class="space-y-6">
                 @csrf
 
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Access Matrix</p>
-                        <h3 class="bp-section-title value_span9">Assigned affiliates</h3>
+                        <h3 class="bp-section-title">Assigned affiliates</h3>
                     </div>
                     <div class="flex gap-2">
                         <button type="button" class="bp-button-secondary" onclick="setOfferAccess(true)">Check all</button>
@@ -79,7 +79,7 @@
                 @endif
 
                 <div class="flex justify-end">
-                    <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">
+                    <button type="submit" class="bp-button-primary">
                         Save access
                     </button>
                 </div>

@@ -11,10 +11,10 @@
     <table>
         <thead>
         <tr>
-            <th class="value_span9">Payout Type</th>
-            <th class="value_span9">Notes</th>
-            <th class="value_span9">Revenue</th>
-            <th class="value_span9">Date Achieved</th>
+            <th>Payout Type</th>
+            <th>Notes</th>
+            <th>Revenue</th>
+            <th>Date Achieved</th>
         </tr>
         </thead>
         <tbody>
@@ -28,11 +28,11 @@
 @endsection
 @section('extra')
     <div id="payout-history">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Payout History</p>
-                    <h3 class="bp-section-title value_span9">Weekly payout snapshots</h3>
+                    <h3 class="bp-section-title">Weekly payout snapshots</h3>
                 </div>
                 <p class="bp-table-meta">Expand a week to inspect the offer, salary, bonus, referral, deduction, and net breakdown.</p>
             </div>
@@ -175,7 +175,6 @@
 
                 ['ID', 'Name', 'Raw', 'Unique', 'FreeSignUps', 'Pending Conversions', 'Conversions', 'Revenue'].forEach(function (label) {
                     const cell = document.createElement('th');
-                    cell.className = 'value_span9';
                     cell.textContent = label;
                     header.appendChild(cell);
                 });

@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">Add referral for {{ $referrer->user_name }}</h2>
+                    <h2 class="bp-section-title">Add referral for {{ $referrer->user_name }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Attach a new referred affiliate to this user and define the payout structure from the same modern shell as the rest of user management.
                     </p>
@@ -40,11 +40,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Referral Setup</p>
-                    <h3 class="bp-section-title value_span9">Create a referral structure</h3>
+                    <h3 class="bp-section-title">Create a referral structure</h3>
                 </div>
                 <p class="bp-table-meta">Set the affiliate, referral window, commission type, and payout value for this structure.</p>
             </div>
@@ -88,7 +88,7 @@
                     </div>
 
                     <div class="flex flex-wrap items-center gap-3">
-                        <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">Create referral</button>
+                        <button type="submit" class="bp-button-primary">Create referral</button>
                         <a href="/user/{{ $referrer->idrep }}/referrals" class="bp-button-secondary">Cancel</a>
                     </div>
                 </form>

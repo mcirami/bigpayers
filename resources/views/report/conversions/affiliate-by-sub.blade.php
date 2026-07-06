@@ -23,10 +23,10 @@
 	<table id="clicks"  data-sortable-table data-sort-default="3:desc" >
 			<thead>
 			<tr>
-				<th class="value_span9">Sub Id</th>
-				<th class="value_span9">Clicks</th>
-				<th class="value_span9">Unique Clicks</th>
-				<th class="value_span9">Conversions</th>
+				<th>Sub Id</th>
+				<th>Clicks</th>
+				<th>Unique Clicks</th>
+				<th>Conversions</th>
 			</tr>
 			</thead>
 			<tbody>

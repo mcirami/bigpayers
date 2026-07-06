@@ -34,27 +34,27 @@
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
-					<th class="value_span9">Click ID</th>
+					<th>Click ID</th>
 				@endif
-				<th class="value_span9">Click Time</th>
-				<th class="value_span9">Conv Time</th>
+				<th>Click Time</th>
+				<th>Conv Time</th>
 
                 @if ($canViewFraudData || ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts))
-                    <th class="value_span9">Paid</th>
+                    <th>Paid</th>
                 @endif
                 @if ($canViewFraudData)
-                    <th class="value_span9">Referer Url</th>
+                    <th>Referer Url</th>
                 @endif
 				@if ($canViewFraudData)
-					<th class="value_span9">IP Address</th>
+					<th>IP Address</th>
 				@endif
-				<th class="value_span9">Country</th>
+				<th>Country</th>
 				@if ($canViewFraudData)
-					<th class="value_span9">Sub Division</th>
-					<th class="value_span9">City</th>
-					<th class="value_span9">Postal</th>
-					<th class="value_span9">Longitude</th>
-					<th class="value_span9">Latitude</th>
+					<th>Sub Division</th>
+					<th>City</th>
+					<th>Postal</th>
+					<th>Longitude</th>
+					<th>Latitude</th>
 				@endif
 			</tr>
 			</thead>

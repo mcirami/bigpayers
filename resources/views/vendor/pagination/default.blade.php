@@ -28,9 +28,9 @@
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @if ($page == $paginator->currentPage())
-                            <li class="active" aria-current="page"><a class="disabled active value_span2-2 value_span3-2 value_span6-1 value_span2 value_span6 value_span4">{{ $page }}</a></li>
+                            <li class="active" aria-current="page"><a class="disabled active">{{ $page }}</a></li>
                         @else
-                            <li><a class="value_span2-2 value_span3-2 value_span6-1 value_span2 value_span6" href="{{ $url }}&d_from={{$d_from}}&d_to={{$d_to}}&dateSelect={{$dateSelect}}">{{ $page }}</a></li>
+                            <li><a href="{{ $url }}&d_from={{$d_from}}&d_to={{$d_to}}&dateSelect={{$dateSelect}}">{{ $page }}</a></li>
                         @endif
                     @endforeach
                 @endif

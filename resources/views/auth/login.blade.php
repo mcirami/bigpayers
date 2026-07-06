@@ -53,13 +53,13 @@
 </head>
 <body class="login-page {{ $themeClass }}">
 <div class="login-shell">
-    <section class="login-shell__brand value_span1">
+    <section class="login-shell__brand">
         <div class="login-shell__brand-inner">
             <a href="{{ $webroot }}" class="login-shell__logo-link" aria-label="{{ $company->getShortHand() }} home">
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
             <p class="login-shell__eyebrow">Affiliate login</p>
-            <h1 class="login-shell__title value_span2">{{ \App\Services\LoginBranding::pageText() }}</h1>
+            <h1 class="login-shell__title">{{ \App\Services\LoginBranding::pageText() }}</h1>
             <p class="login-shell__copy">
                 Access your dashboard, reporting, offers, and account tools from a login experience that now follows your install’s live brand settings.
             </p>
@@ -82,11 +82,11 @@
         </div>
     </section>
 
-    <section class="login-shell__panel value_span8">
+    <section class="login-shell__panel">
         <div class="login-card">
             <p class="login-card__kicker">Sign in</p>
-            <h2 class="login-card__title value_span9">Welcome back</h2>
-            <p class="login-card__copy value_span10">Use your account credentials to continue into the affiliate workspace.</p>
+            <h2 class="login-card__title">Welcome back</h2>
+            <p class="login-card__copy">Use your account credentials to continue into the affiliate workspace.</p>
 
             <form method="post" action="/login" class="login-form">
                 {!! csrf_field() !!}
@@ -112,10 +112,10 @@
                 </label>
 
                 <div class="login-form__row">
-                    <a class="login-form__link value_span5" href="/forgot-password">{{ \App\Services\LoginBranding::forgotPasswordLinkText() }}</a>
+                    <a class="login-form__link" href="/forgot-password">{{ \App\Services\LoginBranding::forgotPasswordLinkText() }}</a>
                 </div>
 
-                <button type="submit" name="button" class="login-form__submit value_span11 value_span2 value_span4">
+                <button type="submit" name="button" class="login-form__submit">
                     {{ \App\Services\LoginBranding::buttonText() }}
                 </button>
             </form>

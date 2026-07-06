@@ -17,11 +17,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Finance Workspace</p>
-                    <h2 class="bp-section-title value_span9">Manual sale entry</h2>
+                    <h2 class="bp-section-title">Manual sale entry</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Create a generated click and conversion pair for an existing {{ strtolower($affiliateLabel) }} and offer, then log the adjustment back into the existing adjustments report.
                     </p>
@@ -48,16 +48,16 @@
             @csrf
 
             <div class="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Selection</p>
-                        <h3 class="bp-section-title value_span9">Choose {{ strtolower($affiliateLabel) }} and offer</h3>
+                        <h3 class="bp-section-title">Choose {{ strtolower($affiliateLabel) }} and offer</h3>
                     </div>
 
                     <div class="mt-6 bp-selection-grid bp-sale-selection-grid">
                         <div class="bp-selection-card">
                             <p class="bp-detail-label">{{ $affiliatePluralLabel }}</p>
-                            <h4 class="bp-selection-title value_span9">Active {{ strtolower($affiliatePluralLabel) }}</h4>
+                            <h4 class="bp-selection-title">Active {{ strtolower($affiliatePluralLabel) }}</h4>
                             <div class="mt-4 space-y-3">
                                 <input
                                     type="text"
@@ -73,7 +73,7 @@
 
                         <div class="bp-selection-card">
                             <p class="bp-detail-label">Offers</p>
-                            <h4 class="bp-selection-title value_span9">Available offers</h4>
+                            <h4 class="bp-selection-title">Available offers</h4>
                             <div class="mt-4 space-y-3">
                                 <input
                                     type="text"
@@ -89,10 +89,10 @@
                     </div>
                 </section>
 
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Sale Details</p>
-                        <h3 class="bp-section-title value_span9">Timestamp and payout</h3>
+                        <h3 class="bp-section-title">Timestamp and payout</h3>
                     </div>
 
                     <div class="mt-6 space-y-6">

@@ -10,11 +10,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $manager->user_name }}'s {{ strtolower($affiliateTypeLabelPlural) }}</h2>
+                    <h2 class="bp-section-title">{{ $manager->user_name }}'s {{ strtolower($affiliateTypeLabelPlural) }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review the {{ strtolower($affiliateTypeLabelPlural) }} assigned to this {{ strtolower($accountTypeLabel) }}, jump into edits, and use the existing pagination controls.
                     </p>
@@ -52,11 +52,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Team Directory</p>
-                    <h3 class="bp-section-title value_span9">{{ $accountTypeLabel }} {{ strtolower($affiliateTypeLabel) }} roster</h3>
+                    <h3 class="bp-section-title">{{ $accountTypeLabel }} {{ strtolower($affiliateTypeLabel) }} roster</h3>
                 </div>
                 <p class="bp-table-meta">The table remains compatible with the existing pagination partial and account action shortcuts.</p>
             </div>
@@ -75,15 +75,15 @@
                 <table  id="managerAffiliatesTable">
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">First</th>
-                        <th class="value_span9">Last</th>
-                        <th class="value_span9">Phone</th>
-                        <th class="value_span9">{{ $affiliateTypeLabel }}</th>
-                        <th class="value_span9">Status</th>
-                        <th class="value_span9">Referrer</th>
-                        <th class="value_span9">Added</th>
-                        <th class="value_span9">Actions</th>
+                        <th>ID</th>
+                        <th>First</th>
+                        <th>Last</th>
+                        <th>Phone</th>
+                        <th>{{ $affiliateTypeLabel }}</th>
+                        <th>Status</th>
+                        <th>Referrer</th>
+                        <th>Added</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody id="affiliateRows">
@@ -99,8 +99,8 @@
                             <td>{{ $affiliate->rep_timestamp }}</td>
                             <td class="actions">
                                 <div class="bp-table-actions">
-                                    <a class="bp-action-link value_span6-1 value_span4" href="/user/{{ $affiliate->idrep }}/edit">Edit</a>
-                                    <a class="bp-action-link value_span5-1" href="#" onclick="adminLogin({{ $affiliate->idrep }}); return false;">Login</a>
+                                    <a class="bp-action-link" href="/user/{{ $affiliate->idrep }}/edit">Edit</a>
+                                    <a class="bp-action-link" href="#" onclick="adminLogin({{ $affiliate->idrep }}); return false;">Login</a>
                                 </div>
                             </td>
                         </tr>

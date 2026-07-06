@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Inbox Workspace</p>
-                    <h2 class="bp-section-title value_span9">Notification center</h2>
+                    <h2 class="bp-section-title">Notification center</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review system messages, open the full detail view, and clear inbox items from one workspace.
                     </p>
@@ -42,11 +42,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Inbox Table</p>
-                    <h3 class="bp-section-title value_span9">Message list</h3>
+                    <h3 class="bp-section-title">Message list</h3>
                 </div>
                 <p class="bp-table-meta">Unread rows are highlighted so important system updates are easier to spot at a glance.</p>
             </div>
@@ -55,12 +55,12 @@
                 <table  id="mainTable" data-sortable-table data-sort-default="2:desc">
                     <thead>
                     <tr>
-                        <th class="value_span9">Title</th>
-                        <th class="value_span9">Preview</th>
-                        <th class="value_span9">Date</th>
-                        <th class="value_span9">Author</th>
-                        <th class="value_span9">Status</th>
-                        <th class="value_span9">Actions</th>
+                        <th>Title</th>
+                        <th>Preview</th>
+                        <th>Date</th>
+                        <th>Author</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -86,7 +86,7 @@
                                     @endif
                                     <form method="post" action="/notifications/{{ $notification->id }}/delete" onsubmit="return confirm('Delete this notification from your inbox?');">
                                         @csrf
-                                        <button type="submit" class="bp-action-link value_span11 value_span2">Delete</button>
+                                        <button type="submit" class="bp-action-link">Delete</button>
                                     </form>
                                 </div>
                             </td>

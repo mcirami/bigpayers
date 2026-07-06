@@ -12,11 +12,11 @@
     <table  id="mainTable" data-sortable-table data-sort-default="6:desc" >
         <thead>
         <tr>
-            <th class="value_span9">User ID</th>
-            <th class="value_span9">User Name</th>
-            <th class="value_span9">Pending Sales</th>
-            <th class="value_span9">Logged Sales</th>
-            <th class="value_span9">Total</th>
+            <th>User ID</th>
+            <th>User Name</th>
+            <th>Pending Sales</th>
+            <th>Logged Sales</th>
+            <th>Total</th>
         </tr>
         </thead>
         <tbody>

@@ -10,11 +10,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">Pending {{ strtolower($affiliateTypeLabelPlural) }}</h2>
+                    <h2 class="bp-section-title">Pending {{ strtolower($affiliateTypeLabelPlural) }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review new signups waiting for approval and activate them into the right {{ strtolower($accountTypeLabel) }} workflow.
                     </p>
@@ -46,11 +46,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Approval Queue</p>
-                    <h3 class="bp-section-title value_span9">Pending signup table</h3>
+                    <h3 class="bp-section-title">Pending signup table</h3>
                 </div>
                 <p class="bp-table-meta">Activate moves the signup into the live tree and applies the standard affiliate setup.</p>
             </div>
@@ -59,13 +59,13 @@
                 <table  id="mainTable" data-sortable-table data-sort-default="5:desc">
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">{{ $affiliateTypeLabel }}</th>
-                        <th class="value_span9">Name</th>
-                        <th class="value_span9">Email</th>
-                        <th class="value_span9">Company</th>
-                        <th class="value_span9">Requested</th>
-                        <th class="value_span9">Actions</th>
+                        <th>ID</th>
+                        <th>{{ $affiliateTypeLabel }}</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Company</th>
+                        <th>Requested</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>

@@ -1637,7 +1637,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Http/Controllers/AdjustmentsController.php'),
-            app_path('Http/Controllers/DashboardController.php'),
             app_path('Http/Controllers/IndexController.php'),
             app_path('Http/Controllers/NotificationController.php'),
             app_path('Http/Controllers/OfferController.php'),

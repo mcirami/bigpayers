@@ -9,11 +9,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Offer URL directory</h2>
+                    <h2 class="bp-section-title">Offer URL directory</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Manage the branded domains used for outbound offer links, keep active URLs easy to scan, and jump into the existing create or edit tools when you need to change one.
                     </p>
@@ -46,11 +46,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">URL Registry</p>
-                    <h3 class="bp-section-title value_span9">Searchable offer URL table</h3>
+                    <h3 class="bp-section-title">Searchable offer URL table</h3>
                 </div>
                 <p class="bp-table-meta">Select a column header to sort the offer URL list.</p>
             </div>
@@ -59,10 +59,10 @@
                 <table  id="mainTable" data-sortable-table data-sort-default="2:desc">
                     <thead>
                     <tr>
-                        <th class="value_span9">URL</th>
-                        <th class="value_span9">Status</th>
-                        <th class="value_span9">Added</th>
-                        <th class="value_span9">Actions</th>
+                        <th>URL</th>
+                        <th>Status</th>
+                        <th>Added</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>

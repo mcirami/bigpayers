@@ -12,12 +12,12 @@
     <table  id="mainTable" data-sortable-table data-sort-default="5:desc" >
         <thead>
         <tr>
-            <th class="value_span9">ID</th>
-            <th class="value_span9">Name</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">Convs</th>
-            <th class="value_span9">Revenue</th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>Convs</th>
+            <th>Revenue</th>
         </tr>
         </thead>
         <tbody>

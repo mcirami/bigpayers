@@ -25,11 +25,11 @@
     <table  id="mainTable" data-sortable-table data-sort-default="4:desc" >
         <thead>
         <tr>
-            <th class="value_span9">Sub</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">Conv</th>
-            <th class="value_span9">Revenue</th>
+            <th>Sub</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>Conv</th>
+            <th>Revenue</th>
         </tr>
         </thead>
         <tbody>

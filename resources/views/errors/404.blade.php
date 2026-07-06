@@ -141,7 +141,7 @@
 </head>
 <body class="bp-shell">
     <main class="bp-error-page">
-        <section class="bp-error-card value_span8">
+        <section class="bp-error-card">
             <div class="bp-error-grid">
                 <a href="/" class="bp-error-brand">
                     <img src="{{ $logoPath }}" alt="{{ $companyName }} logo">
@@ -154,7 +154,7 @@
                 <div class="bp-error-code">404</div>
 
                 <div class="bp-error-copy">
-                    <h1 class="bp-section-title value_span9">That page isn’t available.</h1>
+                    <h1 class="bp-section-title">That page isn’t available.</h1>
                     <p class="text-base leading-7 text-slate-600">
                         The link may be outdated, the page may have moved, or the address may have been typed incorrectly.
                     </p>

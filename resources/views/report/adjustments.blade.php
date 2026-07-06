@@ -14,15 +14,15 @@
     <table  id="mainTable" data-sortable-table >
         <thead>
         <tr>
-            <th class="value_span9">ID</th>
-            <th class="value_span9">Affiliatee</th>
-            <th class="value_span9">Click ID</th>
-            <th class="value_span9">Offer</th>
-            <th class="value_span9">Conv ID</th>
-            <th class="value_span9">Paid</th>
-            <th class="value_span9">Timestamp (UTC)</th>
-            <th class="value_span9">Creator</th>
-            <th class="value_span9">Action</th>
+            <th>ID</th>
+            <th>Affiliatee</th>
+            <th>Click ID</th>
+            <th>Offer</th>
+            <th>Conv ID</th>
+            <th>Paid</th>
+            <th>Timestamp (UTC)</th>
+            <th>Creator</th>
+            <th>Action</th>
         </tr>
         </thead>
         <tbody>

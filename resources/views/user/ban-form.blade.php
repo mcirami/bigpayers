@@ -9,11 +9,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $pageTitle }}</h2>
+                    <h2 class="bp-section-title">{{ $pageTitle }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         {{ $isEdit
                             ? 'Update the expiration, status, or reason for this moderation record.'
@@ -50,11 +50,11 @@
         <form action="{{ $formAction }}" method="post" class="space-y-6 lg:space-y-8">
             {{ csrf_field() }}
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Ban Details</p>
-                        <h3 class="bp-section-title value_span9">{{ $isEdit ? 'Update moderation settings' : 'Create moderation settings' }}</h3>
+                        <h3 class="bp-section-title">{{ $isEdit ? 'Update moderation settings' : 'Create moderation settings' }}</h3>
                     </div>
                     <p class="bp-table-meta">The reason is stored as entered and can be revised later from the banned users log.</p>
                 </div>
@@ -90,7 +90,7 @@
             </section>
 
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">
+                <button type="submit" class="bp-button-primary">
                     {{ $isEdit ? 'Save settings' : 'Ban user' }}
                 </button>
                 <a href="/user/banned" class="bp-button-secondary">Cancel</a>

@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Lookup Workspace</p>
-                    <h2 class="bp-section-title value_span9">Click search</h2>
+                    <h2 class="bp-section-title">Click search</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Search by either the raw click ID or the encoded tracking ID, then inspect the click record, geo resolution, stored query vars, and any attached conversion.
                     </p>
@@ -31,11 +31,11 @@
             </div>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Search</p>
-                    <h3 class="bp-section-title value_span9">Find a click record</h3>
+                    <h3 class="bp-section-title">Find a click record</h3>
                 </div>
                 <p class="bp-table-meta">Paste a click ID from the UI, postback, or reporting export and this tool will normalize the lookup for you.</p>
             </div>
@@ -65,9 +65,9 @@
         </section>
 
         @if ($searchAttempted && !$clickFound)
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <p class="bp-section-kicker">No Match</p>
-                <h3 class="bp-section-title value_span9">No click was found for that lookup</h3>
+                <h3 class="bp-section-title">No click was found for that lookup</h3>
                 <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                     Double-check the click ID, or try the alternate format if you copied an encoded ID from a postback instead of the raw click number.
                 </p>
@@ -101,11 +101,11 @@
                 </article>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Click Record</p>
-                        <h3 class="bp-section-title value_span9">Primary click data</h3>
+                        <h3 class="bp-section-title">Primary click data</h3>
                     </div>
                 </div>
 
@@ -114,7 +114,7 @@
                         <thead>
                         <tr>
                             @foreach (array_keys($clickData) as $label)
-                                <th class="value_span9" data-sorter="false">{{ $label }}</th>
+                                <th data-sorter="false">{{ $label }}</th>
                             @endforeach
                         </tr>
                         </thead>
@@ -130,10 +130,10 @@
             </section>
 
             <div class="grid gap-6 xl:grid-cols-2">
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Geo Data</p>
-                        <h3 class="bp-section-title value_span9">Resolved location</h3>
+                        <h3 class="bp-section-title">Resolved location</h3>
                     </div>
 
                     <div class="mt-6 bp-report-table-wrap">
@@ -141,7 +141,7 @@
                             <thead>
                             <tr>
                                 @foreach (array_keys($geoData) as $label)
-                                    <th class="value_span9" data-sorter="false">{{ $label }}</th>
+                                    <th data-sorter="false">{{ $label }}</th>
                                 @endforeach
                             </tr>
                             </thead>
@@ -156,10 +156,10 @@
                     </div>
                 </section>
 
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Conversion</p>
-                        <h3 class="bp-section-title value_span9">Attached sale data</h3>
+                        <h3 class="bp-section-title">Attached sale data</h3>
                     </div>
 
                     @if ($conversionData)
@@ -168,7 +168,7 @@
                                 <thead>
                                 <tr>
                                     @foreach (array_keys($conversionData) as $label)
-                                        <th class="value_span9" data-sorter="false">{{ $label }}</th>
+                                        <th data-sorter="false">{{ $label }}</th>
                                     @endforeach
                                 </tr>
                                 </thead>
@@ -190,11 +190,11 @@
                 </section>
             </div>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Stored Query</p>
-                        <h3 class="bp-section-title value_span9">Captured URL variables</h3>
+                        <h3 class="bp-section-title">Captured URL variables</h3>
                     </div>
                     <p class="bp-table-meta">{{ $queryVarCount }} populated values were captured with this click.</p>
                 </div>
@@ -204,7 +204,7 @@
                         <thead>
                         <tr>
                             @foreach (array_keys($queryVars) as $label)
-                                <th class="value_span9" data-sorter="false">{{ $label }}</th>
+                                <th data-sorter="false">{{ $label }}</th>
                             @endforeach
                         </tr>
                         </thead>

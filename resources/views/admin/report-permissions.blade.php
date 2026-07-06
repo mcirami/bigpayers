@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Reports Workspace</p>
-                    <h2 class="bp-section-title value_span9">Affiliate report permissions</h2>
+                    <h2 class="bp-section-title">Affiliate report permissions</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Choose which report columns each affiliate can see in their affiliate reports.
                     </p>
@@ -16,14 +16,14 @@
             </div>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <form method="post" action="/admin/report-permissions">
                 @csrf
 
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Column Access</p>
-                        <h3 class="bp-section-title value_span9">Report visibility</h3>
+                        <h3 class="bp-section-title">Report visibility</h3>
                     </div>
 
                     <button type="submit" class="bp-button-primary">Save permissions</button>

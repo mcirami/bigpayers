@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Chat Log</p>
-                    <h2 class="bp-section-title value_span9">Log sale for {{ $offer->offer_name }}</h2>
+                    <h2 class="bp-section-title">Log sale for {{ $offer->offer_name }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Attach proof images to the pending conversion before it is recorded as a sale log.
                     </p>
@@ -19,11 +19,11 @@
         </section>
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)]">
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Upload</p>
-                        <h3 class="bp-section-title value_span9">Proof images</h3>
+                        <h3 class="bp-section-title">Proof images</h3>
                     </div>
 
                     <button type="button" class="bp-button-secondary" onclick="addImageInput()">Add image</button>
@@ -52,10 +52,10 @@
                 </form>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Pending Conversion</p>
-                    <h3 class="bp-section-title value_span9">Sale details</h3>
+                    <h3 class="bp-section-title">Sale details</h3>
                 </div>
 
                 <div class="mt-6">

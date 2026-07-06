@@ -18,11 +18,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $pageTitle }}</h2>
+                    <h2 class="bp-section-title">{{ $pageTitle }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         {{ $isEdit
                             ? 'Update account details, assignment, permissions, and workflow shortcuts from one page.'
@@ -82,11 +82,11 @@
         <form action="{{ $formAction }}" method="post" class="space-y-6 lg:space-y-8">
             {{ csrf_field() }}
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">User Details</p>
-                        <h3 class="bp-section-title value_span9">Profile and contact info</h3>
+                        <h3 class="bp-section-title">Profile and contact info</h3>
                     </div>
                     <p class="bp-table-meta">These fields cover the core account identity and contact details.</p>
                 </div>
@@ -124,11 +124,11 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Access Settings</p>
-                        <h3 class="bp-section-title value_span9">Account credentials and ownership</h3>
+                        <h3 class="bp-section-title">Account credentials and ownership</h3>
                     </div>
                     <p class="bp-table-meta">Role and owner controls determine the permissions available to this account.</p>
                 </div>
@@ -187,11 +187,11 @@
             </section>
 
             @if(!empty($permissionOptionsByRole))
-                <section class="bp-card value_span8" id="permissionsSection">
+                <section class="bp-card" id="permissionsSection">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Permissions</p>
-                            <h3 class="bp-section-title value_span9">Enabled account capabilities</h3>
+                            <h3 class="bp-section-title">Enabled account capabilities</h3>
                         </div>
                         <p class="bp-table-meta">Only permissions you can actually grant are shown for the selected role.</p>
                     </div>
@@ -215,11 +215,11 @@
             @endif
 
             @if($canCreateReferrals)
-                <section class="bp-card value_span8" id="create_referral_panel">
+                <section class="bp-card" id="create_referral_panel">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Referral Setup</p>
-                            <h3 class="bp-section-title value_span9">Optional affiliate referral</h3>
+                            <h3 class="bp-section-title">Optional affiliate referral</h3>
                         </div>
                         <p class="bp-table-meta">This only applies when the selected role is {{ strtolower($affiliateTypeLabel) }}.</p>
                     </div>
@@ -269,11 +269,11 @@
             @endif
 
             @if($isEdit && $canEditReferrals)
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Referral Settings</p>
-                            <h3 class="bp-section-title value_span9">Current referral structure</h3>
+                            <h3 class="bp-section-title">Current referral structure</h3>
                         </div>
                         <a href="/user/{{ $targetUser->idrep }}/referrals" class="bp-button-secondary">Open detailed referral editor</a>
                     </div>
@@ -301,11 +301,11 @@
             @endif
 
             @if($isEdit && $canManageSubIds)
-                <section class="bp-card value_span8" id="sub-id-tools">
+                <section class="bp-card" id="sub-id-tools">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Sub ID Controls</p>
-                            <h3 class="bp-section-title value_span9">Blocked sub IDs</h3>
+                            <h3 class="bp-section-title">Blocked sub IDs</h3>
                         </div>
                         <p class="bp-table-meta">Search existing sub IDs, block new ones, and unblock entries without leaving the account editor.</p>
                     </div>
@@ -337,9 +337,9 @@
                         <table  id="subIdTable" data-sortable-table>
                             <thead>
                             <tr>
-                                <th class="value_span9">Sub ID</th>
-                                <th class="value_span9">Status</th>
-                                <th class="value_span9">Actions</th>
+                                <th>Sub ID</th>
+                                <th>Status</th>
+                                <th>Actions</th>
                             </tr>
                             </thead>
                             <tbody id="subid_content">
@@ -355,7 +355,7 @@
             @endif
 
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">
+                <button type="submit" class="bp-button-primary">
                     {{ $isEdit ? 'Save user' : 'Create user' }}
                 </button>
                 <a href="/user/manage" class="bp-button-secondary">Cancel</a>

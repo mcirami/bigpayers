@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Lead Inventory</p>
-                    <h2 class="bp-section-title value_span9">Email pools</h2>
+                    <h2 class="bp-section-title">Email pools</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Download pools already assigned to you or claim an available pool from the shared inventory.
                     </p>
@@ -27,11 +27,11 @@
             </div>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Owned Pools</p>
-                    <h3 class="bp-section-title value_span9">Ready to download</h3>
+                    <h3 class="bp-section-title">Ready to download</h3>
                     <p class="bp-table-meta mt-3">These pools are already assigned to your account.</p>
                 </div>
             </div>
@@ -66,11 +66,11 @@
             </div>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Available Pools</p>
-                    <h3 class="bp-section-title value_span9">Open inventory</h3>
+                    <h3 class="bp-section-title">Open inventory</h3>
                     <p class="bp-table-meta mt-3">Claiming a pool assigns it to your account for download.</p>
                 </div>
             </div>

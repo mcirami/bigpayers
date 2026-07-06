@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Chat Log</p>
-                    <h2 class="bp-section-title value_span9">Sale log #{{ $saleLogId }}</h2>
+                    <h2 class="bp-section-title">Sale log #{{ $saleLogId }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review uploaded proof images and attach additional files for this sale log.
                     </p>
@@ -35,11 +35,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Upload</p>
-                    <h3 class="bp-section-title value_span9">Add images</h3>
+                    <h3 class="bp-section-title">Add images</h3>
                 </div>
                 <button type="button" class="bp-button-secondary" onclick="addSaleLogImageInput()">Add image</button>
             </div>
@@ -62,10 +62,10 @@
             </form>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div>
                 <p class="bp-section-kicker">Proof Images</p>
-                <h3 class="bp-section-title value_span9">Attached files</h3>
+                <h3 class="bp-section-title">Attached files</h3>
             </div>
 
             @if(count($images) > 0)

@@ -8,11 +8,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">Activate {{ $affiliateTypeLabel }}</h2>
+                    <h2 class="bp-section-title">Activate {{ $affiliateTypeLabel }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Confirm the signup details below, choose the owning {{ strtolower($accountTypeLabel) }}, and activate the account into the live tree.
                     </p>
@@ -47,11 +47,11 @@
         <form action="/user/pending/{{ $user->idrep }}/activate" method="post" class="space-y-6 lg:space-y-8">
             {{ csrf_field() }}
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Signup Details</p>
-                        <h3 class="bp-section-title value_span9">Review submitted information</h3>
+                        <h3 class="bp-section-title">Review submitted information</h3>
                     </div>
                     <p class="bp-table-meta">These fields are read-only here so approval stays focused on assignment.</p>
                 </div>
@@ -89,11 +89,11 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Assignment</p>
-                        <h3 class="bp-section-title value_span9">Choose the owning {{ strtolower($accountTypeLabel) }}</h3>
+                        <h3 class="bp-section-title">Choose the owning {{ strtolower($accountTypeLabel) }}</h3>
                     </div>
                     <p class="bp-table-meta">Activation will also assign all current public offers to the new account.</p>
                 </div>
@@ -112,11 +112,11 @@
             </section>
 
             @if($hasReferralAccess)
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Referral Settings</p>
-                            <h3 class="bp-section-title value_span9">Optional referral payout</h3>
+                            <h3 class="bp-section-title">Optional referral payout</h3>
                         </div>
                         <p class="bp-table-meta">Leave this collapsed to activate without a referral setup.</p>
                     </div>
@@ -166,7 +166,7 @@
             @endif
 
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">Activate {{ $affiliateTypeLabel }}</button>
+                <button type="submit" class="bp-button-primary">Activate {{ $affiliateTypeLabel }}</button>
                 <a href="/user/pending" class="bp-button-secondary">Cancel</a>
             </div>
         </form>

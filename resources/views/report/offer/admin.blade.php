@@ -26,13 +26,13 @@
         <thead>
 
         <tr>
-            <th class="value_span9">ID</th>
-            <th class="value_span9">Offer</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">Convs</th>
+            <th>ID</th>
+            <th>Offer</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>Convs</th>
             @if ($showRevenueColumns)
-                <th class="value_span9">Revenue</th>
+                <th>Revenue</th>
             @endif
         </tr>
         </thead>

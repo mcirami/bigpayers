@@ -22,10 +22,10 @@
 		<thead>
 
 		<tr>
-			<th class="value_span9">Country</th>
-			<th class="value_span9">Clicks</th>
-			<th class="value_span9">Unique</th>
-			<th class="value_span9">Convs</th>
+			<th>Country</th>
+			<th>Clicks</th>
+			<th>Unique</th>
+			<th>Convs</th>
 		</tr>
 		</thead>
 		<tbody>

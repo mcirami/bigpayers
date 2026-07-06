@@ -13,13 +13,13 @@
     <table  id="mainTable" data-sortable-table data-sort-default="0:desc" >
         <thead>
         <tr>
-            <th class="value_span9">Date</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">Signups</th>
-            <th class="value_span9">Pending</th>
-            <th class="value_span9">Convs</th>
-            <th class="value_span9">Revenue</th>
+            <th>Date</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>Signups</th>
+            <th>Pending</th>
+            <th>Convs</th>
+            <th>Revenue</th>
         </tr>
         </thead>
         <tbody>

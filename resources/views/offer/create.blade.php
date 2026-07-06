@@ -28,11 +28,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $pageHeading ?? 'Create a new offer' }}</h2>
+                    <h2 class="bp-section-title">{{ $pageHeading ?? 'Create a new offer' }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         {{ $pageCopy ?? ('Launch a new offer, choose how it appears in the directory, and assign it to the right ' . strtolower($affiliateTypeLabelPlural) . ' from the same screen.') }}
                     </p>
@@ -68,11 +68,11 @@
         <form action="{{ $formAction ?? '/offer/create' }}" method="post" class="space-y-6 lg:space-y-8" data-offer-create>
             {{ csrf_field() }}
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Offer Details</p>
-                        <h3 class="bp-section-title value_span9">Core setup</h3>
+                        <h3 class="bp-section-title">Core setup</h3>
                     </div>
                     <p class="bp-table-meta">These fields control how the offer appears in reporting, routing, and assignment tools.</p>
                 </div>
@@ -177,11 +177,11 @@
             </section>
 
             @unless($isEdit)
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Assignment</p>
-                            <h3 class="bp-section-title value_span9">Choose {{ strtolower($affiliateTypeLabelPlural) }} for this offer</h3>
+                            <h3 class="bp-section-title">Choose {{ strtolower($affiliateTypeLabelPlural) }} for this offer</h3>
                         </div>
                         <p class="bp-table-meta">The selected list is what gets submitted with the offer when you create it.</p>
                     </div>
@@ -217,7 +217,7 @@
                     </div>
                 </section>
             @else
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div class="bp-inline-note">
                         <strong>Assignment management</strong>
                         <span>Use Manage Offers or Multi-Assign Offers to change which {{ strtolower($affiliateTypeLabelPlural) }} currently have access to this offer.</span>
@@ -226,7 +226,7 @@
             @endunless
 
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">{{ $submitLabel ?? 'Create offer' }}</button>
+                <button type="submit" class="bp-button-primary">{{ $submitLabel ?? 'Create offer' }}</button>
                 <a href="/offer/manage" class="bp-button-secondary">Cancel</a>
             </div>
         </form>

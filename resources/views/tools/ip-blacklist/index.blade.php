@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Security Workspace</p>
-                    <h2 class="bp-section-title value_span9">IP blacklist</h2>
+                    <h2 class="bp-section-title">IP blacklist</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Manage the blocked IP ranges that prevent known bad traffic from registering clicks before it can affect reports, routing, or downstream tracking.
                     </p>
@@ -40,11 +40,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Blacklist Table</p>
-                    <h3 class="bp-section-title value_span9">Blocked ranges</h3>
+                    <h3 class="bp-section-title">Blocked ranges</h3>
                 </div>
                 <p class="bp-table-meta">Ranges are stored as start and end IP bounds, then evaluated during click registration.</p>
             </div>
@@ -53,11 +53,11 @@
                 <table  id="mainTable" data-sortable-table data-sort-default="3:desc">
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">Start</th>
-                        <th class="value_span9">End</th>
-                        <th class="value_span9">Created</th>
-                        <th class="value_span9" data-sorter="false">Actions</th>
+                        <th>ID</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Created</th>
+                        <th data-sorter="false">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -72,7 +72,7 @@
                                     <a href="/ip-blacklist/{{ $entry->id }}/edit" class="bp-action-link">Edit</a>
                                     <form method="post" action="/ip-blacklist/{{ $entry->id }}/delete" onsubmit="return confirm('Delete this blocked IP range?');">
                                         @csrf
-                                        <button type="submit" class="bp-action-link value_span11 value_span2">Delete</button>
+                                        <button type="submit" class="bp-action-link">Delete</button>
                                     </form>
                                 </div>
                             </td>

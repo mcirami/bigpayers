@@ -10,11 +10,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Advertisers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Advertiser directory</h2>
+                    <h2 class="bp-section-title">Advertiser directory</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review advertiser accounts, see how many offers each one currently owns, and jump into edits quickly.
                     </p>
@@ -46,11 +46,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Advertiser Registry</p>
-                    <h3 class="bp-section-title value_span9">Searchable advertiser table</h3>
+                    <h3 class="bp-section-title">Searchable advertiser table</h3>
                 </div>
                 <p class="bp-table-meta">Select a column header to sort the advertiser list.</p>
             </div>
@@ -59,10 +59,10 @@
                 <table  id="mainTable" data-sortable-table>
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">Name</th>
-                        <th class="value_span9">Offers</th>
-                        <th class="value_span9">Actions</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Offers</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>

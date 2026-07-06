@@ -78,13 +78,13 @@
         <span>{{$dates['originalStart']}} - {{$dates['originalEnd']}}</span>
     </div>
 
-    <table class="table table-sm table-bordered ">
+    <table class="table table-sm table-bordered">
         <thead>
         <tr>
-            <th class="value_span9">Payout Type</th>
-            <th class="value_span9">Notes</th>
-            <th class="value_span9">Revenue</th>
-            <th class="value_span9">Date Achieved</th>
+            <th>Payout Type</th>
+            <th>Notes</th>
+            <th>Revenue</th>
+            <th>Date Achieved</th>
         </tr>
         </thead>
         <tbody>
@@ -96,20 +96,20 @@
         </tbody>
     </table>
 
-    <table class="table  table-bordered table-sm ">
+    <table class="table  table-bordered table-sm">
         <thead>
         <tr>
             <th>ID</th>
-            <th class="value_span9">Offer Name</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">FreeSignUps</th>
-            <th class="value_span9">Pending Conversions</th>
-            <th class="value_span9">Conversions</th>
-            <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
-            <th class="value_span9">EPC</th>
-            <th class="value_span9">Total</th>
+            <th>Offer Name</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>FreeSignUps</th>
+            <th>Pending Conversions</th>
+            <th>Conversions</th>
+            <th>Revenue</th>
+            <th>Deductions</th>
+            <th>EPC</th>
+            <th>Total</th>
         </tr>
         </thead>
         <tbody>
@@ -133,16 +133,16 @@
         <tfoot>
         <tr>
             <th>ID</th>
-            <th class="value_span9">Offer Name</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">FreeSignUps</th>
-            <th class="value_span9">Pending Conversions</th>
-            <th class="value_span9">Conversions</th>
-            <th class="value_span9">Revenue</th>
-            <th class="value_span9">Deductions</th>
-            <th class="value_span9">EPC</th>
-            <th class="value_span9">Total</th>
+            <th>Offer Name</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>FreeSignUps</th>
+            <th>Pending Conversions</th>
+            <th>Conversions</th>
+            <th>Revenue</th>
+            <th>Deductions</th>
+            <th>EPC</th>
+            <th>Total</th>
         </tr>
         </tfoot>
     </table>

@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Provisioning Workspace</p>
-                    <h2 class="bp-section-title value_span9">Database updates</h2>
+                    <h2 class="bp-section-title">Database updates</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review company install database versions and run the existing updater through Laravel.
                     </p>
@@ -48,17 +48,17 @@
         </section>
 
         @if($error)
-            <section class="bp-card value_span8 border border-red-200">
+            <section class="bp-card border border-red-200">
                 <p class="bp-section-kicker text-red-700">Updater Error</p>
-                <h3 class="bp-section-title value_span9">Unable to inspect database updates</h3>
+                <h3 class="bp-section-title">Unable to inspect database updates</h3>
                 <p class="mt-3 text-sm leading-7 text-red-700">{{ $error }}</p>
             </section>
         @else
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">{{ $didRun ? 'Run Results' : 'Preview' }}</p>
-                        <h3 class="bp-section-title value_span9">Company updater report</h3>
+                        <h3 class="bp-section-title">Company updater report</h3>
                     </div>
                     <p class="bp-table-meta">
                         {{ $didRun ? 'The updater has been executed for each listed install.' : 'No changes have been applied from this preview.' }}

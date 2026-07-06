@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">SMS Chat</p>
-                    <h2 class="bp-section-title value_span9">Conversation workspace</h2>
+                    <h2 class="bp-section-title">Conversation workspace</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review incoming conversations, move them between queues, and reply from the same operational workspace.
                     </p>
@@ -24,11 +24,11 @@
             data-user-id="{{ $userId }}"
             data-csrf-token="{{ csrf_token() }}"
         >
-            <div class="bp-card bp-sms-panel value_span8">
+            <div class="bp-card bp-sms-panel">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Inbox</p>
-                        <h3 class="bp-section-title value_span9">Conversations</h3>
+                        <h3 class="bp-section-title">Conversations</h3>
                     </div>
 
                     <div class="bp-sms-tabs" role="tablist" aria-label="Conversation groups">
@@ -43,11 +43,11 @@
                 </div>
             </div>
 
-            <div class="bp-card bp-sms-panel value_span8">
+            <div class="bp-card bp-sms-panel">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Thread</p>
-                        <h3 class="bp-section-title value_span9" data-thread-title>Select a conversation</h3>
+                        <h3 class="bp-section-title" data-thread-title>Select a conversation</h3>
                         <p class="mt-2 bp-table-meta" data-thread-meta>Choose an open conversation to load messages.</p>
                     </div>
 

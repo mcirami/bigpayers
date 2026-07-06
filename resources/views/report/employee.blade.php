@@ -47,13 +47,13 @@
     <table  id="mainTable" data-sortable-table >
         <thead>
         <tr>
-            <th class="value_span9">ID</th>
-            <th class="value_span9">{{ $affiliateTypeLabel }}</th>
-            <th class="value_span9">Raw</th>
-            <th class="value_span9">Unique</th>
-            <th class="value_span9">Conversions</th>
+            <th>ID</th>
+            <th>{{ $affiliateTypeLabel }}</th>
+            <th>Raw</th>
+            <th>Unique</th>
+            <th>Conversions</th>
             @if($showRevenueColumns)
-                <th class="value_span9 headers">Revenue</th>
+                <th class="headers">Revenue</th>
             @endif
         </tr>
         </thead>

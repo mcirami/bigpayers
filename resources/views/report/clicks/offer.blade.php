@@ -35,35 +35,35 @@
 				<thead>
 				<tr>
 					@if ($canViewFraudData)
-						<th class="value_span9">Click ID</th>
+						<th>Click ID</th>
 					@endif
 					@if ($canViewFraudData)
-						<th class="value_span9">Encoded ID</th>
+						<th>Encoded ID</th>
 					@endif
-					<th class="value_span9"><br>Click Time</th>
-					<th class="value_span9">Conv Time</th>
+					<th><br>Click Time</th>
+					<th>Conv Time</th>
                     @if($sessionUserType == Privilege::ROLE_GOD ||
                         ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts)
                     )
-                        <th class="value_span9">Paid</th>
+                        <th>Paid</th>
                     @endif
-					<th class="value_span9">Sub 1</th>
-					<th class="value_span9">Sub 2</th>
-					<th class="value_span9">Sub 3</th>
-					<th class="value_span9">Affiliate</th>
-					<th class="value_span9">Offer</th>
+					<th>Sub 1</th>
+					<th>Sub 2</th>
+					<th>Sub 3</th>
+					<th>Affiliate</th>
+					<th>Offer</th>
                     @if ($canViewFraudData)
-                        <th class="value_span9">Referer Url</th>
+                        <th>Referer Url</th>
                     @endif
 					@if ($canViewFraudData)
-						<th class="value_span9">Ip Address</th>
-						<th class="value_span9">Sub Division</th>
-						<th class="value_span9">City</th>
-						<th class="value_span9">Postal</th>
-						<th class="value_span9">Longitude</th>
-						<th class="value_span9">Latitude</th>
+						<th>Ip Address</th>
+						<th>Sub Division</th>
+						<th>City</th>
+						<th>Postal</th>
+						<th>Longitude</th>
+						<th>Latitude</th>
 					@endif
-					<th class="value_span9">Country</th>
+					<th>Country</th>
 				</tr>
 				</thead>
 				<tbody>
@@ -114,7 +114,7 @@
 @endsection
 
 @section('extra')
-	<div class="bp-card value_span8">
+	<div class="bp-card">
 		<div class="bp-report-pagination">
 			{{ $reportCollection->links() }}
 		</div>

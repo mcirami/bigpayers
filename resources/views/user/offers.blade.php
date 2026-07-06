@@ -17,11 +17,11 @@
     </div>
 
     <div id="user_info" class="edit_user_offers space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $name }}'s offer access</h2>
+                    <h2 class="bp-section-title">{{ $name }}'s offer access</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review assigned inventory, update affiliate-specific payouts, and toggle access from one place without leaving the redesigned shell.
                     </p>
@@ -82,11 +82,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offer Controls</p>
-                    <h3 class="bp-section-title value_span9">User offer matrix</h3>
+                    <h3 class="bp-section-title">User offer matrix</h3>
                 </div>
                 <p class="bp-table-meta">Payout changes save on enter or blur, and access toggles update immediately.</p>
             </div>
@@ -95,14 +95,14 @@
                 <table class="bp-user-offers-table" id="mainTable" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">Name</th>
-                        <th class="value_span9">Payout</th>
-                        <th class="value_span9">Custom $</th>
-                        <th class="value_span9">Access</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Payout</th>
+                        <th>Custom $</th>
+                        <th>Access</th>
                         @if ($canManageOfferCaps)
-                            <th class="value_span9">Cap</th>
-                            <th class="value_span9">Daily Max</th>
+                            <th>Cap</th>
+                            <th>Daily Max</th>
                         @endif
                     </tr>
                     </thead>

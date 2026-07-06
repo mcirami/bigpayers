@@ -59,24 +59,24 @@
 </head>
 <body class="login-page login-page-signup">
 <div class="login-shell">
-    <section class="login-shell__brand value_span1">
+    <section class="login-shell__brand">
         <div class="login-shell__brand-inner">
             <a href="{{ $webroot }}" class="login-shell__logo-link" aria-label="{{ $company->getShortHand() }} home">
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
             <p class="login-shell__eyebrow">Affiliate signup</p>
-            <h1 class="login-shell__title value_span2">Create your account</h1>
+            <h1 class="login-shell__title">Create your account</h1>
             <p class="login-shell__copy">
                 Register for access to the affiliate workspace, reporting tools, and brand-specific tracking environment.
             </p>
         </div>
     </section>
 
-    <section class="login-shell__panel value_span8">
+    <section class="login-shell__panel">
         <div class="login-card login-card-signup">
             <p class="login-card__kicker">Sign up</p>
-            <h2 class="login-card__title value_span9">Join {{ $company->getShortHand() }}</h2>
-            <p class="login-card__copy value_span10">Fill out the details below and we’ll route your account through the correct approval flow.</p>
+            <h2 class="login-card__title">Join {{ $company->getShortHand() }}</h2>
+            <p class="login-card__copy">Fill out the details below and we’ll route your account through the correct approval flow.</p>
 
             <form method="post" action="/signup" class="login-form">
                 {!! csrf_field() !!}
@@ -133,7 +133,7 @@
                     </label>
                 </div>
 
-                <button type="submit" name="button" class="login-form__submit value_span5-1 value_span2 value_span4">
+                <button type="submit" name="button" class="login-form__submit">
                     Sign Up
                 </button>
             </form>

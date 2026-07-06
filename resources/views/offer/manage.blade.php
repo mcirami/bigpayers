@@ -18,11 +18,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Offer management</h2>
+                    <h2 class="bp-section-title">Offer management</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Browse active offers, request access, copy tracking URLs, and open detailed offer tools when needed.
                     </p>
@@ -40,7 +40,7 @@
                 @if ($isAffiliate)
                     <div class="bp-report-toolbar w-full">
                         <div class="bp-select-group">
-                            <label class="value_span9" for="offer_url">Offer URLs</label>
+                            <label for="offer_url">Offer URLs</label>
                             <select class="selectBox" id="offer_url" name="offer_url">
                                 @for ($i = 0; $i < count($urls); $i++)
                                     <option value="{{ $i }}" {{ \App\Support\RequestContext::query('url', 0) == $i ? 'selected' : '' }}>{{ $urls[$i] }}</option>
@@ -70,11 +70,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offer Directory</p>
-                    <h3 class="bp-section-title value_span9">Searchable offer table</h3>
+                    <h3 class="bp-section-title">Searchable offer table</h3>
                 </div>
                 <p class="text-sm text-slate-500">Search, copy, request, and sort offers directly from this table.</p>
             </div>
@@ -87,27 +87,27 @@
                 <table class="bp-offer-manage-table" id="mainTable" data-sortable-table data-sort-default="1:asc">
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">Offer</th>
+                        <th>ID</th>
+                        <th>Offer</th>
                         @if ($isAffiliate)
-                            <th class="value_span9">Category</th>
-                            <th class="value_span9">Countries</th>
-                            <th class="value_span9">Payout</th>
-                            <th class="value_span9">Link</th>
+                            <th>Category</th>
+                            <th>Countries</th>
+                            <th>Payout</th>
+                            <th>Link</th>
                         @elseif($canEditAffiliates && !$isAffiliate && !$isManager)
-                            <th class="value_span9">Access</th>
+                            <th>Access</th>
                         @endif
 
                         @if ($showPayoutColumn)
-                            <th class="value_span9">Payout</th>
+                            <th>Payout</th>
                         @endif
 
                         @if ($isGod)
-                            <th class="value_span9">Adv</th>
+                            <th>Adv</th>
                         @endif
 
                         @if ($isGod)
-                            <th class="value_span9">Actions</th>
+                            <th>Actions</th>
                         @endif
                     </tr>
                     </thead>
@@ -261,15 +261,15 @@
 
                             html +="<td>" + categoryLabel +"</td>";
                             html +="<td>" + countriesMarkup +"</td>";
-                            html +="<td class='value_span10'>$" + affiliatePayout +"</td>";
+                            html +="<td>$" + affiliatePayout +"</td>";
                         }
 
                         if (userType === 3) {
-                            html +="<td class='value_span10'>" +"<button data-url='https://" + selectedUrl +"/?rid=" + sessionUser +"&oid=" + offer.idoffer +"&s1=' class='copy_button bp-action-link'>Copy</button></td>";
+                            html +="<td>" +"<button data-url='https://" + selectedUrl +"/?rid=" + sessionUser +"&oid=" + offer.idoffer +"&s1=' class='copy_button bp-action-link'>Copy</button></td>";
                         }
 
                         if (canEditAffiliates && (userType === 0 || userType === 1)) {
-                            html +="<td class='value_span10'>" +"<a target='_blank' class='bp-action-link' href='/offer/" + offer.idoffer +"/access'>Affiliate Access</a>" +"</td>";
+                            html +="<td>" +"<a target='_blank' class='bp-action-link' href='/offer/" + offer.idoffer +"/access'>Affiliate Access</a>" +"</td>";
                         }
 
                         if (showPayoutColumn) {
@@ -279,28 +279,28 @@
                                 const adminPayout = offer.admin_payout !== null && offer.admin_payout !== undefined
                                     ? offer.admin_payout
                                     : offer.payout;
-                                html +="<td class='value_span10'>$" + adminPayout +"</td>";
+                                html +="<td>$" + adminPayout +"</td>";
                             } else if (userType === 2) {
                                 const managerPayout = offer.manager_payout !== null && offer.manager_payout !== undefined
                                     ? offer.manager_payout
                                     : offer.payout;
-                                html +="<td class='value_span10'>$" + managerPayout +"</td>";
+                                html +="<td>$" + managerPayout +"</td>";
                             } else {
-                                html +="<td class='value_span10'>$" + offer.payout +"</td>";
+                                html +="<td>$" + offer.payout +"</td>";
                             }
                         }
 
 	                    if (userType === 0) {
-		                    html +="<td class='value_span10'>" + escapeHtml(offer.campaign_name) +"</td>";
+		                    html +="<td>" + escapeHtml(offer.campaign_name) +"</td>";
 	                    }
 
                         if (userType === 0) {
-                            /*html +="<td class='value_span10'>" + offer.offer_timestamp +"</td>";*/
-                            html +="<td class='value_span10 action_column'><div class='bp-table-actions'>";
+                            /*html +="<td>" + offer.offer_timestamp +"</td>";*/
+                            html +="<td class='action_column'><div class='bp-table-actions'>";
                             html +="<a class='bp-action-link' href='/offer/edit/" + offer.idoffer +"'>Edit</a>";
                             html +="<a class='bp-action-link' href='/offer/rules/" + offer.idoffer +"'>Rules</a>";
                             html +="<a class='bp-action-link' href='/offer/view/" + offer.idoffer +"'>View</a>";
-                            html +="<a class='bp-action-link' href='/offer/" + offer.idoffer +"/dupe'>Duplicate</a>" +"<a class='delete_offer bp-action-link value_span11 value_span4' data-offer='" + offer.idoffer +"' href='#'>Delete</a>";
+                            html +="<a class='bp-action-link' href='/offer/" + offer.idoffer +"/dupe'>Duplicate</a>" +"<a class='delete_offer bp-action-link' data-offer='" + offer.idoffer +"' href='#'>Delete</a>";
                             html +="</div></td>";
                         }
 
@@ -324,10 +324,10 @@
                         const link = document.createElement("a");
                         link.href ="#";
                         link.innerText = i;
-                        link.classList.add("value_span2-2","value_span3-2","value_span6-1","value_span2","value_span6","bp-pagination-link");
+                        link.classList.add("bp-pagination-link");
 
                         if (i === currentPage) {
-                            link.classList.add("value_span4","active");
+                            link.classList.add("active");
                         }
 
                         link.addEventListener("click", (event) => {
@@ -337,10 +337,10 @@
 
                             const currentActive = pagination.querySelector(".active");
                             if (currentActive) {
-                                currentActive.classList.remove("active","value_span4");
+                                currentActive.classList.remove("active");
                             }
 
-                            link.classList.add("active","value_span4");
+                            link.classList.add("active");
                         });
 
                         pagination.appendChild(link);

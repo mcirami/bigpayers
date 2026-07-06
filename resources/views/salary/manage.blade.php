@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Payroll Workspace</p>
-                    <h2 class="bp-section-title value_span9">Edit affiliate salaries</h2>
+                    <h2 class="bp-section-title">Edit affiliate salaries</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Create or update salary records for affiliates in your user tree.
                     </p>
@@ -18,7 +18,7 @@
             </div>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="bp-report-table-wrap">
                 <table>
                     <thead>

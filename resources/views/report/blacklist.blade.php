@@ -12,9 +12,9 @@
     <table  id="mainTable" data-sortable-table >
         <thead>
         <tr>
-            <th class="value_span9">Aff ID</th>
-            <th class="value_span9">Affiliate</th>
-            <th class="value_span9">Clicks</th>
+            <th>Aff ID</th>
+            <th>Affiliate</th>
+            <th>Clicks</th>
         </tr>
         </thead>
         <tbody>

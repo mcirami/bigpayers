@@ -1263,16 +1263,6 @@
     color: #0f172a;
   }
 
-  .bp-report-table-wrap .btn.value_span5-1,
-  .bp-report-table-wrap .btn.value_span6-1,
-  .bp-report-table-wrap .btn.value_span11,
-  .bp-report-table-wrap button.btn.value_span5-1,
-  .bp-report-table-wrap button.btn.value_span6-1,
-  .bp-report-table-wrap button.btn.value_span11 {
-    color: #0f172a;
-    border-color: transparent;
-  }
-
   .bp-report-table-wrap td.action_column,
   .bp-report-table-wrap td.actions {
     display: flex;

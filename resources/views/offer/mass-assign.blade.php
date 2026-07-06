@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Mass assign offers</h2>
+                    <h2 class="bp-section-title">Mass assign offers</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Select a user role, choose the users you want, then choose the offers to assign in one pass.
                     </p>
@@ -21,7 +21,7 @@
 
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <form action="/offer/mass-assign?role={{ \App\Support\RequestContext::query('role', 3) }}" method="post" id="form" enctype="multipart/form-data" class="space-y-6">
                 {{ csrf_field() }}
 
@@ -31,11 +31,11 @@
                 </div>
 
                 <div class="bp-selection-grid">
-                    <section class="bp-selection-card value_span7" id="users">
+                    <section class="bp-selection-card" id="users">
                         <div class="flex items-center justify-between gap-3">
                             <div>
                                 <p class="bp-section-kicker">Users</p>
-                                <h3 class="bp-selection-title value_span9">Choose recipients</h3>
+                                <h3 class="bp-selection-title">Choose recipients</h3>
                             </div>
                             <div class="flex gap-2">
                                 <a class="bp-button-secondary" href="javascript:void(0);" onclick="checkBoxesInDiv('users')">Check all</a>
@@ -53,11 +53,11 @@
                         </div>
                     </section>
 
-                    <section class="bp-selection-card value_span7" id="offers">
+                    <section class="bp-selection-card" id="offers">
                         <div class="flex items-center justify-between gap-3">
                             <div>
                                 <p class="bp-section-kicker">Offers</p>
-                                <h3 class="bp-selection-title value_span9">Choose inventory</h3>
+                                <h3 class="bp-selection-title">Choose inventory</h3>
                             </div>
                             <div class="flex gap-2">
                                 <a class="bp-button-secondary" href="javascript:void(0);" onclick="checkBoxesInDiv('offers')">Check all</a>
@@ -77,7 +77,7 @@
                 </div>
 
                 <div class="flex justify-end">
-                    <button type="submit" name="button" class="bp-button-primary value_span6-2 value_span2 value_span1-2">
+                    <button type="submit" name="button" class="bp-button-primary">
                         Assign users
                     </button>
                 </div>

@@ -13,11 +13,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Advertisers Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $pageTitle }}</h2>
+                    <h2 class="bp-section-title">{{ $pageTitle }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         {{ $isEdit
                             ? 'Update the advertiser name and review which offers are currently assigned to it.'
@@ -54,11 +54,11 @@
         <form action="{{ $formAction }}" method="post" class="space-y-6 lg:space-y-8">
             {{ csrf_field() }}
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Advertiser Details</p>
-                        <h3 class="bp-section-title value_span9">{{ $isEdit ? 'Edit advertiser record' : 'Create advertiser record' }}</h3>
+                        <h3 class="bp-section-title">{{ $isEdit ? 'Edit advertiser record' : 'Create advertiser record' }}</h3>
                     </div>
                     <p class="bp-table-meta">This name is what shows up in offer assignment and advertiser reporting.</p>
                 </div>
@@ -80,11 +80,11 @@
             </section>
 
             @if($isEdit)
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Assigned Offers</p>
-                            <h3 class="bp-section-title value_span9">Current offer list</h3>
+                            <h3 class="bp-section-title">Current offer list</h3>
                         </div>
                         <p class="bp-table-meta">This read-only list shows the offers currently assigned to this advertiser.</p>
                     </div>
@@ -109,7 +109,7 @@
             @endif
 
             <div class="flex flex-wrap items-center gap-3">
-                <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">
+                <button type="submit" class="bp-button-primary">
                     {{ $isEdit ? 'Save advertiser' : 'Create advertiser' }}
                 </button>
                 <a href="/advertisers" class="bp-button-secondary">Cancel</a>

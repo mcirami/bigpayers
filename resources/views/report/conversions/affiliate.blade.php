@@ -30,16 +30,16 @@
 			<thead>
 			<tr>
 				@if ($canViewFraudData)
-					<th class="value_span9">Click ID</th>
+					<th>Click ID</th>
 				@endif
-				<th class="value_span9">Offer Name</th>
-				<th class="value_span9">Conversion Timestamp</th>
-				<th class="value_span9">Paid</th>
-				<th class="value_span9">Sub 1</th>
-				<th class="value_span9">Sub 2</th>
-				<th class="value_span9">Sub 3</th>
-				<th class="value_span9">Sub 4</th>
-				<th class="value_span9">Sub 5</th>
+				<th>Offer Name</th>
+				<th>Conversion Timestamp</th>
+				<th>Paid</th>
+				<th>Sub 1</th>
+				<th>Sub 2</th>
+				<th>Sub 3</th>
+				<th>Sub 4</th>
+				<th>Sub 5</th>
 			</tr>
 			</thead>
 			<tbody>

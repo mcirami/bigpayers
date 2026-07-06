@@ -10,11 +10,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">{{ $referrer->user_name }} referral workspace</h2>
+                    <h2 class="bp-section-title">{{ $referrer->user_name }} referral workspace</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Manage which affiliates are referred by this user, update referral timing and payout settings, and remove referral structures.
                     </p>
@@ -54,11 +54,11 @@
         </section>
 
         <section class="grid gap-6 xl:grid-cols-[minmax(0,1.3fr)_minmax(320px,0.85fr)]">
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Referral Directory</p>
-                        <h3 class="bp-section-title value_span9">Current referred affiliates</h3>
+                        <h3 class="bp-section-title">Current referred affiliates</h3>
                     </div>
                     <p class="bp-table-meta">Choose a row to edit it or remove it directly from the actions column.</p>
                 </div>
@@ -67,13 +67,13 @@
                     <table  id="referralTable" data-sortable-table data-sort-default="0:asc">
                         <thead>
                         <tr>
-                            <th class="value_span9">{{ $affiliateTypeLabel }}</th>
-                            <th class="value_span9">Start</th>
-                            <th class="value_span9">End</th>
-                            <th class="value_span9">Type</th>
-                            <th class="value_span9">Amount</th>
-                            <th class="value_span9">Status</th>
-                            <th class="value_span9">Actions</th>
+                            <th>{{ $affiliateTypeLabel }}</th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -90,7 +90,7 @@
                                         <button type="button" class="bp-action-link js-load-referral" data-affiliate="{{ $row->aff_id }}">Edit</button>
                                         <form action="/user/{{ $referrer->idrep }}/referrals/{{ $row->aff_id }}/delete" method="post" onsubmit="return confirm('Delete this referral structure?');">
                                             {{ csrf_field() }}
-                                            <button type="submit" class="bp-action-link value_span11 value_span2">Remove</button>
+                                            <button type="submit" class="bp-action-link">Remove</button>
                                         </form>
                                     </div>
                                 </td>
@@ -101,11 +101,11 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Editor</p>
-                        <h3 class="bp-section-title value_span9">Edit selected referral</h3>
+                        <h3 class="bp-section-title">Edit selected referral</h3>
                     </div>
                     <p class="bp-table-meta">The panel updates from the selected table row and saves back to the same dataset.</p>
                 </div>
@@ -154,7 +154,7 @@
                         </div>
 
                         <div class="flex flex-wrap items-center gap-3">
-                            <button type="submit" class="bp-button-primary value_span6-2 value_span2 value_span1-2">Save referral</button>
+                            <button type="submit" class="bp-button-primary">Save referral</button>
                             <a href="/user/{{ $referrer->idrep }}/referrals/create" class="bp-button-secondary">Create another</a>
                         </div>
                     </form>

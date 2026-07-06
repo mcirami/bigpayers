@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Inbox Workspace</p>
-                    <h2 class="bp-section-title value_span9">Send a notification</h2>
+                    <h2 class="bp-section-title">Send a notification</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Compose an internal notification, target the right recipients, and optionally mirror the message by email without going through the old dual-table composer.
                     </p>
@@ -31,10 +31,10 @@
             @csrf
 
             <div class="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Message Setup</p>
-                        <h3 class="bp-section-title value_span9">Title and body</h3>
+                        <h3 class="bp-section-title">Title and body</h3>
                     </div>
 
                     <div class="mt-6 bp-form-grid">
@@ -55,11 +55,11 @@
                     </div>
                 </section>
 
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="bp-section-kicker">Recipients</p>
-                            <h3 class="bp-section-title value_span9">Choose who receives it</h3>
+                            <h3 class="bp-section-title">Choose who receives it</h3>
                         </div>
 
                         <div class="bp-toolbar-cluster">

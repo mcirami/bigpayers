@@ -53,13 +53,13 @@
 </head>
 <body class="login-page {{ $themeClass }}">
 <div class="login-shell">
-    <section class="login-shell__brand value_span1">
+    <section class="login-shell__brand">
         <div class="login-shell__brand-inner">
             <a href="{{ $webroot }}" class="login-shell__logo-link" aria-label="{{ $company->getShortHand() }} home">
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
             <p class="login-shell__eyebrow">Account recovery</p>
-            <h1 class="login-shell__title value_span2">{{ \App\Services\LoginBranding::forgotPasswordPageText() }}</h1>
+            <h1 class="login-shell__title">{{ \App\Services\LoginBranding::forgotPasswordPageText() }}</h1>
             <p class="login-shell__copy">
                 Request a password reset link or choose a new password if you already have a valid reset token.
             </p>
@@ -82,13 +82,13 @@
         </div>
     </section>
 
-    <section class="login-shell__panel value_span8">
+    <section class="login-shell__panel">
         <div class="login-card">
             <p class="login-card__kicker">{{ $token ? 'Reset password' : 'Forgot password' }}</p>
-            <h2 class="login-card__title value_span9">
+            <h2 class="login-card__title">
                 {{ $token ? 'Create a new password' : 'We can help you back in' }}
             </h2>
-            <p class="login-card__copy value_span10">
+            <p class="login-card__copy">
                 @if($token && $tokenUserName)
                     Resetting password for {{ $tokenUserName }}.
                 @elseif($token)
@@ -127,10 +127,10 @@
                 @endif
 
                 <div class="login-form__row">
-                    <a class="login-form__link value_span5" href="/login">{{ \App\Services\LoginBranding::returnToLoginText() }}</a>
+                    <a class="login-form__link" href="/login">{{ \App\Services\LoginBranding::returnToLoginText() }}</a>
                 </div>
 
-                <button type="submit" name="button" class="login-form__submit value_span11 value_span2 value_span4">
+                <button type="submit" name="button" class="login-form__submit">
                     {{ \App\Services\LoginBranding::forgotPasswordButtonText() }}
                 </button>
             </form>

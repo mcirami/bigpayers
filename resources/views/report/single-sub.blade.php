@@ -13,9 +13,9 @@
     <table  id="mainTable" data-sortable-table data-sort-default="3:desc" >
         <thead>
         <tr>
-            <th class="value_span9">Offer</th>
-            <th class="value_span9">Conv Time</th>
-            <th class="value_span9">Paid</th>
+            <th>Offer</th>
+            <th>Conv Time</th>
+            <th>Paid</th>
         </tr>
         </thead>
         <tbody>

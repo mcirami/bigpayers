@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Provisioning Workspace</p>
-                    <h2 class="bp-section-title value_span9">Company setup</h2>
+                    <h2 class="bp-section-title">Company setup</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Create a company install, import the base schema, and set the bootstrap admin account.
                     </p>
@@ -19,9 +19,9 @@
         </section>
 
         @if($result)
-            <section class="bp-card value_span8 border border-green-200">
+            <section class="bp-card border border-green-200">
                 <p class="bp-section-kicker text-green-700">Setup Complete</p>
-                <h3 class="bp-section-title value_span9">{{ $result['company']->shortHand }} is ready</h3>
+                <h3 class="bp-section-title">{{ $result['company']->shortHand }} is ready</h3>
 
                 <div class="mt-6 grid gap-4 md:grid-cols-3">
                     <article class="bp-stat-card">
@@ -44,9 +44,9 @@
         @endif
 
         @if($errors->has('setup'))
-            <section class="bp-card value_span8 border border-red-200">
+            <section class="bp-card border border-red-200">
                 <p class="bp-section-kicker text-red-700">Setup Error</p>
-                <h3 class="bp-section-title value_span9">Unable to create install</h3>
+                <h3 class="bp-section-title">Unable to create install</h3>
                 <p class="mt-3 text-sm leading-7 text-red-700">{{ $errors->first('setup') }}</p>
             </section>
         @endif
@@ -54,10 +54,10 @@
         <form method="post" action="/admin/setup" class="space-y-6 lg:space-y-8">
             @csrf
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Company Information</p>
-                    <h3 class="bp-section-title value_span9">Identity</h3>
+                    <h3 class="bp-section-title">Identity</h3>
                 </div>
 
                 <div class="mt-6 grid gap-5 md:grid-cols-2">
@@ -100,10 +100,10 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Company Contact</p>
-                    <h3 class="bp-section-title value_span9">Address</h3>
+                    <h3 class="bp-section-title">Address</h3>
                 </div>
 
                 <div class="mt-6 grid gap-5 md:grid-cols-2">
@@ -133,10 +133,10 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Bootstrap Admin</p>
-                    <h3 class="bp-section-title value_span9">Admin account</h3>
+                    <h3 class="bp-section-title">Admin account</h3>
                 </div>
 
                 <div class="mt-6 grid gap-5 md:grid-cols-2">
@@ -166,10 +166,10 @@
                 </div>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Optional Routing</p>
-                    <h3 class="bp-section-title value_span9">Login and registration</h3>
+                    <h3 class="bp-section-title">Login and registration</h3>
                 </div>
 
                 <div class="mt-6 grid gap-5 md:grid-cols-2">
@@ -203,7 +203,7 @@
             </section>
 
             <div class="flex justify-end">
-                <button type="submit" class="bp-button-primary value_span11 value_span2 value_span4">Create install</button>
+                <button type="submit" class="bp-button-primary">Create install</button>
             </div>
         </form>
     </div>

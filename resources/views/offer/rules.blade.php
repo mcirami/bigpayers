@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Offers Workspace</p>
-                    <h2 class="bp-section-title value_span9">Rules for {{ $offer->offer_name ?: 'Offer #' . $offer->idoffer }}</h2>
+                    <h2 class="bp-section-title">Rules for {{ $offer->offer_name ?: 'Offer #' . $offer->idoffer }}</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Manage geo, device, and cap rules for this offer from one focused workspace.
                     </p>
@@ -47,11 +47,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Rule Editor</p>
-                    <h3 class="bp-section-title value_span9">Current rules</h3>
+                    <h3 class="bp-section-title">Current rules</h3>
                 </div>
 
                 <div class="flex flex-wrap gap-3">
@@ -69,12 +69,12 @@
                 <table id="rules" class="bp-rules-table" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
-                        <th class="value_span9">Rule</th>
-                        <th class="value_span9">Type</th>
-                        <th class="value_span9">Mode</th>
-                        <th class="value_span9">Redirect</th>
-                        <th class="value_span9">Status</th>
-                        <th class="value_span9">Actions</th>
+                        <th>Rule</th>
+                        <th>Type</th>
+                        <th>Mode</th>
+                        <th>Redirect</th>
+                        <th>Status</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>

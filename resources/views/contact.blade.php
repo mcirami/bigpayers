@@ -394,7 +394,7 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
 
 <body class="contact-page">
 
-<header class="contact-header value_span1">
+<header class="contact-header">
     <div class="contact-header__inner">
         <a class="contact-brand" href="{{$webroot}}">
             <img src="{{ $logoPath }}"
@@ -419,7 +419,7 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
 </header>
 
 <main class="contact-shell">
-    <section class="contact-card value_span8">
+    <section class="contact-card">
         <div class="contact-card__inner">
             <aside class="contact-intro">
                 <div>

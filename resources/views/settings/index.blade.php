@@ -4,13 +4,13 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Brand Workspace</p>
-                    <h2 class="bp-section-title value_span9">Company settings</h2>
+                    <h2 class="bp-section-title">Company settings</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Update the company identity, theme colors, and brand assets that power the existing `value_span*` styling contract across this install.
+                        Update the company identity, theme colors, and brand assets that power the dashboard styling across this install.
                     </p>
                 </div>
 
@@ -34,11 +34,11 @@
         <form method="post" action="/settings" enctype="multipart/form-data" class="space-y-6 lg:space-y-8">
             @csrf
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="bp-section-kicker">Theme Tokens</p>
-                        <h3 class="bp-section-title value_span9">Color system</h3>
+                        <h3 class="bp-section-title">Color system</h3>
                     </div>
                     <p class="bp-table-meta">These values update the company color palette used across the application.</p>
                 </div>
@@ -80,10 +80,10 @@
             </section>
 
             <div class="bp-settings-main-grid">
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Company Details</p>
-                        <h3 class="bp-section-title value_span9">Identity and routing</h3>
+                        <h3 class="bp-section-title">Identity and routing</h3>
                     </div>
 
                     <div class="mt-6 bp-settings-details-grid">
@@ -148,10 +148,10 @@
                     </div>
                 </section>
 
-                <section class="bp-card value_span8">
+                <section class="bp-card">
                     <div>
                         <p class="bp-section-kicker">Brand Assets</p>
-                        <h3 class="bp-section-title value_span9">Logo and favicon</h3>
+                        <h3 class="bp-section-title">Logo and favicon</h3>
                     </div>
 
                     <div class="mt-6 space-y-5">
@@ -183,7 +183,7 @@
             </div>
 
             <div class="flex justify-end">
-                <button type="submit" class="bp-button-primary value_span11 value_span2 value_span4">Save settings</button>
+                <button type="submit" class="bp-button-primary">Save settings</button>
             </div>
         </form>
     </div>

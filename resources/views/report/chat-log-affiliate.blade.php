@@ -13,12 +13,12 @@
             <thead>
             <tr>
                 @if($sessionUserType !== \App\Privilege::ROLE_AFFILIATE)
-                    <th class="value_span9">Conversion ID</th>
+                    <th>Conversion ID</th>
                 @endif
-                <th class="value_span9">Offer Name</th>
-                <th class="value_span9">Pending Timestamp</th>
-                <th class="value_span9">Converted Timestamp</th>
-                <th class="value_span9">Actions</th>
+                <th>Offer Name</th>
+                <th>Pending Timestamp</th>
+                <th>Converted Timestamp</th>
+                <th>Actions</th>
             </tr>
             </thead>
             <tbody>

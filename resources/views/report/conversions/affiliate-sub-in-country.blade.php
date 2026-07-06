@@ -15,10 +15,10 @@
     <table id="clicks"  data-sortable-table >
         <thead>
         <tr>
-            <th class="value_span9">SubId</th>
-            <th class="value_span9">Clicks</th>
-            <th class="value_span9">Unique Clicks</th>
-            <th class="value_span9">Conversions</th>
+            <th>SubId</th>
+            <th>Clicks</th>
+            <th>Unique Clicks</th>
+            <th>Conversions</th>
         </tr>
         </thead>
         <tbody>

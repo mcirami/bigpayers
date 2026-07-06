@@ -21,11 +21,11 @@
     @endphp
 
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">Users Workspace</p>
-                    <h2 class="bp-section-title value_span9">User account directory</h2>
+                    <h2 class="bp-section-title">User account directory</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Review account access, jump into edits, and log into downstream users.
                     </p>
@@ -79,11 +79,11 @@
             </article>
         </section>
 
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="bp-section-kicker">Directory</p>
-                    <h3 class="bp-section-title value_span9">Searchable user table</h3>
+                    <h3 class="bp-section-title">Searchable user table</h3>
                 </div>
                 <p class="bp-table-meta">Use search to filter the directory, then sort any column in place.</p>
             </div>
@@ -92,11 +92,11 @@
                 <table class="manage_user_table" id="mainTable" data-sortable-table data-sort-default="0:asc">
                     <thead>
                     <tr>
-                        <th class="value_span9">ID</th>
-                        <th class="value_span9">{{ $tableIdentityLabel }}</th>
-                        <th class="value_span9">Email</th>
-                        <th class="value_span9">{{ $accountTypeLabel }}</th>
-                        <th class="value_span9">Actions</th>
+                        <th>ID</th>
+                        <th>{{ $tableIdentityLabel }}</th>
+                        <th>Email</th>
+                        <th>{{ $accountTypeLabel }}</th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody id="users_container"></tbody>

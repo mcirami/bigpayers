@@ -50,13 +50,13 @@
 </head>
 <body class="login-page login-page-signup-success">
 <div class="login-shell">
-    <section class="login-shell__brand value_span1">
+    <section class="login-shell__brand">
         <div class="login-shell__brand-inner">
             <a href="{{ $webroot }}" class="login-shell__logo-link" aria-label="{{ $company->getShortHand() }} home">
                 <img src="{{ $logoPath }}" alt="{{ $company->getShortHand() }} logo" class="login-shell__logo">
             </a>
             <p class="login-shell__eyebrow">Account status</p>
-            <h1 class="login-shell__title value_span2">
+            <h1 class="login-shell__title">
                 @if($mid)
                     Welcome aboard
                 @elseif($pending)
@@ -68,18 +68,18 @@
         </div>
     </section>
 
-    <section class="login-shell__panel value_span8">
+    <section class="login-shell__panel">
         <div class="login-card">
             @if($mid)
                 <p class="login-card__kicker">Activated</p>
-                <h2 class="login-card__title value_span9">Your account is live</h2>
-                <p class="login-card__copy value_span10">
+                <h2 class="login-card__title">Your account is live</h2>
+                <p class="login-card__copy">
                     Your new account has been created and activated. Reach out to the manager who sent you your signup link if you need help getting started.
                 </p>
             @elseif($pending)
                 <p class="login-card__kicker">Still pending</p>
-                <h2 class="login-card__title value_span9">Approval is still in progress</h2>
-                <p class="login-card__copy value_span10">
+                <h2 class="login-card__title">Approval is still in progress</h2>
+                <p class="login-card__copy">
                     Your account is still waiting for approval.
                     @if(!empty($messengerUsername))
                         Contact us for approval. Add username <span class="login-card__kicker">{{ $messengerUsername }}</span> to {{ $messengerType }} and send us a message.
@@ -89,8 +89,8 @@
                 </p>
             @else
                 <p class="login-card__kicker">Submitted</p>
-                <h2 class="login-card__title value_span9">Thanks for registering</h2>
-                <p class="login-card__copy value_span10">
+                <h2 class="login-card__title">Thanks for registering</h2>
+                <p class="login-card__copy">
                     Your signup has been received.
                     @if(!empty($messengerUsername))
                         Contact us for approval. Add username <span class="login-card__kicker">{{ $messengerUsername }}</span> to {{ $messengerType }} and send us a message.
@@ -101,7 +101,7 @@
             @endif
 
             <div class="login-form">
-                <a href="/login" class="login-form__submit value_span11 value_span2 value_span4" style="text-decoration:none;">
+                <a href="/login" class="login-form__submit" style="text-decoration:none;">
                     Go to Login
                 </a>
             </div>

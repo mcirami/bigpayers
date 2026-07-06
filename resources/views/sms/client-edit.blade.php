@@ -4,11 +4,11 @@
 
 @section('content')
     <div class="space-y-6 lg:space-y-8">
-        <section class="bp-card value_span8">
+        <section class="bp-card">
             <div class="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                     <p class="bp-section-kicker">SMS Accounts</p>
-                    <h2 class="bp-section-title value_span9">Edit SMS client</h2>
+                    <h2 class="bp-section-title">Edit SMS client</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
                         Update the provider credentials saved for this SMS client record.
                     </p>
@@ -19,10 +19,10 @@
         </section>
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.05fr)_minmax(320px,0.95fr)]">
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Credentials</p>
-                    <h3 class="bp-section-title value_span9">Client login</h3>
+                    <h3 class="bp-section-title">Client login</h3>
                 </div>
 
                 <form action="/sms/client/update" method="post" class="mt-6 space-y-6">
@@ -50,10 +50,10 @@
                 </form>
             </section>
 
-            <section class="bp-card value_span8">
+            <section class="bp-card">
                 <div>
                     <p class="bp-section-kicker">Record</p>
-                    <h3 class="bp-section-title value_span9">Current client</h3>
+                    <h3 class="bp-section-title">Current client</h3>
                 </div>
 
                 <div class="mt-6">
