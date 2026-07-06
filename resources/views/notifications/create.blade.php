@@ -10,7 +10,7 @@
                     <p class="bp-section-kicker">Inbox Workspace</p>
                     <h2 class="bp-section-title">Send a notification</h2>
                     <p class="mt-3 max-w-3xl text-sm leading-7 text-slate-500">
-                        Compose an internal notification, target the right recipients, and optionally mirror the message by email without going through the old dual-table composer.
+                        Compose an internal notification, target the right recipients, and optionally mirror the message by email from one streamlined workflow.
                     </p>
                 </div>
 

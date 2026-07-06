@@ -7,9 +7,7 @@
     $companyName = $company ? ($company->getShortHand() ?: 'BigPayers') : 'BigPayers';
     $rawColors = $company ? $company->getColors() : [];
     $dashboardShellCssPath = public_path('css/dashboard-shell.css');
-    $companyCssPath = public_path('css/company.css');
     $dashboardShellCssUrl = asset('css/dashboard-shell.css') . (file_exists($dashboardShellCssPath) ? '?v=' . filemtime($dashboardShellCssPath) : '');
-    $companyCssUrl = asset('css/company.css') . (file_exists($companyCssPath) ? '?v=' . filemtime($companyCssPath) : '');
 
     $hexColor = function ($value, $fallback) {
         $candidate = is_string($value) ? ltrim($value, '#') : '';
@@ -54,7 +52,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
     <link rel="stylesheet" type="text/css" href="{{ $dashboardShellCssUrl }}">
-    <link rel="stylesheet" type="text/css" href="{{ $companyCssUrl }}">
     <title>404 | {{ $companyName }}</title>
     <style>
         .bp-error-page {

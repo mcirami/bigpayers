@@ -15,8 +15,6 @@ $faviconPath = $company ? $company->getBrandAssetUrl('favicon.ico') : asset('fav
 
     <link rel="shortcut icon" type="image/ico"
           href="{{ $faviconPath }}"/>
-    <link rel="stylesheet" media="screen" type="text/css"
-          href="<?php echo $webroot; ?>css/company.css"/>
 
     <link rel="stylesheet" type="text/css" href="<?php echo $webroot; ?>css/font-awesome/css/all.css">
 

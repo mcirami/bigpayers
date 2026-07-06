@@ -703,8 +703,6 @@ class UserController extends Controller
 		$offer = $request->offer_id;
 		$payout = $request->filled('payout') ? $request->payout : null;
 
-		// TODO: check if already has access or not.
-
 		if(CurrentUserSession::type() != Privilege::ROLE_AFFILIATE) {
 
 			$offerAccess = DB::table('rep_has_offer')

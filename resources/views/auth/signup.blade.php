@@ -51,7 +51,6 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" type="image/ico" href="{{ $faviconPath }}"/>
-    <link rel="stylesheet" type="text/css" href="{{ $webroot }}css/company.css">
     @if($themeCssUrl)
         <link rel="stylesheet" type="text/css" href="{{ $themeCssUrl }}">
     @endif
