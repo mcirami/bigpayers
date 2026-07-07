@@ -101,7 +101,7 @@ function isSelectedPage($pageName)
 {
     Global $section;
     if ($pageName == $section) {
-        return " active value_span1 value_span2 value_span6-1 ";
+        return " active ";
     }
 
     return "";

@@ -34,8 +34,6 @@ class AuditLegacyFallbackCoverage extends Command
 
     private array $allowedNonLegacyPhpRoutes = [
         'alogin.php' => 'Legacy admin-login alias redirecting to /login/{id}.',
-        'css/company.php' => 'Public compatibility redirect to /css/company.css.',
-        'login_themes/{theme}/index.php' => 'Public compatibility redirect to /login.',
     ];
 
     private array $legacyRedirectStubs = [

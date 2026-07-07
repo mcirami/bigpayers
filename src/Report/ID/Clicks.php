@@ -203,11 +203,11 @@ class Clicks extends ReportBase
     function printHeaders()
     {
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE || $this->userType == \App\Privilege::ROLE_UNKNOWN) {
-            echo " <th class=\"value_span9\">Offer ID</th>";
+            echo " <th>Offer ID</th>";
         } else {
-            echo "<th class=\"value_span9\">Aff ID</th>";
-            echo " <th class=\"value_span9\">Aff First Name</th>
-                                <th class=\"value_span9\">Offer ID</th>";
+            echo "<th>Aff ID</th>";
+            echo " <th>Aff First Name</th>
+                                <th>Offer ID</th>";
         }
 
     }
@@ -221,7 +221,7 @@ class Clicks extends ReportBase
             echo "<tr>";
 
             foreach ($val as $key => $val2) {
-                echo "<td class='value_span8'>" . $val2 . "</td>";
+                echo "<td>" . $val2 . "</td>";
 
             }
 

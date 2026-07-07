@@ -14,8 +14,7 @@ class AdminOfferRepository extends Repository
 
     public function query($dateFrom, $dateTo): \PDOStatement
     {
-        //todo lol
-
+        throw new \BadMethodCallException(static::class . ' builds reports through between().');
     }
 
 

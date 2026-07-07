@@ -58,10 +58,10 @@ class Affiliate extends ReportBase
 
         foreach ($this->headers as $permission => $header) {
             if ($ignorePermissions) {
-                echo "<th class='value_span9'>$header</th>";
+                echo "<th>$header</th>";
             } else {
                 if ($this->canSee($permission)) {
-                    echo "<th class='value_span9'>$header</th>";
+                    echo "<th>$header</th>";
                 }
             }
         }

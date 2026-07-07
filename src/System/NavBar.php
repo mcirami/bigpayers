@@ -275,15 +275,15 @@ class NavBar
 
         if ($mobile) {
             echo "<li class=\"drawer-dropdown\">
-                <a class=\"drawer-menu-item value_span2-2 value_span2 value_span4 value_span4 value_span6-1\"
+                <a class=\"drawer-menu-item\"
                    data-target=\"#\" href=\"#\" data-toggle=\"dropdown\" role=\"button\" aria-expanded=\"false\">{$name}<span class=\"drawer-caret\"></span></a>
-                <ul class=\"drawer-dropdown-menu value_span4-2\">";
+                <ul class=\"drawer-dropdown-menu\">";
         } else {
-            echo "   <li class=\"dropdown value_span6-3\">
-                <a class=\"value_span2-2 value_span3-2 value_span5 value_span6\" href=\"#\"><span
+            echo "   <li class=\"dropdown\">
+                <a href=\"#\"><span
                            ><i class=\"{$css}\"
                                                   aria-hidden=\"true\"></i><b>{$name}</b></span></a>
-                <ul class=\"dropdown-menu value_span6-1 value_span6-4\">";
+                <ul class=\"dropdown-menu\">";
         }
 
 
@@ -292,7 +292,7 @@ class NavBar
 
     private function printSubMenuItem($name, $url, $dates = false, $mobile = false, $css = "")
     {
-        $isSelected = ($url == $this->currentPage) ? "active value_span1 value_span2 value_span6-1 " : "";
+        $isSelected = ($url == $this->currentPage) ? "active " : "";
 
 
         if ($dates) {
@@ -301,11 +301,11 @@ class NavBar
 
         if ($mobile) {
             echo " <li>
-                        <a class=\"drawer-dropdown-menu-item value_span2 value_span2-2 value_span3-2 value_span4 value_span5 {$css}
+                        <a class=\"drawer-dropdown-menu-item {$css}
                        \" href=\"{$this->webRoot}{$url}\">{$name}</a></li>";
         } else {
             echo "<li>
-                <a class=\"{$css} value_span2-2 value_span3-2 value_span4 value_span2 value_span6 {$isSelected}\" href=\"{$this->webRoot}{$url}\">{$name}</a>
+                <a class=\"{$css} {$isSelected}\" href=\"{$this->webRoot}{$url}\">{$name}</a>
             </li>";
         }
     }

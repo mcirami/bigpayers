@@ -347,8 +347,6 @@ class LegacyFallbackAuditTest extends TestCase
             'offer_update.php',
             'scripts/process_bonuses.php',
             'scripts/update_geoip.php',
-            'css/company.php',
-            'login_themes/{theme}/index.php',
         ] as $expectedRoute) {
             $this->assertContains($expectedRoute, $routeUris);
         }
@@ -393,6 +391,7 @@ class LegacyFallbackAuditTest extends TestCase
             'login.php',
             'alogin.php',
             'css/company.php',
+            'login_themes/{theme}/index.php',
             'missing_compatibility.php',
         ];
 
@@ -402,7 +401,7 @@ class LegacyFallbackAuditTest extends TestCase
             'missing_compatibility.php: registered PHP route has no matching legacy file or documented public exception.',
             $errors->all()
         );
-        $this->assertNotContains(
+        $this->assertContains(
             'css/company.php: registered PHP route has no matching legacy file or documented public exception.',
             $errors->all()
         );
@@ -423,7 +422,7 @@ class LegacyFallbackAuditTest extends TestCase
         $errors = $this->invokeAuditMethod(
             $command,
             'allowedNonLegacyPhpRouteInventoryErrors',
-            [['alogin.php', 'css/company.php', 'login_themes/{theme}/index.php']]
+            [['alogin.php']]
         );
 
         $this->assertContains(

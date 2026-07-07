@@ -54,7 +54,7 @@ class View
 
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
 
-            echo "<label class=\"value_span9\">Offer URLS: </label>
+            echo "<label>Offer URLS: </label>
                       <select  onchange='handleSelect(this);'  class=\"form - control input - sm \" id=\"offer_url\" name=\"offer_url\">";
 
             $company = Company::instance()->first();
@@ -94,16 +94,16 @@ class View
     function printHeaders()
     {
         if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
-            echo " <th class=\"value_span9\">Postback Options</th>";
+            echo " <th>Postback Options</th>";
         }
 
 
         if ($this->userType != Privilege::ROLE_AFFILIATE) {
-            echo "<th class=\"value_span9\">Offer Timestamp</th>
+            echo "<th>Offer Timestamp</th>
                  ";
         }
 
-        echo "<th class=\"value_span9\" >Actions</th>";
+        echo "<th>Actions</th>";
     }
 
     public function printToSelectBox($customID = "offerSelectBox", $selectRedirectOffer = false, $customHTML = false)
@@ -168,14 +168,14 @@ class View
 
             echo " <tr>
                 
-                    <td class=\"value_span10\">{$rows->idoffer}</td>
-                    <td class=\"value_span10\">".ucwords($rows->offer_name)."</td>
-                    <td class=\"value_span10\">".Offer::offerTypeAsString($rows->offer_type)."</td>
+                    <td>{$rows->idoffer}</td>
+                    <td>".ucwords($rows->offer_name)."</td>
+                    <td>".Offer::offerTypeAsString($rows->offer_type)."</td>
                    ";
             if ($this->userType == Privilege::ROLE_AFFILIATE) {
                 echo "<p style='display:none;' id=\"url_{$rows->idoffer}\">http://{$this->urls[$this->url][0]}/?rid=".CurrentUserSession::id()."&oid={$rows->idoffer}&s1=</p>";
 
-                echo "<td class=\"value_span10\">
+                echo "<td>
                         <button data-toggle=\"tooltip\" title=\"Copy Offer URL\" onclick=\"copyToClipboard(getElementById('url_{$rows->idoffer}'));\" class=\"btn btn-default\">
                             Copy Offer URL
                         </button>
@@ -183,13 +183,13 @@ class View
             }
 
             if (CurrentUserSession::permissions()->can("create_offers")) {
-                echo "<td class=\"value_span10\">
+                echo "<td>
 							<a target='_blank' class='btn btn-sm btn-default' href='/offer/{$rows->idoffer}/access'>Affiliate Access</a>
 						</td>";
             }
 
             if (CurrentUserSession::type() !== \App\Privilege::ROLE_MANAGER) {
-                echo "<td class=\"value_span10\">$ {$rows->payout}</td>";
+                echo "<td>$ {$rows->payout}</td>";
             }
 
 
@@ -197,14 +197,14 @@ class View
 
                     
 
-                    <td class=\"value_span10\">
+                    <td>
                        {$print}
                     </td>
 
                     ";
 
             if ($this->userType == \App\Privilege::ROLE_AFFILIATE) {
-                echo "<td class=\"value_span10\"><a class='btn btn-default' data-toggle=\"tooltip\" title=\"Offer PostBack Options\" href=\"/offer/{$rows->idoffer}/postback\">Edit Post Back</a></td>";
+                echo "<td><a class='btn btn-default' data-toggle=\"tooltip\" title=\"Offer PostBack Options\" href=\"/offer/{$rows->idoffer}/postback\">Edit Post Back</a></td>";
 
 
             }
@@ -213,37 +213,37 @@ class View
             if ($this->userType != \App\Privilege::ROLE_AFFILIATE) {
                 $formatedTimestamp = Carbon::createFromFormat('Y-m-d H:i:s',
                     $rows->offer_timestamp)->toFormattedDateString();
-                echo "<td class=\"value_span10\">{$formatedTimestamp} </td>";
+                echo "<td>{$formatedTimestamp} </td>";
             }
             $per = CurrentUserSession::permissions();
 
             if ($this->userType != Privilege::ROLE_AFFILIATE && $this->userType != \App\Privilege::ROLE_UNKNOWN) {
                 if ($per->can("create_offers")) {
-                    echo "  <td class=\"value_span10\" >
+                    echo "  <td>
                                                          <a class=\"btn btn-default btn-sm\"  data-toggle=\"tooltip\" title=\"Edit Offer\" href=\"/offer/edit/".$rows->idoffer."\">Edit</a>
                                                       
                                                  </td>";
                 }
 
                 if ($per->can("edit_offer_rules")) {
-                    echo " <td class=\"value_span10\" >
+                    echo " <td>
                                                          <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Edit Offer Rules\"  href=\"/offer/rules/".$rows->idoffer."\"> Rules</a>
                                                       
                                            </td>    ";
                 }
 
-                echo " <td class=\"value_span10\" >
+                echo " <td>
                                                          <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"View Offer\"  href=\"/offer/view/".$rows->idoffer."\"> View</a>
                                                     
                                               </td>     </td>";
 
                 if (CurrentUserSession::type() == \App\Privilege::ROLE_GOD) {
-                    echo " <td class=\"value_span10\" >
+                    echo " <td>
                                                          <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Duplicate Offer\"  href=\"/offer/".$rows->idoffer."/dupe\"> Duplicate </a>
                                                     
                                               </td>     </td>";
 
-                    echo " <td class=\"value_span10\" >
+                    echo " <td>
                              <a class=\"btn btn-default btn-sm\" data-toggle=\"tooltip\" title=\"Delete Offer\" onclick=\"confirmSendTo('Are you sure you want to delete this offer?', '/offer/".$rows->idoffer."/delete');\"  href=\"javascript:void(0);\"> Delete </a>
                                                     
                                               </td>     </td>";

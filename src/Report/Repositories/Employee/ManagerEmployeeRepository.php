@@ -274,7 +274,7 @@ class ManagerEmployeeRepository extends Repository
 	}
     public function query($dateFrom, $dateTo): \PDOStatement
     {
-        // TODO: Implement query() method.
+        throw new \BadMethodCallException(static::class . ' builds reports through between().');
     }
 
 }

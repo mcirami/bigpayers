@@ -338,9 +338,9 @@ class Rules
 
 
             if ($val["type"] == "none_unique") {
-                echo "<td><a class='btn btn-default btn-sm value_span6-1 value_span4' href='/offer/rules/none-unique/{$val["idrule"]}/edit'>Edit</a></td>";
+                echo "<td><a class='btn btn-default btn-sm' href='/offer/rules/none-unique/{$val["idrule"]}/edit'>Edit</a></td>";
             } else {
-                echo "<td><a class='btn btn-default btn-sm value_span6-1 value_span4' onclick=\"editRule({$val["idrule"]},'{$val["type"]}')\" href='javascript:void(0);'>Edit</a></td>";
+                echo "<td><a class='btn btn-default btn-sm' onclick=\"editRule({$val["idrule"]},'{$val["type"]}')\" href='javascript:void(0);'>Edit</a></td>";
             }
 
             echo "</tr>";

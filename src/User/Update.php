@@ -159,7 +159,7 @@ class Update
         }
 
         echo "  <p>
-                    <label class=\"value_span9\">" . BrandingLabels::account() . "</label>
+                    <label>" . BrandingLabels::account() . "</label>
   
                 <select class=\"form-control input-sm \" id=\"referrer_repid\" name=\"referrer_repid\">";
         $new_replist = new User();
@@ -393,7 +393,7 @@ class Update
     public function printRadios()
     {
         $this->findUserType();
-        echo "<p class='value_span10'>";
+        echo "<p>";
 
         $cannotDownGrade = "";
         if (Tree::findChildren($this->selectedUser->lft, $this->selectedUser->rgt) !== 0) {

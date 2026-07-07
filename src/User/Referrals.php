@@ -181,7 +181,7 @@ class Referrals
 
 
                 echo " <p>
-                         <label class='value_span9'>My Referrer</label>
+                         <label>My Referrer</label>
                        <select name=\"referrer_box\">
                       
                     
