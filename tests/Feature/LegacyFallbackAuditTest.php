@@ -41,7 +41,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Legacy POST compatibility routes have CSRF exceptions.',
+            'No legacy POST PHP routes or PHP CSRF exceptions remain registered.',
             $output
         );
         $this->assertStringContainsString(
@@ -342,10 +342,7 @@ class LegacyFallbackAuditTest extends TestCase
         $routeUris = $method->invoke($command);
 
         foreach ([
-            'signup.php',
-            'aff_permissions.php',
-            'setup.php',
-            'scripts/update_geoip.php',
+            'click-id-tool',
         ] as $expectedRoute) {
             $this->assertContains($expectedRoute, $routeUris);
         }
@@ -358,7 +355,7 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertNotContains('api/user', $routeUris);
         $this->assertNotContains('api/sms-orders', $routeUris);
-        $this->assertContains('signup.php', $routeUris);
+        $this->assertContains('click-id-tool', $routeUris);
     }
 
     public function test_intentionally_unrouted_files_are_not_registered_as_routes(): void
@@ -414,20 +411,15 @@ class LegacyFallbackAuditTest extends TestCase
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $allowedNonLegacyPhpRoutes = $this->auditProperty($command, 'allowedNonLegacyPhpRoutes');
-        $allowedNonLegacyPhpRoutes['signup.php'] = '';
         $allowedNonLegacyPhpRoutes['missing_public_compatibility.php'] = '';
         $this->setAuditProperty($command, 'allowedNonLegacyPhpRoutes', $allowedNonLegacyPhpRoutes);
 
         $errors = $this->invokeAuditMethod(
             $command,
             'allowedNonLegacyPhpRouteInventoryErrors',
-            [['signup.php']]
+            [[]]
         );
 
-        $this->assertContains(
-            'signup.php: documented non-legacy PHP route exception reason is blank.',
-            $errors->all()
-        );
         $this->assertContains(
             'missing_public_compatibility.php: documented non-legacy PHP route exception is not registered.',
             $errors->all()

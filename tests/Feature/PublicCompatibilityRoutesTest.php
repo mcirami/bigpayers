@@ -163,7 +163,7 @@ class PublicCompatibilityRoutesTest extends TestCase
 
     public function test_forgot_password_controller_does_not_load_legacy_company_from_session(): void
     {
-        $controller = File::get(app_path('Http/Controllers/LegacyCompatibilityController.php'));
+        $controller = File::get(app_path('Http/Controllers/Auth/ForgotPasswordController.php'));
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
         $this->assertStringNotContainsString('Company::loadFromSession()', $controller);

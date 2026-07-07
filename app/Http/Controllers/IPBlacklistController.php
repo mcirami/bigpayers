@@ -94,14 +94,6 @@ class IPBlacklistController extends Controller
         return redirect('/ip-blacklist')->with('message', 'IP blacklist range updated successfully.');
     }
 
-    public function updateLegacy(Request $request)
-    {
-        $entryId = (int) $request->query('id');
-        abort_if($entryId <= 0, 404);
-
-        return $this->update($request, $entryId);
-    }
-
     public function destroy($id)
     {
         $this->ensureGodAccess();

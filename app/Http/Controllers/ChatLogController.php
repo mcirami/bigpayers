@@ -123,27 +123,6 @@ class ChatLogController extends Controller
         return redirect("/chat-log/view/{$saleLogId}")->with('message', 'Image deleted.');
     }
 
-    public function legacyDeleteSaleLogImage(Request $request)
-    {
-        $saleLogId = (int) $request->input('id');
-        $fileName = (string) $request->input('fileName');
-
-        if ($saleLogId <= 0 || $fileName === '' || basename($fileName) !== $fileName) {
-            return response('false', 400);
-        }
-
-        $this->authorizeSaleLogAccess($saleLogId);
-
-        $filePath = $this->saleLogDirectory($saleLogId)."/{$fileName}";
-
-        if (!is_file($filePath)) {
-            return response('false', 404);
-        }
-
-        return response(unlink($filePath) ? 'true' : 'false');
-    }
-
-
     public function getSaleLogImage($saleLogId, $fileName)
     {
 

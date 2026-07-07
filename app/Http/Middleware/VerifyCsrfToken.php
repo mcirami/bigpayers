@@ -16,16 +16,5 @@ class VerifyCsrfToken extends BaseVerifier
         'email/incoming',
         'email/incoming/distribute',
         'login',
-        'aff_help.php',
-        'signup.php',
-        'aff_permissions.php',
-        'upload_logo.php',
-        'upload_favicon.php',
-        'add_new_ip_blacklist.php',
-        'edit_blacklisted_ip.php',
-        'mass_assign_pb.php',
-        'setup.php',
-        'update_databases.php',
-        'scripts/sale_log.php',
     ];
 }

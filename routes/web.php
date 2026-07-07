@@ -43,7 +43,6 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\ClickSearchController;
 use App\Http\Controllers\GlobalPostbackController;
-use App\Http\Controllers\LegacyCompatibilityController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SignupController;
@@ -55,38 +54,22 @@ use App\Http\Controllers\Sms\SmsClientController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\Report\ConversionReportController;
 use App\Http\Controllers\SmsOrderController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
 Route::get('/login', [LegacyLoginController::class, 'showLoginForm']);
 Route::post('/login', [LegacyLoginController::class, 'login']);
-Route::match(['get', 'post'], '/forgot-password', [LegacyCompatibilityController::class, 'forgotPassword']);
-Route::match(['get', 'post'], '/aff_help.php', [LegacyCompatibilityController::class, 'forgotPassword']);
+Route::match(['get', 'post'], '/forgot-password', [ForgotPasswordController::class, 'show']);
 Route::get('/signup', [SignupController::class, 'show']);
 Route::post('/signup', [SignupController::class, 'submit']);
-Route::get('/signup.php', [SignupController::class, 'show']);
-Route::post('/signup.php', [SignupController::class, 'submit']);
 Route::get('/signup-success', [SignupController::class, 'success']);
-Route::get('/signup_success.php', [SignupController::class, 'success']);
 Route::any('/resources/landers/{subDomain}/{asset}', [LanderController::class, 'getAsset'])->where('asset', '.*');
 Route::get('/logout', [LegacyLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
 Route::group(['middleware' => 'legacy.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
-    Route::get('aff_permissions.php', [ReportPermissionController::class, 'index'])->middleware('permissions:' . Permissions::EDIT_REPORT_PERMISSIONS);
-    Route::post('aff_permissions.php', [ReportPermissionController::class, 'update'])->middleware('permissions:' . Permissions::EDIT_REPORT_PERMISSIONS);
-    Route::post('add_new_ip_blacklist.php', [IPBlacklistController::class, 'store'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::post('edit_blacklisted_ip.php', [IPBlacklistController::class, 'updateLegacy'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::get('mass_assign_pb.php', [AffiliateMassPostbackController::class, 'show'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
-    Route::post('mass_assign_pb.php', [AffiliateMassPostbackController::class, 'update'])->middleware('role:' . Privilege::ROLE_AFFILIATE);
-    Route::get('setup.php', [CompanySetupController::class, 'create'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::post('setup.php', [CompanySetupController::class, 'store'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::match(['get', 'post'], 'update_databases.php', [DatabaseUpdateController::class, 'run'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::get('scripts/update_geoip.php', [LegacyCompatibilityController::class, 'retiredGeoIpUpdater'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::post('scripts/sale_log.php', [ChatLogController::class, 'legacyDeleteSaleLogImage']);
-    Route::post('upload_logo.php', [SettingsController::class, 'uploadLogo'])->middleware('role:' . Privilege::ROLE_GOD);
-    Route::post('upload_favicon.php', [SettingsController::class, 'uploadFavicon'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('click-search', [ClickSearchController::class, 'show'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('ip-blacklist', [IPBlacklistController::class, 'index'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('ip-blacklist/create', [IPBlacklistController::class, 'create'])->middleware('role:' . Privilege::ROLE_GOD);
@@ -119,7 +102,7 @@ Route::group(['middleware' => 'legacy.auth'], function () {
 		'role:0,3',
 		'permissions:' . Permissions::SMS_CHAT
 	);
-    Route::get('dontaskdonttell.php', ClickIdToolController::class)->middleware('role:' . Privilege::ROLE_GOD);
+    Route::get('click-id-tool', ClickIdToolController::class)->middleware('role:' . Privilege::ROLE_GOD);
     Route::group(['prefix' => 'user'], function () {
         Route::get('create', [UserController::class, 'showCreateUser'])->middleware(['role:0,1,2']);
         Route::post('create', [UserController::class, 'storeUser'])->middleware(['role:0,1,2']);

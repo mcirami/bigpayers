@@ -18,6 +18,7 @@ class AuditLegacyFallbackCoverage extends Command
         '404.php' => 'Legacy error template, not a public workflow.',
         '500.php' => 'Legacy error template, not a public workflow.',
         'activate_affiliate.php' => 'Retired legacy redirect marker; use /user/pending/{id}/activate.',
+        'add_new_ip_blacklist.php' => 'Retired legacy redirect marker; use /ip-blacklist/create.',
         'add_offer_url.php' => 'Retired legacy redirect marker; use /offer/urls/create.',
         'add_referral.php' => 'Retired legacy redirect marker; use /user/{id}/referrals/create.',
         'add_sale.php' => 'Retired legacy redirect marker; use /sales/add.',
@@ -25,6 +26,8 @@ class AuditLegacyFallbackCoverage extends Command
         'aff_add_ref.php' => 'Retired legacy redirect marker; use /user/{id}/referrals.',
         'aff_details.php' => 'Retired legacy redirect marker; use /user/{id}/edit.',
         'aff_edit_ref.php' => 'Retired legacy redirect marker; use /user/{id}/referrals.',
+        'aff_help.php' => 'Retired legacy redirect marker; use /forgot-password.',
+        'aff_permissions.php' => 'Retired legacy redirect marker; use /admin/report-permissions.',
         'aff_update.php' => 'Retired legacy redirect marker; use /user/{id}/edit.',
         'approve_offer_request.php' => 'Retired legacy redirect marker; use /offer/{id}/approve-request/{user}.',
         'ban_user.php' => 'Retired legacy redirect marker; use /user/{id}/ban.',
@@ -40,6 +43,8 @@ class AuditLegacyFallbackCoverage extends Command
         'create_bonus.php' => 'Retired legacy redirect marker; use /bonuses/create.',
         'create_none_unique.php' => 'Retired legacy redirect marker; use /offer/rules/{id}/none-unique/create.',
         'create_notification.php' => 'Retired legacy redirect marker; use /notifications/create.',
+        'dontaskdonttell.php' => 'Retired legacy redirect marker; use /click-id-tool.',
+        'edit_blacklisted_ip.php' => 'Retired legacy redirect marker; use /ip-blacklist/{id}/edit.',
         'edit_none_unique.php' => 'Retired legacy redirect marker; use /offer/rules/none-unique/{rule}/edit.',
         'edit_offer_url.php' => 'Retired legacy redirect marker; use /offer/urls/{id}/edit.',
         'edit_salaries.php' => 'Retired legacy redirect marker; use /salaries/edit.',
@@ -54,6 +59,7 @@ class AuditLegacyFallbackCoverage extends Command
         'log_sale.php' => 'Retired legacy redirect marker; use /chat-log/add/{pendingConversionId}.',
         'login.php' => 'Retired legacy redirect marker; use /login.',
         'logout.php' => 'Retired legacy redirect marker; use /logout.',
+        'mass_assign_pb.php' => 'Retired legacy redirect marker; use /account/mass-postback.',
         'notifications.php' => 'Retired legacy notification compatibility redirect; use /notifications.',
         'offer_access.php' => 'Retired legacy redirect marker; use /offer/{id}/access.',
         'offer_add.php' => 'Retired legacy redirect marker; use /offer/create.',
@@ -72,7 +78,15 @@ class AuditLegacyFallbackCoverage extends Command
         'scripts/offer/rules/geo/addGeo.php' => 'Legacy offer-rule AJAX endpoint replaced by /offer/rules/geo.',
         'scripts/offer/rules/geo/editGeo.php' => 'Legacy offer-rule AJAX endpoint replaced by /offer/rules/geo/{rule}.',
         'scripts/process_bonuses.php' => 'Retired legacy redirect marker; use /bonuses/process.',
+        'scripts/sale_log.php' => 'Retired legacy AJAX endpoint; use /chat-log/view/{saleLogId}/delete.',
+        'scripts/update_geoip.php' => 'Retired legacy GeoIP updater; use the provisioning/ops workflow.',
         'settings.php' => 'Retired legacy redirect marker; use /settings.',
+        'setup.php' => 'Retired legacy redirect marker; use /admin/setup.',
+        'signup.php' => 'Retired legacy redirect marker; use /signup.',
+        'signup_success.php' => 'Retired legacy redirect marker; use /signup-success.',
+        'update_databases.php' => 'Retired legacy redirect marker; use /admin/database-updates.',
+        'upload_favicon.php' => 'Retired legacy upload endpoint; upload favicons through /settings.',
+        'upload_logo.php' => 'Retired legacy upload endpoint; upload logos through /settings.',
         'view_pending_affiliates.php' => 'Retired legacy redirect marker; use /user/pending.',
     ];
 
@@ -107,7 +121,7 @@ class AuditLegacyFallbackCoverage extends Command
         'create_bonus.php' => '/bonuses/create',
         'create_notification.php' => '/notifications/create',
         'create_none_unique.php' => '/offer/rules/',
-        'dontaskdonttell.php' => '/dontaskdonttell.php',
+        'dontaskdonttell.php' => '/click-id-tool',
         'edit_blacklisted_ip.php' => '/ip-blacklist/',
         'edit_none_unique.php' => '/offer/rules/none-unique/',
         'edit_salary.php' => '/user/',
@@ -1249,7 +1263,7 @@ class AuditLegacyFallbackCoverage extends Command
         $csrfExceptionErrors = $this->legacyPostCsrfExceptionErrors();
 
         if ($csrfExceptionErrors->isNotEmpty()) {
-            $this->error('Legacy POST compatibility CSRF exceptions are missing or stale:');
+            $this->error('Legacy POST PHP routes or PHP CSRF exceptions remain registered:');
             $csrfExceptionErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -1269,8 +1283,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
         $publicEntrypointSummary = $publicEntrypointCount === 1
-            ? '1 public PHP entrypoint is an expected front controller or compatibility redirect.'
-            : "{$publicEntrypointCount} public PHP entrypoints are expected front controllers or compatibility redirects.";
+            ? '1 public PHP entrypoint is an expected front controller.'
+            : "{$publicEntrypointCount} public PHP entrypoints are expected front controllers.";
         $this->info($publicEntrypointSummary);
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
@@ -1281,7 +1295,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
         $this->info('Modern views and public assets do not reference legacy PHP compatibility URLs.');
         $this->info('Retired legacy script endpoint files are explicit 410 stubs.');
-        $this->info('Legacy POST compatibility routes have CSRF exceptions.');
+        $this->info('No legacy POST PHP routes or PHP CSRF exceptions remain registered.');
         $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
         $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');

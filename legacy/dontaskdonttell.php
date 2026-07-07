@@ -1,4 +1,4 @@
 <?php
 
-header('Location: /dontaskdonttell.php', true, 302);
+header('Location: /click-id-tool', true, 302);
 exit;

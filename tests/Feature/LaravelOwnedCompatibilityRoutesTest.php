@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Http\Controllers\AffiliateMassPostbackController;
 use App\Http\Controllers\ChatLogController;
 use App\Http\Controllers\ClickIdToolController;
 use App\Http\Controllers\CompanySetupController;
@@ -10,9 +9,7 @@ use App\Http\Controllers\DatabaseUpdateController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\OfferController;
-use App\Http\Controllers\ReportPermissionController;
 use App\Http\Controllers\SettingsController;
-use App\Http\Controllers\SignupController;
 use App\Http\Middleware\VerifyCsrfToken;
 use App\Providers\AppServiceProvider;
 use Illuminate\Http\Request;
@@ -23,13 +20,6 @@ use Tests\TestCase;
 
 class LaravelOwnedCompatibilityRoutesTest extends TestCase
 {
-    public function test_public_signup_php_aliases_route_to_laravel_signup_controller(): void
-    {
-        $this->assertRouteAction('/signup.php', 'GET', SignupController::class . '@show');
-        $this->assertRouteAction('/signup.php', 'POST', SignupController::class . '@submit');
-        $this->assertRouteAction('/signup_success.php', 'GET', SignupController::class . '@success');
-    }
-
     public function test_public_auth_flows_use_legacy_auth_boundaries(): void
     {
         $loginController = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
@@ -47,7 +37,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $signupController);
 
         foreach ([
-            app_path('Http/Controllers/LegacyCompatibilityController.php'),
+            app_path('Http/Controllers/Auth/ForgotPasswordController.php'),
             app_path('Http/Middleware/LegacyUserAuth.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -540,20 +530,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_admin_legacy_php_urls_route_to_laravel_controllers(): void
     {
         $routes = [
-            ['/aff_permissions.php', 'GET', ReportPermissionController::class . '@index'],
-            ['/aff_permissions.php', 'POST', ReportPermissionController::class . '@update'],
-            ['/add_new_ip_blacklist.php', 'POST', IPBlacklistController::class . '@store'],
-            ['/edit_blacklisted_ip.php', 'POST', IPBlacklistController::class . '@updateLegacy'],
-            ['/mass_assign_pb.php', 'GET', AffiliateMassPostbackController::class . '@show'],
-            ['/mass_assign_pb.php', 'POST', AffiliateMassPostbackController::class . '@update'],
-            ['/setup.php', 'GET', CompanySetupController::class . '@create'],
-            ['/setup.php', 'POST', CompanySetupController::class . '@store'],
-            ['/update_databases.php', 'GET', DatabaseUpdateController::class . '@run'],
-            ['/update_databases.php', 'POST', DatabaseUpdateController::class . '@run'],
-            ['/scripts/sale_log.php', 'POST', ChatLogController::class . '@legacyDeleteSaleLogImage'],
-            ['/upload_logo.php', 'POST', SettingsController::class . '@uploadLogo'],
-            ['/upload_favicon.php', 'POST', SettingsController::class . '@uploadFavicon'],
-            ['/dontaskdonttell.php', 'GET', ClickIdToolController::class],
+            ['/click-id-tool', 'GET', ClickIdToolController::class],
         ];
 
         foreach ($routes as [$uri, $method, $action]) {
@@ -718,7 +695,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_mail_reads_use_legacy_mail_boundary(): void
     {
         foreach ([
-            app_path('Http/Controllers/LegacyCompatibilityController.php'),
+            app_path('Http/Controllers/Auth/ForgotPasswordController.php'),
             app_path('Http/Controllers/NotificationController.php'),
             base_path('src/User/PasswordReset.php'),
             base_path('src/User/User.php'),
@@ -1936,7 +1913,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_SESSION', $repHasOffer);
     }
 
-    public function test_legacy_post_compatibility_urls_keep_csrf_exceptions(): void
+    public function test_no_legacy_post_php_routes_or_csrf_exceptions_remain(): void
     {
         $middleware = app(VerifyCsrfToken::class);
         $reflection = new ReflectionClass($middleware);
@@ -1958,15 +1935,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             ->sort()
             ->values();
 
-        $this->assertNotEmpty($legacyPostUris);
-
-        foreach ($legacyPostUris as $legacyPostUri) {
-            $this->assertContains($legacyPostUri, $except);
-        }
-
-        foreach ($legacyPhpCsrfExceptions as $legacyPhpCsrfException) {
-            $this->assertContains($legacyPhpCsrfException, $legacyPostUris);
-        }
+        $this->assertTrue($legacyPostUris->isEmpty(), $legacyPostUris->implode(', '));
+        $this->assertTrue($legacyPhpCsrfExceptions->isEmpty(), $legacyPhpCsrfExceptions->implode(', '));
     }
 
     public function test_runtime_branding_reads_use_shared_boundaries(): void
