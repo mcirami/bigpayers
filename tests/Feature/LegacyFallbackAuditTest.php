@@ -25,7 +25,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Intentionally unrouted legacy files are not registered as Laravel routes.',
+            'Retired legacy PHP URLs are not registered as Laravel routes.',
             $output
         );
         $this->assertStringContainsString(
@@ -274,17 +274,10 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, Artisan::call('legacy:audit-fallback-coverage'));
         $output = Artisan::output();
-        $existingIntentionallyUnrouted = $legacyFiles
-            ->filter(fn ($file) => array_key_exists($file, $intentionallyUnrouted))
-            ->count();
 
         $this->assertStringContainsString("Audited {$legacyFiles->count()} legacy PHP files.", $output);
         $this->assertStringContainsString(
-            ($legacyFiles->count() - $existingIntentionallyUnrouted) . ' files have explicit Laravel route coverage.',
-            $output
-        );
-        $this->assertStringContainsString(
-            $existingIntentionallyUnrouted . ' existing files are intentionally unrouted support or retired script files.',
+            'No legacy PHP files exist.',
             $output
         );
         $this->assertStringContainsString(
@@ -296,9 +289,8 @@ class LegacyFallbackAuditTest extends TestCase
     public function test_intentionally_unrouted_legacy_urls_have_documented_reasons(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
-        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
         $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
-        $inventoryErrors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors', [$legacyFiles]);
+        $inventoryErrors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors');
 
         $this->assertNotEmpty($intentionallyUnrouted);
         $this->assertTrue($inventoryErrors->isEmpty(), $inventoryErrors->implode('; '));
@@ -312,15 +304,37 @@ class LegacyFallbackAuditTest extends TestCase
     public function test_intentionally_unrouted_inventory_errors_report_blank_entries(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
-        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
         $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
         $intentionallyUnrouted['404.php'] = '';
         $this->setAuditProperty($command, 'intentionallyUnrouted', $intentionallyUnrouted);
 
-        $errors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors', [$legacyFiles]);
+        $errors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors');
 
         $this->assertContains(
             '404.php: intentionally unrouted reason is blank.',
+            $errors->all()
+        );
+    }
+
+    public function test_legacy_file_presence_errors_report_retired_php_files(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'legacyFilePresenceErrors',
+            [collect([
+                'login.php',
+                'scripts/affiliate_signup.php',
+            ])]
+        );
+
+        $this->assertContains(
+            'login.php: remove retired legacy PHP file.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'scripts/affiliate_signup.php: remove retired legacy PHP file.',
             $errors->all()
         );
     }
@@ -351,7 +365,7 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertContains('click-id-tool', $routeUris);
     }
 
-    public function test_intentionally_unrouted_files_are_not_registered_as_routes(): void
+    public function test_retired_legacy_php_urls_are_not_registered_as_routes(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');

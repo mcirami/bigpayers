@@ -656,24 +656,25 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $intentionalInventoryErrors = $this->intentionallyUnroutedInventoryErrors($legacyFiles);
+        $legacyFilePresenceErrors = $this->legacyFilePresenceErrors($legacyFiles);
+
+        if ($legacyFilePresenceErrors->isNotEmpty()) {
+            $this->error('Legacy PHP files should not exist:');
+            $legacyFilePresenceErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $intentionalInventoryErrors = $this->intentionallyUnroutedInventoryErrors();
 
         if ($intentionalInventoryErrors->isNotEmpty()) {
-            $this->error('Intentionally unrouted legacy file inventory is stale or incomplete:');
+            $this->error('Retired legacy PHP URL inventory is incomplete:');
             $intentionalInventoryErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
 
-        $missing = $this->legacyFilesWithoutRouteCoverage($legacyFiles, $routeUris);
         $unexpectedPublicPhp = $this->unexpectedPublicPhpEntrypoints();
-
-        if ($missing->isNotEmpty()) {
-            $this->error('Legacy PHP files without explicit route coverage or an intentional unrouted reason:');
-            $missing->each(fn ($file) => $this->line(" - {$file}"));
-
-            return self::FAILURE;
-        }
 
         if ($unexpectedPublicPhp->isNotEmpty()) {
             $this->error('Unexpected public PHP entrypoints:');
@@ -1249,12 +1250,8 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $existingIntentionallyUnrouted = $legacyFiles
-            ->filter(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
-            ->count();
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
-        $this->info(($legacyFiles->count() - $existingIntentionallyUnrouted) . ' files have explicit Laravel route coverage.');
-        $this->info($existingIntentionallyUnrouted . ' existing files are intentionally unrouted support or retired script files.');
+        $this->info('No legacy PHP files exist.');
         $this->info(count($this->intentionallyUnrouted) . ' retired legacy PHP URLs are documented.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
         $publicEntrypointSummary = $publicEntrypointCount === 1
@@ -1265,7 +1262,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Front controller has no dynamic legacy file fallback.');
         $this->info('Legacy bootstrap is idempotent and guards native session startup.');
         $this->info('Retired legacy marker URLs are blocked from modern views and assets.');
-        $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
+        $this->info('Retired legacy PHP URLs are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
         $this->info('Modern views and public assets do not reference legacy PHP compatibility URLs.');
@@ -1334,6 +1331,10 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function legacyPhpFiles()
     {
+        if (!File::isDirectory(base_path('legacy'))) {
+            return collect();
+        }
+
         return collect(File::allFiles(base_path('legacy')))
             ->filter(fn ($file) => $file->getExtension() === 'php')
             ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
@@ -1353,15 +1354,14 @@ class AuditLegacyFallbackCoverage extends Command
             ->all();
     }
 
-    private function legacyFilesWithoutRouteCoverage($legacyFiles, array $routeUris)
+    private function legacyFilePresenceErrors($legacyFiles)
     {
         return $legacyFiles
-            ->reject(fn ($file) => in_array($file, $routeUris, true))
-            ->reject(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
+            ->map(fn ($file) => "{$file}: remove retired legacy PHP file.")
             ->values();
     }
 
-    private function intentionallyUnroutedInventoryErrors($legacyFiles)
+    private function intentionallyUnroutedInventoryErrors()
     {
         return collect($this->intentionallyUnrouted)
             ->flatMap(function ($reason, $file) {
