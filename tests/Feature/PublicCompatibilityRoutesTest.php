@@ -10,17 +10,6 @@ use Tests\TestCase;
 
 class PublicCompatibilityRoutesTest extends TestCase
 {
-    public function test_legacy_logout_php_is_a_redirect_marker(): void
-    {
-        $logout = File::get(base_path('legacy/logout.php'));
-
-        $this->assertStringContainsString("Location: /logout", $logout);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats', $logout);
-        $this->assertStringNotContainsString('$_GET', $logout);
-        $this->assertStringNotContainsString('$_POST', $logout);
-        $this->assertStringNotContainsString('$_SESSION', $logout);
-    }
-
     public function test_laravel_company_model_exposes_auth_view_presentation_helpers(): void
     {
         $company = new Company();

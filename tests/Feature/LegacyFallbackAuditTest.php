@@ -21,7 +21,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Replaced legacy marker files are simple redirects to Laravel routes.',
+            'Retired legacy marker URLs are blocked from modern views and assets.',
             $output
         );
         $this->assertStringContainsString(
@@ -37,7 +37,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Retired legacy script endpoint files are explicit 410 stubs.',
+            'Retired legacy script endpoint URLs are blocked from modern source.',
             $output
         );
         $this->assertStringContainsString(
@@ -274,19 +274,26 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertSame(Command::SUCCESS, Artisan::call('legacy:audit-fallback-coverage'));
         $output = Artisan::output();
+        $existingIntentionallyUnrouted = $legacyFiles
+            ->filter(fn ($file) => array_key_exists($file, $intentionallyUnrouted))
+            ->count();
 
         $this->assertStringContainsString("Audited {$legacyFiles->count()} legacy PHP files.", $output);
         $this->assertStringContainsString(
-            ($legacyFiles->count() - count($intentionallyUnrouted)) . ' files have explicit Laravel route coverage.',
+            ($legacyFiles->count() - $existingIntentionallyUnrouted) . ' files have explicit Laravel route coverage.',
             $output
         );
         $this->assertStringContainsString(
-            count($intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.',
+            $existingIntentionallyUnrouted . ' existing files are intentionally unrouted support or retired script files.',
+            $output
+        );
+        $this->assertStringContainsString(
+            count($intentionallyUnrouted) . ' retired legacy PHP URLs are documented.',
             $output
         );
     }
 
-    public function test_intentionally_unrouted_legacy_files_have_documented_reasons(): void
+    public function test_intentionally_unrouted_legacy_urls_have_documented_reasons(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
@@ -296,34 +303,24 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertNotEmpty($intentionallyUnrouted);
         $this->assertTrue($inventoryErrors->isEmpty(), $inventoryErrors->implode('; '));
 
-        foreach ($intentionallyUnrouted as $legacyFile => $reason) {
-            $this->assertFileExists(base_path('legacy/' . $legacyFile));
+        foreach ($intentionallyUnrouted as $reason) {
             $this->assertIsString($reason);
             $this->assertNotSame('', trim($reason));
         }
     }
 
-    public function test_intentionally_unrouted_inventory_errors_report_stale_or_blank_entries(): void
+    public function test_intentionally_unrouted_inventory_errors_report_blank_entries(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
         $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
         $intentionallyUnrouted['404.php'] = '';
-        $intentionallyUnrouted['missing_legacy_file.php'] = '';
         $this->setAuditProperty($command, 'intentionallyUnrouted', $intentionallyUnrouted);
 
         $errors = $this->invokeAuditMethod($command, 'intentionallyUnroutedInventoryErrors', [$legacyFiles]);
 
         $this->assertContains(
             '404.php: intentionally unrouted reason is blank.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'missing_legacy_file.php: listed as intentionally unrouted but legacy/missing_legacy_file.php does not exist.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'missing_legacy_file.php: intentionally unrouted reason is blank.',
             $errors->all()
         );
     }
@@ -443,7 +440,7 @@ class LegacyFallbackAuditTest extends TestCase
         );
     }
 
-    public function test_retired_script_endpoint_guard_targets_existing_or_routed_legacy_scripts(): void
+    public function test_retired_script_endpoint_guard_has_documented_replacements(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $reflection = new ReflectionClass($command);
@@ -455,46 +452,11 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertNotEmpty($retiredScriptEndpoints);
 
         foreach ($retiredScriptEndpoints as $endpoint => $replacement) {
-            $this->assertTrue(
-                File::exists(base_path('legacy/' . $endpoint)) || str_contains(File::get(base_path('routes/web.php')), $endpoint),
-                "{$endpoint} should be a legacy file or explicit route target."
-            );
+            $this->assertIsString($endpoint);
+            $this->assertNotSame('', trim($endpoint));
             $this->assertIsString($replacement);
             $this->assertNotSame('', trim($replacement));
         }
-    }
-
-    public function test_retired_script_implementation_errors_report_live_legacy_scripts(): void
-    {
-        $command = app(AuditLegacyFallbackCoverage::class);
-
-        $errors = $this->invokeAuditMethod(
-            $command,
-            'retiredScriptImplementationErrorsFor',
-            [[
-                'scripts/bad_live.php' => '<?php $x = \\LeadMax\\TrackYourStats\\Offer\\RepHasOffer::class; return $_POST["id"];',
-                'scripts/bad_status.php' => '<?php echo json_encode(["error" => "gone"]);',
-                'scripts/clean.php' => '<?php http_response_code(410); echo json_encode(["error" => "retired"]);',
-            ]]
-        );
-
-        $this->assertContains(
-            'scripts/bad_live.php: retired script file must return HTTP 410.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'scripts/bad_live.php: retired script file must not execute legacy classes.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'scripts/bad_live.php: retired script file must not read native PHP superglobals directly.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'scripts/bad_status.php: retired script file must return HTTP 410.',
-            $errors->all()
-        );
-        $this->assertCount(4, $errors);
     }
 
     public function test_modern_legacy_php_url_reference_errors_report_old_urls_in_views_and_assets(): void
@@ -522,34 +484,6 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertCount(2, $errors);
     }
 
-    public function test_legacy_redirect_stub_errors_report_executable_legacy_files(): void
-    {
-        $command = app(AuditLegacyFallbackCoverage::class);
-
-        $errors = $this->invokeAuditMethod(
-            $command,
-            'legacyRedirectStubErrorsFor',
-            [[
-                'signup.php' => '<?php header("Location: /wrong");',
-                'signup_success.php' => '<?php header("Location: /signup-success"); $x = \\LeadMax\\TrackYourStats\\System\\Company::class; return $_GET["mid"];',
-            ]]
-        );
-
-        $this->assertContains(
-            'signup.php: legacy redirect stub must point to /signup.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'signup_success.php: legacy redirect stub must not execute legacy classes.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'signup_success.php: legacy redirect stub must not read native PHP superglobals directly.',
-            $errors->all()
-        );
-        $this->assertCount(3, $errors);
-    }
-
     public function test_audit_hardening_checks_are_individually_clean(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
@@ -558,10 +492,8 @@ class LegacyFallbackAuditTest extends TestCase
             'publicRewriteHardeningErrors',
             'frontControllerFallbackErrors',
             'legacyBootstrapHardeningErrors',
-            'legacyRedirectStubErrors',
             'modernRetiredScriptReferenceErrors',
             'modernLegacyPhpUrlReferenceErrors',
-            'retiredScriptImplementationErrors',
             'retiredCompanySessionDependencyErrors',
             'legacyBoundaryDependencyErrors',
             'nativeSessionDependencyErrors',

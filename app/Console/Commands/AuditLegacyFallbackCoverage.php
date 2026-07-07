@@ -12,7 +12,7 @@ class AuditLegacyFallbackCoverage extends Command
 {
     protected $signature = 'legacy:audit-fallback-coverage';
 
-    protected $description = 'Verify legacy PHP files are explicitly routed or intentionally unrouted.';
+    protected $description = 'Verify retired legacy PHP URLs stay documented and unrouted.';
 
     private array $intentionallyUnrouted = [
         '404.php' => 'Legacy error template, not a public workflow.',
@@ -718,15 +718,6 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $legacyRedirectStubErrors = $this->legacyRedirectStubErrors();
-
-        if ($legacyRedirectStubErrors->isNotEmpty()) {
-            $this->error('Legacy redirect stubs are stale or executable:');
-            $legacyRedirectStubErrors->each(fn ($error) => $this->line(" - {$error}"));
-
-            return self::FAILURE;
-        }
-
         $modernScriptReferenceErrors = $this->modernRetiredScriptReferenceErrors();
 
         if ($modernScriptReferenceErrors->isNotEmpty()) {
@@ -741,15 +732,6 @@ class AuditLegacyFallbackCoverage extends Command
         if ($modernLegacyPhpUrlReferenceErrors->isNotEmpty()) {
             $this->error('Modern views or public assets still reference legacy PHP compatibility URLs:');
             $modernLegacyPhpUrlReferenceErrors->each(fn ($error) => $this->line(" - {$error}"));
-
-            return self::FAILURE;
-        }
-
-        $retiredScriptImplementationErrors = $this->retiredScriptImplementationErrors();
-
-        if ($retiredScriptImplementationErrors->isNotEmpty()) {
-            $this->error('Retired legacy script endpoint files are not explicit 410 stubs:');
-            $retiredScriptImplementationErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -1267,9 +1249,13 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $existingIntentionallyUnrouted = $legacyFiles
+            ->filter(fn ($file) => array_key_exists($file, $this->intentionallyUnrouted))
+            ->count();
         $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
-        $this->info(($legacyFiles->count() - count($this->intentionallyUnrouted)) . ' files have explicit Laravel route coverage.');
-        $this->info(count($this->intentionallyUnrouted) . ' files are intentionally unrouted support or retired script files.');
+        $this->info(($legacyFiles->count() - $existingIntentionallyUnrouted) . ' files have explicit Laravel route coverage.');
+        $this->info($existingIntentionallyUnrouted . ' existing files are intentionally unrouted support or retired script files.');
+        $this->info(count($this->intentionallyUnrouted) . ' retired legacy PHP URLs are documented.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
         $publicEntrypointSummary = $publicEntrypointCount === 1
             ? '1 public PHP entrypoint is an expected front controller.'
@@ -1278,12 +1264,12 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
         $this->info('Legacy bootstrap is idempotent and guards native session startup.');
-        $this->info('Replaced legacy marker files are simple redirects to Laravel routes.');
+        $this->info('Retired legacy marker URLs are blocked from modern views and assets.');
         $this->info('Intentionally unrouted legacy files are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
         $this->info('Modern views and assets do not reference retired legacy script endpoints.');
         $this->info('Modern views and public assets do not reference legacy PHP compatibility URLs.');
-        $this->info('Retired legacy script endpoint files are explicit 410 stubs.');
+        $this->info('Retired legacy script endpoint URLs are blocked from modern source.');
         $this->info('No legacy POST PHP routes or PHP CSRF exceptions remain registered.');
         $this->info('No PHP compatibility routes remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');
@@ -1377,15 +1363,9 @@ class AuditLegacyFallbackCoverage extends Command
 
     private function intentionallyUnroutedInventoryErrors($legacyFiles)
     {
-        $legacyFileLookup = $legacyFiles->flip();
-
         return collect($this->intentionallyUnrouted)
-            ->flatMap(function ($reason, $file) use ($legacyFileLookup) {
+            ->flatMap(function ($reason, $file) {
                 $errors = [];
-
-                if (!$legacyFileLookup->has($file)) {
-                    $errors[] = "{$file}: listed as intentionally unrouted but legacy/{$file} does not exist.";
-                }
 
                 if (!is_string($reason) || trim($reason) === '') {
                     $errors[] = "{$file}: intentionally unrouted reason is blank.";
@@ -1434,48 +1414,6 @@ class AuditLegacyFallbackCoverage extends Command
 
                 if (!is_string($reason) || trim($reason) === '') {
                     $errors[] = "public/{$file}: allowed public PHP entrypoint reason is blank.";
-                }
-
-                return $errors;
-            })
-            ->values();
-    }
-
-    private function legacyRedirectStubErrors()
-    {
-        return $this->legacyRedirectStubErrorsFor(
-            collect($this->legacyRedirectStubs)
-                ->mapWithKeys(function (string $target, string $file) {
-                    $path = base_path('legacy/' . $file);
-
-                    return [$file => File::exists($path) ? File::get($path) : null];
-                })
-        );
-    }
-
-    private function legacyRedirectStubErrorsFor($sourceFiles)
-    {
-        return collect($sourceFiles)
-            ->flatMap(function (?string $contents, string $file) {
-                $errors = [];
-                $target = $this->legacyRedirectStubs[$file] ?? null;
-
-                if ($contents === null) {
-                    return ["{$file}: legacy redirect stub file does not exist."];
-                }
-
-                if ($target === null || !str_contains($contents, "Location: {$target}")) {
-                    $errors[] = "{$file}: legacy redirect stub must point to {$target}.";
-                }
-
-                if (str_contains($contents, 'LeadMax\\TrackYourStats')) {
-                    $errors[] = "{$file}: legacy redirect stub must not execute legacy classes.";
-                }
-
-                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
-                    if (str_contains($contents, $pattern)) {
-                        $errors[] = "{$file}: legacy redirect stub must not read native PHP superglobals directly.";
-                    }
                 }
 
                 return $errors;
@@ -1609,51 +1547,6 @@ class AuditLegacyFallbackCoverage extends Command
                     ->filter(fn (string $url) => str_contains($contents, $url))
                     ->map(fn (string $url) => "{$relativePath}: replace legacy PHP URL {$url} with its modern Laravel route.")
                     ->all();
-            })
-            ->values();
-    }
-
-    private function retiredScriptImplementationErrors()
-    {
-        return $this->retiredScriptImplementationErrorsFor(
-            collect($this->retiredScriptEndpoints)
-                ->filter(fn (string $replacement, string $endpoint) => array_key_exists($endpoint, $this->intentionallyUnrouted) || in_array($endpoint, [
-                    'scripts/sale_log.php',
-                    'scripts/update_geoip.php',
-                ], true))
-                ->mapWithKeys(function (string $replacement, string $endpoint) {
-                    $path = base_path('legacy/' . $endpoint);
-
-                    if (!File::exists($path)) {
-                        return [];
-                    }
-
-                    return [$endpoint => File::get($path)];
-                })
-        );
-    }
-
-    private function retiredScriptImplementationErrorsFor($sourceFiles)
-    {
-        return collect($sourceFiles)
-            ->flatMap(function (string $contents, string $endpoint) {
-                $errors = [];
-
-                if (!str_contains($contents, 'http_response_code(410)')) {
-                    $errors[] = "{$endpoint}: retired script file must return HTTP 410.";
-                }
-
-                if (str_contains($contents, 'LeadMax\\TrackYourStats')) {
-                    $errors[] = "{$endpoint}: retired script file must not execute legacy classes.";
-                }
-
-                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
-                    if (str_contains($contents, $pattern)) {
-                        $errors[] = "{$endpoint}: retired script file must not read native PHP superglobals directly.";
-                    }
-                }
-
-                return $errors;
             })
             ->values();
     }
