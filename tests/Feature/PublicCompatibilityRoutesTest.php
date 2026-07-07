@@ -3,42 +3,13 @@
 namespace Tests\Feature;
 
 use App\Company;
-use App\Http\Controllers\LegacyCompatibilityController;
 use App\Services\SaleLogImageStorage;
 use App\Support\NativeSession;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class PublicCompatibilityRoutesTest extends TestCase
 {
-    public function test_public_php_compatibility_routes_are_registered(): void
-    {
-        $this->assertSame(
-            LegacyCompatibilityController::class . '@redirectLoginPhp',
-            Route::getRoutes()->match(Request::create('/login.php'))->getActionName()
-        );
-        $this->assertSame(
-            LegacyCompatibilityController::class . '@redirectLogoutPhp',
-            Route::getRoutes()->match(Request::create('/logout.php'))->getActionName()
-        );
-    }
-
-    public function test_public_php_compatibility_controllers_redirect_to_laravel_routes(): void
-    {
-        $legacyController = app(LegacyCompatibilityController::class);
-
-        $this->assertStringEndsWith('/login', $legacyController->redirectLoginPhp()->getTargetUrl());
-        $this->assertStringEndsWith('/logout', $legacyController->redirectLogoutPhp()->getTargetUrl());
-    }
-
-    public function test_public_php_compatibility_routes_run_matched_route_actions(): void
-    {
-        $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('login.php'), '/login');
-        $this->assertRouteActionRedirectPath($this->runMatchedRouteAction('logout.php'), '/logout');
-    }
-
     public function test_legacy_logout_php_is_a_redirect_marker(): void
     {
         $logout = File::get(base_path('legacy/logout.php'));
@@ -300,24 +271,4 @@ class PublicCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('Company::loadFromSession()', $controller);
     }
 
-    private function runMatchedRouteAction(string $uri, string $method = 'GET', array $payload = [])
-    {
-        $request = Request::create($uri, $method, $payload);
-        $this->app->instance('request', $request);
-        $route = Route::getRoutes()->match($request);
-
-        $request->setRouteResolver(fn () => $route);
-        $route->bind($request);
-
-        return $route->run();
-    }
-
-    private function assertRouteActionRedirectPath($response, string $expectedPath): void
-    {
-        $this->assertContains($response->getStatusCode(), [201, 301, 302, 303, 307, 308]);
-
-        $target = parse_url($response->headers->get('Location'));
-
-        $this->assertStringEndsWith($expectedPath, $target['path'] ?? '');
-    }
 }

@@ -342,10 +342,9 @@ class LegacyFallbackAuditTest extends TestCase
         $routeUris = $method->invoke($command);
 
         foreach ([
-            'login.php',
-            'home.php',
-            'offer_update.php',
-            'scripts/process_bonuses.php',
+            'signup.php',
+            'aff_permissions.php',
+            'setup.php',
             'scripts/update_geoip.php',
         ] as $expectedRoute) {
             $this->assertContains($expectedRoute, $routeUris);
@@ -359,7 +358,7 @@ class LegacyFallbackAuditTest extends TestCase
 
         $this->assertNotContains('api/user', $routeUris);
         $this->assertNotContains('api/sms-orders', $routeUris);
-        $this->assertContains('login.php', $routeUris);
+        $this->assertContains('signup.php', $routeUris);
     }
 
     public function test_intentionally_unrouted_files_are_not_registered_as_routes(): void
@@ -405,7 +404,7 @@ class LegacyFallbackAuditTest extends TestCase
             'css/company.php: registered PHP route has no matching legacy file or documented public exception.',
             $errors->all()
         );
-        $this->assertNotContains(
+        $this->assertContains(
             'alogin.php: registered PHP route has no matching legacy file or documented public exception.',
             $errors->all()
         );
@@ -415,18 +414,18 @@ class LegacyFallbackAuditTest extends TestCase
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $allowedNonLegacyPhpRoutes = $this->auditProperty($command, 'allowedNonLegacyPhpRoutes');
-        $allowedNonLegacyPhpRoutes['alogin.php'] = '';
+        $allowedNonLegacyPhpRoutes['signup.php'] = '';
         $allowedNonLegacyPhpRoutes['missing_public_compatibility.php'] = '';
         $this->setAuditProperty($command, 'allowedNonLegacyPhpRoutes', $allowedNonLegacyPhpRoutes);
 
         $errors = $this->invokeAuditMethod(
             $command,
             'allowedNonLegacyPhpRouteInventoryErrors',
-            [['alogin.php']]
+            [['signup.php']]
         );
 
         $this->assertContains(
-            'alogin.php: documented non-legacy PHP route exception reason is blank.',
+            'signup.php: documented non-legacy PHP route exception reason is blank.',
             $errors->all()
         );
         $this->assertContains(

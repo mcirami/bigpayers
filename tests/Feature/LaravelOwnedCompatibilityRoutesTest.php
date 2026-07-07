@@ -670,7 +670,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Click.php'),
-            app_path('Http/Controllers/LegacyCompatibilityController.php'),
             app_path('Http/Middleware/LegacyAccountTypeMiddleware.php'),
             app_path('Http/Middleware/LegacyPermissionMiddleware.php'),
             app_path('Providers/AppServiceProvider.php'),
