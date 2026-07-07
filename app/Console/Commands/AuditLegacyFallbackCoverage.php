@@ -94,8 +94,6 @@ class AuditLegacyFallbackCoverage extends Command
         'index.php' => 'Laravel front controller.',
     ];
 
-    private array $allowedNonLegacyPhpRoutes = [];
-
     private array $legacyRedirectStubs = [
         'aff_add.php' => '/user/create',
         'aff_add_ref.php' => '/user/',
@@ -649,20 +647,11 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $registeredPhpRouteErrors = $this->registeredPhpRouteInventoryErrors($legacyFiles, $routeUris);
+        $registeredPhpRouteErrors = $this->registeredPhpRouteInventoryErrors($routeUris);
 
         if ($registeredPhpRouteErrors->isNotEmpty()) {
-            $this->error('Registered PHP compatibility routes are stale or undocumented:');
+            $this->error('Unexpected PHP compatibility routes remain registered:');
             $registeredPhpRouteErrors->each(fn ($error) => $this->line(" - {$error}"));
-
-            return self::FAILURE;
-        }
-
-        $nonLegacyPhpRouteErrors = $this->allowedNonLegacyPhpRouteInventoryErrors($routeUris);
-
-        if ($nonLegacyPhpRouteErrors->isNotEmpty()) {
-            $this->error('Documented non-legacy PHP compatibility routes are stale or incomplete:');
-            $nonLegacyPhpRouteErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -1296,8 +1285,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern views and public assets do not reference legacy PHP compatibility URLs.');
         $this->info('Retired legacy script endpoint files are explicit 410 stubs.');
         $this->info('No legacy POST PHP routes or PHP CSRF exceptions remain registered.');
-        $this->info('Registered PHP compatibility routes map to legacy files or documented public exceptions.');
-        $this->info('Documented non-legacy PHP compatibility route exceptions remain registered.');
+        $this->info('No PHP compatibility routes remain registered.');
         $this->info('Runtime code does not reference the retired legacy company session loader.');
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
         $this->info('Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.');
@@ -1416,34 +1404,11 @@ class AuditLegacyFallbackCoverage extends Command
             ->values();
     }
 
-    private function registeredPhpRouteInventoryErrors($legacyFiles, array $routeUris)
+    private function registeredPhpRouteInventoryErrors(array $routeUris)
     {
-        $legacyFileLookup = $legacyFiles->flip();
-
         return collect($routeUris)
             ->filter(fn ($uri) => str_contains($uri, '.php'))
-            ->reject(fn ($uri) => $legacyFileLookup->has($uri))
-            ->reject(fn ($uri) => array_key_exists($uri, $this->allowedNonLegacyPhpRoutes))
-            ->map(fn ($uri) => "{$uri}: registered PHP route has no matching legacy file or documented public exception.")
-            ->values();
-    }
-
-    private function allowedNonLegacyPhpRouteInventoryErrors(array $routeUris)
-    {
-        return collect($this->allowedNonLegacyPhpRoutes)
-            ->flatMap(function ($reason, $uri) use ($routeUris) {
-                $errors = [];
-
-                if (!in_array($uri, $routeUris, true)) {
-                    $errors[] = "{$uri}: documented non-legacy PHP route exception is not registered.";
-                }
-
-                if (!is_string($reason) || trim($reason) === '') {
-                    $errors[] = "{$uri}: documented non-legacy PHP route exception reason is blank.";
-                }
-
-                return $errors;
-            })
+            ->map(fn ($uri) => "{$uri}: registered PHP route should be removed.")
             ->values();
     }
 
@@ -1633,7 +1598,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function modernLegacyPhpUrlReferenceErrorsFor($sourceFiles)
     {
         $legacyPhpUrls = collect(array_keys($this->legacyRedirectStubs))
-            ->merge(array_keys($this->allowedNonLegacyPhpRoutes))
             ->merge(array_keys($this->retiredScriptEndpoints))
             ->reject(fn (string $url) => str_contains($url, '{'))
             ->unique()
@@ -3379,13 +3343,13 @@ class AuditLegacyFallbackCoverage extends Command
 
         $missingExceptions = $legacyPostRoutes
             ->reject(fn ($uri) => $normalizedCsrfExceptions->contains($uri))
-            ->map(fn ($uri) => "{$uri}: POST compatibility route is missing from VerifyCsrfToken exceptions.")
+            ->map(fn ($uri) => "{$uri}: legacy POST PHP route is missing from VerifyCsrfToken exceptions.")
             ->values();
 
         $staleExceptions = $normalizedCsrfExceptions
             ->filter(fn ($uri) => str_contains($uri, '.php'))
             ->reject(fn ($uri) => $legacyPostRoutes->contains($uri))
-            ->map(fn ($uri) => "{$uri}: VerifyCsrfToken exception does not match a registered POST compatibility route.")
+            ->map(fn ($uri) => "{$uri}: VerifyCsrfToken exception does not match a registered legacy POST PHP route.")
             ->values();
 
         return $missingExceptions

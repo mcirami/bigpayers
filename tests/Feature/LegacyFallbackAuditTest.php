@@ -45,11 +45,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Registered PHP compatibility routes map to legacy files or documented public exceptions.',
-            $output
-        );
-        $this->assertStringContainsString(
-            'Documented non-legacy PHP compatibility route exceptions remain registered.',
+            'No PHP compatibility routes remain registered.',
             $output
         );
         $this->assertStringContainsString(
@@ -332,7 +328,7 @@ class LegacyFallbackAuditTest extends TestCase
         );
     }
 
-    public function test_registered_route_reader_sees_representative_compatibility_routes(): void
+    public function test_registered_route_reader_sees_representative_laravel_routes(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
         $reflection = new ReflectionClass($command);
@@ -367,12 +363,11 @@ class LegacyFallbackAuditTest extends TestCase
         $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
     }
 
-    public function test_registered_php_routes_map_to_legacy_files_or_documented_public_exceptions(): void
+    public function test_no_unexpected_registered_php_routes_remain(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
-        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
         $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
-        $errors = $this->invokeAuditMethod($command, 'registeredPhpRouteInventoryErrors', [$legacyFiles, $routeUris]);
+        $errors = $this->invokeAuditMethod($command, 'registeredPhpRouteInventoryErrors', [$routeUris]);
 
         $this->assertTrue($errors->isEmpty(), $errors->implode('; '));
     }
@@ -380,9 +375,6 @@ class LegacyFallbackAuditTest extends TestCase
     public function test_registered_php_route_inventory_errors_report_unknown_php_routes(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
-        $legacyFiles = collect([
-            'login.php',
-        ]);
         $routeUris = [
             'login.php',
             'alogin.php',
@@ -391,41 +383,22 @@ class LegacyFallbackAuditTest extends TestCase
             'missing_compatibility.php',
         ];
 
-        $errors = $this->invokeAuditMethod($command, 'registeredPhpRouteInventoryErrors', [$legacyFiles, $routeUris]);
+        $errors = $this->invokeAuditMethod($command, 'registeredPhpRouteInventoryErrors', [$routeUris]);
 
         $this->assertContains(
-            'missing_compatibility.php: registered PHP route has no matching legacy file or documented public exception.',
+            'login.php: registered PHP route should be removed.',
             $errors->all()
         );
         $this->assertContains(
-            'css/company.php: registered PHP route has no matching legacy file or documented public exception.',
+            'missing_compatibility.php: registered PHP route should be removed.',
             $errors->all()
         );
         $this->assertContains(
-            'alogin.php: registered PHP route has no matching legacy file or documented public exception.',
-            $errors->all()
-        );
-    }
-
-    public function test_allowed_non_legacy_php_route_inventory_errors_report_stale_or_blank_entries(): void
-    {
-        $command = app(AuditLegacyFallbackCoverage::class);
-        $allowedNonLegacyPhpRoutes = $this->auditProperty($command, 'allowedNonLegacyPhpRoutes');
-        $allowedNonLegacyPhpRoutes['missing_public_compatibility.php'] = '';
-        $this->setAuditProperty($command, 'allowedNonLegacyPhpRoutes', $allowedNonLegacyPhpRoutes);
-
-        $errors = $this->invokeAuditMethod(
-            $command,
-            'allowedNonLegacyPhpRouteInventoryErrors',
-            [[]]
-        );
-
-        $this->assertContains(
-            'missing_public_compatibility.php: documented non-legacy PHP route exception is not registered.',
+            'css/company.php: registered PHP route should be removed.',
             $errors->all()
         );
         $this->assertContains(
-            'missing_public_compatibility.php: documented non-legacy PHP route exception reason is blank.',
+            'alogin.php: registered PHP route should be removed.',
             $errors->all()
         );
     }
@@ -484,7 +457,7 @@ class LegacyFallbackAuditTest extends TestCase
         foreach ($retiredScriptEndpoints as $endpoint => $replacement) {
             $this->assertTrue(
                 File::exists(base_path('legacy/' . $endpoint)) || str_contains(File::get(base_path('routes/web.php')), $endpoint),
-                "{$endpoint} should be a legacy file or explicit compatibility route."
+                "{$endpoint} should be a legacy file or explicit route target."
             );
             $this->assertIsString($replacement);
             $this->assertNotSame('', trim($replacement));
@@ -644,17 +617,12 @@ class LegacyFallbackAuditTest extends TestCase
             'legacySupportDirectReferenceInventoryErrors',
             'legacyPostCsrfExceptionErrors',
             'registeredPhpRouteInventoryErrors',
-            'allowedNonLegacyPhpRouteInventoryErrors',
             'allowedPublicPhpInventoryErrors',
             'boundaryAllowedPathInventoryErrors',
         ] as $methodName) {
             $routeUris = $this->invokeAuditMethod($command, 'routeUrisFromRegisteredRoutes');
             $arguments = match ($methodName) {
-                'registeredPhpRouteInventoryErrors' => [
-                    $this->invokeAuditMethod($command, 'legacyPhpFiles'),
-                    $routeUris,
-                ],
-                'allowedNonLegacyPhpRouteInventoryErrors' => [$routeUris],
+                'registeredPhpRouteInventoryErrors' => [$routeUris],
                 default => [],
             };
             $errors = $this->invokeAuditMethod($command, $methodName, $arguments);
@@ -841,11 +809,11 @@ PHP,
         );
 
         $this->assertContains(
-            'missing_exception.php: POST compatibility route is missing from VerifyCsrfToken exceptions.',
+            'missing_exception.php: legacy POST PHP route is missing from VerifyCsrfToken exceptions.',
             $errors->all()
         );
         $this->assertContains(
-            'stale_exception.php: VerifyCsrfToken exception does not match a registered POST compatibility route.',
+            'stale_exception.php: VerifyCsrfToken exception does not match a registered legacy POST PHP route.',
             $errors->all()
         );
     }
