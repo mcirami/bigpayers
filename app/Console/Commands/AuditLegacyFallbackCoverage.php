@@ -172,23 +172,25 @@ class AuditLegacyFallbackCoverage extends Command
     private array $frontControllerForbiddenPatterns = [
         '../legacy' => 'public/index.php must not include files from the legacy directory.',
         'legacy/index.php' => 'public/index.php must not execute legacy/index.php.',
+        'legacy_loader.php' => 'public/index.php must not load the retired legacy bootstrap.',
         'is_file($file)' => 'public/index.php must not dynamically check request paths for executable files.',
         'include($file)' => 'public/index.php must not dynamically include request-matched files.',
     ];
 
-    private array $legacyBootstrapRequiredPatterns = [
-        'BIGPAYERS_LEGACY_LOADER_BOOTSTRAPPED' => 'bootstrap/legacy_loader.php is missing the idempotency guard.',
-        'require_once __DIR__. "/../vendor/autoload.php";' => 'bootstrap/legacy_loader.php must load Composer with require_once.',
-        'session_status() === PHP_SESSION_NONE' => 'bootstrap/legacy_loader.php must guard native session startup.',
-    ];
-
-    private array $legacyBootstrapForbiddenPatterns = [
-        'include __DIR__. "/../vendor/autoload.php";' => 'bootstrap/legacy_loader.php must not include Composer repeatedly.',
+    private array $runtimeBootstrapRequiredPatterns = [
+        'private static bool $bootstrapped = false;' => 'RuntimeBootstrap is missing its idempotency guard.',
+        'session_status() === PHP_SESSION_NONE' => 'RuntimeBootstrap must guard native session startup.',
+        '$connection->setConnection();' => 'RuntimeBootstrap must initialize tenant connection constants.',
+        'Company::loadFromSession()->setSession();' => 'RuntimeBootstrap must restore company session context.',
     ];
 
     private array $retiredCompanySessionForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Company' => 'Use App\\Company instead of the legacy company class.',
         'Company::loadFromSession()' => 'Use App\\Company current-company helpers instead of the legacy session company loader.',
+    ];
+
+    private array $retiredCompanySessionAllowedFiles = [
+        'app/Support/RuntimeBootstrap.php' => 'The Laravel-owned boundary that restores legacy company context during request startup.',
     ];
 
     private array $legacySessionForbiddenPatterns = [
@@ -629,10 +631,6 @@ class AuditLegacyFallbackCoverage extends Command
         'app/Support' => 'Dedicated wrappers around legacy classes.',
     ];
 
-    private array $legacyBoundaryAllowedFiles = [
-        'bootstrap/legacy_loader.php' => 'The explicit legacy runtime bootstrap boundary.',
-    ];
-
     public function handle(): int
     {
         $legacyFiles = $this->legacyPhpFiles();
@@ -710,11 +708,11 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $legacyBootstrapErrors = $this->legacyBootstrapHardeningErrors();
+        $runtimeBootstrapErrors = $this->runtimeBootstrapHardeningErrors();
 
-        if ($legacyBootstrapErrors->isNotEmpty()) {
-            $this->error('Legacy bootstrap hardening is incomplete:');
-            $legacyBootstrapErrors->each(fn ($error) => $this->line(" - {$error}"));
+        if ($runtimeBootstrapErrors->isNotEmpty()) {
+            $this->error('Runtime bootstrap hardening is incomplete:');
+            $runtimeBootstrapErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
         }
@@ -1250,7 +1248,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info($publicEntrypointSummary);
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
-        $this->info('Legacy bootstrap is idempotent and guards native session startup.');
+        $this->info('Laravel middleware initializes the legacy runtime boundary once per request.');
         $this->info('Retired legacy marker URLs are blocked from modern views and assets.');
         $this->info('Retired legacy PHP URLs are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
@@ -1443,19 +1441,18 @@ class AuditLegacyFallbackCoverage extends Command
         return $errors;
     }
 
-    private function legacyBootstrapHardeningErrors()
+    private function runtimeBootstrapHardeningErrors()
     {
         $errors = collect();
-        $legacyBootstrap = base_path('bootstrap/legacy_loader.php');
+        $runtimeBootstrap = app_path('Support/RuntimeBootstrap.php');
 
-        if (!File::exists($legacyBootstrap)) {
-            return $errors->push('bootstrap/legacy_loader.php is missing.');
+        if (!File::exists($runtimeBootstrap)) {
+            return $errors->push('app/Support/RuntimeBootstrap.php is missing.');
         }
 
-        $contents = File::get($legacyBootstrap);
+        $contents = File::get($runtimeBootstrap);
 
-        $this->appendMissingPatternErrors($errors, $contents, $this->legacyBootstrapRequiredPatterns);
-        $this->appendForbiddenPatternErrors($errors, $contents, $this->legacyBootstrapForbiddenPatterns);
+        $this->appendMissingPatternErrors($errors, $contents, $this->runtimeBootstrapRequiredPatterns);
 
         return $errors;
     }
@@ -1553,6 +1550,7 @@ class AuditLegacyFallbackCoverage extends Command
     private function retiredCompanySessionDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
+            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->retiredCompanySessionAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -1797,10 +1795,6 @@ class AuditLegacyFallbackCoverage extends Command
     {
         return collect($sourceFiles)
             ->reject(function (string $contents, string $relativePath) {
-                if (array_key_exists($relativePath, $this->legacyBoundaryAllowedFiles)) {
-                    return true;
-                }
-
                 foreach (array_keys($this->legacyBoundaryAllowedDirectories) as $allowedDirectory) {
                     if (str_starts_with($relativePath, $allowedDirectory . '/')) {
                         return true;

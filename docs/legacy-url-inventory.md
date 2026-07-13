@@ -7,22 +7,19 @@ The direct legacy fallback has been removed from
 [`public/index.php`](/Users/matteocirami/dev-docker/LARADOCK/bigpayers/public/index.php:53),
 which previously:
 
-1. boots the legacy runtime via `bootstrap/legacy_loader.php`
+1. booted the legacy runtime via `bootstrap/legacy_loader.php`
 2. included `legacy/index.php` for `/`
-3. includes matching files under `legacy/` for arbitrary request paths
+3. included matching files under `legacy/` for arbitrary request paths
 
-The Laravel front controller still boots `bootstrap/legacy_loader.php` because
-the modern controllers and services continue to use legacy classes, session
-state, and tenant/company setup. What is gone is the arbitrary execution of
-matching PHP files under `legacy/`.
+The standalone bootstrap has also been removed. Laravel now initializes native
+session, tenant connection, and company context through global middleware and
+the audited `App\Support\RuntimeBootstrap` boundary. Composer, environment,
+timezone, and error handling remain owned by Laravel's normal bootstrap.
 
-The legacy bootstrap is guarded so repeated includes in the same request do not
-restart the PHP session or re-run tenant setup. The fallback audit also checks
-that `public/index.php` does not regain a dynamic legacy file include path and
-that `bootstrap/legacy_loader.php` keeps its idempotency and session guards.
-That bootstrap loader is the one audited exception to the Laravel-side legacy
-boundary: it may touch `LeadMax\TrackYourStats` directly because it initializes
-the legacy runtime before Laravel-owned code handles the request.
+The fallback audit checks that `public/index.php` does not regain either the
+retired loader or a dynamic legacy file include path. It also verifies that the
+Laravel-owned runtime boundary retains its session and tenant initialization
+guards.
 
 ## Implemented Compatibility Batch
 
@@ -398,7 +395,7 @@ Remaining cleanup is mostly archival and hardening:
 - the fallback audit now includes a broad boundary check: direct
   `LeadMax\TrackYourStats` references in Laravel app, bootstrap, config,
   database, public, route, or view code must live under `App\Support`, except
-  for the explicit `bootstrap/legacy_loader.php` runtime bootstrap
+  under the audited `App\Support` boundary
 - `App\Support` files that directly reference legacy classes must also be listed
   in a specific audited allow-list, so broad support-boundary coverage does not
   hide new undocumented legacy dependencies

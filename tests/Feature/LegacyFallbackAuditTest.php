@@ -17,7 +17,7 @@ class LegacyFallbackAuditTest extends TestCase
         $output = Artisan::output();
 
         $this->assertStringContainsString(
-            'Legacy bootstrap is idempotent and guards native session startup.',
+            'Laravel middleware initializes the legacy runtime boundary once per request.',
             $output
         );
         $this->assertStringContainsString(
@@ -503,7 +503,7 @@ class LegacyFallbackAuditTest extends TestCase
         foreach ([
             'publicRewriteHardeningErrors',
             'frontControllerFallbackErrors',
-            'legacyBootstrapHardeningErrors',
+            'runtimeBootstrapHardeningErrors',
             'modernRetiredScriptReferenceErrors',
             'modernLegacyPhpUrlReferenceErrors',
             'retiredCompanySessionDependencyErrors',
@@ -993,7 +993,11 @@ PHP,
             'public/bad-entrypoint.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
-        $this->assertCount(4, $errors);
+        $this->assertContains(
+            'bootstrap/legacy_loader.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            $errors->all()
+        );
+        $this->assertCount(5, $errors);
     }
 
     public function test_legacy_permissions_dependency_errors_report_forbidden_sources(): void
@@ -1950,9 +1954,9 @@ PHP,
 
         foreach ([
             'frontControllerForbiddenPatterns',
-            'legacyBootstrapRequiredPatterns',
-            'legacyBootstrapForbiddenPatterns',
+            'runtimeBootstrapRequiredPatterns',
             'retiredCompanySessionForbiddenPatterns',
+            'retiredCompanySessionAllowedFiles',
             'legacySessionForbiddenPatterns',
             'nativeSessionForbiddenPatterns',
             'nativeSessionAllowedFiles',
@@ -2002,7 +2006,6 @@ PHP,
             'legacyMiscReportRepositoriesForbiddenPatterns',
             'legacyMailForbiddenPatterns',
             'legacyBoundaryAllowedDirectories',
-            'legacyBoundaryAllowedFiles',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 
@@ -2017,25 +2020,32 @@ PHP,
         }
     }
 
-    public function test_front_controller_keeps_legacy_loader_without_dynamic_legacy_fallback(): void
+    public function test_front_controller_has_no_legacy_loader_or_dynamic_legacy_fallback(): void
     {
         $frontController = File::get(public_path('index.php'));
 
-        $this->assertStringContainsString("require __DIR__.'/../bootstrap/legacy_loader.php';", $frontController);
+        $this->assertStringNotContainsString('legacy_loader.php', $frontController);
         $this->assertStringNotContainsString('../legacy', $frontController);
         $this->assertStringNotContainsString('legacy/index.php', $frontController);
         $this->assertStringNotContainsString('is_file($file)', $frontController);
         $this->assertStringNotContainsString('include($file)', $frontController);
     }
 
-    public function test_legacy_loader_stays_idempotent_and_guards_native_session_startup(): void
+    public function test_laravel_middleware_owns_runtime_bootstrap(): void
     {
-        $legacyLoader = File::get(base_path('bootstrap/legacy_loader.php'));
+        $kernel = File::get(app_path('Http/Kernel.php'));
+        $middleware = File::get(app_path('Http/Middleware/InitializeLegacyRuntime.php'));
+        $runtimeBootstrap = File::get(app_path('Support/RuntimeBootstrap.php'));
 
-        $this->assertStringContainsString('BIGPAYERS_LEGACY_LOADER_BOOTSTRAPPED', $legacyLoader);
-        $this->assertStringContainsString('require_once __DIR__. "/../vendor/autoload.php";', $legacyLoader);
-        $this->assertStringContainsString('session_status() === PHP_SESSION_NONE', $legacyLoader);
-        $this->assertStringNotContainsString('include __DIR__. "/../vendor/autoload.php";', $legacyLoader);
+        $this->assertFileDoesNotExist(base_path('bootstrap/legacy_loader.php'));
+        $this->assertStringContainsString('InitializeLegacyRuntime::class', $kernel);
+        $this->assertStringContainsString('RuntimeBootstrap::boot()', $middleware);
+        $this->assertStringContainsString('private static bool $bootstrapped = false;', $runtimeBootstrap);
+        $this->assertStringContainsString('session_status() === PHP_SESSION_NONE', $runtimeBootstrap);
+        $this->assertStringContainsString('$connection->setConnection();', $runtimeBootstrap);
+        $this->assertStringContainsString('Company::loadFromSession()->setSession();', $runtimeBootstrap);
+        $this->assertStringNotContainsString('vendor/autoload.php', $runtimeBootstrap);
+        $this->assertStringNotContainsString('Dotenv', $runtimeBootstrap);
     }
 
     public function test_public_webserver_configs_route_direct_php_requests_through_laravel(): void
