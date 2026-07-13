@@ -782,15 +782,6 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $legacyEntrypointRuntimeErrors = $this->legacyEntrypointRuntimeErrors();
-
-        if ($legacyEntrypointRuntimeErrors->isNotEmpty()) {
-            $this->error('Legacy PHP entrypoint files still execute legacy runtime code:');
-            $legacyEntrypointRuntimeErrors->each(fn ($error) => $this->line(" - {$error}"));
-
-            return self::FAILURE;
-        }
-
         $legacyPermissionsDependencyErrors = $this->legacyPermissionsDependencyErrors();
 
         if ($legacyPermissionsDependencyErrors->isNotEmpty()) {
@@ -1250,7 +1241,6 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
-        $this->info("Audited {$legacyFiles->count()} legacy PHP files.");
         $this->info('No legacy PHP files exist.');
         $this->info(count($this->intentionallyUnrouted) . ' retired legacy PHP URLs are documented.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
@@ -1274,7 +1264,6 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.');
         $this->info('Runtime source reads environment-backed values through Laravel config.');
         $this->info('Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.');
-        $this->info('Legacy PHP entrypoint files do not execute legacy classes or read native PHP superglobals directly.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');
@@ -1690,49 +1679,6 @@ class AuditLegacyFallbackCoverage extends Command
         return collect($sourceFiles)
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
-
-                foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
-                    if (str_contains($contents, $pattern)) {
-                        $errors[] = "{$relativePath}: {$message}";
-                    }
-                }
-
-                return $errors;
-            })
-            ->values();
-    }
-
-    private function legacyEntrypointRuntimeErrors()
-    {
-        $sourceFiles = collect();
-        $path = base_path('legacy');
-
-        if (!File::isDirectory($path)) {
-            return $sourceFiles;
-        }
-
-        foreach (File::allFiles($path) as $file) {
-            if ($file->getExtension() !== 'php') {
-                continue;
-            }
-
-            $relativePath = 'legacy/' . str_replace('\\', '/', $file->getRelativePathname());
-
-            $sourceFiles[$relativePath] = File::get($file->getPathname());
-        }
-
-        return $this->legacyEntrypointRuntimeErrorsFor($sourceFiles);
-    }
-
-    private function legacyEntrypointRuntimeErrorsFor($sourceFiles)
-    {
-        return collect($sourceFiles)
-            ->flatMap(function (string $contents, string $relativePath) {
-                $errors = [];
-
-                if (str_contains($contents, 'LeadMax\\TrackYourStats')) {
-                    $errors[] = "{$relativePath}: legacy entrypoint files must not execute legacy classes directly.";
-                }
 
                 foreach ($this->nativeSessionForbiddenPatterns as $pattern => $message) {
                     if (str_contains($contents, $pattern)) {

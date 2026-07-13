@@ -269,13 +269,11 @@ class LegacyFallbackAuditTest extends TestCase
     public function test_audit_summary_uses_current_inventory_counts(): void
     {
         $command = app(AuditLegacyFallbackCoverage::class);
-        $legacyFiles = $this->invokeAuditMethod($command, 'legacyPhpFiles');
         $intentionallyUnrouted = $this->auditProperty($command, 'intentionallyUnrouted');
 
         $this->assertSame(Command::SUCCESS, Artisan::call('legacy:audit-fallback-coverage'));
         $output = Artisan::output();
 
-        $this->assertStringContainsString("Audited {$legacyFiles->count()} legacy PHP files.", $output);
         $this->assertStringContainsString(
             'No legacy PHP files exist.',
             $output
@@ -512,7 +510,6 @@ class LegacyFallbackAuditTest extends TestCase
             'legacyBoundaryDependencyErrors',
             'nativeSessionDependencyErrors',
             'legacySourceNativeSuperglobalErrors',
-            'legacyEntrypointRuntimeErrors',
             'legacyPermissionsDependencyErrors',
             'legacyClickGeoDependencyErrors',
             'legacyClickDependencyErrors',
@@ -937,45 +934,6 @@ PHP,
         $command = app(AuditLegacyFallbackCoverage::class);
 
         $errors = $this->invokeAuditMethod($command, 'legacySourceNativeSuperglobalErrors', []);
-
-        $this->assertSame([], $errors->all());
-    }
-
-    public function test_legacy_entrypoint_runtime_errors_report_forbidden_sources(): void
-    {
-        $command = app(AuditLegacyFallbackCoverage::class);
-
-        $errors = $this->invokeAuditMethod(
-            $command,
-            'legacyEntrypointRuntimeErrorsFor',
-            [[
-                'legacy/bad_legacy_class.php' => 'return \\LeadMax\\TrackYourStats\\System\\Session::userID();',
-                'legacy/bad_query.php' => 'return $_GET["id"];',
-                'legacy/bad_post.php' => 'return $_POST["id"];',
-                'legacy/clean.php' => 'header("Location: /dashboard");',
-            ]]
-        );
-
-        $this->assertContains(
-            'legacy/bad_legacy_class.php: legacy entrypoint files must not execute legacy classes directly.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'legacy/bad_query.php: Use Illuminate\\Http\\Request instead of reading query parameters from the native request superglobal directly.',
-            $errors->all()
-        );
-        $this->assertContains(
-            'legacy/bad_post.php: Use App\\Support\\NativeRequest for explicit legacy POST bridges instead of writing the native request superglobal directly.',
-            $errors->all()
-        );
-        $this->assertCount(3, $errors);
-    }
-
-    public function test_legacy_entrypoint_files_do_not_execute_legacy_runtime_directly(): void
-    {
-        $command = app(AuditLegacyFallbackCoverage::class);
-
-        $errors = $this->invokeAuditMethod($command, 'legacyEntrypointRuntimeErrors', []);
 
         $this->assertSame([], $errors->all());
     }
