@@ -189,7 +189,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.',
+            'Runtime code resolves query assignments through App\\Support\\QueryAssignments.',
             $output
         );
         $this->assertStringContainsString(
@@ -1532,13 +1532,12 @@ PHP,
             'legacyAssignmentsDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Assignments;',
-                'app/Support/LegacyAssignments.php' => 'use LeadMax\\TrackYourStats\\Table\\Assignments;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAssignments as Assignments;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\QueryAssignments as Assignments;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAssignments instead of importing the legacy assignments class directly.',
+            'app/Http/Controllers/BadController.php: The legacy assignments class is retired; use App\\Support\\QueryAssignments.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

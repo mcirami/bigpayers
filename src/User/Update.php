@@ -12,7 +12,7 @@ use App\Privilege;
 use App\Services\BrandingLabels;
 use Illuminate\Support\Facades\DB;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAssignments as Assignments;
+use App\Support\QueryAssignments as Assignments;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyUser as User;
 use App\Support\NativeRequest;

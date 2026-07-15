@@ -420,11 +420,7 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyAssignmentsForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Table\\Assignments' => 'Use App\\Support\\LegacyAssignments instead of importing the legacy assignments class directly.',
-    ];
-
-    private array $legacyAssignmentsAllowedFiles = [
-        'app/Support/LegacyAssignments.php' => 'The dedicated boundary around the legacy assignments class.',
+        'LeadMax\\TrackYourStats\\Table\\Assignments' => 'The legacy assignments class is retired; use App\\Support\\QueryAssignments.',
     ];
 
     private array $legacyTreeForbiddenPatterns = [
@@ -1270,7 +1266,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
         $this->info('Runtime code resolves date helpers through App\\Support\\DateHelper.');
         $this->info('Runtime code resolves pagination through App\\Support\\PaginationHelper.');
-        $this->info('Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.');
+        $this->info('Runtime code resolves query assignments through App\\Support\\QueryAssignments.');
         $this->info('Modern Laravel code rebuilds user trees through LegacyTree.');
         $this->info('Modern Laravel code resolves legacy users through LegacyUser.');
         $this->info('Modern login flows use LegacyLogin for legacy login constants.');
@@ -2622,7 +2618,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyAssignmentsDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyAssignmentsAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

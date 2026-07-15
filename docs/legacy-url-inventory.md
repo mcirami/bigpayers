@@ -495,9 +495,9 @@ Remaining cleanup is mostly archival and hardening:
 - pagination callers now resolve through `App\Support\PaginationHelper`; the
   retired `src/Table/Paginate` class and wrapper have been removed, and the
   fallback audit blocks their reintroduction
-- modern click-report assignment handling now resolves the legacy `Assignments`
-  helper through `App\Support\LegacyAssignments`; the fallback audit fails on
-  new direct Laravel-side assignments imports outside the boundary
+- query-backed assignment handling now resolves through
+  `App\Support\QueryAssignments`; the retired `src/Table/Assignments` class and
+  wrapper have been removed, and the fallback audit blocks reintroduction
 - modern user-controller and observer tree rebuild/read calls now resolve the
   legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
   fails on new direct Laravel-side tree imports outside the boundary

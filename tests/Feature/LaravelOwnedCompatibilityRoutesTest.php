@@ -1079,7 +1079,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertTrue($pagination->has_next());
     }
 
-    public function test_modern_assignments_reads_use_legacy_assignments_boundary(): void
+    public function test_runtime_query_assignments_use_laravel_helper(): void
     {
         foreach ([
             base_path('src/Offer/Create.php'),
@@ -1089,19 +1089,26 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyAssignments as Assignments', $contents);
+            $this->assertStringContainsString('App\\Support\\QueryAssignments as Assignments', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Assignments', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Table\\Assignments',
-            File::get(app_path('Support/LegacyAssignments.php'))
-        );
-
-        $assignments = File::get(base_path('src/Table/Assignments.php'));
-
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $assignments);
+        $assignments = File::get(app_path('Support/QueryAssignments.php'));
+        $this->assertStringContainsString('NativeRequest::queryAll', $assignments);
         $this->assertStringNotContainsString('$_GET', $assignments);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyAssignments.php'));
+        $this->assertFileDoesNotExist(base_path('src/Table/Assignments.php'));
+
+        $queryAssignments = new \App\Support\QueryAssignments([
+            'page' => 2,
+            'status' => 'active',
+            '!offer' => null,
+        ], false, false);
+        $this->assertTrue($queryAssignments->has('offer'));
+        $this->assertSame('!', $queryAssignments->get('offer'));
+        $this->assertSame('?page=2&status=active&offer=!', $queryAssignments->buildAssignments());
+        $this->assertSame('?page=2&offer=!', $queryAssignments->buildAssignments(['status']));
+        $this->assertSame('{"page":2,"offer":"!"}', $queryAssignments->buildJSONArray(['status']));
     }
 
     public function test_modern_tree_reads_use_legacy_tree_boundary(): void

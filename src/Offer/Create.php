@@ -14,7 +14,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAssignments as Assignments;
+use App\Support\QueryAssignments as Assignments;
 use App\Support\LegacyUser as User;
 
 class Create
