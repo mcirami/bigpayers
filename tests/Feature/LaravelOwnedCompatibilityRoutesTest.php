@@ -1047,7 +1047,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/Table/Date.php'));
     }
 
-    public function test_modern_paginate_reads_use_legacy_paginate_boundary(): void
+    public function test_runtime_pagination_uses_laravel_helper(): void
     {
         foreach ([
             app_path('Http/Controllers/Report/ChatLogReportController.php'),
@@ -1056,23 +1056,27 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyPaginate as Paginate', $contents);
+            $this->assertStringContainsString('App\\Support\\PaginationHelper as Paginate', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Paginate', $contents);
         }
 
         $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Paginate', $offerController);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Table\\Paginate',
-            File::get(app_path('Support/LegacyPaginate.php'))
-        );
-
-        $paginate = File::get(base_path('src/Table/Paginate.php'));
-
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $paginate);
+        $paginate = File::get(app_path('Support/PaginationHelper.php'));
+        $this->assertStringContainsString('NativeRequest::query', $paginate);
+        $this->assertStringContainsString('NativeRequest::requestUri', $paginate);
         $this->assertStringNotContainsString('$_GET', $paginate);
         $this->assertStringNotContainsString('$_SERVER', $paginate);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyPaginate.php'));
+        $this->assertFileDoesNotExist(base_path('src/Table/Paginate.php'));
+
+        $pagination = new \App\Support\PaginationHelper(25, 51);
+        $this->assertSame(1, $pagination->current_page);
+        $this->assertSame(3.0, $pagination->page_total());
+        $this->assertSame(0, $pagination->offset());
+        $this->assertFalse($pagination->has_previous());
+        $this->assertTrue($pagination->has_next());
     }
 
     public function test_modern_assignments_reads_use_legacy_assignments_boundary(): void

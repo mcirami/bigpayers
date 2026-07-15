@@ -492,10 +492,9 @@ Remaining cleanup is mostly archival and hardening:
 - report, command, and remaining source date calculations now resolve through
   `App\Support\DateHelper`; the retired `src/Table/Date` class and wrapper have
   been removed, and the fallback audit blocks their reintroduction
-- modern pagination helper callers now resolve the legacy `Paginate` helper
-  through `App\Support\LegacyPaginate`; stale direct imports/comments were
-  removed, and the fallback audit fails on new direct Laravel-side paginate
-  imports outside the boundary
+- pagination callers now resolve through `App\Support\PaginationHelper`; the
+  retired `src/Table/Paginate` class and wrapper have been removed, and the
+  fallback audit blocks their reintroduction
 - modern click-report assignment handling now resolves the legacy `Assignments`
   helper through `App\Support\LegacyAssignments`; the fallback audit fails on
   new direct Laravel-side assignments imports outside the boundary

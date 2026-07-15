@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyBonus as Bonus;
-use App\Support\LegacyPaginate as Paginate;
+use App\Support\PaginationHelper as Paginate;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyTree as Tree;
 use Illuminate\Support\Facades\Cache;

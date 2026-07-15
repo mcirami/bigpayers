@@ -416,11 +416,7 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyPaginateForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Table\\Paginate' => 'Use App\\Support\\LegacyPaginate instead of importing the legacy paginate class directly.',
-    ];
-
-    private array $legacyPaginateAllowedFiles = [
-        'app/Support/LegacyPaginate.php' => 'The dedicated boundary around the legacy paginate class.',
+        'LeadMax\\TrackYourStats\\Table\\Paginate' => 'The legacy paginate class is retired; use App\\Support\\PaginationHelper.',
     ];
 
     private array $legacyAssignmentsForbiddenPatterns = [
@@ -1273,7 +1269,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.');
         $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
         $this->info('Runtime code resolves date helpers through App\\Support\\DateHelper.');
-        $this->info('Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.');
+        $this->info('Runtime code resolves pagination through App\\Support\\PaginationHelper.');
         $this->info('Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.');
         $this->info('Modern Laravel code rebuilds user trees through LegacyTree.');
         $this->info('Modern Laravel code resolves legacy users through LegacyUser.');
@@ -2599,7 +2595,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyPaginateDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPaginateAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

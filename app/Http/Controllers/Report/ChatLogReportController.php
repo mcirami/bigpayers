@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyPaginate as Paginate;
+use App\Support\PaginationHelper as Paginate;
 use App\Support\RequestContext;
 use App\User;
 use Illuminate\Support\Facades\DB;

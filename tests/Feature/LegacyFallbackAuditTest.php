@@ -185,7 +185,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.',
+            'Runtime code resolves pagination through App\\Support\\PaginationHelper.',
             $output
         );
         $this->assertStringContainsString(
@@ -1512,13 +1512,12 @@ PHP,
             'legacyPaginateDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Paginate;',
-                'app/Support/LegacyPaginate.php' => 'use LeadMax\\TrackYourStats\\Table\\Paginate;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPaginate as Paginate;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\PaginationHelper as Paginate;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPaginate instead of importing the legacy paginate class directly.',
+            'app/Http/Controllers/BadController.php: The legacy paginate class is retired; use App\\Support\\PaginationHelper.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
