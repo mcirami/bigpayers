@@ -14,7 +14,7 @@ use App\OfferURL;
 use App\Privilege;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyDate as Date;
+use App\Support\DateHelper as Date;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPaginate as Paginate;
 use App\Support\LegacyUser as User;

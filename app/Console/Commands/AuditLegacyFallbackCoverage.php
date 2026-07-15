@@ -411,12 +411,8 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyDateForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Table\\Date' => 'Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
+        'LeadMax\\TrackYourStats\\Table\\Date' => 'The legacy date class is retired; use App\\Support\\DateHelper.',
         '$_COOKIE["timezone"]' => 'Use App\\Support\\NativeRequest::cookie() instead of reading the timezone cookie directly.',
-    ];
-
-    private array $legacyDateAllowedFiles = [
-        'app/Support/LegacyDate.php' => 'The dedicated boundary around the legacy date class.',
     ];
 
     private array $legacyPaginateForbiddenPatterns = [
@@ -497,19 +493,11 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyAdminLoginForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\AdminLogin' => 'Use App\\Support\\LegacyAdminLogin instead of importing the legacy admin-login class directly.',
-    ];
-
-    private array $legacyAdminLoginAllowedFiles = [
-        'app/Support/LegacyAdminLogin.php' => 'The dedicated boundary around the legacy admin-login class.',
+        'LeadMax\\TrackYourStats\\User\\AdminLogin' => 'The legacy admin-login class is retired; use Laravel request and middleware boundaries.',
     ];
 
     private array $legacyNotifyForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Notify' => 'Use App\\Support\\LegacyNotify instead of importing the legacy notify class directly.',
-    ];
-
-    private array $legacyNotifyAllowedFiles = [
-        'app/Support/LegacyNotify.php' => 'The dedicated boundary around the legacy notify class.',
+        'LeadMax\\TrackYourStats\\System\\Notify' => 'The legacy notify class is retired; render notifications through Laravel views.',
     ];
 
     private array $legacyCompanyUpdaterForbiddenPatterns = [
@@ -1284,7 +1272,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
         $this->info('Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.');
         $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
-        $this->info('Modern Laravel code resolves legacy date helpers through LegacyDate.');
+        $this->info('Runtime code resolves date helpers through App\\Support\\DateHelper.');
         $this->info('Modern Laravel code resolves legacy pagination helpers through LegacyPaginate.');
         $this->info('Modern Laravel code resolves legacy assignment helpers through LegacyAssignments.');
         $this->info('Modern Laravel code rebuilds user trees through LegacyTree.');
@@ -1294,7 +1282,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.');
         $this->info('Modern offer postback URL flows use App\Support boundaries.');
         $this->info('Modern layouts preserve admin-login state through Laravel request boundaries.');
-        $this->info('Modern Laravel code keeps legacy notifications behind the LegacyNotify boundary.');
+        $this->info('Legacy admin-login and notify classes are retired from runtime source.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');
         $this->info('Modern report views render through LegacyReportHtml.');
@@ -2584,7 +2572,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyDateDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyDateAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2833,7 +2820,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyAdminLoginDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyAdminLoginAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2860,7 +2846,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyNotifyDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyNotifyAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

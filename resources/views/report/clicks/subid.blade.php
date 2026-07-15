@@ -59,7 +59,7 @@
 			</tr>
 			</thead>
 			<tbody>
-			@php $myReport = new \App\Support\LegacyDate;  @endphp
+			@php $myReport = new \App\Support\DateHelper;  @endphp
 			@foreach($report as $row)
 				@php 
 					$timestamp = $myReport->convertToEST($row->timestamp);

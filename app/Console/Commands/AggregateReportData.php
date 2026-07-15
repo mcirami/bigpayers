@@ -6,7 +6,7 @@ use App\AggregateReport;
 use App\Company;
 use App\Services\CompanyDatabaseConnectionManager;
 use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
-use App\Support\LegacyDate as Date;
+use App\Support\DateHelper as Date;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 

@@ -181,7 +181,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy date helpers through LegacyDate.',
+            'Runtime code resolves date helpers through App\\Support\\DateHelper.',
             $output
         );
         $this->assertStringContainsString(
@@ -221,7 +221,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code keeps legacy notifications behind the LegacyNotify boundary.',
+            'Legacy admin-login and notify classes are retired from runtime source.',
             $output
         );
         $this->assertStringContainsString(
@@ -1484,17 +1484,16 @@ PHP,
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Table\\Date;',
                 'resources/views/report/bad.blade.php' => 'new LeadMax\\TrackYourStats\\Table\\Date;',
                 'src/Table/Date.php' => 'return $_COOKIE["timezone"];',
-                'app/Support/LegacyDate.php' => 'use LeadMax\\TrackYourStats\\Table\\Date;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyDate as Date;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\DateHelper as Date;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
+            'app/Http/Controllers/BadController.php: The legacy date class is retired; use App\\Support\\DateHelper.',
             $errors->all()
         );
         $this->assertContains(
-            'resources/views/report/bad.blade.php: Use App\\Support\\LegacyDate instead of importing the legacy date class directly.',
+            'resources/views/report/bad.blade.php: The legacy date class is retired; use App\\Support\\DateHelper.',
             $errors->all()
         );
         $this->assertContains(
@@ -1681,13 +1680,12 @@ PHP,
             'legacyAdminLoginDependencyErrorsFor',
             [[
                 'resources/views/layouts/bad.blade.php' => 'new \\LeadMax\\TrackYourStats\\User\\AdminLogin();',
-                'app/Support/LegacyAdminLogin.php' => 'use LeadMax\\TrackYourStats\\User\\AdminLogin;',
-                'resources/views/layouts/clean.blade.php' => 'new \\App\\Support\\LegacyAdminLogin();',
+                'resources/views/layouts/clean.blade.php' => 'App\\Support\\RequestContext::hasQuery(\'adminLogin\');',
             ]]
         );
 
         $this->assertContains(
-            'resources/views/layouts/bad.blade.php: Use App\\Support\\LegacyAdminLogin instead of importing the legacy admin-login class directly.',
+            'resources/views/layouts/bad.blade.php: The legacy admin-login class is retired; use Laravel request and middleware boundaries.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1702,13 +1700,12 @@ PHP,
             'legacyNotifyDependencyErrorsFor',
             [[
                 'resources/views/layouts/bad.blade.php' => '\\LeadMax\\TrackYourStats\\System\\Notify::info($message, \'\');',
-                'app/Support/LegacyNotify.php' => 'use LeadMax\\TrackYourStats\\System\\Notify;',
-                'resources/views/layouts/clean.blade.php' => '\\App\\Support\\LegacyNotify::info($message, \'\');',
+                'resources/views/layouts/clean.blade.php' => '{{ session(\'status\') }}',
             ]]
         );
 
         $this->assertContains(
-            'resources/views/layouts/bad.blade.php: Use App\\Support\\LegacyNotify instead of importing the legacy notify class directly.',
+            'resources/views/layouts/bad.blade.php: The legacy notify class is retired; render notifications through Laravel views.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

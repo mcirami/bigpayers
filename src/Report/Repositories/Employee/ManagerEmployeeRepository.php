@@ -7,7 +7,7 @@ use App\Privilege;
 use App\Support\LegacyPayouts as Payouts;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyDate as Date;
+use App\Support\DateHelper as Date;
 
 class ManagerEmployeeRepository extends Repository
 {

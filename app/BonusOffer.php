@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Support\LegacyDate as Date;
+use App\Support\DateHelper as Date;
 use Illuminate\Database\Eloquent\Model;
 
 /**

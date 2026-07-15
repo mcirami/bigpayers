@@ -489,11 +489,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern chat-log sale-log writes now resolve the legacy `SaleLog` helper
   through `App\Support\LegacySaleLog`; the fallback audit fails on new direct
   Laravel-side sale log imports outside the boundary
-- modern report date helpers and report Blade date helper instantiations now
-  resolve the legacy `Date` helper through `App\Support\LegacyDate`; the
-  older `src/Table/Date` helper reads the timezone cookie through Laravel's
-  request boundary, and the fallback audit fails on new direct Laravel-side date
-  imports or direct timezone-cookie reads outside the boundary
+- report, command, and remaining source date calculations now resolve through
+  `App\Support\DateHelper`; the retired `src/Table/Date` class and wrapper have
+  been removed, and the fallback audit blocks their reintroduction
 - modern pagination helper callers now resolve the legacy `Paginate` helper
   through `App\Support\LegacyPaginate`; stale direct imports/comments were
   removed, and the fallback audit fails on new direct Laravel-side paginate
@@ -504,12 +502,10 @@ Remaining cleanup is mostly archival and hardening:
 - modern user-controller and observer tree rebuild/read calls now resolve the
   legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
   fails on new direct Laravel-side tree imports outside the boundary
-- modern layout footer/report script partials now append legacy admin-login
-  JavaScript through `App\Support\LegacyAdminLogin`; the fallback audit fails on
-  new direct Laravel-side admin-login imports outside the boundary
-- modern dashboard layouts now render legacy flash notifications through
-  `App\Support\LegacyNotify`; the fallback audit fails on new direct
-  Laravel-side notify imports outside the boundary
+- modern dashboard links preserve admin-login state through Laravel request and
+  middleware boundaries; the retired legacy admin-login class has been removed
+- modern dashboard layouts render notification state through Laravel views; the
+  retired legacy JavaScript notify class has been removed
 - modern database-update screens now run the legacy company database updater
   through `App\Support\LegacyCompanyUpdater`; the fallback audit fails on new
   direct Laravel-side company-updater imports outside the boundary

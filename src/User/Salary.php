@@ -8,7 +8,7 @@
  */
 
 use App\Support\CurrentUserSession;
-use App\Support\LegacyDate as Date;
+use App\Support\DateHelper as Date;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use PDO;
 

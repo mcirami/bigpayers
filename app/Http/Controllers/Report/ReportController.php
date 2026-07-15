@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Carbon;
-use App\Support\LegacyDate as Date;
+use App\Support\DateHelper as Date;
 use App\Support\RequestContext;
 
 class ReportController extends Controller

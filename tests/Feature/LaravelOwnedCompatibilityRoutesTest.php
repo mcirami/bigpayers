@@ -1010,7 +1010,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $saleLog);
     }
 
-    public function test_modern_date_reads_use_legacy_date_boundary(): void
+    public function test_runtime_date_reads_use_laravel_date_helper(): void
     {
         foreach ([
             app_path('BonusOffer.php'),
@@ -1020,7 +1020,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDate as Date', $contents);
+            $this->assertStringContainsString('App\\Support\\DateHelper as Date', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Date', $contents);
         }
 
@@ -1036,20 +1036,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDate', $contents);
+            $this->assertStringContainsString('App\\Support\\DateHelper', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Table\\Date', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Table\\Date',
-            File::get(app_path('Support/LegacyDate.php'))
-        );
-
-        $legacyDate = File::get(base_path('src/Table/Date.php'));
-
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $legacyDate);
-        $this->assertStringNotContainsString('request()->cookie', $legacyDate);
-        $this->assertStringNotContainsString('$_COOKIE', $legacyDate);
+        $dateHelper = File::get(app_path('Support/DateHelper.php'));
+        $this->assertStringContainsString('NativeRequest::cookie', $dateHelper);
+        $this->assertStringNotContainsString('$_COOKIE', $dateHelper);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyDate.php'));
+        $this->assertFileDoesNotExist(base_path('src/Table/Date.php'));
     }
 
     public function test_modern_paginate_reads_use_legacy_paginate_boundary(): void
@@ -1138,16 +1133,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('adminLogin=1', $dashboardShell);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\AdminLogin', $dashboardShell);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\User\\AdminLogin',
-            File::get(app_path('Support/LegacyAdminLogin.php'))
-        );
-        $adminLogin = File::get(base_path('src/User/AdminLogin.php'));
-
-        $this->assertStringContainsString('App\\Support\\NativeSession', $adminLogin);
-        $this->assertStringNotContainsString('$_SESSION', $adminLogin);
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $adminLogin);
-        $this->assertStringNotContainsString('$_GET', $adminLogin);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyAdminLogin.php'));
+        $this->assertFileDoesNotExist(base_path('src/User/AdminLogin.php'));
     }
 
     public function test_report_views_do_not_reference_retired_jquery_table_assets(): void
@@ -1168,10 +1155,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Notify', $layout);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\System\\Notify',
-            File::get(app_path('Support/LegacyNotify.php'))
-        );
+        $this->assertFileDoesNotExist(app_path('Support/LegacyNotify.php'));
+        $this->assertFileDoesNotExist(base_path('src/System/Notify.php'));
     }
 
     public function test_modern_report_views_use_legacy_report_html_boundary(): void
