@@ -293,19 +293,11 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyUidForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\UID' => 'Use App\\Support\\LegacyUid instead of importing the legacy UID class directly.',
-    ];
-
-    private array $legacyUidAllowedFiles = [
-        'app/Support/LegacyUid.php' => 'The dedicated boundary around the legacy UID class.',
+        'LeadMax\\TrackYourStats\\Clicks\\UID' => 'The legacy UID class is retired; use App\\Support\\ClickIdCodec.',
     ];
 
     private array $legacyTrackingParametersForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters' => 'Use App\\Support\\LegacyTrackingParameters instead of importing the legacy tracking parameters class directly.',
-    ];
-
-    private array $legacyTrackingParametersAllowedFiles = [
-        'app/Support/LegacyTrackingParameters.php' => 'The dedicated boundary around the legacy tracking parameters class.',
+        'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters' => 'The legacy tracking parameters class is retired; use App\\Support\\TrackingParameters.',
     ];
 
     private array $legacyLanderForbiddenPatterns = [
@@ -1252,8 +1244,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code resolves legacy pending conversion activation through LegacyPendingConversion.');
         $this->info('Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.');
         $this->info('Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.');
-        $this->info('Modern Laravel code encodes legacy click IDs through LegacyUid.');
-        $this->info('Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.');
+        $this->info('Runtime code encodes click IDs through App\\Support\\ClickIdCodec.');
+        $this->info('Runtime code normalizes tracking query parameters through App\\Support\\TrackingParameters.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
         $this->info('Modern Laravel code builds dashboard navigation through LegacyNavBar.');
         $this->info('Modern Laravel code manages IP blacklist records through LegacyIPBlackList.');
@@ -2205,7 +2197,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyUidDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyUidAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2233,7 +2224,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyTrackingParametersDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyTrackingParametersAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

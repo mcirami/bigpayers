@@ -129,11 +129,11 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code encodes legacy click IDs through LegacyUid.',
+            'Runtime code encodes click IDs through App\\Support\\ClickIdCodec.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code normalizes tracking query parameters through LegacyTrackingParameters.',
+            'Runtime code normalizes tracking query parameters through App\\Support\\TrackingParameters.',
             $output
         );
         $this->assertStringContainsString(
@@ -1209,13 +1209,12 @@ PHP,
             'legacyUidDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\UID;',
-                'app/Support/LegacyUid.php' => 'use LeadMax\\TrackYourStats\\Clicks\\UID;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyUid as UID;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\ClickIdCodec as UID;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyUid instead of importing the legacy UID class directly.',
+            'app/Http/Controllers/BadController.php: The legacy UID class is retired; use App\\Support\\ClickIdCodec.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1230,13 +1229,12 @@ PHP,
             'legacyTrackingParametersDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\TrackingParameters;',
-                'app/Support/LegacyTrackingParameters.php' => 'use LeadMax\\TrackYourStats\\Clicks\\TrackingParameters;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyTrackingParameters as TrackingParameters;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\TrackingParameters;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyTrackingParameters instead of importing the legacy tracking parameters class directly.',
+            'app/Http/Controllers/BadController.php: The legacy tracking parameters class is retired; use App\\Support\\TrackingParameters.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

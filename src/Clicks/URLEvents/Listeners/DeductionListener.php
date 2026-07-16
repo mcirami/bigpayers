@@ -3,7 +3,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
 
-use App\Support\LegacyUid as UID;
+use App\Support\ClickIdCodec as UID;
 use App\Support\NativeRequest;
 use LeadMax\TrackYourStats\Clicks\URLEvents\DeductionRegistrationEvent;
 

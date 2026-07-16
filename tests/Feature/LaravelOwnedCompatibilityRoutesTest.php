@@ -891,7 +891,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyUid as UID', $contents);
+            $this->assertStringContainsString('App\\Support\\ClickIdCodec as UID', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\UID', $contents);
         }
 
@@ -905,10 +905,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             );
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\UID',
-            File::get(app_path('Support/LegacyUid.php'))
-        );
+        $encodedClickId = \App\Support\ClickIdCodec::encode('1029384756');
+        $this->assertSame('1029384756', \App\Support\ClickIdCodec::decode($encodedClickId));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyUid.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/UID.php'));
     }
 
     public function test_modern_lander_reads_use_legacy_lander_boundary(): void
@@ -1517,7 +1517,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/Report/Repositories/AffiliateChatLogRepository.php'));
     }
 
-    public function test_modern_tracking_parameter_reads_use_legacy_tracking_parameters_boundary(): void
+    public function test_runtime_tracking_parameter_reads_use_laravel_helper(): void
     {
         foreach ([
             (new ReflectionClass(IndexController::class))->getFileName(),
@@ -1530,14 +1530,17 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyTrackingParameters as TrackingParameters', $contents);
+            $this->assertStringContainsString('App\\Support\\TrackingParameters', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\TrackingParameters', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\TrackingParameters',
-            File::get(app_path('Support/LegacyTrackingParameters.php'))
-        );
+        $parameters = \App\Support\TrackingParameters::normalize(['rid' => 42, 'oid' => 7, 's1' => 'alpha']);
+        $this->assertSame(42, $parameters['repid']);
+        $this->assertSame(7, $parameters['offerid']);
+        $this->assertSame('alpha', $parameters['sub1']);
+        $this->assertSame(99, \App\Support\TrackingParameters::get(['repid' => 99, 'rid' => 42], 'repid'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyTrackingParameters.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/TrackingParameters.php'));
 
         foreach ([
             base_path('src/Clicks/URLEvents/Listeners/BonusListener.php'),

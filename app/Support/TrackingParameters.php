@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Clicks;
+namespace App\Support;
 
 class TrackingParameters
 {

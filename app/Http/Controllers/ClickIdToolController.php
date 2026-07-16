@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\LegacyUid as UID;
+use App\Support\ClickIdCodec as UID;
 use Illuminate\Http\Request;
 
 class ClickIdToolController extends Controller

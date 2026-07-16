@@ -8,7 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
 
-use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\TrackingParameters;
 use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
 use App\Support\NativeRequest;
 

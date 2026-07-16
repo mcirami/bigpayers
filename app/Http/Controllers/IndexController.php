@@ -8,7 +8,7 @@ use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
 use App\Support\LegacyIPBlackList as IPBlackList;
 use App\Support\LegacyLander as Lander;
 use App\Support\LegacyPostBackURLEventHandler as PostBackURLEventHandler;
-use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\TrackingParameters;
 use App\Support\RequestContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

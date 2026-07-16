@@ -456,11 +456,11 @@ Remaining cleanup is mostly archival and hardening:
   through `App\Support` boundaries; the fallback audit fails on new direct
   Laravel-side imports outside those boundaries
 - modern click ID encode/decode callers now resolve the legacy `UID` helper
-  through `App\Support\LegacyUid`; unused legacy UID imports were removed from
+  through `App\Support\ClickIdCodec`; the retired UID class and wrapper were removed from
   registration-event exceptions, and the fallback audit fails on new direct
   Laravel-side UID imports outside the boundary
 - modern tracking query normalization now resolves the legacy
-  `TrackingParameters` helper through `App\Support\LegacyTrackingParameters`;
+  `TrackingParameters` helper through `App\Support\TrackingParameters`;
   the fallback audit fails on new direct Laravel-side tracking-parameter imports
   outside the boundary
 - modern landing-page and lander-asset controllers now resolve the legacy

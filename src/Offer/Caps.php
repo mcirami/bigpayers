@@ -9,7 +9,7 @@
 
 use Carbon\Carbon;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use App\Support\LegacyTrackingParameters as TrackingParameters;
+use App\Support\TrackingParameters;
 use App\Support\NativeRequest;
 use Illuminate\Support\Facades\DB;
 use Monolog\Handler\StreamHandler;

@@ -7,7 +7,7 @@ use App\Support\CurrentUserSession;
 use App\Support\LegacyClickGeo as ClickGeo;
 use App\Support\LegacyClickSearcher as ClickSearcher;
 use App\Support\LegacyConversion as Conversion;
-use App\Support\LegacyUid as UID;
+use App\Support\ClickIdCodec as UID;
 use Illuminate\Http\Request;
 use PDO;
 

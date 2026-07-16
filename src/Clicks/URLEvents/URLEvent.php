@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 
 use App\Support\LegacyClick as Click;
 use App\Support\LegacyClickVars as ClickVars;
-use App\Support\LegacyUid as UID;
+use App\Support\ClickIdCodec as UID;
 use LeadMax\TrackYourStats\Clicks\URLProcessor;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\Base64;
 use LeadMax\TrackYourStats\Clicks\URLTagReplacers\SubVariables;

@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Clicks\URLTagReplacers;
 
 
-use App\Support\LegacyUid as UID;
+use App\Support\ClickIdCodec as UID;
 
 class TYSVariables implements TagReplacer
 {

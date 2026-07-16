@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Database\Stubs;
 
 
-use App\Support\LegacyUid as UID;
+use App\Support\ClickIdCodec as UID;
 
 class ConversionRegister implements Stub
 {
