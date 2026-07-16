@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Report;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use LeadMax\TrackYourStats\Table\ReportBase;
+use App\Support\ReportBase;
 
 // Offer Report
 // Reports->Offer Report (nav bar)

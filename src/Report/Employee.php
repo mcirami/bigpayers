@@ -18,7 +18,7 @@ use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use LeadMax\TrackYourStats\Table\ReportBase;
+use App\Support\ReportBase;
 
 class Employee extends ReportBase
 {

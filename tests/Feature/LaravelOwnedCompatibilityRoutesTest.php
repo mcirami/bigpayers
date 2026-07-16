@@ -1888,7 +1888,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             base_path('src/Offer/Update.php'),
             base_path('src/Offer/View.php'),
             base_path('src/System/Notifications.php'),
-            base_path('src/Table/ReportBase.php'),
             base_path('src/User/Bonus.php'),
             base_path('src/User/Create.php'),
             base_path('src/User/Login.php'),
@@ -1903,6 +1902,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\CurrentUserSession', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $contents);
         }
+
+        $this->assertFileDoesNotExist(base_path('src/Table/ReportBase.php'));
+        $this->assertFileDoesNotExist(base_path('src/Table/Functions.php'));
+
+        $reportBase = File::get(app_path('Support/ReportBase.php'));
+        $this->assertStringContainsString('CurrentUserSession::permissions()', $reportBase);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Session', $reportBase);
 
         $repHasOffer = File::get(base_path('src/Offer/RepHasOffer.php'));
 

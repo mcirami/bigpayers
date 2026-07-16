@@ -11,7 +11,7 @@ use App\Support\LegacyClickVars as ClickVars;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\CurrentUserSession;
-use LeadMax\TrackYourStats\Table\ReportBase;
+use App\Support\ReportBase;
 use PDO;
 
 class Clicks extends ReportBase

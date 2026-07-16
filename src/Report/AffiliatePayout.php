@@ -10,7 +10,7 @@
 use Carbon\Carbon;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyDollarSignFilter as DollarSign;
-use LeadMax\TrackYourStats\Table\ReportBase;
+use App\Support\ReportBase;
 use PDO;
 
 class AffiliatePayout

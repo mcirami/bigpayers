@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\Report\Filters;
 
-use LeadMax\TrackYourStats\Table\ReportBase;
+use App\Support\ReportBase;
 
 
 /**

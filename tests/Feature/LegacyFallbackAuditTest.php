@@ -1823,6 +1823,7 @@ PHP,
             'legacyReportObjectsDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\AffiliatePayout;',
+                'src/Report/BadReport.php' => 'use LeadMax\\TrackYourStats\\Table\\ReportBase;',
                 'app/Support/LegacyAffiliatePayoutReport.php' => 'use LeadMax\\TrackYourStats\\Report\\AffiliatePayout;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAffiliatePayoutReport as AffiliatePayout;',
             ]]
@@ -1832,7 +1833,11 @@ PHP,
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAffiliatePayoutReport instead of importing the legacy affiliate payout report directly.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'src/Report/BadReport.php: The legacy report base class is retired; use App\\Support\\ReportBase.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_database_connection_dependency_errors_report_forbidden_sources(): void

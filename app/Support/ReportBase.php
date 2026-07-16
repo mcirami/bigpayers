@@ -6,12 +6,10 @@
  * Time: 4:11 PM
  */
 
-namespace LeadMax\TrackYourStats\Table;
+namespace App\Support;
 
 // original report base class, has epc functions, created another 'BaseReport' class because wanted to change some stuff
 
-
-use App\Support\CurrentUserSession;
 
 class ReportBase
 {

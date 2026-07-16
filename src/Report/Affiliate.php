@@ -8,7 +8,7 @@ use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use LeadMax\TrackYourStats\Table\ReportBase;
+use App\Support\ReportBase;
 use App\Support\LegacyReportPermissions as ReportPermissions;
 use PDO;
 
