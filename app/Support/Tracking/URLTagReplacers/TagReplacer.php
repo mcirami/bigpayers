@@ -6,7 +6,7 @@
  * Time: 3:06 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLTagReplacers;
+namespace App\Support\Tracking\URLTagReplacers;
 
 interface TagReplacer
 {

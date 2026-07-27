@@ -12,10 +12,10 @@ namespace LeadMax\TrackYourStats\Clicks\URLEvents;
 use App\Support\LegacyClick as Click;
 use App\Support\ClickVariables as ClickVars;
 use App\Support\ClickIdCodec as UID;
-use LeadMax\TrackYourStats\Clicks\URLProcessor;
-use LeadMax\TrackYourStats\Clicks\URLTagReplacers\Base64;
-use LeadMax\TrackYourStats\Clicks\URLTagReplacers\SubVariables;
-use LeadMax\TrackYourStats\Clicks\URLTagReplacers\TYSVariables;
+use App\Support\Tracking\URLProcessor;
+use App\Support\Tracking\URLTagReplacers\Base64;
+use App\Support\Tracking\URLTagReplacers\SubVariables;
+use App\Support\Tracking\URLTagReplacers\TYSVariables;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyUser as User;
 

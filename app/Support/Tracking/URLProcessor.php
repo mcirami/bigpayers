@@ -6,10 +6,10 @@
  * Time: 1:35 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks;
+namespace App\Support\Tracking;
 
 
-use LeadMax\TrackYourStats\Clicks\URLTagReplacers\TagReplacer;
+use App\Support\Tracking\URLTagReplacers\TagReplacer;
 
 class URLProcessor
 {

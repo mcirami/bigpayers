@@ -504,6 +504,8 @@ Remaining cleanup is mostly archival and hardening:
 - click-variable parsing and postback substitutions now resolve through
   `App\Support\ClickVariables`; the retired `src/Clicks/ClickVars` class and
   wrapper have been removed
+- URL processing and tag replacement now live under `App\Support\Tracking`;
+  the five corresponding `src/Clicks` utility files have been removed
 - modern user-controller and observer tree rebuild/read calls now resolve the
   legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
   fails on new direct Laravel-side tree imports outside the boundary

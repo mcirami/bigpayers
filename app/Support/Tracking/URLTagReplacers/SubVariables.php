@@ -6,7 +6,7 @@
  * Time: 3:07 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLTagReplacers;
+namespace App\Support\Tracking\URLTagReplacers;
 
 
 class SubVariables implements TagReplacer

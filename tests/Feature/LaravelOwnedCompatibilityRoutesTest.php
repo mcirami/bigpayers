@@ -892,7 +892,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/ClickIdToolController.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
-            base_path('src/Clicks/URLTagReplacers/TYSVariables.php'),
+            app_path('Support/Tracking/URLTagReplacers/TYSVariables.php'),
             base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
             base_path('src/Clicks/URLEvents/Listeners/ConversionListener.php'),
             base_path('src/Clicks/URLEvents/Listeners/DeductionListener.php'),
@@ -920,6 +920,28 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertSame('1029384756', \App\Support\ClickIdCodec::decode($encodedClickId));
         $this->assertFileDoesNotExist(app_path('Support/LegacyUid.php'));
         $this->assertFileDoesNotExist(base_path('src/Clicks/UID.php'));
+
+        $processor = new \App\Support\Tracking\URLProcessor(
+            'https://example.test/#affid#/#offid#/#clickid#/#user#/#sub1#/<base64>secret</base64>'
+        );
+        $processor->addTagReplacer(new \App\Support\Tracking\URLTagReplacers\TYSVariables(4, 'alice', 'encoded', 9));
+        $processor->addTagReplacer(new \App\Support\Tracking\URLTagReplacers\SubVariables(['sub1' => 'campaign']));
+        $processor->addTagReplacer(new \App\Support\Tracking\URLTagReplacers\Base64());
+        $processor->processURL();
+        $this->assertSame(
+            'https://example.test/4/9/encoded/alice/campaign/' . base64_encode('secret'),
+            $processor->url
+        );
+
+        foreach ([
+            'src/Clicks/URLProcessor.php',
+            'src/Clicks/URLTagReplacers/Base64.php',
+            'src/Clicks/URLTagReplacers/SubVariables.php',
+            'src/Clicks/URLTagReplacers/TYSVariables.php',
+            'src/Clicks/URLTagReplacers/TagReplacer.php',
+        ] as $retiredPath) {
+            $this->assertFileDoesNotExist(base_path($retiredPath));
+        }
     }
 
     public function test_modern_lander_reads_use_legacy_lander_boundary(): void

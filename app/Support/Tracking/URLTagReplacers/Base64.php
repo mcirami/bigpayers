@@ -6,7 +6,7 @@
  * Time: 3:47 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLTagReplacers;
+namespace App\Support\Tracking\URLTagReplacers;
 
 
 class Base64 implements TagReplacer

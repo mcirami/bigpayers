@@ -6,7 +6,7 @@
  * Time: 3:39 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLTagReplacers;
+namespace App\Support\Tracking\URLTagReplacers;
 
 
 use App\Support\ClickIdCodec as UID;
