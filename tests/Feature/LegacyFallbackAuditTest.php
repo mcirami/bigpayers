@@ -97,7 +97,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.',
+            'Runtime code resolves click geography through App\\Support\\ClickGeo.',
             $output
         );
         $this->assertStringContainsString(
@@ -109,7 +109,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.',
+            'Runtime code resolves click search queries through App\\Support\\ClickSearcher.',
             $output
         );
         $this->assertStringContainsString(
@@ -117,7 +117,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy pending conversion activation through LegacyPendingConversion.',
+            'Runtime code handles pending conversions through App\\Support\\PendingConversion.',
             $output
         );
         $this->assertStringContainsString(
@@ -1040,16 +1040,20 @@ PHP,
             'legacyClickGeoDependencyErrorsFor',
             [[
                 'app/Services/BadService.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
-                'app/Support/LegacyClickGeo.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickGeo as ClickGeo;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyClickGeo as ClickGeo;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\ClickGeo;',
             ]]
         );
 
         $this->assertContains(
-            'app/Services/BadService.php: Use App\\Support\\LegacyClickGeo instead of importing the legacy ClickGeo class directly.',
+            'app/Services/BadService.php: The legacy ClickGeo class is retired; use App\\Support\\ClickGeo.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyClickGeo wrapper is retired; use App\\Support\\ClickGeo.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_click_dependency_errors_report_forbidden_sources(): void
@@ -1061,6 +1065,7 @@ PHP,
             'legacyClickDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Click;',
+                'src/Clicks/BadCookie.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Cookie;',
                 'app/Support/LegacyClick.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Click;',
                 'app/Support/LegacyClickGeo.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClick as Click;',
@@ -1071,7 +1076,11 @@ PHP,
             'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'src/Clicks/BadCookie.php: The legacy click cookie class is retired; use App\\Support\\Tracking\\ClickCookie.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_click_vars_dependency_errors_report_forbidden_sources(): void
@@ -1103,16 +1112,20 @@ PHP,
             'legacyClickSearcherDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickSearcher;',
-                'app/Support/LegacyClickSearcher.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickSearcher;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickSearcher as ClickSearcher;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyClickSearcher as ClickSearcher;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\ClickSearcher;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickSearcher instead of importing the legacy click searcher class directly.',
+            'app/Http/Controllers/BadController.php: The legacy ClickSearcher class is retired; use App\\Support\\ClickSearcher.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyClickSearcher wrapper is retired; use App\\Support\\ClickSearcher.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_conversion_dependency_errors_report_forbidden_sources(): void
@@ -1145,16 +1158,20 @@ PHP,
             'legacyPendingConversionDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PendingConversion;',
-                'app/Support/LegacyPendingConversion.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PendingConversion;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPendingConversion as PendingConversion;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyPendingConversion as PendingConversion;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\PendingConversion;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPendingConversion instead of importing the legacy pending conversion class directly.',
+            'app/Http/Controllers/BadController.php: The legacy PendingConversion class is retired; use App\\Support\\PendingConversion.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyPendingConversion wrapper is retired; use App\\Support\\PendingConversion.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_postback_url_event_handler_dependency_errors_report_forbidden_sources(): void

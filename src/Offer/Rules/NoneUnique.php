@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer\Rules;
 
 
-use LeadMax\TrackYourStats\Clicks\Cookie;
+use App\Support\Tracking\ClickCookie;
 use App\Support\TrackingParameters;
 use App\Support\NativeRequest;
 
@@ -42,7 +42,7 @@ class NoneUnique implements Rule
     {
         $params = TrackingParameters::normalize(NativeRequest::queryAll());
 
-        $offerLogCookie = new Cookie(
+        $offerLogCookie = new ClickCookie(
             TrackingParameters::get($params, "repid"),
             TrackingParameters::get($params, "offerid")
         );

@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\ClickGeoCache;
-use App\Support\LegacyClickGeo as ClickGeo;
+use App\Support\ClickGeo;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;

@@ -434,22 +434,23 @@ Remaining cleanup is mostly archival and hardening:
   permission class directly outside the `App\Support\LegacyPermissions`
   boundary or if Laravel-reached helper code reloads permissions from the
   legacy session directly
-- modern Laravel geo lookup callers now resolve the legacy `ClickGeo` helper
-  through `App\Support\LegacyClickGeo`; the fallback audit fails if Laravel-side
-  code imports the legacy `ClickGeo` class directly outside that boundary
+- runtime geo lookup callers now use the Laravel-owned `App\Support\ClickGeo`;
+  the legacy `ClickGeo` class and `LegacyClickGeo` wrapper have been removed,
+  and the fallback audit prevents either namespace from returning
 - modern adjustment and chat-log click writes now resolve the legacy `Click`
   helper through `App\Support\LegacyClick`; the fallback audit fails on new
   direct Laravel-side click imports outside the boundary
-- modern click-search lookup queries now resolve the legacy `ClickSearcher`
-  helper through `App\Support\LegacyClickSearcher`; the fallback audit fails on
-  new direct Laravel-side click searcher imports outside the boundary
+- click-search lookup queries now use the Laravel-owned
+  `App\Support\ClickSearcher`; the legacy class and `LegacyClickSearcher`
+  wrapper have been removed, and the fallback audit prevents either namespace
+  from returning
 - modern click-search, adjustment, and chat-log conversion reads now resolve the
   legacy `Conversion` helper through `App\Support\LegacyConversion`; the
   fallback audit fails on new direct Laravel-side conversion imports outside the
   boundary
-- modern chat-log pending conversion activation now resolves the legacy
-  `PendingConversion` helper through `App\Support\LegacyPendingConversion`; the
-  fallback audit fails on new direct Laravel-side pending conversion imports
+- pending conversion registration and activation now use the Laravel-owned
+  `App\Support\PendingConversion`; the legacy class and wrapper have been
+  removed, and the fallback audit prevents either namespace from returning
   outside the boundary
 - modern landing-page postback and click-registration entrypoints now resolve
   the legacy `PostBackURLEventHandler` and `ClickRegistrationEvent` classes
@@ -506,6 +507,9 @@ Remaining cleanup is mostly archival and hardening:
   wrapper have been removed
 - URL processing and tag replacement now live under `App\Support\Tracking`;
   the five corresponding `src/Clicks` utility files have been removed
+- click uniqueness and transfer-prevention cookie state now resolve through
+  `App\Support\Tracking\ClickCookie`; the old `src/Clicks/Cookie` class has
+  been removed
 - modern user-controller and observer tree rebuild/read calls now resolve the
   legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
   fails on new direct Laravel-side tree imports outside the boundary

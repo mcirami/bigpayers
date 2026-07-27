@@ -4,7 +4,7 @@ namespace App\Http\Traits;
 
 use App\ClickGeoCache;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyClickGeo as ClickGeo;
+use App\Support\ClickGeo;
 
 trait ClickTraits {
 

@@ -6,7 +6,7 @@ namespace LeadMax\TrackYourStats\Report\ID;
 // User specific Click Report
 
 use Carbon\Carbon;
-use App\Support\LegacyClickGeo as ClickGeo;
+use App\Support\ClickGeo;
 use App\Support\ClickVariables as ClickVars;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyPayouts as Payouts;

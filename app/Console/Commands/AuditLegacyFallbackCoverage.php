@@ -228,16 +228,14 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyClickGeoForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\ClickGeo' => 'Use App\\Support\\LegacyClickGeo instead of importing the legacy ClickGeo class directly.',
-    ];
-
-    private array $legacyClickGeoAllowedFiles = [
-        'app/Support/LegacyClickGeo.php' => 'The dedicated boundary around the legacy ClickGeo class.',
+        'LeadMax\\TrackYourStats\\Clicks\\ClickGeo' => 'The legacy ClickGeo class is retired; use App\\Support\\ClickGeo.',
+        'App\\Support\\LegacyClickGeo' => 'The LegacyClickGeo wrapper is retired; use App\\Support\\ClickGeo.',
     ];
 
     private array $legacyClickForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Clicks\\Click;' => 'Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
         'LeadMax\\TrackYourStats\\Clicks\\Click as ' => 'Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
+        'LeadMax\\TrackYourStats\\Clicks\\Cookie' => 'The legacy click cookie class is retired; use App\\Support\\Tracking\\ClickCookie.',
     ];
 
     private array $legacyClickAllowedFiles = [
@@ -249,11 +247,8 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyClickSearcherForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\ClickSearcher' => 'Use App\\Support\\LegacyClickSearcher instead of importing the legacy click searcher class directly.',
-    ];
-
-    private array $legacyClickSearcherAllowedFiles = [
-        'app/Support/LegacyClickSearcher.php' => 'The dedicated boundary around the legacy click searcher class.',
+        'LeadMax\\TrackYourStats\\Clicks\\ClickSearcher' => 'The legacy ClickSearcher class is retired; use App\\Support\\ClickSearcher.',
+        'App\\Support\\LegacyClickSearcher' => 'The LegacyClickSearcher wrapper is retired; use App\\Support\\ClickSearcher.',
     ];
 
     private array $legacyConversionForbiddenPatterns = [
@@ -265,11 +260,8 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyPendingConversionForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\PendingConversion' => 'Use App\\Support\\LegacyPendingConversion instead of importing the legacy pending conversion class directly.',
-    ];
-
-    private array $legacyPendingConversionAllowedFiles = [
-        'app/Support/LegacyPendingConversion.php' => 'The dedicated boundary around the legacy pending conversion class.',
+        'LeadMax\\TrackYourStats\\Clicks\\PendingConversion' => 'The legacy PendingConversion class is retired; use App\\Support\\PendingConversion.',
+        'App\\Support\\LegacyPendingConversion' => 'The LegacyPendingConversion wrapper is retired; use App\\Support\\PendingConversion.',
     ];
 
     private array $legacyPostBackUrlEventHandlerForbiddenPatterns = [
@@ -761,7 +753,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyClickGeoDependencyErrors = $this->legacyClickGeoDependencyErrors();
 
         if ($legacyClickGeoDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy ClickGeo class directly:');
+            $this->error('Runtime code still references retired click geo classes:');
             $legacyClickGeoDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -788,7 +780,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyClickSearcherDependencyErrors = $this->legacyClickSearcherDependencyErrors();
 
         if ($legacyClickSearcherDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy click searcher class directly:');
+            $this->error('Runtime code still references retired click searcher classes:');
             $legacyClickSearcherDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -806,7 +798,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyPendingConversionDependencyErrors = $this->legacyPendingConversionDependencyErrors();
 
         if ($legacyPendingConversionDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy pending conversion class directly:');
+            $this->error('Runtime code still references retired pending conversion classes:');
             $legacyPendingConversionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -1232,12 +1224,12 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime source reads environment-backed values through Laravel config.');
         $this->info('Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
-        $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
+        $this->info('Runtime code resolves click geography through App\\Support\\ClickGeo.');
         $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');
         $this->info('Runtime code resolves click variables through App\\Support\\ClickVariables.');
-        $this->info('Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.');
+        $this->info('Runtime code resolves click search queries through App\\Support\\ClickSearcher.');
         $this->info('Modern Laravel code resolves legacy conversion helpers through LegacyConversion.');
-        $this->info('Modern Laravel code resolves legacy pending conversion activation through LegacyPendingConversion.');
+        $this->info('Runtime code handles pending conversions through App\\Support\\PendingConversion.');
         $this->info('Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.');
         $this->info('Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.');
         $this->info('Runtime code encodes click IDs through App\\Support\\ClickIdCodec.');
@@ -1969,7 +1961,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyClickGeoDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickGeoAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2052,7 +2043,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyClickSearcherDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickSearcherAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2108,7 +2098,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyPendingConversionDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPendingConversionAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

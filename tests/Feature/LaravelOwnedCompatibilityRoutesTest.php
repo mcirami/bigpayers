@@ -725,7 +725,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_SERVER', $passwordReset);
     }
 
-    public function test_modern_click_geo_reads_use_legacy_click_geo_boundary(): void
+    public function test_runtime_click_geo_reads_use_laravel_support(): void
     {
         foreach ([
             app_path('Console/Commands/BackfillClicksGeoFromIp.php'),
@@ -737,14 +737,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyClickGeo as ClickGeo', $contents);
+            $this->assertStringContainsString('App\\Support\\ClickGeo', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\ClickGeo', $contents);
+            $this->assertStringNotContainsString('App\\Support\\LegacyClickGeo', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\ClickGeo',
-            File::get(app_path('Support/LegacyClickGeo.php'))
-        );
+        $this->assertFileExists(app_path('Support/ClickGeo.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyClickGeo.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/ClickGeo.php'));
     }
 
     public function test_modern_click_writes_use_legacy_click_boundary(): void
@@ -775,10 +775,28 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_GET', $click);
         $this->assertStringNotContainsString('$_SERVER', $click);
 
-        $cookie = File::get(base_path('src/Clicks/Cookie.php'));
+        $cookie = File::get(app_path('Support/Tracking/ClickCookie.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeRequest', $cookie);
         $this->assertStringNotContainsString('$_COOKIE', $cookie);
+        $this->assertFileDoesNotExist(base_path('src/Clicks/Cookie.php'));
+
+        foreach ([
+            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            base_path('src/Offer/Rules/NoneUnique.php'),
+        ] as $path) {
+            $this->assertStringContainsString('App\\Support\\Tracking\\ClickCookie', File::get($path));
+        }
+
+        $clickCookie = (new ReflectionClass(\App\Support\Tracking\ClickCookie::class))->newInstanceWithoutConstructor();
+        $clickCookie->affid = 12;
+        $clickCookie->offid = 34;
+        $clickCookie->cookie = [];
+        $clickCookie->transferCookieAlreadySet = false;
+        $this->assertTrue($clickCookie->isUnique());
+        $clickCookie->registerClick();
+        $this->assertFalse($clickCookie->isUnique());
+        $this->assertSame([12 => [34]], $clickCookie->cookie);
     }
 
     public function test_runtime_click_variables_use_laravel_boundary(): void
@@ -813,21 +831,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
-    public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void
+    public function test_runtime_click_search_reads_use_laravel_support(): void
     {
         $controller = File::get(app_path('Http/Controllers/ClickSearchController.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyClickSearcher as ClickSearcher', $controller);
+        $this->assertStringContainsString('App\\Support\\ClickSearcher', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\ClickSearcher', $controller);
-
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\ClickSearcher',
-            File::get(app_path('Support/LegacyClickSearcher.php'))
-        );
-        $clickSearcher = File::get(base_path('src/Clicks/ClickSearcher.php'));
-
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickSearcher);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickSearcher);
+        $this->assertStringNotContainsString('App\\Support\\LegacyClickSearcher', $controller);
+        $this->assertFileExists(app_path('Support/ClickSearcher.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyClickSearcher.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/ClickSearcher.php'));
     }
 
     public function test_modern_conversion_reads_use_legacy_conversion_boundary(): void
@@ -864,7 +877,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRegister);
     }
 
-    public function test_modern_pending_conversion_reads_use_legacy_pending_conversion_boundary(): void
+    public function test_runtime_pending_conversions_use_laravel_support(): void
     {
         foreach ([
             app_path('Http/Controllers/ChatLogController.php'),
@@ -872,19 +885,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyPendingConversion as PendingConversion', $contents);
+            $this->assertStringContainsString('App\\Support\\PendingConversion', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PendingConversion', $contents);
+            $this->assertStringNotContainsString('App\\Support\\LegacyPendingConversion', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\PendingConversion',
-            File::get(app_path('Support/LegacyPendingConversion.php'))
-        );
-
-        $pendingConversion = File::get(base_path('src/Clicks/PendingConversion.php'));
-
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $pendingConversion);
-        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $pendingConversion);
+        $this->assertFileExists(app_path('Support/PendingConversion.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyPendingConversion.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/PendingConversion.php'));
     }
 
     public function test_modern_click_id_reads_use_legacy_uid_boundary(): void

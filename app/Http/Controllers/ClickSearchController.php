@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyClickGeo as ClickGeo;
-use App\Support\LegacyClickSearcher as ClickSearcher;
+use App\Support\ClickGeo;
+use App\Support\ClickSearcher;
 use App\Support\LegacyConversion as Conversion;
 use App\Support\ClickIdCodec as UID;
 use Illuminate\Http\Request;

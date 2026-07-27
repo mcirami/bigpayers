@@ -9,7 +9,7 @@ use App\User;
 use App\Conversion;
 use App\Privilege;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyClickGeo as ClickGeo;
+use App\Support\ClickGeo;
 use App\Support\LegacyPayouts as Payouts;
 use App\Support\RequestContext;
 use Illuminate\Http\Request;

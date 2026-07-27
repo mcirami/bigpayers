@@ -1,4 +1,6 @@
-<?php namespace LeadMax\TrackYourStats\Clicks;
+<?php
+
+namespace App\Support\Tracking;
 
 use App\Support\NativeRequest;
 
@@ -8,7 +10,7 @@ use App\Support\NativeRequest;
  * Date: 10/13/2017
  * Time: 12:17 PM
  */
-class Cookie
+class ClickCookie
 {
 
     public $affid = 0;

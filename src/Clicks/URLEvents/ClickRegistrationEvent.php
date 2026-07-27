@@ -8,7 +8,7 @@ use App\User;
 use Illuminate\Support\Facades\Log;
 use App\Support\LegacyClick as Click;
 use App\Support\LegacyConversion as Conversion;
-use LeadMax\TrackYourStats\Clicks\Cookie;
+use App\Support\Tracking\ClickCookie;
 use App\Support\ClickIdCodec as UID;
 use App\Support\Tracking\URLProcessor;
 use App\Support\Tracking\URLTagReplacers\Base64;
@@ -69,7 +69,7 @@ class ClickRegistrationEvent extends URLEvent
             return Click::TYPE_BLACKLISTED;
         }
 
-        $cookie = new Cookie($this->userId, $this->offerId);
+        $cookie = new ClickCookie($this->userId, $this->offerId);
         $cookie->setPreventTransferCookie();
         if ($cookie->isUnique()) {
             return Click::TYPE_UNIQUE;
@@ -102,7 +102,7 @@ class ClickRegistrationEvent extends URLEvent
             $click->click_type = $this->getClickType();
 
             if ($click->save()) {
-                $cookie = new Cookie($this->userId, $this->offerId);
+                $cookie = new ClickCookie($this->userId, $this->offerId);
                 $cookie->registerClick();
                 $cookie->save();
             }

@@ -8,7 +8,7 @@ use App\Exceptions\RegistrationEventExceptions\InvalidClickException;
 use App\Offer;
 use App\Support\LegacyConversion as Conversion;
 use App\Support\LegacyOffer as LegacyOffer;
-use App\Support\LegacyPendingConversion as PendingConversion;
+use App\Support\PendingConversion;
 use App\Support\LegacyConversionPostBackURL as ConversionPostBackURL;
 //use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\JsonResponse;

@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\ClickGeoCache;
-use App\Support\LegacyClickGeo as ClickGeo;
+use App\Support\ClickGeo;
 use Illuminate\Support\Collection;
 
 class ClickGeoCacheService {
