@@ -245,11 +245,7 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyClickVarsForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\ClickVars' => 'Use App\\Support\\LegacyClickVars instead of importing the legacy click vars class directly.',
-    ];
-
-    private array $legacyClickVarsAllowedFiles = [
-        'app/Support/LegacyClickVars.php' => 'The dedicated boundary around the legacy click vars class.',
+        'LeadMax\\TrackYourStats\\Clicks\\ClickVars' => 'The legacy click vars class is retired; use App\\Support\\ClickVariables.',
     ];
 
     private array $legacyClickSearcherForbiddenPatterns = [
@@ -1238,7 +1234,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Modern Laravel code resolves legacy ClickGeo through LegacyClickGeo.');
         $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');
-        $this->info('Modern Laravel code resolves legacy click vars through LegacyClickVars.');
+        $this->info('Runtime code resolves click variables through App\\Support\\ClickVariables.');
         $this->info('Modern Laravel code resolves legacy click search queries through LegacyClickSearcher.');
         $this->info('Modern Laravel code resolves legacy conversion helpers through LegacyConversion.');
         $this->info('Modern Laravel code resolves legacy pending conversion activation through LegacyPendingConversion.');
@@ -2029,7 +2025,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyClickVarsDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickVarsAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

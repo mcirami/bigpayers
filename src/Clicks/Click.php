@@ -1,6 +1,8 @@
 <?php
 namespace LeadMax\TrackYourStats\Clicks;
 
+use App\Support\TrackingParameters;
+
 use App\Services\GeoIpDatabase;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\NativeRequest;

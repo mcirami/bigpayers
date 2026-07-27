@@ -105,7 +105,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/BonusController.php'),
             app_path('Http/Controllers/OfferController.php'),
             app_path('Http/Controllers/UserController.php'),
-            base_path('src/Clicks/ClickVars.php'),
             base_path('src/Clicks/Conversion.php'),
             base_path('src/Clicks/URLEvents/URLEvent.php'),
             base_path('src/Database/Versions/V158.php'),
@@ -123,6 +122,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringContainsString('App\\Support\\LegacyUser', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $contents);
         }
+
+        $clickVariables = File::get(app_path('Support/ClickVariables.php'));
+        $this->assertStringContainsString('LegacyUser::SelectOne', $clickVariables);
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $clickVariables);
 
         $this->assertStringContainsString(
             'LeadMax\\TrackYourStats\\User\\User',
@@ -277,7 +280,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
             app_path('Http/Controllers/OfferController.php'),
-            base_path('src/Clicks/ClickVars.php'),
             base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
             base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
             base_path('src/Clicks/URLEvents/URLEvent.php'),
@@ -293,7 +295,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
             app_path('Http/Controllers/OfferController.php'),
-            base_path('src/Clicks/ClickVars.php'),
             base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
             base_path('src/Database/Versions/V158.php'),
             base_path('src/User/Create.php'),
@@ -303,6 +304,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $this->assertStringContainsString('App\\Support\\LegacyRepHasOffer', File::get($path));
         }
+
+        $clickVariables = File::get(app_path('Support/ClickVariables.php'));
+        $this->assertStringContainsString('LegacyOffer::selectOneQuery', $clickVariables);
+        $this->assertStringContainsString('LegacyRepHasOffer::getPostbackURL', $clickVariables);
 
         $userController = File::get(app_path('Http/Controllers/UserController.php'));
 
@@ -776,7 +781,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_COOKIE', $cookie);
     }
 
-    public function test_modern_click_vars_reads_use_legacy_click_vars_boundary(): void
+    public function test_runtime_click_variables_use_laravel_boundary(): void
     {
         foreach ([
             base_path('src/Clicks/URLEvents/URLEvent.php'),
@@ -786,20 +791,26 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyClickVars as ClickVars', $contents);
+            $this->assertStringContainsString('App\\Support\\ClickVariables as ClickVars', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\ClickVars', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\ClickVars',
-            File::get(app_path('Support/LegacyClickVars.php'))
-        );
-        $clickVars = File::get(base_path('src/Clicks/ClickVars.php'));
-
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickVars);
+        $clickVars = File::get(app_path('Support/ClickVariables.php'));
+        $this->assertStringContainsString('LegacyDatabaseConnection::getInstance()', $clickVars);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickVars);
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $clickVars);
+        $this->assertStringContainsString('NativeRequest::queryAll()', $clickVars);
         $this->assertStringNotContainsString('$_GET', $clickVars);
+        $this->assertFileDoesNotExist(app_path('Support/LegacyClickVars.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/ClickVars.php'));
+
+        $this->assertSame(
+            ['sub1' => 'alpha', 'sub2' => '', 'sub3' => '', 'sub4' => '', 'sub5' => 'omega'],
+            \App\Support\ClickVariables::processUrlToSubIDArray('/offer?sub1=alpha&s5=omega')
+        );
+        $this->assertSame(
+            'https://example.test/' . base64_encode('value'),
+            \App\Support\ClickVariables::checkForBase64('https://example.test/<base64>value</base64>')
+        );
     }
 
     public function test_modern_click_search_reads_use_legacy_click_searcher_boundary(): void

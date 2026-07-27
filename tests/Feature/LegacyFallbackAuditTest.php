@@ -105,7 +105,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy click vars through LegacyClickVars.',
+            'Runtime code resolves click variables through App\\Support\\ClickVariables.',
             $output
         );
         $this->assertStringContainsString(
@@ -1083,13 +1083,12 @@ PHP,
             'legacyClickVarsDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickVars;',
-                'app/Support/LegacyClickVars.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickVars;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickVars as ClickVars;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\ClickVariables as ClickVars;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickVars instead of importing the legacy click vars class directly.',
+            'app/Http/Controllers/BadController.php: The legacy click vars class is retired; use App\\Support\\ClickVariables.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

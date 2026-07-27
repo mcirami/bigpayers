@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Database\Versions;
 
 
-use App\Support\LegacyClickVars as ClickVars;
+use App\Support\ClickVariables as ClickVars;
 use LeadMax\TrackYourStats\Database\Version;
 
 class V130 extends Version

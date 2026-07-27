@@ -501,6 +501,9 @@ Remaining cleanup is mostly archival and hardening:
 - report inheritance now resolves through `App\Support\ReportBase`; the old
   `src/Table/ReportBase` class was migrated and the unreferenced
   `src/Table/Functions` renderer was removed
+- click-variable parsing and postback substitutions now resolve through
+  `App\Support\ClickVariables`; the retired `src/Clicks/ClickVars` class and
+  wrapper have been removed
 - modern user-controller and observer tree rebuild/read calls now resolve the
   legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
   fails on new direct Laravel-side tree imports outside the boundary

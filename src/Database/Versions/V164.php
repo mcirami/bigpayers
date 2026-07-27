@@ -3,7 +3,7 @@
 namespace LeadMax\TrackYourStats\Database\Versions;
 
 use Carbon\Carbon;
-use App\Support\LegacyClickVars as ClickVars;
+use App\Support\ClickVariables as ClickVars;
 use LeadMax\TrackYourStats\Database\Version;
 
 //@deprecated

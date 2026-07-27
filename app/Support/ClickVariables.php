@@ -6,17 +6,12 @@
  * Time: 12:14 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks;
+namespace App\Support;
 
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use App\Support\LegacyOffer as Offer;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
-use App\Support\LegacyUser as User;
-use App\Support\NativeRequest;
 use PDO;
 
-class ClickVars
+class ClickVariables
 {
 
     public $clickObj;
@@ -44,32 +39,32 @@ class ClickVars
             $trackingQuery = TrackingParameters::normalize(NativeRequest::queryAll());
 
             //get Affiliate data who's ID is linked to that click, stored as PDO::FETCH_OBJ
-            $affData = new User();
-            $this->affData = User::SelectOne(TrackingParameters::get($trackingQuery, "repid"));
+            $affData = new LegacyUser();
+            $this->affData = LegacyUser::SelectOne(TrackingParameters::get($trackingQuery, "repid"));
 
 
             // gets offer url
-            $this->offerURL = Offer::selectOneQuery(TrackingParameters::get($trackingQuery, "offerid"))->fetch(PDO::FETCH_OBJ)->url;
+            $this->offerURL = LegacyOffer::selectOneQuery(TrackingParameters::get($trackingQuery, "offerid"))->fetch(PDO::FETCH_OBJ)->url;
 
         } else {
             // Get click info as PDO::FETCH_OBJ
-            $this->clickObj = Click::SelectOne($clickID);
+            $this->clickObj = LegacyClick::SelectOne($clickID);
 
             //get Affiliate data who's ID is linked to that click, stored as PDO::FETCH_OBJ
-            $affData = new User();
-            $this->affData = User::SelectOne($this->clickObj->rep_idrep);
+            $affData = new LegacyUser();
+            $this->affData = LegacyUser::SelectOne($this->clickObj->rep_idrep);
 
 
             // gets sub variables that were stored when click was generated, stored as obj
-            $this->subVars = ClickVars::selectSubVars($clickID)->fetch(PDO::FETCH_OBJ);
+            $this->subVars = self::selectSubVars($clickID)->fetch(PDO::FETCH_OBJ);
 
             // gets affiliate specific post back url
-            $this->postBackUrl = RepHasOffer::getPostbackURL($this->clickObj->offer_idoffer, $this->affData->idrep);
+            $this->postBackUrl = LegacyRepHasOffer::getPostbackURL($this->clickObj->offer_idoffer, $this->affData->idrep);
 
-            $this->usersGlobalPostBackUrl = User::getUsersGlobalPostBackURL($this->clickObj->rep_idrep);
+            $this->usersGlobalPostBackUrl = LegacyUser::getUsersGlobalPostBackURL($this->clickObj->rep_idrep);
 
             // gets offer url
-            $this->offerURL = Offer::selectOneQuery($this->clickObj->offer_idoffer)->fetch(PDO::FETCH_OBJ)->url;
+            $this->offerURL = LegacyOffer::selectOneQuery($this->clickObj->offer_idoffer)->fetch(PDO::FETCH_OBJ)->url;
         }
 
 
@@ -288,12 +283,12 @@ class ClickVars
             $trackingQuery = TrackingParameters::normalize(NativeRequest::queryAll());
             $url = str_replace("#affid#", TrackingParameters::get($trackingQuery, "repid"), $url);
             $url = str_replace("#offid#", TrackingParameters::get($trackingQuery, "offerid"), $url);
-            $url = str_replace("#clickid#", UID::encode($this->clickID), $url);
+            $url = str_replace("#clickid#", ClickIdCodec::encode($this->clickID), $url);
         } else // postback.php
         {
             $url = str_replace("#affid#", $this->clickObj->rep_idrep, $url);
             $url = str_replace("#offid#", $this->clickObj->offer_idoffer, $url);
-            $url = str_replace("#clickid#", UID::encode($this->clickObj->idclicks), $url);
+            $url = str_replace("#clickid#", ClickIdCodec::encode($this->clickObj->idclicks), $url);
         }
 
         $url = str_replace("#user#", $this->affData->user_name, $url);
@@ -359,7 +354,7 @@ class ClickVars
 
     static function getSubVarArray($click_id)
     {
-        $storedQueryString = ClickVars::selectSubVars($click_id)->fetch(\PDO::FETCH_OBJ);
+        $storedQueryString = self::selectSubVars($click_id)->fetch(PDO::FETCH_OBJ);
 
         $storedClickQuery = parse_url($storedQueryString->url);
 
@@ -375,7 +370,7 @@ class ClickVars
 
     static function selectSubVars($id)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM click_vars WHERE click_id = :id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
