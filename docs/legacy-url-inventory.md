@@ -437,17 +437,17 @@ Remaining cleanup is mostly archival and hardening:
 - runtime geo lookup callers now use the Laravel-owned `App\Support\ClickGeo`;
   the legacy `ClickGeo` class and `LegacyClickGeo` wrapper have been removed,
   and the fallback audit prevents either namespace from returning
-- modern adjustment and chat-log click writes now resolve the legacy `Click`
-  helper through `App\Support\LegacyClick`; the fallback audit fails on new
-  direct Laravel-side click imports outside the boundary
+- click writes now use the Laravel-owned `App\Support\Click`; the legacy class
+  and `LegacyClick` wrapper have been removed, and the fallback audit prevents
+  either namespace from returning
 - click-search lookup queries now use the Laravel-owned
   `App\Support\ClickSearcher`; the legacy class and `LegacyClickSearcher`
   wrapper have been removed, and the fallback audit prevents either namespace
   from returning
-- modern click-search, adjustment, and chat-log conversion reads now resolve the
-  legacy `Conversion` helper through `App\Support\LegacyConversion`; the
-  fallback audit fails on new direct Laravel-side conversion imports outside the
-  boundary
+- conversion and referral-commission registration now use the Laravel-owned
+  `App\Support\Conversion` and `App\Support\ReferralRegister`; their legacy
+  classes and the `LegacyConversion` wrapper have been removed, and the
+  fallback audit prevents those namespaces from returning
 - pending conversion registration and activation now use the Laravel-owned
   `App\Support\PendingConversion`; the legacy class and wrapper have been
   removed, and the fallback audit prevents either namespace from returning

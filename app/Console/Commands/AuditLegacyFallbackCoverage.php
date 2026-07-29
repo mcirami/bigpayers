@@ -233,13 +233,11 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyClickForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\Click;' => 'Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
-        'LeadMax\\TrackYourStats\\Clicks\\Click as ' => 'Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
+        'LeadMax\\TrackYourStats\\Clicks\\Click;' => 'The legacy click class is retired; use App\\Support\\Click.',
+        'LeadMax\\TrackYourStats\\Clicks\\Click as ' => 'The legacy click class is retired; use App\\Support\\Click.',
+        'App\\Support\\LegacyClick as ' => 'The LegacyClick wrapper is retired; use App\\Support\\Click.',
+        'App\\Support\\LegacyClick;' => 'The LegacyClick wrapper is retired; use App\\Support\\Click.',
         'LeadMax\\TrackYourStats\\Clicks\\Cookie' => 'The legacy click cookie class is retired; use App\\Support\\Tracking\\ClickCookie.',
-    ];
-
-    private array $legacyClickAllowedFiles = [
-        'app/Support/LegacyClick.php' => 'The dedicated boundary around the legacy click class.',
     ];
 
     private array $legacyClickVarsForbiddenPatterns = [
@@ -252,11 +250,10 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyConversionForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\Conversion' => 'Use App\\Support\\LegacyConversion instead of importing the legacy conversion class directly.',
-    ];
-
-    private array $legacyConversionAllowedFiles = [
-        'app/Support/LegacyConversion.php' => 'The dedicated boundary around the legacy conversion class.',
+        'LeadMax\\TrackYourStats\\Clicks\\Conversion' => 'The legacy conversion class is retired; use App\\Support\\Conversion.',
+        'App\\Support\\LegacyConversion as ' => 'The LegacyConversion wrapper is retired; use App\\Support\\Conversion.',
+        'App\\Support\\LegacyConversion;' => 'The LegacyConversion wrapper is retired; use App\\Support\\Conversion.',
+        'LeadMax\\TrackYourStats\\User\\ReferralRegister' => 'The legacy referral register is retired; use App\\Support\\ReferralRegister.',
     ];
 
     private array $legacyPendingConversionForbiddenPatterns = [
@@ -756,7 +753,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyClickDependencyErrors = $this->legacyClickDependencyErrors();
 
         if ($legacyClickDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy click class directly:');
+            $this->error('Runtime code still references retired click classes:');
             $legacyClickDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -783,7 +780,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyConversionDependencyErrors = $this->legacyConversionDependencyErrors();
 
         if ($legacyConversionDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy conversion class directly:');
+            $this->error('Runtime code still references retired conversion classes:');
             $legacyConversionDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -1219,10 +1216,10 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.');
         $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
         $this->info('Runtime code resolves click geography through App\\Support\\ClickGeo.');
-        $this->info('Modern Laravel code resolves legacy click writes through LegacyClick.');
+        $this->info('Runtime code handles click writes through App\\Support\\Click.');
         $this->info('Runtime code resolves click variables through App\\Support\\ClickVariables.');
         $this->info('Runtime code resolves click search queries through App\\Support\\ClickSearcher.');
-        $this->info('Modern Laravel code resolves legacy conversion helpers through LegacyConversion.');
+        $this->info('Runtime code handles conversions through App\\Support\\Conversion and ReferralRegister.');
         $this->info('Runtime code handles pending conversions through App\\Support\\PendingConversion.');
         $this->info('Runtime code handles postback URLs through App\\Support\\Tracking\\PostBackUrlEventHandler.');
         $this->info('Runtime code handles tracking events through App\\Support\\Tracking\\Events.');
@@ -1982,7 +1979,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyClickDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2064,7 +2060,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyConversionDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyConversionAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

@@ -1,14 +1,11 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Clicks;
+namespace App\Support;
 
 
 use App\Privilege;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use App\Support\LegacyPayouts as Payouts;
-use App\Support\CurrentUserSession;
 use App\Support\LegacyBonus as Bonus;
-use LeadMax\TrackYourStats\User\ReferralRegister;
+use App\Support\LegacyPayouts as Payouts;
 use App\Support\LegacyReferrals as Referrals;
 use App\Support\LegacyUser as User;
 use PDO;
@@ -111,7 +108,7 @@ class Conversion
 
     public function save()
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "INSERT INTO conversions (user_id, click_id, timestamp, paid) VALUES (:user_id, :clickID, :timestamp, :paid)";
 
         $prep = $db->prepare($sql);
@@ -139,7 +136,7 @@ class Conversion
 
     public function getAffiliateData()
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT
                     clicks.rep_idrep,
                     " . Payouts::sqlForRole(Privilege::ROLE_AFFILIATE, 'offer', 'rep_has_offer') . " AS resolved_payout
@@ -201,7 +198,7 @@ class Conversion
 
     static function selectOne($id)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE click_id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -213,7 +210,7 @@ class Conversion
 
     static function selectOneByConversionID($ConversionId)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $ConversionId);
@@ -226,7 +223,7 @@ class Conversion
     // OLD AND DISGUSTING
     static function Conversion($clickid, $customPayout = false, $returnConversionId = false)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
 
         $click = Click::SelectOne($clickid);
 

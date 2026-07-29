@@ -101,7 +101,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy click writes through LegacyClick.',
+            'Runtime code handles click writes through App\\Support\\Click.',
             $output
         );
         $this->assertStringContainsString(
@@ -113,7 +113,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy conversion helpers through LegacyConversion.',
+            'Runtime code handles conversions through App\\Support\\Conversion and ReferralRegister.',
             $output
         );
         $this->assertStringContainsString(
@@ -1066,21 +1066,25 @@ PHP,
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Click;',
                 'src/Clicks/BadCookie.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Cookie;',
-                'app/Support/LegacyClick.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Click;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyClick as Click;',
                 'app/Support/LegacyClickGeo.php' => 'use LeadMax\\TrackYourStats\\Clicks\\ClickGeo;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClick as Click;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Click;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClick instead of importing the legacy click class directly.',
+            'app/Http/Controllers/BadController.php: The legacy click class is retired; use App\\Support\\Click.',
             $errors->all()
         );
         $this->assertContains(
             'src/Clicks/BadCookie.php: The legacy click cookie class is retired; use App\\Support\\Tracking\\ClickCookie.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyClick wrapper is retired; use App\\Support\\Click.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_click_vars_dependency_errors_report_forbidden_sources(): void
@@ -1137,16 +1141,25 @@ PHP,
             'legacyConversionDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Conversion;',
-                'app/Support/LegacyConversion.php' => 'use LeadMax\\TrackYourStats\\Clicks\\Conversion;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyConversion as Conversion;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyConversion as Conversion;',
+                'app/Services/BadReferral.php' => 'use LeadMax\\TrackYourStats\\User\\ReferralRegister;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Conversion;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyConversion instead of importing the legacy conversion class directly.',
+            'app/Http/Controllers/BadController.php: The legacy conversion class is retired; use App\\Support\\Conversion.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyConversion wrapper is retired; use App\\Support\\Conversion.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Services/BadReferral.php: The legacy referral register is retired; use App\\Support\\ReferralRegister.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_pending_conversion_dependency_errors_report_forbidden_sources(): void

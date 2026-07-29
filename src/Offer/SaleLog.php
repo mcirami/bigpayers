@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 use App\Services\SaleLogImageStorage;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyConversion as Conversion;
+use App\Support\Conversion;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\LegacyUser as User;
 

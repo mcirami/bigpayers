@@ -1,11 +1,7 @@
 <?php
-namespace LeadMax\TrackYourStats\Clicks;
-
-use App\Support\TrackingParameters;
+namespace App\Support;
 
 use App\Services\GeoIpDatabase;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use App\Support\NativeRequest;
 use PDO;
 
 use GeoIp2\Database\Reader;
@@ -49,7 +45,7 @@ class Click
 
     public static function updateClickType($click_id, $click_type)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "UPDATE clicks SET click_type = :click_type WHERE idclicks = :click_id";
         $prep = $db->prepare($sql);
         $prep->bindParam("click_type", $click_type);
@@ -69,7 +65,7 @@ class Click
 
     public function save()
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "INSERT INTO clicks(first_timestamp, rep_idrep, offer_idoffer, ip_address, browser_agent, click_type, country_code, referer) VALUES(:timestamp, :user_id, :offer_id, :ip, :browser_agent, :click_type, :country_code, :referer)";
         $prep = $db->prepare($sql);
         $prep->bindParam(":timestamp", $this->first_timestamp);
@@ -109,7 +105,7 @@ class Click
             $this->queryString = NativeRequest::requestUri();
         }
 
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
 
         $sql = "INSERT INTO click_vars (click_id, url, sub1, sub2,sub3,sub4,sub5) VALUES ( :click_id, :url, :sub1, :sub2, :sub3, :sub4, :sub5)";
 
@@ -132,7 +128,7 @@ class Click
 		if ($sub1 === '') {
 			return false;
 		}
-		$db = DatabaseConnection::getInstance();
+		$db = LegacyDatabaseConnection::getInstance();
 		$sql = "INSERT IGNORE INTO sub_ids (idrep, sub_id) VALUES (:idrep, :sub_id)";
 		$stmt = $db->prepare($sql);
 		return $stmt->execute([
@@ -143,7 +139,7 @@ class Click
 
     private function saveGeoData()
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
 
         $sql = "INSERT INTO click_geo (click_id, iso_code, postal, ip) VALUES(:clickID, :iso_code, :postal, :ip)";
 
@@ -193,7 +189,7 @@ class Click
     // SELECT ONE
     public static function SelectOne($id)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE idclicks=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -204,7 +200,7 @@ class Click
 
     public static function querySelectOne($id)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE idclicks=:id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -215,7 +211,7 @@ class Click
 
     static function SelectOneByUID($uid)
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks WHERE uid= :uid ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':uid', $uid);
@@ -237,7 +233,7 @@ class Click
     // SELECT All 2
     static function select_all()
     {
-        $db = DatabaseConnection::getInstance();
+        $db = LegacyDatabaseConnection::getInstance();
         $sql = "SELECT * FROM clicks ";
         $stmt = $db->prepare($sql);
         $stmt->execute();

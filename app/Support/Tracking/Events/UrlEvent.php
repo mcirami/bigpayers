@@ -9,7 +9,7 @@
 namespace App\Support\Tracking\Events;
 
 
-use App\Support\LegacyClick as Click;
+use App\Support\Click;
 use App\Support\ClickVariables as ClickVars;
 use App\Support\ClickIdCodec as UID;
 use App\Support\Tracking\URLProcessor;
