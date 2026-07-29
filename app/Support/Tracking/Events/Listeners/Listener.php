@@ -6,7 +6,7 @@
  * Time: 2:19 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
+namespace App\Support\Tracking\Events\Listeners;
 
 use App\Support\TrackingParameters;
 use App\Support\NativeRequest;

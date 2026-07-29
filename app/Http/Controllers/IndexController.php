@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use App\Services\LegacyDatabaseConfig;
-use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
+use App\Support\Tracking\Events\ClickRegistrationEvent;
 use App\Support\LegacyIPBlackList as IPBlackList;
 use App\Support\LegacyLander as Lander;
-use App\Support\LegacyPostBackURLEventHandler as PostBackURLEventHandler;
+use App\Support\Tracking\PostBackUrlEventHandler;
 use App\Support\TrackingParameters;
 use App\Support\RequestContext;
 use Illuminate\Http\JsonResponse;
@@ -71,7 +71,7 @@ class IndexController extends Controller
             }
 
             try {
-                $handler = new PostBackURLEventHandler();
+                $handler = new PostBackUrlEventHandler();
 
                 return $handler->handleRequest();
             } catch (\Exception $e) {

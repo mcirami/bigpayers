@@ -121,11 +121,11 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.',
+            'Runtime code handles postback URLs through App\\Support\\Tracking\\PostBackUrlEventHandler.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.',
+            'Runtime code handles tracking events through App\\Support\\Tracking\\Events.',
             $output
         );
         $this->assertStringContainsString(
@@ -1183,16 +1183,20 @@ PHP,
             'legacyPostBackUrlEventHandlerDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler;',
-                'app/Support/LegacyPostBackURLEventHandler.php' => 'use LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Tracking\\PostBackUrlEventHandler;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPostBackURLEventHandler instead of importing the legacy postback URL event handler directly.',
+            'app/Http/Controllers/BadController.php: The legacy postback URL event handler is retired; use App\\Support\\Tracking\\PostBackUrlEventHandler.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyPostBackURLEventHandler wrapper is retired; use App\\Support\\Tracking\\PostBackUrlEventHandler.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_click_registration_event_dependency_errors_report_forbidden_sources(): void
@@ -1204,16 +1208,20 @@ PHP,
             'legacyClickRegistrationEventDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent;',
-                'app/Support/LegacyClickRegistrationEvent.php' => 'use LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Tracking\\Events\\ClickRegistrationEvent;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyClickRegistrationEvent instead of importing the legacy click registration event directly.',
+            'app/Http/Controllers/BadController.php: The legacy URL event namespace is retired; use App\\Support\\Tracking\\Events.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyClickRegistrationEvent wrapper is retired; use App\\Support\\Tracking\\Events\\ClickRegistrationEvent.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_uid_dependency_errors_report_forbidden_sources(): void

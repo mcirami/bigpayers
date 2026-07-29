@@ -452,10 +452,10 @@ Remaining cleanup is mostly archival and hardening:
   `App\Support\PendingConversion`; the legacy class and wrapper have been
   removed, and the fallback audit prevents either namespace from returning
   outside the boundary
-- modern landing-page postback and click-registration entrypoints now resolve
-  the legacy `PostBackURLEventHandler` and `ClickRegistrationEvent` classes
-  through `App\Support` boundaries; the fallback audit fails on new direct
-  Laravel-side imports outside those boundaries
+- landing-page postback handling, listeners, and registration events now live
+  under `App\Support\Tracking`; the legacy handler, URL event namespace, and
+  compatibility wrappers have been removed, and the fallback audit prevents
+  those namespaces from returning
 - modern click ID encode/decode callers now resolve the legacy `UID` helper
   through `App\Support\ClickIdCodec`; the retired UID class and wrapper were removed from
   registration-event exceptions, and the fallback audit fails on new direct

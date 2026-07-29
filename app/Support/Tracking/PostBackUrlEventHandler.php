@@ -1,15 +1,15 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Clicks;
+namespace App\Support\Tracking;
 
 
-use LeadMax\TrackYourStats\Clicks\URLEvents\Listeners\BonusListener;
-use LeadMax\TrackYourStats\Clicks\URLEvents\Listeners\ConversionListener;
-use LeadMax\TrackYourStats\Clicks\URLEvents\Listeners\DeductionListener;
-use LeadMax\TrackYourStats\Clicks\URLEvents\Listeners\FreeSignUpListener;
+use App\Support\Tracking\Events\Listeners\BonusListener;
+use App\Support\Tracking\Events\Listeners\ConversionListener;
+use App\Support\Tracking\Events\Listeners\DeductionListener;
+use App\Support\Tracking\Events\Listeners\FreeSignUpListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-class PostBackURLEventHandler
+class PostBackUrlEventHandler
 {
 
 

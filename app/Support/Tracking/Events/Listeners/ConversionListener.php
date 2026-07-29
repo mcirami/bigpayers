@@ -1,10 +1,10 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
+namespace App\Support\Tracking\Events\Listeners;
 
 use App\Support\ClickIdCodec as UID;
 use App\Support\NativeRequest;
-use LeadMax\TrackYourStats\Clicks\URLEvents\ConversionRegistrationEvent;
+use App\Support\Tracking\Events\ConversionRegistrationEvent;
 
 class ConversionListener extends Listener
 {

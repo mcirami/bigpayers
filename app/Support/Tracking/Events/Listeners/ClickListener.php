@@ -6,10 +6,10 @@
  * Time: 2:24 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
+namespace App\Support\Tracking\Events\Listeners;
 
 use App\Support\TrackingParameters;
-use App\Support\LegacyClickRegistrationEvent as ClickRegistrationEvent;
+use App\Support\Tracking\Events\ClickRegistrationEvent;
 use App\Support\NativeRequest;
 
 class ClickListener extends Listener

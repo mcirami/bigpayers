@@ -6,12 +6,12 @@
  * Time: 11:37 AM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents\Listeners;
+namespace App\Support\Tracking\Events\Listeners;
 
 
 use App\Support\TrackingParameters;
 use App\Support\NativeRequest;
-use LeadMax\TrackYourStats\Clicks\URLEvents\BonusRegistrationEvent;
+use App\Support\Tracking\Events\BonusRegistrationEvent;
 
 class BonusListener extends Listener
 {

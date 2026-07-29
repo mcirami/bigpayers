@@ -265,19 +265,13 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyPostBackUrlEventHandlerForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler' => 'Use App\\Support\\LegacyPostBackURLEventHandler instead of importing the legacy postback URL event handler directly.',
-    ];
-
-    private array $legacyPostBackUrlEventHandlerAllowedFiles = [
-        'app/Support/LegacyPostBackURLEventHandler.php' => 'The dedicated boundary around the legacy postback URL event handler.',
+        'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler' => 'The legacy postback URL event handler is retired; use App\\Support\\Tracking\\PostBackUrlEventHandler.',
+        'App\\Support\\LegacyPostBackURLEventHandler' => 'The LegacyPostBackURLEventHandler wrapper is retired; use App\\Support\\Tracking\\PostBackUrlEventHandler.',
     ];
 
     private array $legacyClickRegistrationEventForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent' => 'Use App\\Support\\LegacyClickRegistrationEvent instead of importing the legacy click registration event directly.',
-    ];
-
-    private array $legacyClickRegistrationEventAllowedFiles = [
-        'app/Support/LegacyClickRegistrationEvent.php' => 'The dedicated boundary around the legacy click registration event.',
+        'LeadMax\\TrackYourStats\\Clicks\\URLEvents\\' => 'The legacy URL event namespace is retired; use App\\Support\\Tracking\\Events.',
+        'App\\Support\\LegacyClickRegistrationEvent' => 'The LegacyClickRegistrationEvent wrapper is retired; use App\\Support\\Tracking\\Events\\ClickRegistrationEvent.',
     ];
 
     private array $legacyUidForbiddenPatterns = [
@@ -807,7 +801,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyPostBackUrlEventHandlerDependencyErrors = $this->legacyPostBackUrlEventHandlerDependencyErrors();
 
         if ($legacyPostBackUrlEventHandlerDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy postback URL event handler directly:');
+            $this->error('Runtime code still references retired postback URL event handler classes:');
             $legacyPostBackUrlEventHandlerDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -816,7 +810,7 @@ class AuditLegacyFallbackCoverage extends Command
         $legacyClickRegistrationEventDependencyErrors = $this->legacyClickRegistrationEventDependencyErrors();
 
         if ($legacyClickRegistrationEventDependencyErrors->isNotEmpty()) {
-            $this->error('Modern Laravel code still imports the legacy click registration event directly:');
+            $this->error('Runtime code still references retired tracking URL event classes:');
             $legacyClickRegistrationEventDependencyErrors->each(fn ($error) => $this->line(" - {$error}"));
 
             return self::FAILURE;
@@ -1230,8 +1224,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code resolves click search queries through App\\Support\\ClickSearcher.');
         $this->info('Modern Laravel code resolves legacy conversion helpers through LegacyConversion.');
         $this->info('Runtime code handles pending conversions through App\\Support\\PendingConversion.');
-        $this->info('Modern Laravel code handles postback URL events through LegacyPostBackURLEventHandler.');
-        $this->info('Modern Laravel code registers offer clicks through LegacyClickRegistrationEvent.');
+        $this->info('Runtime code handles postback URLs through App\\Support\\Tracking\\PostBackUrlEventHandler.');
+        $this->info('Runtime code handles tracking events through App\\Support\\Tracking\\Events.');
         $this->info('Runtime code encodes click IDs through App\\Support\\ClickIdCodec.');
         $this->info('Runtime code normalizes tracking query parameters through App\\Support\\TrackingParameters.');
         $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
@@ -2125,7 +2119,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyPostBackUrlEventHandlerDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyPostBackUrlEventHandlerAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2153,7 +2146,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyClickRegistrationEventDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyClickRegistrationEventAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

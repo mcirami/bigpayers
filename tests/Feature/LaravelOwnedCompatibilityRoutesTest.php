@@ -106,7 +106,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/OfferController.php'),
             app_path('Http/Controllers/UserController.php'),
             base_path('src/Clicks/Conversion.php'),
-            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            app_path('Support/Tracking/Events/UrlEvent.php'),
             base_path('src/Database/Versions/V158.php'),
             base_path('src/Offer/Create.php'),
             base_path('src/Offer/RepHasOffer.php'),
@@ -156,7 +156,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         foreach ([
             base_path('src/Clicks/Conversion.php'),
-            base_path('src/Clicks/URLEvents/BonusRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/BonusRegistrationEvent.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -280,9 +280,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
             app_path('Http/Controllers/OfferController.php'),
-            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
-            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
-            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ConversionRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/UrlEvent.php'),
             base_path('src/Database/Versions/V158.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -295,7 +295,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
             app_path('Http/Controllers/OfferController.php'),
-            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
             base_path('src/Database/Versions/V158.php'),
             base_path('src/User/Create.php'),
             base_path('src/User/CreateUser.php'),
@@ -359,9 +359,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\PostBackURLs', $offerController);
 
         foreach ([
-            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php') => 'App\\Support\\LegacyConversionPostBackURL as ConversionPostBackURL',
-            base_path('src/Clicks/URLEvents/DeductionRegistrationEvent.php') => 'App\\Support\\LegacyDeductionPostBackURL as DeductionPostBackURL',
-            base_path('src/Clicks/URLEvents/FreeSignUpRegistrationEvent.php') => 'App\\Support\\LegacyFreePostBackURL as FreePostBackURL',
+            app_path('Support/Tracking/Events/ConversionRegistrationEvent.php') => 'App\\Support\\LegacyConversionPostBackURL as ConversionPostBackURL',
+            app_path('Support/Tracking/Events/DeductionRegistrationEvent.php') => 'App\\Support\\LegacyDeductionPostBackURL as DeductionPostBackURL',
+            app_path('Support/Tracking/Events/FreeSignUpRegistrationEvent.php') => 'App\\Support\\LegacyFreePostBackURL as FreePostBackURL',
         ] as $path => $expectedImport) {
             $contents = File::get($path);
 
@@ -407,7 +407,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString('App\\Support\\LegacyCreateOffer as CreateOffer', $legacySeedVersion);
         $this->assertStringContainsString(
             'App\\Support\\LegacyFreeSignUp as FreeSignUp',
-            File::get(base_path('src/Clicks/URLEvents/FreeSignUpRegistrationEvent.php'))
+            File::get(app_path('Support/Tracking/Events/FreeSignUpRegistrationEvent.php'))
         );
         $this->assertStringContainsString('App\\Support\\LegacyOfferView', $offerController);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\Campaigns', $offerController);
@@ -420,7 +420,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\CreateOffer', $legacySeedVersion);
         $this->assertStringNotContainsString(
             'LeadMax\\TrackYourStats\\Offer\\FreeSignUp',
-            File::get(base_path('src/Clicks/URLEvents/FreeSignUpRegistrationEvent.php'))
+            File::get(app_path('Support/Tracking/Events/FreeSignUpRegistrationEvent.php'))
         );
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Offer\\View', $offerController);
 
@@ -479,7 +479,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_offer_rule_helpers_use_legacy_boundaries(): void
     {
         $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
-        $clickRegistrationEvent = File::get(base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'));
+        $clickRegistrationEvent = File::get(app_path('Support/Tracking/Events/ClickRegistrationEvent.php'));
 
         foreach ([
             'App\\Support\\LegacyDeviceRuleHandler',
@@ -782,7 +782,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/Clicks/Cookie.php'));
 
         foreach ([
-            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
             base_path('src/Offer/Rules/NoneUnique.php'),
         ] as $path) {
             $this->assertStringContainsString('App\\Support\\Tracking\\ClickCookie', File::get($path));
@@ -802,7 +802,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_runtime_click_variables_use_laravel_boundary(): void
     {
         foreach ([
-            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            app_path('Support/Tracking/Events/UrlEvent.php'),
             base_path('src/Database/Versions/V130.php'),
             base_path('src/Database/Versions/V164.php'),
             base_path('src/Report/ID/Clicks.php'),
@@ -849,9 +849,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/AdjustmentsController.php'),
             app_path('Http/Controllers/ChatLogController.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
-            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
-            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
-            base_path('src/Clicks/URLEvents/DeductionRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ConversionRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/DeductionRegistrationEvent.php'),
             base_path('src/Offer/SaleLog.php'),
             base_path('src/User/ReferralRegister.php'),
         ] as $path) {
@@ -881,7 +881,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Http/Controllers/ChatLogController.php'),
-            base_path('src/Clicks/URLEvents/ConversionRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ConversionRegistrationEvent.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -901,11 +901,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/ClickIdToolController.php'),
             app_path('Http/Controllers/ClickSearchController.php'),
             app_path('Support/Tracking/URLTagReplacers/TYSVariables.php'),
-            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
-            base_path('src/Clicks/URLEvents/Listeners/ConversionListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/DeductionListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/FreeSignUpListener.php'),
-            base_path('src/Clicks/URLEvents/URLEvent.php'),
+            app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/Listeners/ConversionListener.php'),
+            app_path('Support/Tracking/Events/Listeners/DeductionListener.php'),
+            app_path('Support/Tracking/Events/Listeners/FreeSignUpListener.php'),
+            app_path('Support/Tracking/Events/UrlEvent.php'),
             base_path('src/Database/Stubs/ConversionRegister.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -1562,9 +1562,9 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             (new ReflectionClass(IndexController::class))->getFileName(),
-            base_path('src/Clicks/URLEvents/Listeners/BonusListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/Listener.php'),
+            app_path('Support/Tracking/Events/Listeners/BonusListener.php'),
+            app_path('Support/Tracking/Events/Listeners/ClickListener.php'),
+            app_path('Support/Tracking/Events/Listeners/Listener.php'),
             base_path('src/Offer/Caps.php'),
             base_path('src/Offer/Rules.php'),
             base_path('src/Offer/Rules/NoneUnique.php'),
@@ -1584,12 +1584,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/Clicks/TrackingParameters.php'));
 
         foreach ([
-            base_path('src/Clicks/URLEvents/Listeners/BonusListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/ConversionListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/DeductionListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/FreeSignUpListener.php'),
-            base_path('src/Clicks/URLEvents/Listeners/Listener.php'),
+            app_path('Support/Tracking/Events/Listeners/BonusListener.php'),
+            app_path('Support/Tracking/Events/Listeners/ClickListener.php'),
+            app_path('Support/Tracking/Events/Listeners/ConversionListener.php'),
+            app_path('Support/Tracking/Events/Listeners/DeductionListener.php'),
+            app_path('Support/Tracking/Events/Listeners/FreeSignUpListener.php'),
+            app_path('Support/Tracking/Events/Listeners/Listener.php'),
             base_path('src/Offer/Caps.php'),
             base_path('src/Offer/Rules.php'),
             base_path('src/Offer/Rules/NoneUnique.php'),
@@ -1606,34 +1606,43 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_COOKIE', $noneUnique);
     }
 
-    public function test_index_click_registration_uses_legacy_event_boundaries(): void
+    public function test_tracking_event_pipeline_is_laravel_owned(): void
     {
+        $controller = File::get((new ReflectionClass(IndexController::class))->getFileName());
+        $this->assertStringContainsString('App\\Support\\Tracking\\PostBackUrlEventHandler', $controller);
+        $this->assertStringContainsString('App\\Support\\Tracking\\Events\\ClickRegistrationEvent', $controller);
+        $this->assertStringNotContainsString('App\\Support\\LegacyPostBackURLEventHandler', $controller);
+        $this->assertStringNotContainsString('App\\Support\\LegacyClickRegistrationEvent', $controller);
+
         foreach ([
-            (new ReflectionClass(IndexController::class))->getFileName(),
-            base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'),
-        ] as $path) {
-            $controller = File::get($path);
-
-            if ($path === (new ReflectionClass(IndexController::class))->getFileName()) {
-                $this->assertStringContainsString('App\\Support\\LegacyPostBackURLEventHandler as PostBackURLEventHandler', $controller);
-                $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler', $controller);
-            }
-
-            $this->assertStringContainsString('App\\Support\\LegacyClickRegistrationEvent as ClickRegistrationEvent', $controller);
-            $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent', $controller);
+            'BonusRegistrationEvent.php',
+            'ClickRegistrationEvent.php',
+            'ConversionRegistrationEvent.php',
+            'DeductionRegistrationEvent.php',
+            'FreeSignUpRegistrationEvent.php',
+            'UrlEvent.php',
+        ] as $file) {
+            $this->assertFileExists(app_path("Support/Tracking/Events/{$file}"));
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\PostBackURLEventHandler',
-            File::get(app_path('Support/LegacyPostBackURLEventHandler.php'))
-        );
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Clicks\\URLEvents\\ClickRegistrationEvent',
-            File::get(app_path('Support/LegacyClickRegistrationEvent.php'))
-        );
+        foreach ([
+            'BonusListener.php',
+            'ClickListener.php',
+            'ConversionListener.php',
+            'DeductionListener.php',
+            'FreeSignUpListener.php',
+            'Listener.php',
+        ] as $file) {
+            $this->assertFileExists(app_path("Support/Tracking/Events/Listeners/{$file}"));
+        }
 
-        $clickRegistrationEvent = File::get(base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'));
-        $clickListener = File::get(base_path('src/Clicks/URLEvents/Listeners/ClickListener.php'));
+        $this->assertFileExists(app_path('Support/Tracking/PostBackUrlEventHandler.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyPostBackURLEventHandler.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyClickRegistrationEvent.php'));
+        $this->assertFileDoesNotExist(base_path('src/Clicks/PostBackURLEventHandler.php'));
+
+        $clickRegistrationEvent = File::get(app_path('Support/Tracking/Events/ClickRegistrationEvent.php'));
+        $clickListener = File::get(app_path('Support/Tracking/Events/Listeners/ClickListener.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickRegistrationEvent);
@@ -1809,7 +1818,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             (new ReflectionClass(IndexController::class))->getFileName(),
             (new ReflectionClass(IPBlacklistController::class))->getFileName(),
-            base_path('src/Clicks/URLEvents/ClickRegistrationEvent.php'),
+            app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
             base_path('src/System/IPBlackList.php'),
         ] as $path) {
             $contents = File::get($path);

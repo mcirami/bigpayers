@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents;
+namespace App\Support\Tracking\Events;
 
 
 use App\BonusOffer;
@@ -24,7 +24,7 @@ use App\Support\NativeRequest;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
-class ClickRegistrationEvent extends URLEvent
+class ClickRegistrationEvent extends UrlEvent
 {
 
     public $subVarArray = [];

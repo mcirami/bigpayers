@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents;
+namespace App\Support\Tracking\Events;
 
 use App\Exceptions\RegistrationEventExceptions\ClickConvertedException;
 use App\Exceptions\RegistrationEventExceptions\ConversionAlreadyPendingException;
@@ -13,7 +13,7 @@ use App\Support\LegacyConversionPostBackURL as ConversionPostBackURL;
 //use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\JsonResponse;
 
-class ConversionRegistrationEvent extends URLEvent
+class ConversionRegistrationEvent extends UrlEvent
 {
 
     public $clickId;

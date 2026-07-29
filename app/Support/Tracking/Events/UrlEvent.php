@@ -6,7 +6,7 @@
  * Time: 12:20 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents;
+namespace App\Support\Tracking\Events;
 
 
 use App\Support\LegacyClick as Click;
@@ -20,7 +20,7 @@ use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyUser as User;
 
 
-abstract class URLEvent
+abstract class UrlEvent
 {
 
     public $clickId;

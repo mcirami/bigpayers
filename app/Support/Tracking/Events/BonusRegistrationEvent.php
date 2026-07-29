@@ -6,14 +6,14 @@
  * Time: 10:12 AM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents;
+namespace App\Support\Tracking\Events;
 
 
 use App\User;
 use Illuminate\Http\JsonResponse;
 use App\Support\LegacyBonus as Bonus;
 
-class BonusRegistrationEvent extends URLEvent
+class BonusRegistrationEvent extends UrlEvent
 {
 
     public $bonusId;

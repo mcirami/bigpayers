@@ -6,7 +6,7 @@
  * Time: 1:12 PM
  */
 
-namespace LeadMax\TrackYourStats\Clicks\URLEvents;
+namespace App\Support\Tracking\Events;
 
 use App\User;
 use Illuminate\Http\JsonResponse;
@@ -14,7 +14,7 @@ use App\Support\LegacyConversion as Conversion;
 use LeadMax\TrackYourStats\Offer\Deduction;
 use App\Support\LegacyDeductionPostBackURL as DeductionPostBackURL;
 
-class DeductionRegistrationEvent extends URLEvent
+class DeductionRegistrationEvent extends UrlEvent
 {
 
     public function __construct($click_id)
