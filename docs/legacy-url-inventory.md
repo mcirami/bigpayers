@@ -533,6 +533,9 @@ Remaining cleanup is mostly archival and hardening:
 - report controllers now coordinate Laravel-owned repositories through
   `App\Support\Report\Reporter`; the legacy Reporter namespace and wrapper are
   retired, and the fallback audit prevents them from returning
+- the superseded affiliate, employee, offer, and ID click report classes have
+  been removed from `src/Report`; their active workflows use Laravel report
+  controllers, queries, and `App\Support\Report` repositories
 - report controllers now format rows through the Laravel-owned
   `App\Support\Report\Filters`; the legacy filter namespace and wrappers are
   retired, and the fallback audit prevents them from returning

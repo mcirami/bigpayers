@@ -193,7 +193,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             base_path('src/Database/Versions/V148.php') => 'App\\Support\\LegacyReportPermissions as ReportPermissions',
             base_path('src/Offer/Deduction.php') => 'App\\Support\\LegacyReferrals as Referrals',
             base_path('src/Offer/Offer.php') => 'App\\Support\\LegacyPrivileges as Privileges',
-            base_path('src/Report/Affiliate.php') => 'App\\Support\\LegacyReportPermissions as ReportPermissions',
         ] as $path => $expectedImport) {
             $contents = File::get($path);
 
@@ -808,7 +807,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/Tracking/Events/UrlEvent.php'),
             base_path('src/Database/Versions/V130.php'),
             base_path('src/Database/Versions/V164.php'),
-            base_path('src/Report/ID/Clicks.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -993,9 +991,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/SubReportController.php'),
             app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
             app_path('Support/Conversion.php'),
-            base_path('src/Report/Employee.php'),
-            base_path('src/Report/ID/Clicks.php'),
-            base_path('src/Report/Offer.php'),
             app_path('Support/Report/Repositories/Employee/AdminEmployeeRepository.php'),
             app_path('Support/Report/Repositories/Employee/GodEmployeeRepository.php'),
             app_path('Support/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
@@ -1358,11 +1353,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
 
         foreach ([
-            base_path('src/Report/Affiliate.php'),
             app_path('Support/Report/AffiliatePayout.php'),
-            base_path('src/Report/Employee.php'),
-            base_path('src/Report/ID/Clicks.php'),
-            base_path('src/Report/Offer.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1916,11 +1907,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_legacy_report_domain_helpers_use_current_session_boundary(): void
     {
         foreach ([
-            base_path('src/Report/Affiliate.php'),
-            base_path('src/Report/Employee.php'),
             app_path('Support/Report/Formats/Html.php'),
-            base_path('src/Report/ID/Clicks.php'),
-            base_path('src/Report/Offer.php'),
             app_path('Support/Report/Repositories/BannedUsersRepository.php'),
             app_path('Support/Report/Repositories/Employee/AdminEmployeeRepository.php'),
             app_path('Support/Report/Repositories/Employee/GodEmployeeRepository.php'),

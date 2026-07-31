@@ -502,6 +502,9 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyReportObjectsForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Table\\ReportBase' => 'The legacy report base class is retired; use App\\Support\\ReportBase.',
         'LeadMax\\TrackYourStats\\Report\\Affiliate;' => 'The legacy affiliate report is retired in Laravel-owned code; use the Laravel report queries instead.',
+        'LeadMax\\TrackYourStats\\Report\\Employee' => 'The legacy employee report is retired; use App\\Support\\Report\\Repositories\\Employee.',
+        'LeadMax\\TrackYourStats\\Report\\Offer;' => 'The legacy offer report is retired; use App\\Support\\Report\\Repositories\\Offer.',
+        'LeadMax\\TrackYourStats\\Report\\ID\\Clicks' => 'The legacy click report is retired; use the Laravel click report queries.',
         'LeadMax\\TrackYourStats\\Report\\AffiliatePayout' => 'The legacy affiliate payout report is retired; use App\\Support\\Report\\AffiliatePayout.',
         'App\\Support\\LegacyAffiliatePayoutReport' => 'The LegacyAffiliatePayoutReport wrapper is retired; use App\\Support\\Report\\AffiliatePayout.',
         'LeadMax\\TrackYourStats\\Report\\BlackList' => 'The legacy blacklist report is retired; use the Laravel blacklist query instead.',
