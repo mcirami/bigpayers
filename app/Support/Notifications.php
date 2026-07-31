@@ -1,4 +1,4 @@
-<?php namespace LeadMax\TrackYourStats\System;
+<?php namespace App\Support;
 
 /**
  * Author: Dean

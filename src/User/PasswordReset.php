@@ -2,7 +2,7 @@
 
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use App\Support\LegacyMail as Mail;
+use App\Support\Mail;
 use App\Support\NativeRequest;
 
 // all business logic for password resets

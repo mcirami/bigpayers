@@ -8,7 +8,7 @@ use App\Services\SaleLogImageStorage;
 use App\Support\CurrentUserSession;
 use App\Support\Click;
 use App\Support\Conversion;
-use App\Support\LegacyImagesUploader as ImagesUploader;
+use App\Support\ImagesUploader;
 use App\Support\PendingConversion;
 use App\Support\LegacyPermissions as Permissions;
 use App\Support\LegacySaleLog as SaleLog;

@@ -19,7 +19,7 @@ use App\Support\LegacyCampaigns as Campaigns;
 use App\Support\LegacyGeoRuleHandler;
 use App\Support\LegacyNoneUniqueRuleHandler;
 use App\Support\LegacyOffer as LegacyOffer;
-use App\Support\LegacyNotifications as Notifications;
+use App\Support\Notifications;
 use App\Support\LegacyOfferRuleGeo;
 use App\Support\LegacyOfferRules;
 use App\Support\LegacyOfferView;

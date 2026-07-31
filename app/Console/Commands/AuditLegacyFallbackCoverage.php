@@ -280,12 +280,10 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyLanderForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Lander' => 'Use App\\Support\\LegacyLander instead of importing the legacy lander class directly.',
+        'LeadMax\\TrackYourStats\\System\\Lander' => 'The legacy lander class is retired; use App\\Support\\Lander.',
     ];
 
-    private array $legacyLanderAllowedFiles = [
-        'app/Support/LegacyLander.php' => 'The dedicated boundary around the legacy lander class.',
-    ];
+    private array $legacyLanderAllowedFiles = [];
 
     private array $legacyNavBarForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\NavBar' => 'Use App\\Support\\LegacyNavBar instead of importing the legacy navigation class directly.',
@@ -296,28 +294,22 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyIpBlackListForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\IPBlackList' => 'Use App\\Support\\LegacyIPBlackList instead of importing the legacy IP blacklist class directly.',
+        'LeadMax\\TrackYourStats\\System\\IPBlackList' => 'The legacy IP blacklist class is retired; use App\\Support\\IPBlackList.',
     ];
 
-    private array $legacyIpBlackListAllowedFiles = [
-        'app/Support/LegacyIPBlackList.php' => 'The dedicated boundary around the legacy IP blacklist class.',
-    ];
+    private array $legacyIpBlackListAllowedFiles = [];
 
     private array $legacyImagesUploaderForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader' => 'Use App\\Support\\LegacyImagesUploader instead of importing the legacy image uploader class directly.',
+        'LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader' => 'The legacy image uploader class is retired; use App\\Support\\ImagesUploader.',
     ];
 
-    private array $legacyImagesUploaderAllowedFiles = [
-        'app/Support/LegacyImagesUploader.php' => 'The dedicated boundary around the legacy image uploader class.',
-    ];
+    private array $legacyImagesUploaderAllowedFiles = [];
 
     private array $legacyNotificationsForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Notifications' => 'Use App\\Support\\LegacyNotifications instead of importing the legacy notifications class directly.',
+        'LeadMax\\TrackYourStats\\System\\Notifications' => 'The legacy notifications class is retired; use App\\Support\\Notifications.',
     ];
 
-    private array $legacyNotificationsAllowedFiles = [
-        'app/Support/LegacyNotifications.php' => 'The dedicated boundary around the legacy notifications class.',
-    ];
+    private array $legacyNotificationsAllowedFiles = [];
 
     private array $legacyPayoutsForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Offer\\Payouts' => 'Use App\\Support\\LegacyPayouts instead of importing the legacy payouts class directly.',
@@ -550,12 +542,10 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyMiscReportRepositoriesAllowedFiles = [];
 
     private array $legacyMailForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Mail' => 'Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
+        'LeadMax\\TrackYourStats\\System\\Mail' => 'The legacy mail class is retired; use App\\Support\\Mail.',
     ];
 
-    private array $legacyMailAllowedFiles = [
-        'app/Support/LegacyMail.php' => 'The dedicated boundary around the legacy mail class.',
-    ];
+    private array $legacyMailAllowedFiles = [];
 
     private array $malformedLegacyNamespaceForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\LeadMax\\TrackYourStats' => 'Remove the duplicated legacy namespace segment.',
@@ -1207,11 +1197,11 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code handles tracking events through App\\Support\\Tracking\\Events.');
         $this->info('Runtime code encodes click IDs through App\\Support\\ClickIdCodec.');
         $this->info('Runtime code normalizes tracking query parameters through App\\Support\\TrackingParameters.');
-        $this->info('Modern Laravel code loads legacy landers through LegacyLander.');
+        $this->info('Runtime code loads landers through App\\Support\\Lander.');
         $this->info('Modern Laravel code builds dashboard navigation through LegacyNavBar.');
-        $this->info('Modern Laravel code manages IP blacklist records through LegacyIPBlackList.');
-        $this->info('Modern Laravel code uploads sale-log images through LegacyImagesUploader.');
-        $this->info('Modern Laravel code reads and sends notifications through LegacyNotifications.');
+        $this->info('Runtime code manages IP blacklist records through App\\Support\\IPBlackList.');
+        $this->info('Runtime code uploads sale-log images through App\\Support\\ImagesUploader.');
+        $this->info('Runtime code reads and sends notifications through App\\Support\\Notifications.');
         $this->info('Modern Laravel code resolves legacy offer-domain helpers through App\Support boundaries.');
         $this->info('Modern Laravel code resolves legacy offer support helpers through App\Support boundaries.');
         $this->info('Modern Laravel code resolves legacy offer-rule helpers through App\Support boundaries.');
@@ -1239,7 +1229,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime offer reports use App\\Support\\Report\\Repositories\\Offer.');
         $this->info('Runtime employee reports use App\\Support\\Report\\Repositories\\Employee.');
         $this->info('Runtime miscellaneous reports use App\\Support\\Report\\Repositories.');
-        $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
+        $this->info('Runtime code sends mail through App\\Support\\Mail.');
         $this->info('Source code has no malformed duplicated legacy namespace references.');
         $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
         $this->info('Legacy support wrappers remain simple boundary aliases.');

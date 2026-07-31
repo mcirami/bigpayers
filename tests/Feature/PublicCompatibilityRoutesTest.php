@@ -241,7 +241,7 @@ class PublicCompatibilityRoutesTest extends TestCase
     public function test_legacy_helper_classes_do_not_load_legacy_company_from_session(): void
     {
         foreach ([
-            base_path('src/System/Files/ImagesUploader.php'),
+            app_path('Support/ImagesUploader.php'),
             base_path('src/Offer/SaleLog.php'),
             base_path('src/User/User.php'),
         ] as $path) {

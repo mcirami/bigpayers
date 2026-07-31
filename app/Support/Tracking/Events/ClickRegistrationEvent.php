@@ -19,7 +19,7 @@ use App\Support\LegacyCaps as Caps;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyOfferRules as Rules;
-use App\Support\LegacyIPBlackList as IPBlackList;
+use App\Support\IPBlackList;
 use App\Support\NativeRequest;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;

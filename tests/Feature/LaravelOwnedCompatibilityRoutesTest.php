@@ -710,14 +710,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyMail as Mail', $contents);
+            $this->assertStringContainsString('App\\Support\\Mail', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Mail', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\System\\Mail',
-            File::get(app_path('Support/LegacyMail.php'))
-        );
+        $this->assertFileDoesNotExist(base_path('src/System/Mail.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyMail.php'));
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats', File::get(app_path('Support/Mail.php')));
         $passwordReset = File::get(base_path('src/User/PasswordReset.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $passwordReset);
@@ -966,18 +965,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyLander as Lander', $contents);
+            $this->assertStringContainsString('App\\Support\\Lander', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Lander', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\System\\Lander',
-            File::get(app_path('Support/LegacyLander.php'))
-        );
+        $this->assertFileDoesNotExist(base_path('src/System/Lander.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyLander.php'));
+        $lander = File::get(app_path('Support/Lander.php'));
 
-        $lander = File::get(base_path('src/System/Lander.php'));
-
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $lander);
+        $this->assertStringContainsString('NativeRequest::', $lander);
         $this->assertStringNotContainsString('$_GET', $lander);
         $this->assertStringNotContainsString('$_SERVER', $lander);
     }
@@ -1817,45 +1813,41 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             (new ReflectionClass(IndexController::class))->getFileName(),
             (new ReflectionClass(IPBlacklistController::class))->getFileName(),
             app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
-            base_path('src/System/IPBlackList.php'),
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringContainsString('App\\Support\\IPBlackList', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\IPBlackList', $contents);
         }
 
-        $ipBlackList = File::get(base_path('src/System/IPBlackList.php'));
+        $this->assertFileDoesNotExist(base_path('src/System/IPBlackList.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyIPBlackList.php'));
+        $ipBlackList = File::get(app_path('Support/IPBlackList.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $ipBlackList);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $ipBlackList);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\System\\IPBlackList',
-            File::get(app_path('Support/LegacyIPBlackList.php'))
-        );
     }
 
     public function test_modern_sale_log_image_uploads_use_legacy_images_uploader_boundary(): void
     {
         $controller = File::get((new ReflectionClass(ChatLogController::class))->getFileName());
 
-        $this->assertStringContainsString('App\\Support\\LegacyImagesUploader as ImagesUploader', $controller);
+        $this->assertStringContainsString('App\\Support\\ImagesUploader', $controller);
         $this->assertStringContainsString('App\\Services\\SaleLogImageStorage', $controller);
         $this->assertStringNotContainsString("config('filesystems.sale_log_directory')", $controller);
         $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader', $controller);
 
-        $imagesUploader = File::get(base_path('src/System/Files/ImagesUploader.php'));
+        $this->assertFileDoesNotExist(base_path('src/System/Files/ImagesUploader.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyImagesUploader.php'));
+        $imagesUploader = File::get(app_path('Support/ImagesUploader.php'));
 
         $this->assertStringContainsString('App\\Services\\SaleLogImageStorage', $imagesUploader);
         $this->assertStringNotContainsString("config('filesystems.sale_log_directory')", $imagesUploader);
         $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $imagesUploader);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader',
-            File::get(app_path('Support/LegacyImagesUploader.php'))
-        );
+        $this->assertStringNotContainsString('LeadMax\\TrackYourStats', $imagesUploader);
     }
 
     public function test_modern_notification_reads_use_legacy_notifications_boundary(): void
@@ -1868,22 +1860,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyNotifications as Notifications', $contents);
+            $this->assertStringContainsString('App\\Support\\Notifications', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Notifications', $contents);
         }
 
-        $notifications = File::get(base_path('src/System/Notifications.php'));
+        $this->assertFileDoesNotExist(base_path('src/System/Notifications.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyNotifications.php'));
+        $notifications = File::get(app_path('Support/Notifications.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $notifications);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $notifications);
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $notifications);
+        $this->assertStringContainsString('NativeRequest::', $notifications);
         $this->assertStringNotContainsString('$_POST', $notifications);
         $this->assertStringNotContainsString('$_SERVER', $notifications);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\System\\Notifications',
-            File::get(app_path('Support/LegacyNotifications.php'))
-        );
     }
 
     public function test_dashboard_navigation_uses_legacy_navbar_boundary(): void
@@ -1938,7 +1928,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             base_path('src/Offer/SaleLog.php'),
             base_path('src/Offer/Update.php'),
             base_path('src/Offer/View.php'),
-            base_path('src/System/Notifications.php'),
+            app_path('Support/Notifications.php'),
             base_path('src/User/Bonus.php'),
             base_path('src/User/Create.php'),
             base_path('src/User/Login.php'),

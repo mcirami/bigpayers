@@ -69,7 +69,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code sends legacy mail through LegacyMail.',
+            'Runtime code sends mail through App\\Support\\Mail.',
             $output
         );
         $this->assertStringContainsString(
@@ -137,7 +137,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code loads legacy landers through LegacyLander.',
+            'Runtime code loads landers through App\\Support\\Lander.',
             $output
         );
         $this->assertStringContainsString(
@@ -145,15 +145,15 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code manages IP blacklist records through LegacyIPBlackList.',
+            'Runtime code manages IP blacklist records through App\\Support\\IPBlackList.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code uploads sale-log images through LegacyImagesUploader.',
+            'Runtime code uploads sale-log images through App\\Support\\ImagesUploader.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code reads and sends notifications through LegacyNotifications.',
+            'Runtime code reads and sends notifications through App\\Support\\Notifications.',
             $output
         );
         $this->assertStringContainsString(
@@ -673,7 +673,7 @@ PHP,
             $command,
             'legacySupportWrapperInventoryErrorsFor',
             [[
-                'app/Support/LegacyMail.php',
+                'app/Support/LegacyUser.php',
                 'app/Support/LegacyMissingBoundary.php',
             ]]
         );
@@ -947,13 +947,12 @@ PHP,
             'legacyMailDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Mail;',
-                'app/Support/LegacyMail.php' => 'use LeadMax\\TrackYourStats\\System\\Mail;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyMail as Mail;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Mail;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyMail instead of importing the legacy mail class directly.',
+            'app/Http/Controllers/BadController.php: The legacy mail class is retired; use App\\Support\\Mail.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1286,13 +1285,12 @@ PHP,
             'legacyLanderDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Lander;',
-                'app/Support/LegacyLander.php' => 'use LeadMax\\TrackYourStats\\System\\Lander;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyLander as Lander;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Lander;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyLander instead of importing the legacy lander class directly.',
+            'app/Http/Controllers/BadController.php: The legacy lander class is retired; use App\\Support\\Lander.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1307,13 +1305,12 @@ PHP,
             'legacyIpBlackListDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\IPBlackList;',
-                'app/Support/LegacyIPBlackList.php' => 'use LeadMax\\TrackYourStats\\System\\IPBlackList;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyIPBlackList as IPBlackList;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\IPBlackList;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyIPBlackList instead of importing the legacy IP blacklist class directly.',
+            'app/Http/Controllers/BadController.php: The legacy IP blacklist class is retired; use App\\Support\\IPBlackList.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1349,13 +1346,12 @@ PHP,
             'legacyImagesUploaderDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader;',
-                'app/Support/LegacyImagesUploader.php' => 'use LeadMax\\TrackYourStats\\System\\Files\\ImagesUploader;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyImagesUploader as ImagesUploader;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\ImagesUploader;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyImagesUploader instead of importing the legacy image uploader class directly.',
+            'app/Http/Controllers/BadController.php: The legacy image uploader class is retired; use App\\Support\\ImagesUploader.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1370,13 +1366,12 @@ PHP,
             'legacyNotificationsDependencyErrorsFor',
             [[
                 'app/Providers/BadProvider.php' => 'use LeadMax\\TrackYourStats\\System\\Notifications;',
-                'app/Support/LegacyNotifications.php' => 'use LeadMax\\TrackYourStats\\System\\Notifications;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyNotifications as Notifications;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Notifications;',
             ]]
         );
 
         $this->assertContains(
-            'app/Providers/BadProvider.php: Use App\\Support\\LegacyNotifications instead of importing the legacy notifications class directly.',
+            'app/Providers/BadProvider.php: The legacy notifications class is retired; use App\\Support\\Notifications.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

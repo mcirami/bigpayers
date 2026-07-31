@@ -464,22 +464,22 @@ Remaining cleanup is mostly archival and hardening:
   `TrackingParameters` helper through `App\Support\TrackingParameters`;
   the fallback audit fails on new direct Laravel-side tracking-parameter imports
   outside the boundary
-- modern landing-page and lander-asset controllers now resolve the legacy
-  `Lander` helper through `App\Support\LegacyLander`; the fallback audit fails
-  on new direct Laravel-side lander imports outside the boundary
+- landing-page and lander-asset behavior now lives in
+  `App\Support\Lander`; the legacy source class and wrapper have been removed and the
+  fallback audit prevents its namespace from returning
 - modern dashboard navigation composition now resolves the legacy `NavBar`
   helper through `App\Support\LegacyNavBar`; the fallback audit fails on new
   direct Laravel-side navigation imports outside the boundary
-- modern IP blacklist controllers now resolve the legacy `IPBlackList` helper
-  through `App\Support\LegacyIPBlackList`; the fallback audit fails on new
-  direct Laravel-side IP blacklist imports outside the boundary
-- modern sale-log image uploads now resolve the legacy `ImagesUploader` helper
-  through `App\Support\LegacyImagesUploader`; the fallback audit fails on new
-  direct Laravel-side image uploader imports outside the boundary
-- modern notification view composers and offer-approval notifications now
-  resolve the legacy `Notifications` helper through
-  `App\Support\LegacyNotifications`; the fallback audit fails on new direct
-  Laravel-side notifications imports outside the boundary
+- IP blacklist behavior now lives in `App\Support\IPBlackList`; the legacy
+  source class and wrapper have been removed, and the fallback audit prevents
+  the retired namespace from returning
+- sale-log image upload behavior now lives in
+  `App\Support\ImagesUploader`; the legacy uploader, wrapper, and unused file
+  validator classes have been removed, and the fallback audit prevents the
+  uploader namespace from returning
+- notification view composers and offer-approval notifications now use
+  `App\Support\Notifications`; the legacy source class and wrapper have been
+  removed, and the fallback audit prevents the retired namespace from returning
 - modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
   through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
   Laravel-side payout imports outside the boundary
@@ -580,14 +580,12 @@ Remaining cleanup is mostly archival and hardening:
 - affiliate chat-log details now use Laravel joins with the existing pagination
   contract and direct Blade actions, allowing the final chat-log repository
   wrapper and source to be removed
-- notification and forgot-password mail sends now construct the legacy mailer
-  through `App\Support\LegacyMail` instead of importing the legacy mail class
-  directly in controllers
+- notification and forgot-password mail behavior now lives in
+  `App\Support\Mail`; the legacy mail source class and wrapper have been removed
 - global postback settings now read and upsert `user_postbacks` through Laravel;
   the retired `LegacyPostBackUrl` wrapper and legacy source class have been
   removed while offer-specific postback boundaries remain in place
-- the fallback audit now fails if modern Laravel code imports the legacy mailer
-  directly outside the `App\Support\LegacyMail` boundary
+- the fallback audit now fails if the retired legacy mailer namespace returns
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable
