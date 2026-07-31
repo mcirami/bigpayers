@@ -505,13 +505,10 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyReportObjectsForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Table\\ReportBase' => 'The legacy report base class is retired; use App\\Support\\ReportBase.',
         'LeadMax\\TrackYourStats\\Report\\Affiliate;' => 'The legacy affiliate report is retired in Laravel-owned code; use the Laravel report queries instead.',
-        'LeadMax\\TrackYourStats\\Report\\AffiliatePayout' => 'Use App\\Support\\LegacyAffiliatePayoutReport instead of importing the legacy affiliate payout report directly.',
+        'LeadMax\\TrackYourStats\\Report\\AffiliatePayout' => 'The legacy affiliate payout report is retired; use App\\Support\\Report\\AffiliatePayout.',
+        'App\\Support\\LegacyAffiliatePayoutReport' => 'The LegacyAffiliatePayoutReport wrapper is retired; use App\\Support\\Report\\AffiliatePayout.',
         'LeadMax\\TrackYourStats\\Report\\BlackList' => 'The legacy blacklist report is retired; use the Laravel blacklist query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository' => 'The legacy blacklist repository is retired; use the Laravel blacklist query instead.',
-    ];
-
-    private array $legacyReportObjectsAllowedFiles = [
-        'app/Support/LegacyAffiliatePayoutReport.php' => 'The dedicated boundary around the legacy affiliate payout report.',
     ];
 
     private array $legacyDatabaseConnectionForbiddenPatterns = [
@@ -1246,7 +1243,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime report views render through App\\Support\\Report\\Formats\\Html.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
         $this->info('Runtime report controllers format reports through App\\Support\\Report\\Filters.');
-        $this->info('Modern payout reports use the audited legacy payout report boundary.');
+        $this->info('Runtime payout reports use App\\Support\\Report\\AffiliatePayout.');
         $this->info('Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.');
         $this->info('Modern offer report controllers resolve legacy offer repositories through App\Support boundaries.');
         $this->info('Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.');
@@ -2953,7 +2950,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyReportObjectsDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyReportObjectsAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

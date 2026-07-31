@@ -245,7 +245,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern payout reports use the audited legacy payout report boundary.',
+            'Runtime payout reports use App\\Support\\Report\\AffiliatePayout.',
             $output
         );
         $this->assertStringContainsString(
@@ -1867,20 +1867,24 @@ PHP,
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\AffiliatePayout;',
                 'src/Report/BadReport.php' => 'use LeadMax\\TrackYourStats\\Table\\ReportBase;',
-                'app/Support/LegacyAffiliatePayoutReport.php' => 'use LeadMax\\TrackYourStats\\Report\\AffiliatePayout;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAffiliatePayoutReport as AffiliatePayout;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyAffiliatePayoutReport as AffiliatePayout;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Report\\AffiliatePayout;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAffiliatePayoutReport instead of importing the legacy affiliate payout report directly.',
+            'app/Http/Controllers/BadController.php: The legacy affiliate payout report is retired; use App\\Support\\Report\\AffiliatePayout.',
+            $errors->all()
+        );
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyAffiliatePayoutReport wrapper is retired; use App\\Support\\Report\\AffiliatePayout.',
             $errors->all()
         );
         $this->assertContains(
             'src/Report/BadReport.php: The legacy report base class is retired; use App\\Support\\ReportBase.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_database_connection_dependency_errors_report_forbidden_sources(): void

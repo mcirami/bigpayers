@@ -536,6 +536,9 @@ Remaining cleanup is mostly archival and hardening:
 - report controllers now format rows through the Laravel-owned
   `App\Support\Report\Filters`; the legacy filter namespace and wrappers are
   retired, and the fallback audit prevents them from returning
+- affiliate payout aggregation now uses the Laravel-owned
+  `App\Support\Report\AffiliatePayout`; the legacy class and compatibility
+  wrapper are retired, and the fallback audit prevents them from returning
 - affiliate sub reports now use Laravel query-builder aggregation and direct
   Blade row rendering; the retired legacy sub-var repository and its wrapper
   have been removed

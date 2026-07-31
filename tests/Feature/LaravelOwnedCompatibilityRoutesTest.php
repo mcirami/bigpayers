@@ -1289,7 +1289,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
             app_path('Http/Controllers/Report/OfferReportController.php'),
             app_path('Http/Controllers/Report/PayoutReportController.php'),
-            base_path('src/Report/AffiliatePayout.php'),
+            app_path('Support/Report/AffiliatePayout.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1320,18 +1320,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringContainsString('App\\Support\\Report\\AffiliatePayout', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Affiliate;', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\AffiliatePayout', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\BlackList', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\BlackListRepository', $contents);
         }
 
-        foreach ([
-            app_path('Support/LegacyAffiliatePayoutReport.php') => 'LeadMax\\TrackYourStats\\Report\\AffiliatePayout',
-        ] as $path => $legacyClass) {
-            $this->assertStringContainsString($legacyClass, File::get($path));
-        }
+        $this->assertFileExists(app_path('Support/Report/AffiliatePayout.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyAffiliatePayoutReport.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/AffiliatePayout.php'));
 
         $offerReportController = File::get(app_path('Http/Controllers/Report/OfferReportController.php'));
         $this->assertStringContainsString("DB::table('click_bonus')", $offerReportController);
@@ -1361,7 +1359,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         foreach ([
             base_path('src/Report/Affiliate.php'),
-            base_path('src/Report/AffiliatePayout.php'),
+            app_path('Support/Report/AffiliatePayout.php'),
             base_path('src/Report/Employee.php'),
             base_path('src/Report/ID/Clicks.php'),
             base_path('src/Report/Offer.php'),

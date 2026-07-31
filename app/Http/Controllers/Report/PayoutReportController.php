@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Report;
 use App\PayoutLog;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAffiliatePayoutReport as AffiliatePayout;
+use App\Support\Report\AffiliatePayout;
 use App\Support\Report\Filters\DeductionColumnFilter;
 use App\Support\Report\Filters\DollarSign;
 use App\Support\Report\Filters\EarningPerClick;
