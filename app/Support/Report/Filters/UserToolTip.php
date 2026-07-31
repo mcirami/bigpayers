@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Filters;
+namespace App\Support\Report\Filters;
 
 use App\Support\ReportBase;
 

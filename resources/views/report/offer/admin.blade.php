@@ -45,7 +45,7 @@
 			}
 
 			$reporter->between($dates['startDate'], $dates['endDate'],
-			new \App\Support\LegacyReportHtml(true,
+			new \App\Support\Report\Formats\Html(true,
 			$array,$dates));
         @endphp
 

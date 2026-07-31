@@ -22,7 +22,7 @@
         </thead>
         <tbody>
         @php
-            $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\LegacyReportHtml(true, [
+            $reporter->between($dates['startDate'], $dates['endDate'], new \App\Support\Report\Formats\Html(true, [
                 'idoffer',
                 'offer_name',
                 'Clicks',

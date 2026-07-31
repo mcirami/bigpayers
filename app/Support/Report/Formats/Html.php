@@ -1,4 +1,4 @@
-<?php namespace LeadMax\TrackYourStats\Report\Formats;
+<?php namespace App\Support\Report\Formats;
 use App\Support\CurrentUserSession;
 use App\Support\NativeRequest;
 use App\Privilege;
@@ -8,7 +8,7 @@ use App\Privilege;
  * Date: 10/23/2017
  * Time: 11:33 AM
  */
-class HTML implements Format
+class Html implements Format
 {
 
     public $lastRowStatic;

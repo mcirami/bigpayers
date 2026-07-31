@@ -480,11 +480,8 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyReportHtmlForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Formats\\HTML' => 'Use App\\Support\\LegacyReportHtml instead of importing the legacy report HTML formatter directly.',
-    ];
-
-    private array $legacyReportHtmlAllowedFiles = [
-        'app/Support/LegacyReportHtml.php' => 'The dedicated boundary around the legacy report HTML formatter.',
+        'LeadMax\\TrackYourStats\\Report\\Formats\\' => 'The legacy report format namespace is retired; use App\\Support\\Report\\Formats.',
+        'App\\Support\\LegacyReportHtml' => 'The LegacyReportHtml wrapper is retired; use App\\Support\\Report\\Formats\\Html.',
     ];
 
     private array $legacyReporterForbiddenPatterns = [
@@ -496,16 +493,13 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyReportFiltersForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Filters' => 'Use App\\Support legacy report filter wrappers instead of importing legacy report filters directly.',
-    ];
-
-    private array $legacyReportFiltersAllowedFiles = [
-        'app/Support/LegacyClickLinkFilter.php' => 'The dedicated boundary around the legacy click-link report filter.',
-        'app/Support/LegacyDeductionColumnFilter.php' => 'The dedicated boundary around the legacy deduction-column report filter.',
-        'app/Support/LegacyDollarSignFilter.php' => 'The dedicated boundary around the legacy dollar-sign report filter.',
-        'app/Support/LegacyEarningPerClickFilter.php' => 'The dedicated boundary around the legacy earning-per-click report filter.',
-        'app/Support/LegacyTotalFilter.php' => 'The dedicated boundary around the legacy total report filter.',
-        'app/Support/LegacyUserToolTipFilter.php' => 'The dedicated boundary around the legacy user-tooltip report filter.',
+        'LeadMax\\TrackYourStats\\Report\\Filters' => 'The legacy report filter namespace is retired; use App\\Support\\Report\\Filters.',
+        'App\\Support\\LegacyClickLinkFilter' => 'The LegacyClickLinkFilter wrapper is retired; use App\\Support\\Report\\Filters\\ClickLink.',
+        'App\\Support\\LegacyDeductionColumnFilter' => 'The LegacyDeductionColumnFilter wrapper is retired; use App\\Support\\Report\\Filters\\DeductionColumnFilter.',
+        'App\\Support\\LegacyDollarSignFilter' => 'The LegacyDollarSignFilter wrapper is retired; use App\\Support\\Report\\Filters\\DollarSign.',
+        'App\\Support\\LegacyEarningPerClickFilter' => 'The LegacyEarningPerClickFilter wrapper is retired; use App\\Support\\Report\\Filters\\EarningPerClick.',
+        'App\\Support\\LegacyTotalFilter' => 'The LegacyTotalFilter wrapper is retired; use App\\Support\\Report\\Filters\\Total.',
+        'App\\Support\\LegacyUserToolTipFilter' => 'The LegacyUserToolTipFilter wrapper is retired; use App\\Support\\Report\\Filters\\UserToolTip.',
     ];
 
     private array $legacyReportObjectsForbiddenPatterns = [
@@ -1249,9 +1243,9 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Legacy admin-login and notify classes are retired from runtime source.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');
-        $this->info('Modern report views render through LegacyReportHtml.');
+        $this->info('Runtime report views render through App\\Support\\Report\\Formats\\Html.');
         $this->info('Modern report controllers coordinate reports through LegacyReporter.');
-        $this->info('Modern report controllers format reports through legacy report filter wrappers.');
+        $this->info('Runtime report controllers format reports through App\\Support\\Report\\Filters.');
         $this->info('Modern payout reports use the audited legacy payout report boundary.');
         $this->info('Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.');
         $this->info('Modern offer report controllers resolve legacy offer repositories through App\Support boundaries.');
@@ -2879,7 +2873,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyReportHtmlDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyReportHtmlAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -2933,7 +2926,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyReportFiltersDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyReportFiltersAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

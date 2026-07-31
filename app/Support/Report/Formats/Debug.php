@@ -6,7 +6,7 @@
  * Time: 11:58 AM
  */
 
-namespace LeadMax\TrackYourStats\Report\Formats;
+namespace App\Support\Report\Formats;
 
 
 class Debug implements Format

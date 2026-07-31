@@ -3,7 +3,8 @@
 namespace LeadMax\TrackYourStats\Report;
 
 
-use LeadMax\TrackYourStats\Report\Filters\Filter;
+use App\Support\Report\Filters\Filter;
+use App\Support\Report\Formats\Format;
 use LeadMax\TrackYourStats\Report\Repositories\Repository;
 
 class Reporter
@@ -56,7 +57,7 @@ class Reporter
         return $report;
     }
 
-    public function between($dateFrom, $dateTo, Formats\Format $format)
+    public function between($dateFrom, $dateTo, Format $format)
     {
 
         $report = $this->repo->between($dateFrom, $dateTo);

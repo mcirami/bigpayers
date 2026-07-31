@@ -1,9 +1,9 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Formats;
+namespace App\Support\Report\Formats;
 
 
-class JSON implements Format
+class Json implements Format
 {
     public function output($data)
     {

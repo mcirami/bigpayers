@@ -9,7 +9,7 @@
 
 use Carbon\Carbon;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
-use App\Support\LegacyDollarSignFilter as DollarSign;
+use App\Support\Report\Filters\DollarSign;
 use App\Support\ReportBase;
 use PDO;
 

@@ -523,9 +523,9 @@ Remaining cleanup is mostly archival and hardening:
 - legacy source paths reached by Laravel now resolve legacy database bootstrap
   connections through `App\Support\LegacyConnection`; the fallback audit fails
   on new direct connection imports outside that boundary
-- modern report Blade views now render legacy report HTML formatters through
-  `App\Support\LegacyReportHtml`; the fallback audit fails on new direct
-  Laravel-side report HTML formatter imports outside the boundary
+- report Blade views now render through the Laravel-owned
+  `App\Support\Report\Formats\Html`; the legacy format namespace and wrapper
+  are retired, and the fallback audit prevents either from returning
 - the unrouted legacy click-offer report implementation and its
   `App\Support\LegacyOfferReport` wrapper have been removed; offer click reports
   now use the registered Laravel-owned repository path exclusively, and the
@@ -533,9 +533,9 @@ Remaining cleanup is mostly archival and hardening:
 - modern report controllers now coordinate report repositories through
   `App\Support\LegacyReporter`; the fallback audit fails on new direct
   Laravel-side reporter imports outside the boundary
-- modern report controllers now format report rows through `App\Support`
-  wrappers for legacy report filters; the fallback audit fails on new direct
-  Laravel-side report filter imports outside those boundaries
+- report controllers now format rows through the Laravel-owned
+  `App\Support\Report\Filters`; the legacy filter namespace and wrappers are
+  retired, and the fallback audit prevents them from returning
 - affiliate sub reports now use Laravel query-builder aggregation and direct
   Blade row rendering; the retired legacy sub-var repository and its wrapper
   have been removed

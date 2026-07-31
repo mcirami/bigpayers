@@ -6,12 +6,12 @@ use App\PayoutLog;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyAffiliatePayoutReport as AffiliatePayout;
-use App\Support\LegacyDeductionColumnFilter as DeductionColumnFilter;
-use App\Support\LegacyDollarSignFilter as DollarSign;
-use App\Support\LegacyEarningPerClickFilter as EarningPerClick;
+use App\Support\Report\Filters\DeductionColumnFilter;
+use App\Support\Report\Filters\DollarSign;
+use App\Support\Report\Filters\EarningPerClick;
 use App\Support\LegacyAffiliateOfferRepository as AffiliateOfferRepository;
 use App\Support\LegacyReporter as Reporter;
-use App\Support\LegacyTotalFilter as Total;
+use App\Support\Report\Filters\Total;
 use App\Support\RequestContext;
 use Carbon\Carbon;
 

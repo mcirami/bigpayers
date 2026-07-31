@@ -233,7 +233,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern report views render through LegacyReportHtml.',
+            'Runtime report views render through App\\Support\\Report\\Formats\\Html.',
             $output
         );
         $this->assertStringContainsString(
@@ -241,7 +241,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern report controllers format reports through legacy report filter wrappers.',
+            'Runtime report controllers format reports through App\\Support\\Report\\Filters.',
             $output
         );
         $this->assertStringContainsString(
@@ -1795,16 +1795,20 @@ PHP,
             'legacyReportHtmlDependencyErrorsFor',
             [[
                 'resources/views/report/bad.blade.php' => 'new \\LeadMax\\TrackYourStats\\Report\\Formats\\HTML();',
-                'app/Support/LegacyReportHtml.php' => 'use LeadMax\\TrackYourStats\\Report\\Formats\\HTML;',
-                'resources/views/report/clean.blade.php' => 'new \\App\\Support\\LegacyReportHtml();',
+                'resources/views/report/bad-wrapper.blade.php' => 'new \\App\\Support\\LegacyReportHtml();',
+                'resources/views/report/clean.blade.php' => 'new \\App\\Support\\Report\\Formats\\Html();',
             ]]
         );
 
         $this->assertContains(
-            'resources/views/report/bad.blade.php: Use App\\Support\\LegacyReportHtml instead of importing the legacy report HTML formatter directly.',
+            'resources/views/report/bad.blade.php: The legacy report format namespace is retired; use App\\Support\\Report\\Formats.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'resources/views/report/bad-wrapper.blade.php: The LegacyReportHtml wrapper is retired; use App\\Support\\Report\\Formats\\Html.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_reporter_dependency_errors_report_forbidden_sources(): void
@@ -1837,16 +1841,20 @@ PHP,
             'legacyReportFiltersDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Filters\\DollarSign;',
-                'app/Support/LegacyDollarSignFilter.php' => 'use LeadMax\\TrackYourStats\\Report\\Filters\\DollarSign;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyDollarSignFilter as DollarSign;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyDollarSignFilter as DollarSign;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Report\\Filters\\DollarSign;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support legacy report filter wrappers instead of importing legacy report filters directly.',
+            'app/Http/Controllers/BadController.php: The legacy report filter namespace is retired; use App\\Support\\Report\\Filters.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyDollarSignFilter wrapper is retired; use App\\Support\\Report\\Filters\\DollarSign.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_report_objects_dependency_errors_report_forbidden_sources(): void

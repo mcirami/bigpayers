@@ -1133,7 +1133,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             base_path('src/Offer/Create.php'),
             base_path('src/Offer/Update.php'),
-            base_path('src/Report/Filters/ClickLink.php'),
+            app_path('Support/Report/Filters/ClickLink.php'),
             base_path('src/User/Update.php'),
         ] as $path) {
             $contents = File::get($path);
@@ -1219,7 +1219,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/System/Notify.php'));
     }
 
-    public function test_modern_report_views_use_legacy_report_html_boundary(): void
+    public function test_runtime_report_views_use_laravel_owned_formatters(): void
     {
         foreach ([
             resource_path('views/report/employee.blade.php'),
@@ -1228,22 +1228,20 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyReportHtml', $contents);
+            $this->assertStringContainsString('App\\Support\\Report\\Formats\\Html', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Formats\\HTML', $contents);
+            $this->assertStringNotContainsString('App\\Support\\LegacyReportHtml', $contents);
         }
 
         $aggregateController = File::get(app_path('Http/Controllers/Report/AggregateReportController.php'));
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Formats\\HTML', $aggregateController);
 
-        $reportHtml = File::get(base_path('src/Report/Formats/HTML.php'));
+        $reportHtml = File::get(app_path('Support/Report/Formats/Html.php'));
 
-        $this->assertStringContainsString('App\\Support\\NativeRequest', $reportHtml);
+        $this->assertStringContainsString('NativeRequest::query(', $reportHtml);
         $this->assertStringNotContainsString('$_GET', $reportHtml);
-
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Report\\Formats\\HTML',
-            File::get(app_path('Support/LegacyReportHtml.php'))
-        );
+        $this->assertFileDoesNotExist(app_path('Support/LegacyReportHtml.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/Formats/HTML.php'));
     }
 
     public function test_retired_click_offer_report_path_stays_removed(): void
@@ -1285,7 +1283,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
     }
 
-    public function test_modern_report_controllers_use_legacy_report_filter_boundaries(): void
+    public function test_runtime_report_controllers_use_laravel_owned_filters(): void
     {
         foreach ([
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
@@ -1295,7 +1293,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringContainsString('App\\Support\\Report\\Filters', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Filters', $contents);
         }
 
@@ -1307,10 +1305,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/LegacyTotalFilter.php'),
             app_path('Support/LegacyUserToolTipFilter.php'),
         ] as $path) {
-            $this->assertStringContainsString(
-                'LeadMax\\TrackYourStats\\Report\\Filters',
-                File::get($path)
-            );
+            $this->assertFileDoesNotExist($path);
+        }
+
+        foreach (['ClickLink', 'DeductionColumnFilter', 'DollarSign', 'EarningPerClick', 'Filter', 'Total', 'UserToolTip'] as $class) {
+            $this->assertFileExists(app_path("Support/Report/Filters/{$class}.php"));
         }
     }
 
@@ -1919,7 +1918,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         foreach ([
             base_path('src/Report/Affiliate.php'),
             base_path('src/Report/Employee.php'),
-            base_path('src/Report/Formats/HTML.php'),
+            app_path('Support/Report/Formats/Html.php'),
             base_path('src/Report/ID/Clicks.php'),
             base_path('src/Report/Offer.php'),
             base_path('src/Report/Repositories/BannedUsersRepository.php'),

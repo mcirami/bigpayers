@@ -1,4 +1,4 @@
-<?php namespace LeadMax\TrackYourStats\Report\Filters;
+<?php namespace App\Support\Report\Filters;
 
 
 class EarningPerClick implements Filter

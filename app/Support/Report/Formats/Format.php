@@ -1,4 +1,4 @@
-<?php namespace LeadMax\TrackYourStats\Report\Formats;
+<?php namespace App\Support\Report\Formats;
 
 /**
  * Author: Dean

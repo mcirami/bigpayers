@@ -1,5 +1,5 @@
 @php
-    use App\Support\LegacyReportHtml as HTML;
+    use App\Support\Report\Formats\Html;
 	use App\Privilege;
     $showRevenueColumns = in_array($sessionUserType, [Privilege::ROLE_GOD, Privilege::ROLE_MANAGER], true)
         || ($sessionUserType == Privilege::ROLE_ADMIN && $canViewPayouts);
@@ -81,7 +81,7 @@
                 $array = array_values(array_filter($array));
 
                 $reporter->between($dates['startDate'], $dates['endDate'],
-                new HTML(true, $array));
+                new Html(true, $array));
         @endphp
         </tbody>
     </table>
