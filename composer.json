@@ -43,8 +43,8 @@
             "Database\\Seeders\\": "database/seeds/"
         },
         "files": [
-            "src/System/Functions.php",
-            "src/System/Log.php"
+            "app/Support/GlobalFunctions.php",
+            "app/Support/GlobalLogging.php"
         ]
     },
     "scripts": {

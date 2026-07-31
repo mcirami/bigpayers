@@ -417,9 +417,12 @@ class MigrationCommandsTest extends TestCase
         $resolver = File::get(base_path('app/Services/BaseInstallSql.php'));
         $provisioning = File::get(base_path('app/Services/CompanyProvisioningService.php'));
         $legacyImport = File::get(base_path('app/Console/Commands/MigrateLegacyDatabase.php'));
-        $legacySetup = File::get(base_path('src/System/Setup.php'));
 
-        $this->assertSame(base_path('base_install.sql'), (new BaseInstallSql())->path());
+        $configuredPath = config('provisioning.base_install_sql');
+        $expectedPath = $configuredPath
+            ? (str_starts_with($configuredPath, '/') ? $configuredPath : storage_path($configuredPath))
+            : base_path('base_install.sql');
+        $this->assertSame($expectedPath, (new BaseInstallSql())->path());
         $this->assertStringContainsString('Unable to find base_install.sql.', $resolver);
         $this->assertStringContainsString("'base_install_sql' => env('TYS_BASE_INSTALL')", File::get(config_path('provisioning.php')));
         $this->assertStringContainsString("config('provisioning.base_install_sql')", $resolver);
@@ -434,12 +437,7 @@ class MigrationCommandsTest extends TestCase
         $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacyImport);
         $this->assertStringNotContainsString("env('TYS_BASE_INSTALL", $legacyImport);
 
-        $this->assertStringContainsString('BaseInstallSql', $legacySetup);
-        $this->assertStringContainsString('TenantDatabasePdoFactory', $legacySetup);
-        $this->assertStringContainsString('$this->baseInstallSql->contents()', $legacySetup);
-        $this->assertStringContainsString('$this->databases->quoteIdentifier($this->subDomain())', $legacySetup);
-        $this->assertStringNotContainsString('resources/importDB.php', $legacySetup);
-        $this->assertStringNotContainsString('tys_create_db', $legacySetup);
+        $this->assertFileDoesNotExist(base_path('src/System/Setup.php'));
     }
 
     public function test_base_install_sql_resolver_prefers_configured_absolute_path(): void

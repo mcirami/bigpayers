@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\System;
+namespace App\Support;
 
 use App\Services\BrandingLabels;
 use App\Support\LegacyPermissions as Permissions;

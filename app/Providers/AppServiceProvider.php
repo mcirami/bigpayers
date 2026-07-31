@@ -6,7 +6,7 @@ use App\Company;
 use App\Observers\UserObserver;
 use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyNavBar as NavBar;
+use App\Support\NavBar;
 use App\Support\Notifications;
 use App\User;
 use Illuminate\Support\Facades\Log;

@@ -3,18 +3,17 @@
 namespace App\Support;
 
 use App\User;
-use LeadMax\TrackYourStats\System\Session;
 
 class CurrentUserSession
 {
     public static function id(): int
     {
-        return (int) Session::userID();
+        return (int) self::value('repid');
     }
 
     public static function type(): int
     {
-        return (int) Session::userType();
+        return (int) self::value('userType');
     }
 
     public static function user()
@@ -24,12 +23,12 @@ class CurrentUserSession
 
     public static function data()
     {
-        return Session::userData();
+        return self::value('userData', true);
     }
 
     public static function permissions()
     {
-        return Session::permissions();
+        return self::value('permissions', true);
     }
 
     public static function can(string $permission): bool
@@ -47,5 +46,22 @@ class CurrentUserSession
             self::data(),
             self::permissions(),
         );
+    }
+
+    private static function value(string $key, bool $unserialize = false)
+    {
+        $adminLogin = NativeSession::get('adminLogin');
+
+        if (NativeRequest::hasQuery('adminLogin') && $adminLogin !== null) {
+            $value = $adminLogin[$key] ?? null;
+        } else {
+            $value = NativeSession::get($key);
+        }
+
+        if ($value === null) {
+            return false;
+        }
+
+        return $unserialize ? unserialize($value) : $value;
     }
 }

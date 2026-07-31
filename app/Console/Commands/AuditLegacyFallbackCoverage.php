@@ -181,7 +181,7 @@ class AuditLegacyFallbackCoverage extends Command
         'private static bool $bootstrapped = false;' => 'RuntimeBootstrap is missing its idempotency guard.',
         'session_status() === PHP_SESSION_NONE' => 'RuntimeBootstrap must guard native session startup.',
         '$connection->setConnection();' => 'RuntimeBootstrap must initialize tenant connection constants.',
-        'Company::loadFromSession()->setSession();' => 'RuntimeBootstrap must restore company session context.',
+        'RuntimeCompany::loadFromSession()->setSession();' => 'RuntimeBootstrap must restore company session context.',
     ];
 
     private array $retiredCompanySessionForbiddenPatterns = [
@@ -194,12 +194,10 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacySessionForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Session' => 'Use App\\Support\\CurrentUserSession instead of importing the legacy session class directly.',
+        'LeadMax\\TrackYourStats\\System\\Session' => 'The legacy session class is retired; use App\\Support\\CurrentUserSession.',
     ];
 
-    private array $legacySessionAllowedFiles = [
-        'app/Support/CurrentUserSession.php' => 'The dedicated boundary around the legacy session class.',
-    ];
+    private array $legacySessionAllowedFiles = [];
 
     private array $nativeSessionForbiddenPatterns = [
         '$_SESSION' => 'Use App\\Support\\NativeSession instead of reading or writing the native session superglobal directly.',
@@ -286,12 +284,10 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyLanderAllowedFiles = [];
 
     private array $legacyNavBarForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\NavBar' => 'Use App\\Support\\LegacyNavBar instead of importing the legacy navigation class directly.',
+        'LeadMax\\TrackYourStats\\System\\NavBar' => 'The legacy navigation class is retired; use App\\Support\\NavBar.',
     ];
 
-    private array $legacyNavBarAllowedFiles = [
-        'app/Support/LegacyNavBar.php' => 'The dedicated boundary around the legacy navigation class.',
-    ];
+    private array $legacyNavBarAllowedFiles = [];
 
     private array $legacyIpBlackListForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\IPBlackList' => 'The legacy IP blacklist class is retired; use App\\Support\\IPBlackList.',
@@ -464,12 +460,10 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyConnectionForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\System\\Connection' => 'Use App\\Support\\LegacyConnection instead of importing the legacy connection class directly.',
+        'LeadMax\\TrackYourStats\\System\\Connection' => 'The legacy connection class is retired; use App\\Support\\Connection.',
     ];
 
-    private array $legacyConnectionAllowedFiles = [
-        'app/Support/LegacyConnection.php' => 'The dedicated boundary around the legacy connection class.',
-    ];
+    private array $legacyConnectionAllowedFiles = [];
 
     private array $legacyReportHtmlForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Report\\Formats\\' => 'The legacy report format namespace is retired; use App\\Support\\Report\\Formats.',
@@ -583,6 +577,15 @@ class AuditLegacyFallbackCoverage extends Command
         if ($legacyFilePresenceErrors->isNotEmpty()) {
             $this->error('Legacy PHP files should not exist:');
             $legacyFilePresenceErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
+        $retiredSystemSourceFiles = $this->retiredSystemSourceFiles();
+
+        if ($retiredSystemSourceFiles->isNotEmpty()) {
+            $this->error('Retired src/System PHP files have returned:');
+            $retiredSystemSourceFiles->each(fn ($file) => $this->line(" - {$file}"));
 
             return self::FAILURE;
         }
@@ -1164,6 +1167,7 @@ class AuditLegacyFallbackCoverage extends Command
         }
 
         $this->info('No legacy PHP files exist.');
+        $this->info('The retired src/System directory contains no PHP files.');
         $this->info(count($this->intentionallyUnrouted) . ' retired legacy PHP URLs are documented.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
         $publicEntrypointSummary = $publicEntrypointCount === 1
@@ -1198,7 +1202,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code encodes click IDs through App\\Support\\ClickIdCodec.');
         $this->info('Runtime code normalizes tracking query parameters through App\\Support\\TrackingParameters.');
         $this->info('Runtime code loads landers through App\\Support\\Lander.');
-        $this->info('Modern Laravel code builds dashboard navigation through LegacyNavBar.');
+        $this->info('Runtime code builds dashboard navigation through App\\Support\\NavBar.');
         $this->info('Runtime code manages IP blacklist records through App\\Support\\IPBlackList.');
         $this->info('Runtime code uploads sale-log images through App\\Support\\ImagesUploader.');
         $this->info('Runtime code reads and sends notifications through App\\Support\\Notifications.');
@@ -1220,7 +1224,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern layouts preserve admin-login state through Laravel request boundaries.');
         $this->info('Legacy admin-login and notify classes are retired from runtime source.');
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
-        $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');
+        $this->info('Runtime code resolves tenant connections through App\\Support\\Connection.');
         $this->info('Runtime report views render through App\\Support\\Report\\Formats\\Html.');
         $this->info('Runtime report controllers coordinate reports through App\\Support\\Report\\Reporter.');
         $this->info('Runtime report controllers format reports through App\\Support\\Report\\Filters.');
@@ -1250,6 +1254,20 @@ class AuditLegacyFallbackCoverage extends Command
             ->filter(fn ($file) => $file->getExtension() === 'php')
             ->map(fn ($file) => str_replace('\\', '/', $file->getRelativePathname()))
             ->sort()
+            ->values();
+    }
+
+    private function retiredSystemSourceFiles()
+    {
+        $path = base_path('src/System');
+
+        if (! File::isDirectory($path)) {
+            return collect();
+        }
+
+        return collect(File::allFiles($path))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => 'src/System/'.str_replace('\\', '/', $file->getRelativePathname()))
             ->values();
     }
 

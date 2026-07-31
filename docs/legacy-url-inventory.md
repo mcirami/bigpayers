@@ -401,7 +401,9 @@ Remaining cleanup is mostly archival and hardening:
   hide new undocumented legacy dependencies
 - the fallback audit now fails if runtime code reintroduces the retired legacy
   company class import or `Company::loadFromSession()` dependency
-- the fallback audit now fails if runtime code imports the legacy session class
+- current-user session resolution now lives in `App\Support\CurrentUserSession`;
+  the legacy session source has been removed, and the fallback audit fails if
+  runtime code imports the retired session class
   directly outside the `App\Support\CurrentUserSession` boundary
 - company subdomain lookup, company cache invalidation, and admin-login logout
   cleanup now use `App\Support\NativeSession` or Laravel request data instead
@@ -467,9 +469,9 @@ Remaining cleanup is mostly archival and hardening:
 - landing-page and lander-asset behavior now lives in
   `App\Support\Lander`; the legacy source class and wrapper have been removed and the
   fallback audit prevents its namespace from returning
-- modern dashboard navigation composition now resolves the legacy `NavBar`
-  helper through `App\Support\LegacyNavBar`; the fallback audit fails on new
-  direct Laravel-side navigation imports outside the boundary
+- dashboard navigation composition now lives in `App\Support\NavBar`; the
+  legacy source class and wrapper have been removed, and the fallback audit
+  prevents the retired namespace from returning
 - IP blacklist behavior now lives in `App\Support\IPBlackList`; the legacy
   source class and wrapper have been removed, and the fallback audit prevents
   the retired namespace from returning
@@ -520,9 +522,10 @@ Remaining cleanup is mostly archival and hardening:
 - modern database-update screens now run the legacy company database updater
   through `App\Support\LegacyCompanyUpdater`; the fallback audit fails on new
   direct Laravel-side company-updater imports outside the boundary
-- legacy source paths reached by Laravel now resolve legacy database bootstrap
-  connections through `App\Support\LegacyConnection`; the fallback audit fails
-  on new direct connection imports outside that boundary
+- tenant bootstrap and remaining source callers now use
+  `App\Support\Connection` and `App\Support\RuntimeCompany`; both legacy source
+  classes and the connection wrapper have been removed, and stale serialized
+  company sessions are refreshed safely
 - report Blade views now render through the Laravel-owned
   `App\Support\Report\Formats\Html`; the legacy format namespace and wrapper
   are retired, and the fallback audit prevents either from returning
@@ -586,6 +589,11 @@ Remaining cleanup is mostly archival and hardening:
   the retired `LegacyPostBackUrl` wrapper and legacy source class have been
   removed while offer-specific postback boundaries remain in place
 - the fallback audit now fails if the retired legacy mailer namespace returns
+- obsolete system setup, database updater, GeoIP updater, SFS, and database
+  utility classes have been removed; provisioning, migration, and GeoIP paths
+  are owned by Laravel services and console workflows
+- the final global function and database logging helpers now autoload from
+  `app/Support`; `src/System` is empty and no longer owns runtime behavior
 - Apache and IIS rewrite configs route direct public `.php` file requests through
   Laravel unless the request is for `public/index.php`
 - remove or archive unused `legacy/*.php` files once the team is comfortable

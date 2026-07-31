@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\Database;
 
-use App\Support\LegacyConnection as Connection;
+use App\Support\Connection;
 
 class CompanyUpdater
 {

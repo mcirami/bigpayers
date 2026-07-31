@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\System;
+namespace App\Support;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Services\LegacyDatabaseConfig;
@@ -11,7 +11,7 @@ use PDO;
 // Class to handle company auto loading for installs, gets company info, colors, sub-domain, etc..
 // company settings are stored into session, if we have an instance of company settings in session, we don't re-query the db for company info
 
-class Company
+class RuntimeCompany
 {
 
     public $loaded = false;
@@ -51,13 +51,18 @@ class Company
         $company = NativeSession::get('company');
 
         if ($company !== null) {
-            return unserialize($company);
-        } else {
-            $company = new self;
-            $company->setSession();
+            $restored = @unserialize($company);
+            if ($restored instanceof self) {
+                return $restored;
+            }
 
-            return $company;
+            NativeSession::forget('company');
         }
+
+        $company = new self;
+        $company->setSession();
+
+        return $company;
     }
 
 
@@ -303,7 +308,7 @@ class Company
             $sql = "SELECT * FROM company WHERE subDomain = :subDomain";
 
             $prep = $db->prepare($sql);
-            $sub  = Company::getCustomSub();
+            $sub  = self::getCustomSub();
             $prep->bindParam(":subDomain", $sub);
 
 

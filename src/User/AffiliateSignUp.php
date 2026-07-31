@@ -12,7 +12,7 @@ namespace LeadMax\TrackYourStats\User;
 use Illuminate\Support\Facades\DB;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\Notifications;
-use App\Support\LegacyConnection as Connection;
+use App\Support\Connection;
 use App\Support\NativeRequest;
 
 class AffiliateSignUp

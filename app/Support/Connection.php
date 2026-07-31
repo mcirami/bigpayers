@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\System;
+namespace App\Support;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Services\LegacyDatabaseConfig;
@@ -45,7 +45,7 @@ class Connection
         {
             if ( ! $this->isLoginPage() && ! $this->isLanderPage() ) {
 
-                $this->setSub(Company::getSub());
+                $this->setSub(RuntimeCompany::getSub());
             } //if its not local or an offer url, must be an install
         }
 
@@ -186,7 +186,7 @@ class Connection
 
     public function isDev()
     {
-        return Company::getSub() == 'test';
+        return RuntimeCompany::getSub() == 'test';
     }
 
     public function isLocal()
@@ -197,7 +197,7 @@ class Connection
             'fuckchrome',
         ];
 
-        return in_array(Company::getExtension(), $validLocalExtensions);
+        return in_array(RuntimeCompany::getExtension(), $validLocalExtensions);
     }
 
     //DEPRECATED

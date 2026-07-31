@@ -1,5 +1,7 @@
 <?php
 
+// Global compatibility helpers loaded through Composer.
+
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 use App\Support\NativeRequest;
 

@@ -17,6 +17,11 @@ class LegacyFallbackAuditTest extends TestCase
         $output = Artisan::output();
 
         $this->assertStringContainsString(
+            'The retired src/System directory contains no PHP files.',
+            $output
+        );
+
+        $this->assertStringContainsString(
             'Laravel middleware initializes the legacy runtime boundary once per request.',
             $output
         );
@@ -141,7 +146,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code builds dashboard navigation through LegacyNavBar.',
+            'Runtime code builds dashboard navigation through App\\Support\\NavBar.',
             $output
         );
         $this->assertStringContainsString(
@@ -229,7 +234,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy connections through LegacyConnection.',
+            'Runtime code resolves tenant connections through App\\Support\\Connection.',
             $output
         );
         $this->assertStringContainsString(
@@ -693,7 +698,7 @@ PHP,
             $command,
             'legacySupportDirectReferenceInventoryErrorsFor',
             [[
-                'app/Support/CurrentUserSession.php' => 'use LeadMax\\TrackYourStats\\System\\Session;',
+                'app/Support/LegacyUser.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
                 'app/Support/UnlistedLegacyAdapter.php' => 'use LeadMax\\TrackYourStats\\User\\User;',
                 'app/Support/PlainAdapter.php' => 'use App\\User;',
             ]]
@@ -796,17 +801,16 @@ PHP,
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\System\\Session;',
                 'src/BadHelper.php' => '\\LeadMax\\TrackYourStats\\System\\Session::userID();',
-                'app/Support/CurrentUserSession.php' => 'use LeadMax\\TrackYourStats\\System\\Session;',
                 'app/Http/Controllers/CleanController.php' => 'use App\\Support\\CurrentUserSession;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\CurrentUserSession instead of importing the legacy session class directly.',
+            'app/Http/Controllers/BadController.php: The legacy session class is retired; use App\\Support\\CurrentUserSession.',
             $errors->all()
         );
         $this->assertContains(
-            'src/BadHelper.php: Use App\\Support\\CurrentUserSession instead of importing the legacy session class directly.',
+            'src/BadHelper.php: The legacy session class is retired; use App\\Support\\CurrentUserSession.',
             $errors->all()
         );
         $this->assertCount(2, $errors);
@@ -1325,13 +1329,12 @@ PHP,
             'legacyNavBarDependencyErrorsFor',
             [[
                 'app/Providers/BadProvider.php' => 'use LeadMax\\TrackYourStats\\System\\NavBar;',
-                'app/Support/LegacyNavBar.php' => 'use LeadMax\\TrackYourStats\\System\\NavBar;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyNavBar as NavBar;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\NavBar;',
             ]]
         );
 
         $this->assertContains(
-            'app/Providers/BadProvider.php: Use App\\Support\\LegacyNavBar instead of importing the legacy navigation class directly.',
+            'app/Providers/BadProvider.php: The legacy navigation class is retired; use App\\Support\\NavBar.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1769,13 +1772,12 @@ PHP,
             'legacyConnectionDependencyErrorsFor',
             [[
                 'src/User/BadSource.php' => 'use LeadMax\\TrackYourStats\\System\\Connection;',
-                'app/Support/LegacyConnection.php' => 'use LeadMax\\TrackYourStats\\System\\Connection;',
-                'src/User/CleanSource.php' => 'use App\\Support\\LegacyConnection as Connection;',
+                'src/User/CleanSource.php' => 'use App\\Support\\Connection;',
             ]]
         );
 
         $this->assertContains(
-            'src/User/BadSource.php: Use App\\Support\\LegacyConnection instead of importing the legacy connection class directly.',
+            'src/User/BadSource.php: The legacy connection class is retired; use App\\Support\\Connection.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -2097,7 +2099,7 @@ PHP,
         $this->assertStringContainsString('private static bool $bootstrapped = false;', $runtimeBootstrap);
         $this->assertStringContainsString('session_status() === PHP_SESSION_NONE', $runtimeBootstrap);
         $this->assertStringContainsString('$connection->setConnection();', $runtimeBootstrap);
-        $this->assertStringContainsString('Company::loadFromSession()->setSession();', $runtimeBootstrap);
+        $this->assertStringContainsString('RuntimeCompany::loadFromSession()->setSession();', $runtimeBootstrap);
         $this->assertStringNotContainsString('vendor/autoload.php', $runtimeBootstrap);
         $this->assertStringNotContainsString('Dotenv', $runtimeBootstrap);
     }

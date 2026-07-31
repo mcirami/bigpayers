@@ -2,8 +2,6 @@
 
 namespace App\Support;
 
-use LeadMax\TrackYourStats\System\Company;
-
 class RuntimeBootstrap
 {
     private static bool $bootstrapped = false;
@@ -20,9 +18,9 @@ class RuntimeBootstrap
             session_start();
         }
 
-        $connection = new LegacyConnection();
+        $connection = new Connection();
         $connection->setConnection();
 
-        Company::loadFromSession()->setSession();
+        RuntimeCompany::loadFromSession()->setSession();
     }
 }
