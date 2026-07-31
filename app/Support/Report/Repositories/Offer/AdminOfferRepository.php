@@ -1,12 +1,12 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
+namespace App\Support\Report\Repositories\Offer;
 
 use App\Privilege;
 use App\User;
 use Illuminate\Support\Facades\DB;
 use App\Support\LegacyPayouts as Payouts;
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use App\Support\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 
 class AdminOfferRepository extends Repository

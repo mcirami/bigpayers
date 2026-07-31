@@ -1,4 +1,4 @@
-<?php namespace LeadMax\TrackYourStats\Report\Repositories;
+<?php namespace App\Support\Report\Repositories;
 
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;
 

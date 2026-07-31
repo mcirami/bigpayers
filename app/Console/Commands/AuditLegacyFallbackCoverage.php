@@ -485,11 +485,8 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyReporterForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Reporter' => 'Use App\\Support\\LegacyReporter instead of importing the legacy reporter class directly.',
-    ];
-
-    private array $legacyReporterAllowedFiles = [
-        'app/Support/LegacyReporter.php' => 'The dedicated boundary around the legacy reporter class.',
+        'LeadMax\\TrackYourStats\\Report\\Reporter' => 'The legacy Reporter class is retired; use App\\Support\\Report\\Reporter.',
+        'App\\Support\\LegacyReporter' => 'The LegacyReporter wrapper is retired; use App\\Support\\Report\\Reporter.',
     ];
 
     private array $legacyReportFiltersForbiddenPatterns = [
@@ -520,30 +517,19 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyOfferReportRepositoriesForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\AdminOfferRepository' => 'Use App\\Support\\LegacyAdminOfferRepository instead of importing the legacy admin offer repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\AffiliateOfferRepository' => 'Use App\\Support\\LegacyAffiliateOfferRepository instead of importing the legacy affiliate offer repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\GodOfferRepository' => 'Use App\\Support\\LegacyGodOfferRepository instead of importing the legacy god offer repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\ManagerOfferRepository' => 'Use App\\Support\\LegacyManagerOfferRepository instead of importing the legacy manager offer repository directly.',
-    ];
-
-    private array $legacyOfferReportRepositoriesAllowedFiles = [
-        'app/Support/LegacyAdminOfferRepository.php' => 'The dedicated boundary around the legacy admin offer repository.',
-        'app/Support/LegacyAffiliateOfferRepository.php' => 'The dedicated boundary around the legacy affiliate offer repository.',
-        'app/Support/LegacyGodOfferRepository.php' => 'The dedicated boundary around the legacy god offer repository.',
-        'app/Support/LegacyManagerOfferRepository.php' => 'The dedicated boundary around the legacy manager offer repository.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\' => 'The legacy offer repository namespace is retired; use App\\Support\\Report\\Repositories\\Offer.',
+        'App\\Support\\LegacyAdminOfferRepository' => 'The LegacyAdminOfferRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Offer\\AdminOfferRepository.',
+        'App\\Support\\LegacyAffiliateOfferRepository' => 'The LegacyAffiliateOfferRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Offer\\AffiliateOfferRepository.',
+        'App\\Support\\LegacyGodOfferRepository' => 'The LegacyGodOfferRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Offer\\GodOfferRepository.',
+        'App\\Support\\LegacyManagerOfferRepository' => 'The LegacyManagerOfferRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Offer\\ManagerOfferRepository.',
     ];
 
     private array $legacyEmployeeReportRepositoriesForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Repository' => 'Avoid typehinting the legacy base report repository directly in modern report controllers.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository' => 'Use App\\Support\\LegacyAdminEmployeeRepository instead of importing the legacy admin employee repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\GodEmployeeRepository' => 'Use App\\Support\\LegacyGodEmployeeRepository instead of importing the legacy god employee repository directly.',
-        'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\ManagerEmployeeRepository' => 'Use App\\Support\\LegacyManagerEmployeeRepository instead of importing the legacy manager employee repository directly.',
-    ];
-
-    private array $legacyEmployeeReportRepositoriesAllowedFiles = [
-        'app/Support/LegacyAdminEmployeeRepository.php' => 'The dedicated boundary around the legacy admin employee repository.',
-        'app/Support/LegacyGodEmployeeRepository.php' => 'The dedicated boundary around the legacy god employee repository.',
-        'app/Support/LegacyManagerEmployeeRepository.php' => 'The dedicated boundary around the legacy manager employee repository.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\Repository' => 'The legacy base report repository is retired; use App\\Support\\Report\\Repositories\\Repository.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\' => 'The legacy employee repository namespace is retired; use App\\Support\\Report\\Repositories\\Employee.',
+        'App\\Support\\LegacyAdminEmployeeRepository' => 'The LegacyAdminEmployeeRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Employee\\AdminEmployeeRepository.',
+        'App\\Support\\LegacyGodEmployeeRepository' => 'The LegacyGodEmployeeRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Employee\\GodEmployeeRepository.',
+        'App\\Support\\LegacyManagerEmployeeRepository' => 'The LegacyManagerEmployeeRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Employee\\ManagerEmployeeRepository.',
     ];
 
     private array $legacyMiscReportRepositoriesForbiddenPatterns = [
@@ -554,6 +540,8 @@ class AuditLegacyFallbackCoverage extends Command
         'LeadMax\\TrackYourStats\\Report\\Repositories\\PayoutLogRepository' => 'The legacy payout-log repository is retired; use the App\\PayoutLog model instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\SaleLogRepository' => 'The legacy sale-log summary repository is retired; use the Laravel chat-log summary query instead.',
         'LeadMax\\TrackYourStats\\Report\\Repositories\\SubVarRepository' => 'The legacy sub-var repository is retired; use the Laravel sub report query instead.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\BannedUsersRepository' => 'The legacy banned-users repository is retired; use App\\Support\\Report\\Repositories\\BannedUsersRepository.',
+        'LeadMax\\TrackYourStats\\Report\\Repositories\\ReferralRepository' => 'The legacy referral repository is retired; use App\\Support\\Report\\Repositories\\ReferralRepository.',
     ];
 
     private array $legacyMiscReportRepositoriesAllowedFiles = [];
@@ -1241,13 +1229,13 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern database update screens run through LegacyCompanyUpdater.');
         $this->info('Modern Laravel code resolves legacy connections through LegacyConnection.');
         $this->info('Runtime report views render through App\\Support\\Report\\Formats\\Html.');
-        $this->info('Modern report controllers coordinate reports through LegacyReporter.');
+        $this->info('Runtime report controllers coordinate reports through App\\Support\\Report\\Reporter.');
         $this->info('Runtime report controllers format reports through App\\Support\\Report\\Filters.');
         $this->info('Runtime payout reports use App\\Support\\Report\\AffiliatePayout.');
         $this->info('Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.');
-        $this->info('Modern offer report controllers resolve legacy offer repositories through App\Support boundaries.');
-        $this->info('Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.');
-        $this->info('Modern report controllers resolve remaining legacy report repositories through App\Support boundaries.');
+        $this->info('Runtime offer reports use App\\Support\\Report\\Repositories\\Offer.');
+        $this->info('Runtime employee reports use App\\Support\\Report\\Repositories\\Employee.');
+        $this->info('Runtime miscellaneous reports use App\\Support\\Report\\Repositories.');
         $this->info('Modern Laravel code sends legacy mail through LegacyMail.');
         $this->info('Source code has no malformed duplicated legacy namespace references.');
         $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
@@ -2896,7 +2884,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyReporterDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyReporterAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -3003,7 +2990,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyOfferReportRepositoriesDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyOfferReportRepositoriesAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 
@@ -3030,7 +3016,6 @@ class AuditLegacyFallbackCoverage extends Command
     private function legacyEmployeeReportRepositoriesDependencyErrorsFor($sourceFiles)
     {
         return collect($sourceFiles)
-            ->reject(fn (string $contents, string $relativePath) => array_key_exists($relativePath, $this->legacyEmployeeReportRepositoriesAllowedFiles))
             ->flatMap(function (string $contents, string $relativePath) {
                 $errors = [];
 

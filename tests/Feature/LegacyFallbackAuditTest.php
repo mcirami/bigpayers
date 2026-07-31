@@ -237,7 +237,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern report controllers coordinate reports through LegacyReporter.',
+            'Runtime report controllers coordinate reports through App\\Support\\Report\\Reporter.',
             $output
         );
         $this->assertStringContainsString(
@@ -253,15 +253,15 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern offer report controllers resolve legacy offer repositories through App\Support boundaries.',
+            'Runtime offer reports use App\\Support\\Report\\Repositories\\Offer.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern employee report controllers and commands resolve legacy employee repositories through App\Support boundaries.',
+            'Runtime employee reports use App\\Support\\Report\\Repositories\\Employee.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern report controllers resolve remaining legacy report repositories through App\Support boundaries.',
+            'Runtime miscellaneous reports use App\\Support\\Report\\Repositories.',
             $output
         );
     }
@@ -673,7 +673,7 @@ PHP,
             $command,
             'legacySupportWrapperInventoryErrorsFor',
             [[
-                'app/Support/LegacyReporter.php',
+                'app/Support/LegacyMail.php',
                 'app/Support/LegacyMissingBoundary.php',
             ]]
         );
@@ -1820,16 +1820,20 @@ PHP,
             'legacyReporterDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Reporter;',
-                'app/Support/LegacyReporter.php' => 'use LeadMax\\TrackYourStats\\Report\\Reporter;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyReporter as Reporter;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyReporter as Reporter;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Report\\Reporter;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyReporter instead of importing the legacy reporter class directly.',
+            'app/Http/Controllers/BadController.php: The legacy Reporter class is retired; use App\\Support\\Report\\Reporter.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyReporter wrapper is retired; use App\\Support\\Report\\Reporter.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_report_filters_dependency_errors_report_forbidden_sources(): void
@@ -1937,16 +1941,20 @@ PHP,
             'legacyOfferReportRepositoriesDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\GodOfferRepository;',
-                'app/Support/LegacyGodOfferRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\GodOfferRepository;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyGodOfferRepository as GodOfferRepository;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyGodOfferRepository as GodOfferRepository;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Report\\Repositories\\Offer\\GodOfferRepository;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyGodOfferRepository instead of importing the legacy god offer repository directly.',
+            'app/Http/Controllers/BadController.php: The legacy offer repository namespace is retired; use App\\Support\\Report\\Repositories\\Offer.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyGodOfferRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Offer\\GodOfferRepository.',
+            $errors->all()
+        );
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_employee_report_repositories_dependency_errors_report_forbidden_sources(): void
@@ -1959,20 +1967,24 @@ PHP,
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
                 'app/Http/Controllers/BadBaseController.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Repository;',
-                'app/Support/LegacyAdminEmployeeRepository.php' => 'use LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAdminEmployeeRepository as AdminEmployeeRepository;',
+                'app/Http/Controllers/BadWrapperController.php' => 'use App\\Support\\LegacyAdminEmployeeRepository as AdminEmployeeRepository;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\Report\\Repositories\\Employee\\AdminEmployeeRepository;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAdminEmployeeRepository instead of importing the legacy admin employee repository directly.',
+            'app/Http/Controllers/BadController.php: The legacy employee repository namespace is retired; use App\\Support\\Report\\Repositories\\Employee.',
             $errors->all()
         );
         $this->assertContains(
-            'app/Http/Controllers/BadBaseController.php: Avoid typehinting the legacy base report repository directly in modern report controllers.',
+            'app/Http/Controllers/BadBaseController.php: The legacy base report repository is retired; use App\\Support\\Report\\Repositories\\Repository.',
             $errors->all()
         );
-        $this->assertCount(2, $errors);
+        $this->assertContains(
+            'app/Http/Controllers/BadWrapperController.php: The LegacyAdminEmployeeRepository wrapper is retired; use App\\Support\\Report\\Repositories\\Employee\\AdminEmployeeRepository.',
+            $errors->all()
+        );
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_misc_report_repositories_dependency_errors_report_forbidden_sources(): void

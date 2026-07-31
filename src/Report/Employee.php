@@ -14,7 +14,7 @@ namespace LeadMax\TrackYourStats\Report;
 
 
 use App\Support\LegacyPayouts as Payouts;
-use LeadMax\TrackYourStats\Report\Repositories\ReferralRepository;
+use App\Support\Report\Repositories\ReferralRepository;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
 use App\Support\LegacyDatabaseConnection as DatabaseConnection;

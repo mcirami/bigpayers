@@ -530,9 +530,9 @@ Remaining cleanup is mostly archival and hardening:
   `App\Support\LegacyOfferReport` wrapper have been removed; offer click reports
   now use the registered Laravel-owned repository path exclusively, and the
   unrouted manager-click aggregation action has also been removed
-- modern report controllers now coordinate report repositories through
-  `App\Support\LegacyReporter`; the fallback audit fails on new direct
-  Laravel-side reporter imports outside the boundary
+- report controllers now coordinate Laravel-owned repositories through
+  `App\Support\Report\Reporter`; the legacy Reporter namespace and wrapper are
+  retired, and the fallback audit prevents them from returning
 - report controllers now format rows through the Laravel-owned
   `App\Support\Report\Filters`; the legacy filter namespace and wrappers are
   retired, and the fallback audit prevents them from returning

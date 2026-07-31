@@ -1,6 +1,6 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Repositories;
+namespace App\Support\Report\Repositories;
 
 
 use Carbon\Carbon;

@@ -1,11 +1,11 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report;
+namespace App\Support\Report;
 
 
 use App\Support\Report\Filters\Filter;
 use App\Support\Report\Formats\Format;
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use App\Support\Report\Repositories\Repository;
 
 class Reporter
 {

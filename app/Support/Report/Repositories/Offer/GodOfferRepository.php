@@ -1,14 +1,14 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
+namespace App\Support\Report\Repositories\Offer;
 
-
-use App\Privilege;
+use App\User;
+use Illuminate\Support\Facades\DB;
 use App\Support\LegacyPayouts as Payouts;
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use App\Support\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 
-class ManagerOfferRepository extends Repository
+class GodOfferRepository extends Repository
 {
 
     public function query($dateFrom, $dateTo): \PDOStatement
@@ -16,12 +16,12 @@ class ManagerOfferRepository extends Repository
         throw new \BadMethodCallException(static::class . ' builds reports through between().');
     }
 
+
     public function between($dateFrom, $dateTo): array
     {
         $clicks = $this->getClicks($dateFrom, $dateTo);
 
         $conversions = $this->getConversions($dateFrom, $dateTo);
-
         $report = $this->mergeReport($clicks, $conversions);
 
         $report = $this->setRequiredKeysIfNotSet($report, [
@@ -37,33 +37,32 @@ class ManagerOfferRepository extends Repository
             'EPC' => 0,
         ]);
 
+
         return $report;
     }
 
 
     private function getClicks($dateFrom, $dateTo)
     {
+
         $db = $this->getDB();
-        $sql = "SELECT
+        $sql = "
+				SELECT
 					offer.idoffer,
 					offer.offer_name,
 					count(rawClicks.idclicks) Clicks,
 					SUM(CASE WHEN rawClicks.click_type = 0 THEN 1 ELSE 0 END) UniqueClicks,
-                    count(pending_conversions.id) as PendingConversions
+                    count(pc.id) as PendingConversions
 				FROM
 					offer
 					
-				LEFT JOIN rep ON rep.referrer_repid = :referrer_repid
+				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = offer.idoffer
 				
-			
-				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = offer.idoffer AND rawClicks.rep_idrep = rep.idrep
-			 LEFT JOIN pending_conversions
-                    ON pending_conversions.click_id = rawClicks.idclicks 
-                    AND pending_conversions.converted = 0
-				
-				WHERE
+                LEFT JOIN pending_conversions pc
+                    ON pc.click_id = rawClicks.idclicks  
+					AND pc.converted = 0
+                WHERE
 					rawClicks.first_timestamp BETWEEN :dateFrom AND :dateTo  and rawClicks.click_type !=2
-				 
 			 GROUP BY offer.idoffer, rawClicks.offer_idoffer
 				
 		";
@@ -71,8 +70,6 @@ class ManagerOfferRepository extends Repository
 
         $stmt = $db->prepare($sql);
 
-
-        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
 
         $stmt->bindParam(":dateFrom", $dateFrom);
         $stmt->bindParam(":dateTo", $dateTo);
@@ -82,14 +79,16 @@ class ManagerOfferRepository extends Repository
 
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
+
         return $result;
     }
 
     private function getConversions($dateFrom, $dateTo)
     {
         $db = $this->getDB();
-        $revenueExpression = Payouts::sqlForRole(Privilege::ROLE_MANAGER, 'offer', 'rep_has_offer');
-        $sql = "SELECT
+        $revenueExpression = Payouts::sqlForRole(\App\Privilege::ROLE_GOD, 'offer', 'rep_has_offer');
+        $sql = "
+				SELECT
 					offer.idoffer,
 					offer.offer_name,
 					count(f.id) FreeSignUps,
@@ -99,14 +98,12 @@ class ManagerOfferRepository extends Repository
 				FROM
 					offer
 					
-				LEFT JOIN rep ON rep.referrer_repid = :referrer_repid
-				
-			
-				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = offer.idoffer AND rawClicks.rep_idrep = rep.idrep
+				LEFT JOIN clicks rawClicks ON rawClicks.offer_idoffer = offer.idoffer
 				
 				LEFT JOIN conversions ON conversions.click_id = rawClicks.idclicks
 				
 				LEFT JOIN free_sign_ups f ON f.click_id = rawClicks.idclicks
+				
 				
 				LEFT JOIN deductions ON deductions.conversion_id = conversions.id
 				
@@ -123,8 +120,6 @@ class ManagerOfferRepository extends Repository
         $stmt = $db->prepare($sql);
 
 
-        $stmt->bindValue(":referrer_repid", CurrentUserSession::id());
-
         $stmt->bindParam(":dateFrom", $dateFrom);
         $stmt->bindParam(":dateTo", $dateTo);
 
@@ -134,7 +129,7 @@ class ManagerOfferRepository extends Repository
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return $result;
-
     }
+
 
 }

@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Company;
 use App\PayoutLog;
 use App\Services\CompanyDatabaseConnectionManager;
-use App\Support\LegacyAdminEmployeeRepository as AdminEmployeeRepository;
+use App\Support\Report\Repositories\Employee\AdminEmployeeRepository;
 use App\Support\DateHelper as Date;
 use Carbon\Carbon;
 use Illuminate\Console\Command;

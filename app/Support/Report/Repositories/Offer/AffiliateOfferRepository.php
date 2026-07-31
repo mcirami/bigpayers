@@ -1,10 +1,10 @@
 <?php
 
 
-namespace LeadMax\TrackYourStats\Report\Repositories\Offer;
+namespace App\Support\Report\Repositories\Offer;
 
 
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use App\Support\Report\Repositories\Repository;
 
 class AffiliateOfferRepository extends Repository
 {

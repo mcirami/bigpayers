@@ -1,12 +1,12 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
+namespace App\Support\Report\Repositories\Employee;
 
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Support\LegacyPayouts as Payouts;
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use App\Support\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
 use Termwind\Components\Raw;

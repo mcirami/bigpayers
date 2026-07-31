@@ -1,11 +1,11 @@
 <?php
 
-namespace LeadMax\TrackYourStats\Report\Repositories\Employee;
+namespace App\Support\Report\Repositories\Employee;
 
 
 use App\Privilege;
 use App\Support\LegacyPayouts as Payouts;
-use LeadMax\TrackYourStats\Report\Repositories\Repository;
+use App\Support\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
 

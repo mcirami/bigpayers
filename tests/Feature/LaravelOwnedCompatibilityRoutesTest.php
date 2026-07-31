@@ -996,12 +996,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             base_path('src/Report/Employee.php'),
             base_path('src/Report/ID/Clicks.php'),
             base_path('src/Report/Offer.php'),
-            base_path('src/Report/Repositories/Employee/AdminEmployeeRepository.php'),
-            base_path('src/Report/Repositories/Employee/GodEmployeeRepository.php'),
-            base_path('src/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
-            base_path('src/Report/Repositories/Offer/AdminOfferRepository.php'),
-            base_path('src/Report/Repositories/Offer/GodOfferRepository.php'),
-            base_path('src/Report/Repositories/Offer/ManagerOfferRepository.php'),
+            app_path('Support/Report/Repositories/Employee/AdminEmployeeRepository.php'),
+            app_path('Support/Report/Repositories/Employee/GodEmployeeRepository.php'),
+            app_path('Support/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
+            app_path('Support/Report/Repositories/Offer/AdminOfferRepository.php'),
+            app_path('Support/Report/Repositories/Offer/GodOfferRepository.php'),
+            app_path('Support/Report/Repositories/Offer/ManagerOfferRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1264,7 +1264,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
     }
 
-    public function test_modern_report_controllers_use_legacy_reporter_boundary(): void
+    public function test_runtime_report_controllers_use_laravel_reporter(): void
     {
         foreach ([
             app_path('Http/Controllers/Report/EmployeeReportController.php'),
@@ -1273,14 +1273,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyReporter as Reporter', $contents);
+            $this->assertStringContainsString('App\\Support\\Report\\Reporter', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Reporter', $contents);
+            $this->assertStringNotContainsString('App\\Support\\LegacyReporter', $contents);
         }
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Report\\Reporter',
-            File::get(app_path('Support/LegacyReporter.php'))
-        );
+        $this->assertFileExists(app_path('Support/Report/Reporter.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyReporter.php'));
+        $this->assertFileDoesNotExist(base_path('src/Report/Reporter.php'));
     }
 
     public function test_runtime_report_controllers_use_laravel_owned_filters(): void
@@ -1447,7 +1447,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('GEO_IP_DATABASE', $geoIpUpdater);
     }
 
-    public function test_modern_offer_report_repositories_use_legacy_boundaries(): void
+    public function test_runtime_offer_reports_use_laravel_repositories(): void
     {
         foreach ([
             app_path('Http/Controllers/ExportDataController.php'),
@@ -1456,7 +1456,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringContainsString('App\\Support\\Report\\Repositories\\Offer', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Offer', $contents);
         }
 
@@ -1466,14 +1466,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/LegacyGodOfferRepository.php'),
             app_path('Support/LegacyManagerOfferRepository.php'),
         ] as $path) {
-            $this->assertStringContainsString(
-                'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer',
-                File::get($path)
-            );
+            $this->assertFileDoesNotExist($path);
+        }
+
+        foreach (['AdminOfferRepository', 'AffiliateOfferRepository', 'GodOfferRepository', 'ManagerOfferRepository'] as $class) {
+            $this->assertFileExists(app_path("Support/Report/Repositories/Offer/{$class}.php"));
         }
     }
 
-    public function test_modern_employee_report_repositories_use_legacy_boundaries(): void
+    public function test_runtime_employee_reports_use_laravel_repositories(): void
     {
         foreach ([
             app_path('Console/Commands/AggregateReportData.php'),
@@ -1483,7 +1484,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\Legacy', $contents);
+            $this->assertStringContainsString('App\\Support\\Report\\Repositories\\Employee', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\AdminEmployeeRepository', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\GodEmployeeRepository', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Report\\Repositories\\Employee\\ManagerEmployeeRepository', $contents);
@@ -1495,10 +1496,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/LegacyGodEmployeeRepository.php'),
             app_path('Support/LegacyManagerEmployeeRepository.php'),
         ] as $path) {
-            $this->assertStringContainsString(
-                'LeadMax\\TrackYourStats\\Report\\Repositories\\Employee',
-                File::get($path)
-            );
+            $this->assertFileDoesNotExist($path);
+        }
+
+        foreach (['AdminEmployeeRepository', 'GodEmployeeRepository', 'ManagerEmployeeRepository'] as $class) {
+            $this->assertFileExists(app_path("Support/Report/Repositories/Employee/{$class}.php"));
         }
     }
 
@@ -1524,7 +1526,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFalse(File::exists(app_path('Support/LegacySubVarRepository.php')));
         $this->assertFalse(File::exists(base_path('src/Report/Repositories/SubVarRepository.php')));
 
-        $referralRepository = File::get(base_path('src/Report/Repositories/ReferralRepository.php'));
+        $referralRepository = File::get(app_path('Support/Report/Repositories/ReferralRepository.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $referralRepository);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRepository);
@@ -1919,13 +1921,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/Report/Formats/Html.php'),
             base_path('src/Report/ID/Clicks.php'),
             base_path('src/Report/Offer.php'),
-            base_path('src/Report/Repositories/BannedUsersRepository.php'),
-            base_path('src/Report/Repositories/Employee/AdminEmployeeRepository.php'),
-            base_path('src/Report/Repositories/Employee/GodEmployeeRepository.php'),
-            base_path('src/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
-            base_path('src/Report/Repositories/Offer/AdminOfferRepository.php'),
-            base_path('src/Report/Repositories/Offer/GodOfferRepository.php'),
-            base_path('src/Report/Repositories/Offer/ManagerOfferRepository.php'),
+            app_path('Support/Report/Repositories/BannedUsersRepository.php'),
+            app_path('Support/Report/Repositories/Employee/AdminEmployeeRepository.php'),
+            app_path('Support/Report/Repositories/Employee/GodEmployeeRepository.php'),
+            app_path('Support/Report/Repositories/Employee/ManagerEmployeeRepository.php'),
+            app_path('Support/Report/Repositories/Offer/AdminOfferRepository.php'),
+            app_path('Support/Report/Repositories/Offer/GodOfferRepository.php'),
+            app_path('Support/Report/Repositories/Offer/ManagerOfferRepository.php'),
         ] as $path) {
             $contents = File::get($path);
 
