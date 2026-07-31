@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Services\LegacyDatabaseConfig;
 use App\Support\NativeRequest;
 use App\Support\NativeSession;

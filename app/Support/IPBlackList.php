@@ -1,6 +1,6 @@
 <?php namespace App\Support;
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 
 /**
  * Author: Dean

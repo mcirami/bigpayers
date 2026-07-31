@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;

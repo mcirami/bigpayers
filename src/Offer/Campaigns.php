@@ -3,7 +3,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use App\Support\CurrentUserSession;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use PDO;
 
 class Campaigns

@@ -11,7 +11,7 @@ namespace LeadMax\TrackYourStats\User;
 use App\Privilege;
 use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\NativeRequest;
 use PDO;

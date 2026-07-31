@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\User;
 
 
 use Illuminate\Support\Facades\DB;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\Notifications;
 use App\Support\Connection;
 use App\Support\NativeRequest;

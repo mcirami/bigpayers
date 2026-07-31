@@ -8,7 +8,7 @@
 
 namespace LeadMax\TrackYourStats\Offer\Rules\Handlers;
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 
 class NoneUnique
 {

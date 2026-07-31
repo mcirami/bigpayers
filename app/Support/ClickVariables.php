@@ -370,7 +370,7 @@ class ClickVariables
 
     static function selectSubVars($id)
     {
-        $db = LegacyDatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM click_vars WHERE click_id = :id ";
         $stmt = $db->prepare($sql);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);

@@ -4,7 +4,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\Click;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 
 class FreeSignUp
 {

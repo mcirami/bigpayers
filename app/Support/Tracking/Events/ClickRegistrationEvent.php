@@ -14,7 +14,7 @@ use App\Support\Tracking\URLProcessor;
 use App\Support\Tracking\URLTagReplacers\Base64;
 use App\Support\Tracking\URLTagReplacers\SubVariables;
 use App\Support\Tracking\URLTagReplacers\TYSVariables;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\LegacyCaps as Caps;
 use App\Support\LegacyOffer as Offer;
 use App\Support\LegacyRepHasOffer as RepHasOffer;

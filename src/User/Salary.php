@@ -9,7 +9,7 @@
 
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use PDO;
 
 class Salary

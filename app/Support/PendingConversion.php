@@ -51,7 +51,7 @@ class PendingConversion
 
     public static function selectOneQuery($pendingConversion)
     {
-        $database = LegacyDatabaseConnection::getInstance();
+        $database = DatabaseConnection::getInstance();
         $statement = $database->prepare('SELECT * FROM pending_conversions WHERE id = :id');
         $statement->bindParam(':id', $pendingConversion);
         $statement->execute();
@@ -61,7 +61,7 @@ class PendingConversion
 
     public static function selectOneByClickIdQuery($clickId)
     {
-        $database = LegacyDatabaseConnection::getInstance();
+        $database = DatabaseConnection::getInstance();
         $statement = $database->prepare('SELECT * FROM pending_conversions WHERE click_id = :click_id');
         $statement->bindParam(':click_id', $clickId);
         $statement->execute();
@@ -77,7 +77,7 @@ class PendingConversion
             return false;
         }
 
-        $database = LegacyDatabaseConnection::getInstance();
+        $database = DatabaseConnection::getInstance();
         $statement = $database->prepare(
             'INSERT INTO pending_conversions (click_id, payout, converted, timestamp)
              VALUES (:click_id, :payout, :converted, :timestamp)'

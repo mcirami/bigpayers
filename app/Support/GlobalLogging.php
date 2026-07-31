@@ -2,7 +2,7 @@
 
 // Global compatibility logging helpers loaded through Composer.
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\NativeRequest;
 
 // php file used to store our log functions, these functions log to the database,

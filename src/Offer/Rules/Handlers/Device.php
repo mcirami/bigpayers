@@ -7,7 +7,7 @@
  * Time: 12:40 PM
  */
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use PDO;
 
 class Device

@@ -15,7 +15,7 @@ use App\Privilege;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\PaginationHelper as Paginate;
 use App\Support\LegacyUser as User;
 use App\Support\NativeRequest;

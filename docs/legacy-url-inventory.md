@@ -519,9 +519,9 @@ Remaining cleanup is mostly archival and hardening:
   middleware boundaries; the retired legacy admin-login class has been removed
 - modern dashboard layouts render notification state through Laravel views; the
   retired legacy JavaScript notify class has been removed
-- modern database-update screens now run the legacy company database updater
-  through `App\Support\LegacyCompanyUpdater`; the fallback audit fails on new
-  direct Laravel-side company-updater imports outside the boundary
+- database-update screens and version history now live under
+  `App\Support\DatabaseUpdates`; the legacy updater wrapper and unused database
+  seeder/stub subsystem have been removed
 - tenant bootstrap and remaining source callers now use
   `App\Support\Connection` and `App\Support\RuntimeCompany`; both legacy source
   classes and the connection wrapper have been removed, and stale serialized
@@ -553,9 +553,8 @@ Remaining cleanup is mostly archival and hardening:
   reporting now also uses a Laravel aggregate query, allowing both blacklist
   wrappers and their unused legacy source classes to be removed; payout reports
   still resolve through an audited `App\Support` boundary
-- modern report controllers now resolve the legacy database singleton through
-  `App\Support\LegacyDatabaseConnection`; the fallback audit fails on new direct
-  Laravel-side database connection imports outside that boundary
+- runtime database access now resolves through `App\Support\DatabaseConnection`;
+  the legacy source class and wrapper have been removed
 - modern offer report controllers and exports now resolve legacy offer report
   repositories through `App\Support` wrappers; the fallback audit fails on new
   direct Laravel-side offer report repository imports outside those boundaries

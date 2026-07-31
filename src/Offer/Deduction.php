@@ -10,7 +10,7 @@ namespace LeadMax\TrackYourStats\Offer;
 
 
 use App\Support\LegacyReferrals as Referrals;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 
 class Deduction
 {

@@ -20,6 +20,10 @@ class LegacyFallbackAuditTest extends TestCase
             'The retired src/System directory contains no PHP files.',
             $output
         );
+        $this->assertStringContainsString(
+            'The retired src/Database directory contains no PHP files.',
+            $output
+        );
 
         $this->assertStringContainsString(
             'Laravel middleware initializes the legacy runtime boundary once per request.',
@@ -230,7 +234,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern database update screens run through LegacyCompanyUpdater.',
+            'Database update screens run through App\\Support\\DatabaseUpdates.',
             $output
         );
         $this->assertStringContainsString(
@@ -254,7 +258,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.',
+            'Runtime code resolves database connections through App\\Support\\DatabaseConnection.',
             $output
         );
         $this->assertStringContainsString(
@@ -1751,13 +1755,12 @@ PHP,
             'legacyCompanyUpdaterDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Database\\CompanyUpdater;',
-                'app/Support/LegacyCompanyUpdater.php' => 'use LeadMax\\TrackYourStats\\Database\\CompanyUpdater;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyCompanyUpdater as CompanyUpdater;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\DatabaseUpdates\\CompanyUpdater;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyCompanyUpdater instead of importing the legacy company updater class directly.',
+            'app/Http/Controllers/BadController.php: The legacy company updater class is retired; use App\\Support\\DatabaseUpdates\\CompanyUpdater.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1897,13 +1900,12 @@ PHP,
             'legacyDatabaseConnectionDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => '\\LeadMax\\TrackYourStats\\Database\\DatabaseConnection::getInstance();',
-                'app/Support/LegacyDatabaseConnection.php' => 'use LeadMax\\TrackYourStats\\Database\\DatabaseConnection;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyDatabaseConnection as DatabaseConnection;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\DatabaseConnection;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyDatabaseConnection instead of referencing the legacy database connection class directly.',
+            'app/Http/Controllers/BadController.php: The legacy database connection class is retired; use App\\Support\\DatabaseConnection.',
             $errors->all()
         );
         $this->assertCount(1, $errors);

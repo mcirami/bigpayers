@@ -2,7 +2,7 @@
 
 namespace LeadMax\TrackYourStats\User;
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use PDO;
 
 // logic for heirachy tree for users

@@ -8,7 +8,7 @@ use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
 use App\Support\Report\Filters\ClickLink;
 use App\Support\Report\Filters\DeductionColumnFilter;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\Report\Filters\DollarSign;
 use App\Support\Report\Filters\EarningPerClick;
 use App\Support\Report\Repositories\Offer\AdminOfferRepository;

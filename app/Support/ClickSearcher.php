@@ -13,7 +13,7 @@ class ClickSearcher
 
     public function clickVars()
     {
-        $database = LegacyDatabaseConnection::getInstance();
+        $database = DatabaseConnection::getInstance();
         $statement = $database->prepare('SELECT * FROM click_vars WHERE click_id = :click_id');
         $statement->bindParam(':click_id', $this->clickId);
         $statement->execute();
@@ -23,7 +23,7 @@ class ClickSearcher
 
     public function clickData()
     {
-        $database = LegacyDatabaseConnection::getInstance();
+        $database = DatabaseConnection::getInstance();
         $statement = $database->prepare('SELECT * FROM clicks WHERE idclicks = :click_id');
         $statement->bindParam(':click_id', $this->clickId);
         $statement->execute();

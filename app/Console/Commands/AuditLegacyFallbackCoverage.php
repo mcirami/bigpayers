@@ -452,12 +452,10 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyCompanyUpdaterForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Database\\CompanyUpdater' => 'Use App\\Support\\LegacyCompanyUpdater instead of importing the legacy company updater class directly.',
+        'LeadMax\\TrackYourStats\\Database\\CompanyUpdater' => 'The legacy company updater class is retired; use App\\Support\\DatabaseUpdates\\CompanyUpdater.',
     ];
 
-    private array $legacyCompanyUpdaterAllowedFiles = [
-        'app/Support/LegacyCompanyUpdater.php' => 'The dedicated boundary around the legacy company updater class.',
-    ];
+    private array $legacyCompanyUpdaterAllowedFiles = [];
 
     private array $legacyConnectionForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\System\\Connection' => 'The legacy connection class is retired; use App\\Support\\Connection.',
@@ -498,12 +496,10 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyDatabaseConnectionForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Database\\DatabaseConnection' => 'Use App\\Support\\LegacyDatabaseConnection instead of referencing the legacy database connection class directly.',
+        'LeadMax\\TrackYourStats\\Database\\DatabaseConnection' => 'The legacy database connection class is retired; use App\\Support\\DatabaseConnection.',
     ];
 
-    private array $legacyDatabaseConnectionAllowedFiles = [
-        'app/Support/LegacyDatabaseConnection.php' => 'The dedicated boundary around the legacy database connection class.',
-    ];
+    private array $legacyDatabaseConnectionAllowedFiles = [];
 
     private array $legacyOfferReportRepositoriesForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Report\\Repositories\\Offer\\' => 'The legacy offer repository namespace is retired; use App\\Support\\Report\\Repositories\\Offer.',
@@ -586,6 +582,15 @@ class AuditLegacyFallbackCoverage extends Command
         if ($retiredSystemSourceFiles->isNotEmpty()) {
             $this->error('Retired src/System PHP files have returned:');
             $retiredSystemSourceFiles->each(fn ($file) => $this->line(" - {$file}"));
+
+            return self::FAILURE;
+        }
+
+        $retiredDatabaseSourceFiles = $this->retiredDatabaseSourceFiles();
+
+        if ($retiredDatabaseSourceFiles->isNotEmpty()) {
+            $this->error('Retired src/Database PHP files have returned:');
+            $retiredDatabaseSourceFiles->each(fn ($file) => $this->line(" - {$file}"));
 
             return self::FAILURE;
         }
@@ -1168,6 +1173,7 @@ class AuditLegacyFallbackCoverage extends Command
 
         $this->info('No legacy PHP files exist.');
         $this->info('The retired src/System directory contains no PHP files.');
+        $this->info('The retired src/Database directory contains no PHP files.');
         $this->info(count($this->intentionallyUnrouted) . ' retired legacy PHP URLs are documented.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
         $publicEntrypointSummary = $publicEntrypointCount === 1
@@ -1223,13 +1229,13 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Modern offer postback URL flows use App\Support boundaries.');
         $this->info('Modern layouts preserve admin-login state through Laravel request boundaries.');
         $this->info('Legacy admin-login and notify classes are retired from runtime source.');
-        $this->info('Modern database update screens run through LegacyCompanyUpdater.');
+        $this->info('Database update screens run through App\\Support\\DatabaseUpdates.');
         $this->info('Runtime code resolves tenant connections through App\\Support\\Connection.');
         $this->info('Runtime report views render through App\\Support\\Report\\Formats\\Html.');
         $this->info('Runtime report controllers coordinate reports through App\\Support\\Report\\Reporter.');
         $this->info('Runtime report controllers format reports through App\\Support\\Report\\Filters.');
         $this->info('Runtime payout reports use App\\Support\\Report\\AffiliatePayout.');
-        $this->info('Modern report controllers resolve legacy database connections through LegacyDatabaseConnection.');
+        $this->info('Runtime code resolves database connections through App\\Support\\DatabaseConnection.');
         $this->info('Runtime offer reports use App\\Support\\Report\\Repositories\\Offer.');
         $this->info('Runtime employee reports use App\\Support\\Report\\Repositories\\Employee.');
         $this->info('Runtime miscellaneous reports use App\\Support\\Report\\Repositories.');
@@ -1268,6 +1274,20 @@ class AuditLegacyFallbackCoverage extends Command
         return collect(File::allFiles($path))
             ->filter(fn ($file) => $file->getExtension() === 'php')
             ->map(fn ($file) => 'src/System/'.str_replace('\\', '/', $file->getRelativePathname()))
+            ->values();
+    }
+
+    private function retiredDatabaseSourceFiles()
+    {
+        $path = base_path('src/Database');
+
+        if (! File::isDirectory($path)) {
+            return collect();
+        }
+
+        return collect(File::allFiles($path))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => 'src/Database/'.str_replace('\\', '/', $file->getRelativePathname()))
             ->values();
     }
 

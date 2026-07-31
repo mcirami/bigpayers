@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use Carbon\Carbon;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\TrackingParameters;
 use App\Support\NativeRequest;
 use Illuminate\Support\Facades\DB;

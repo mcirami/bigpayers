@@ -52,7 +52,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         );
         $login = File::get(base_path('src/User/Login.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $login);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $login);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $login);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $login);
         $this->assertStringContainsString('App\\Support\\NativeSession', $login);
@@ -74,7 +74,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(base_path('src/User/AffiliateSignUp.php'))
         );
         $this->assertStringContainsString(
-            'App\\Support\\LegacyDatabaseConnection as DatabaseConnection',
+            'App\\Support\\DatabaseConnection',
             File::get(base_path('src/User/AffiliateSignUp.php'))
         );
         $this->assertStringNotContainsString(
@@ -105,7 +105,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/UserController.php'),
             app_path('Support/Conversion.php'),
             app_path('Support/Tracking/Events/UrlEvent.php'),
-            base_path('src/Database/Versions/V158.php'),
+            app_path('Support/DatabaseUpdates/Versions/V158.php'),
             base_path('src/Offer/Create.php'),
             base_path('src/Offer/RepHasOffer.php'),
             base_path('src/Offer/SaleLog.php'),
@@ -136,7 +136,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $legacyUser = File::get(base_path('src/User/User.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $legacyUser);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $legacyUser);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $legacyUser);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $legacyUser);
         $this->assertStringNotContainsString('$_COOKIE', $legacyUser);
@@ -186,7 +186,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         foreach ([
             app_path('Support/Conversion.php') => 'App\\Support\\LegacyReferrals as Referrals',
-            base_path('src/Database/Versions/V148.php') => 'App\\Support\\LegacyReportPermissions as ReportPermissions',
+            app_path('Support/DatabaseUpdates/Versions/V148.php') => 'App\\Support\\LegacyReportPermissions as ReportPermissions',
             base_path('src/Offer/Deduction.php') => 'App\\Support\\LegacyReferrals as Referrals',
             base_path('src/Offer/Offer.php') => 'App\\Support\\LegacyPrivileges as Privileges',
         ] as $path => $expectedImport) {
@@ -234,7 +234,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringContainsString('App\\Support\\DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
 
@@ -266,7 +266,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $deduction = File::get(base_path('src/Offer/Deduction.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $deduction);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $deduction);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $deduction);
     }
 
@@ -278,7 +278,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
             app_path('Support/Tracking/Events/ConversionRegistrationEvent.php'),
             app_path('Support/Tracking/Events/UrlEvent.php'),
-            base_path('src/Database/Versions/V158.php'),
+            app_path('Support/DatabaseUpdates/Versions/V158.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -291,7 +291,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Http/Controllers/AffiliateMassPostbackController.php'),
             app_path('Http/Controllers/OfferController.php'),
             app_path('Support/Tracking/Events/ClickRegistrationEvent.php'),
-            base_path('src/Database/Versions/V158.php'),
+            app_path('Support/DatabaseUpdates/Versions/V158.php'),
             base_path('src/User/Create.php'),
             base_path('src/User/CreateUser.php'),
             base_path('src/User/PostBackURLs/ConversionPostBackURL.php'),
@@ -327,13 +327,13 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $repHasOffer = File::get(base_path('src/Offer/RepHasOffer.php'));
         $offerUpdate = File::get(base_path('src/Offer/Update.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offer);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $offer);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offer);
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $repHasOffer);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $repHasOffer);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $repHasOffer);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $repHasOffer);
         $this->assertStringNotContainsString('$_POST', $repHasOffer);
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $offerUpdate);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $offerUpdate);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $offerUpdate);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $offerUpdate);
         $this->assertStringNotContainsString('$_POST', $offerUpdate);
@@ -382,7 +382,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringContainsString('App\\Support\\DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
     }
@@ -390,11 +390,11 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_offer_support_helpers_use_legacy_boundaries(): void
     {
         $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
-        $legacySeedVersion = File::get(base_path('src/Database/Versions/V158.php'));
+        $legacySeedVersion = File::get(app_path('Support/DatabaseUpdates/Versions/V158.php'));
 
         $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $offerController);
         $this->assertStringContainsString('App\\Support\\LegacyCampaigns as Campaigns', $legacySeedVersion);
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $legacySeedVersion);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $legacySeedVersion);
         $this->assertStringContainsString(
             'App\\Support\\LegacyCaps as Caps',
             File::get(base_path('src/Offer/Rules/Device.php'))
@@ -432,7 +432,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             File::get(app_path('Support/LegacyCreateOffer.php'))
         );
         $this->assertStringContainsString(
-            'App\\Support\\LegacyDatabaseConnection as DatabaseConnection',
+            'App\\Support\\DatabaseConnection',
             File::get(base_path('src/Offer/CreateOffer.php'))
         );
         $this->assertStringNotContainsString(
@@ -450,7 +450,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $freeSignUp = File::get(base_path('src/Offer/FreeSignUp.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $freeSignUp);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $freeSignUp);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $freeSignUp);
 
         foreach ([
@@ -460,7 +460,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringContainsString('App\\Support\\DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
 
@@ -511,7 +511,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringContainsString('App\\Support\\DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
 
@@ -549,17 +549,15 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     public function test_modern_database_updates_use_legacy_company_updater_boundary(): void
     {
         $controller = File::get(app_path('Http/Controllers/DatabaseUpdateController.php'));
-        $companyUpdater = File::get(base_path('src/Database/CompanyUpdater.php'));
+        $companyUpdater = File::get(app_path('Support/DatabaseUpdates/CompanyUpdater.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyCompanyUpdater as CompanyUpdater', $controller);
+        $this->assertStringContainsString('App\\Support\\DatabaseUpdates\\CompanyUpdater', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\CompanyUpdater', $controller);
         $this->assertStringContainsString('App\\Support\\Connection', $companyUpdater);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Connection', $companyUpdater);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Database\\CompanyUpdater',
-            File::get(app_path('Support/LegacyCompanyUpdater.php'))
-        );
+        $this->assertFileDoesNotExist(base_path('src/Database/CompanyUpdater.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyCompanyUpdater.php'));
     }
 
     public function test_settings_controller_does_not_load_legacy_company_from_session(): void
@@ -593,7 +591,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $urls = File::get(base_path('src/Offer/URLs.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $urls);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $urls);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $urls);
     }
 
@@ -715,7 +713,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats', File::get(app_path('Support/Mail.php')));
         $passwordReset = File::get(base_path('src/User/PasswordReset.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $passwordReset);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $passwordReset);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $passwordReset);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $passwordReset);
         $this->assertStringNotContainsString('$_GET', $passwordReset);
@@ -763,7 +761,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/Clicks/Click.php'));
 
         $click = File::get(app_path('Support/Click.php'));
-        $this->assertStringContainsString('LegacyDatabaseConnection::getInstance()', $click);
+        $this->assertStringContainsString('DatabaseConnection::getInstance()', $click);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $click);
         $this->assertStringContainsString('NativeRequest::', $click);
         $this->assertStringContainsString('App\\Services\\GeoIpDatabase', $click);
@@ -800,8 +798,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Support/Tracking/Events/UrlEvent.php'),
-            base_path('src/Database/Versions/V130.php'),
-            base_path('src/Database/Versions/V164.php'),
+            app_path('Support/DatabaseUpdates/Versions/V130.php'),
+            app_path('Support/DatabaseUpdates/Versions/V164.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -810,7 +808,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $clickVars = File::get(app_path('Support/ClickVariables.php'));
-        $this->assertStringContainsString('LegacyDatabaseConnection::getInstance()', $clickVars);
+        $this->assertStringContainsString('DatabaseConnection::getInstance()', $clickVars);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickVars);
         $this->assertStringContainsString('NativeRequest::queryAll()', $clickVars);
         $this->assertStringNotContainsString('$_GET', $clickVars);
@@ -869,12 +867,12 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(base_path('src/User/ReferralRegister.php'));
 
         $conversion = File::get(app_path('Support/Conversion.php'));
-        $this->assertStringContainsString('LegacyDatabaseConnection::getInstance()', $conversion);
+        $this->assertStringContainsString('DatabaseConnection::getInstance()', $conversion);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $conversion);
 
         $referralRegister = File::get(app_path('Support/ReferralRegister.php'));
 
-        $this->assertStringContainsString('LegacyDatabaseConnection::getInstance()', $referralRegister);
+        $this->assertStringContainsString('DatabaseConnection::getInstance()', $referralRegister);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRegister);
     }
 
@@ -907,7 +905,6 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             app_path('Support/Tracking/Events/Listeners/DeductionListener.php'),
             app_path('Support/Tracking/Events/Listeners/FreeSignUpListener.php'),
             app_path('Support/Tracking/Events/UrlEvent.php'),
-            base_path('src/Database/Stubs/ConversionRegister.php'),
         ] as $path) {
             $contents = File::get($path);
 
@@ -1021,7 +1018,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $adjustmentsLog = File::get(base_path('src/Offer/AdjustmentsLog.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $adjustmentsLog);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $adjustmentsLog);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $adjustmentsLog);
     }
 
@@ -1039,7 +1036,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $saleLog = File::get(base_path('src/Offer/SaleLog.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $saleLog);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $saleLog);
         $this->assertStringContainsString('App\\Services\\SaleLogImageStorage', $saleLog);
         $this->assertStringNotContainsString("config('filesystems.sale_log_directory')", $saleLog);
         $this->assertStringNotContainsString('SALE_LOG_DIRECTORY', $saleLog);
@@ -1168,7 +1165,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $tree = File::get(base_path('src/User/Tree.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $tree);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $tree);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $tree);
     }
 
@@ -1336,20 +1333,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         $controller = File::get(app_path('Http/Controllers/Report/OfferReportController.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $controller);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $controller);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $controller);
 
-        $this->assertStringContainsString(
-            'LeadMax\\TrackYourStats\\Database\\DatabaseConnection',
-            File::get(app_path('Support/LegacyDatabaseConnection.php'))
-        );
+        $this->assertFileDoesNotExist(base_path('src/Database/DatabaseConnection.php'));
+        $this->assertFileDoesNotExist(app_path('Support/LegacyDatabaseConnection.php'));
 
         foreach ([
             app_path('Support/Report/AffiliatePayout.php'),
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringContainsString('App\\Support\\DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
     }
@@ -1364,7 +1359,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         ] as $path) {
             $contents = File::get($path);
 
-            $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $contents);
+            $this->assertStringContainsString('App\\Support\\DatabaseConnection', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $contents);
         }
 
@@ -1393,7 +1388,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $legacyDatabaseConfig = File::get(app_path('Services/LegacyDatabaseConfig.php'));
-        $legacyDatabaseConnection = File::get(base_path('src/Database/DatabaseConnection.php'));
+        $databaseConnection = File::get(app_path('Support/DatabaseConnection.php'));
         $runtimeCompany = File::get(app_path('Support/RuntimeCompany.php'));
         $connection = File::get(app_path('Support/Connection.php'));
         $indexController = File::get(app_path('Http/Controllers/IndexController.php'));
@@ -1405,18 +1400,18 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringContainsString("config(\"database.connections.{\$connection}.{\$key}\")", $legacyDatabaseConfig);
         $this->assertStringContainsString("self::databaseConfig()['connections'][\$connection]", $legacyDatabaseConfig);
         $this->assertStringContainsString("require base_path('config/database.php')", $legacyDatabaseConfig);
-        $this->assertStringContainsString('LegacyDatabaseConfig', $legacyDatabaseConnection);
+        $this->assertStringContainsString('LegacyDatabaseConfig', $databaseConnection);
         $this->assertStringContainsString('LegacyDatabaseConfig', $runtimeCompany);
         $this->assertStringContainsString('LegacyDatabaseConfig', $connection);
         $this->assertStringContainsString('LegacyDatabaseConfig', $indexController);
         $this->assertStringNotContainsString("config('database.connections.mysql.database')", $indexController);
-        $this->assertStringNotContainsString('DB_DATABASE', $legacyDatabaseConnection);
+        $this->assertStringNotContainsString('DB_DATABASE', $databaseConnection);
         $this->assertStringNotContainsString('DB_DATABASE', $runtimeCompany);
         $this->assertStringNotContainsString('DB_DATABASE', $connection);
         $this->assertStringNotContainsString('DB_DATABASE', $indexController);
-        $this->assertStringNotContainsString('DB_HOST', $legacyDatabaseConnection);
+        $this->assertStringNotContainsString('DB_HOST', $databaseConnection);
         $this->assertStringNotContainsString('DB_HOST', $connection);
-        $this->assertStringNotContainsString('MASTER_DB_', $legacyDatabaseConnection);
+        $this->assertStringNotContainsString('MASTER_DB_', $databaseConnection);
     }
 
     public function test_runtime_offer_reports_use_laravel_repositories(): void
@@ -1500,7 +1495,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         $referralRepository = File::get(app_path('Support/Report/Repositories/ReferralRepository.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $referralRepository);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $referralRepository);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $referralRepository);
 
         $aggregateController = File::get(app_path('Http/Controllers/Report/AggregateReportController.php'));
@@ -1623,7 +1618,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $clickRegistrationEvent = File::get(app_path('Support/Tracking/Events/ClickRegistrationEvent.php'));
         $clickListener = File::get(app_path('Support/Tracking/Events/Listeners/ClickListener.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $clickRegistrationEvent);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $clickRegistrationEvent);
         $this->assertStringContainsString('App\\Support\\NativeRequest', $clickRegistrationEvent);
         $this->assertStringContainsString('NativeRequest::referrer()', $clickRegistrationEvent);
@@ -1809,7 +1804,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(app_path('Support/LegacyIPBlackList.php'));
         $ipBlackList = File::get(app_path('Support/IPBlackList.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $ipBlackList);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $ipBlackList);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $ipBlackList);
 
     }
@@ -1853,7 +1848,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(app_path('Support/LegacyNotifications.php'));
         $notifications = File::get(app_path('Support/Notifications.php'));
 
-        $this->assertStringContainsString('App\\Support\\LegacyDatabaseConnection as DatabaseConnection', $notifications);
+        $this->assertStringContainsString('App\\Support\\DatabaseConnection', $notifications);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\Database\\DatabaseConnection', $notifications);
         $this->assertStringContainsString('NativeRequest::', $notifications);
         $this->assertStringNotContainsString('$_POST', $notifications);

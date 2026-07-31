@@ -108,7 +108,7 @@ class Conversion
 
     public function save()
     {
-        $db = LegacyDatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "INSERT INTO conversions (user_id, click_id, timestamp, paid) VALUES (:user_id, :clickID, :timestamp, :paid)";
 
         $prep = $db->prepare($sql);
@@ -136,7 +136,7 @@ class Conversion
 
     public function getAffiliateData()
     {
-        $db = LegacyDatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT
                     clicks.rep_idrep,
                     " . Payouts::sqlForRole(Privilege::ROLE_AFFILIATE, 'offer', 'rep_has_offer') . " AS resolved_payout
@@ -198,7 +198,7 @@ class Conversion
 
     static function selectOne($id)
     {
-        $db = LegacyDatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE click_id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $id);
@@ -210,7 +210,7 @@ class Conversion
 
     static function selectOneByConversionID($ConversionId)
     {
-        $db = LegacyDatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
         $sql = "SELECT * FROM conversions WHERE id = :id";
         $prep = $db->prepare($sql);
         $prep->bindParam(":id", $ConversionId);
@@ -223,7 +223,7 @@ class Conversion
     // OLD AND DISGUSTING
     static function Conversion($clickid, $customPayout = false, $returnConversionId = false)
     {
-        $db = LegacyDatabaseConnection::getInstance();
+        $db = DatabaseConnection::getInstance();
 
         $click = Click::SelectOne($clickid);
 

@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\Offer\Rules\Handlers;
 
 use Illuminate\Support\Facades\Log;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use PDO;
 
 

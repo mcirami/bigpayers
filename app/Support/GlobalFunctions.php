@@ -2,7 +2,7 @@
 
 // Global compatibility helpers loaded through Composer.
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\NativeRequest;
 
 /*

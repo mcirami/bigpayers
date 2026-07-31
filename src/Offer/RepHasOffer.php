@@ -15,7 +15,7 @@
 namespace LeadMax\TrackYourStats\Offer;
 
 use App\BonusOffer;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\Notifications;
 use App\Support\CurrentUserSession;
 use App\Support\LegacyPermissions as Permissions;

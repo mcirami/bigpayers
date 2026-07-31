@@ -8,7 +8,7 @@
 
 namespace LeadMax\TrackYourStats\User\PostBackURLs;
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 
 class FreePostBackURL extends PostBackURL
 {

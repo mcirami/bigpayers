@@ -15,7 +15,7 @@
 namespace LeadMax\TrackYourStats\User;
 
 use App\Privilege;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use PDO;
 
 

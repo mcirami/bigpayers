@@ -6,7 +6,7 @@ use App\BonusOffer;
 use Carbon\Carbon;
 use App\Support\CurrentUserSession;
 use App\Support\QueryAssignments as Assignments;
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\NativeRequest;
 use App\Support\LegacyTree as Tree;
 use App\Support\LegacyUser as User;

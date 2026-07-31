@@ -9,7 +9,7 @@
 namespace LeadMax\TrackYourStats\User\PostBackURLs;
 
 
-use App\Support\LegacyDatabaseConnection as DatabaseConnection;
+use App\Support\DatabaseConnection;
 use App\Support\LegacyRepHasOffer as RepHasOffer;
 use App\Support\LegacyUser as User;
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Support\LegacyCompanyUpdater as CompanyUpdater;
+use App\Support\DatabaseUpdates\CompanyUpdater;
 use Illuminate\Http\Request;
 use Throwable;
 
