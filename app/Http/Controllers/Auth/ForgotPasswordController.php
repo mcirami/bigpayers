@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Support\Mail;
-use App\Support\LegacyUser as User;
+use App\Support\UserDomain\User;
 
 class ForgotPasswordController extends Controller
 {

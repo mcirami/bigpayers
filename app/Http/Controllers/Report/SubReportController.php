@@ -10,7 +10,7 @@ use App\Conversion;
 use App\Privilege;
 use App\Support\CurrentUserSession;
 use App\Support\ClickGeo;
-use App\Support\LegacyPayouts as Payouts;
+use App\Support\OfferDomain\Payouts;
 use App\Support\RequestContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

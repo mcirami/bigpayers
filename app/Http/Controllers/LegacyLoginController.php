@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Company;
-use App\Support\LegacyLogin as Login;
-use App\Support\LegacyUser as User;
+use App\Support\UserDomain\Login;
+use App\Support\UserDomain\User;
 use App\Support\NativeSession;
 use Illuminate\Http\Request;
 

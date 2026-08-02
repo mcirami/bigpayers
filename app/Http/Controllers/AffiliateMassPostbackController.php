@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyOffer;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
+use App\Support\OfferDomain\Offer as OfferSupport;
+use App\Support\OfferDomain\RepHasOffer;
 use Illuminate\Http\Request;
 use PDO;
 
@@ -64,7 +64,7 @@ class AffiliateMassPostbackController extends Controller
         $currentUserContext ??= CurrentUserSession::snapshot();
 
         return collect(
-            LegacyOffer::selectOwnedOffers($currentUserContext->type)->fetchAll(PDO::FETCH_OBJ)
+            OfferSupport::selectOwnedOffers($currentUserContext->type)->fetchAll(PDO::FETCH_OBJ)
         )->values();
     }
 

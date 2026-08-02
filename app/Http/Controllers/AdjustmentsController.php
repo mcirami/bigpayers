@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
+use App\Support\OfferDomain\AdjustmentsLog;
 use App\Support\Click;
 use App\Support\Conversion;
 use App\Support\RequestContext;

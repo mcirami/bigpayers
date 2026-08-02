@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Report;
 
 use App\Privilege;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyAdjustmentsLog as AdjustmentsLog;
+use App\Support\OfferDomain\AdjustmentsLog;
 use Illuminate\Support\Facades\DB;
 
 class AdjustmentsReportController extends ReportController

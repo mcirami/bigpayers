@@ -11,20 +11,20 @@ use App\PredefinedOfferRule;
 use App\Privilege;
 use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyConversionPostBackURL;
-use App\Support\LegacyDeductionPostBackURL;
-use App\Support\LegacyDeviceRuleHandler;
-use App\Support\LegacyFreePostBackURL;
-use App\Support\LegacyCampaigns as Campaigns;
-use App\Support\LegacyGeoRuleHandler;
-use App\Support\LegacyNoneUniqueRuleHandler;
-use App\Support\LegacyOffer as LegacyOffer;
+use App\Support\UserDomain\PostBackURLs\ConversionPostBackURL as LegacyConversionPostBackURL;
+use App\Support\UserDomain\PostBackURLs\DeductionPostBackURL as LegacyDeductionPostBackURL;
+use App\Support\OfferDomain\Rules\Handlers\Device as DeviceRuleHandler;
+use App\Support\UserDomain\PostBackURLs\FreePostBackURL as LegacyFreePostBackURL;
+use App\Support\OfferDomain\Campaigns;
+use App\Support\OfferDomain\Rules\Handlers\Geo as GeoRuleHandler;
+use App\Support\OfferDomain\Rules\Handlers\NoneUnique as NoneUniqueRuleHandler;
+use App\Support\OfferDomain\Offer as OfferSupport;
 use App\Support\Notifications;
-use App\Support\LegacyOfferRuleGeo;
-use App\Support\LegacyOfferRules;
-use App\Support\LegacyOfferView;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
-use App\Support\LegacyUser;
+use App\Support\OfferDomain\Rules as OfferRules;
+use App\Support\OfferDomain\Rules\Geo as GeoRule;
+use App\Support\OfferDomain\View as OfferView;
+use App\Support\OfferDomain\RepHasOffer;
+use App\Support\UserDomain\User as LegacyUser;
 use App\Support\RequestContext;
 use App\User;
 use App\UserOffer;
@@ -121,7 +121,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one country before saving this rule.'], 422);
         }
 
-        (new LegacyGeoRuleHandler($data))->createRule();
+        (new GeoRuleHandler($data))->createRule();
 
         return response()->json(['message' => 'Geo rule created.']);
     }
@@ -142,7 +142,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one country before saving this rule.'], 422);
         }
 
-        (new LegacyGeoRuleHandler((string) $rule))->updateRule($ruleData, $countryList);
+        (new GeoRuleHandler((string) $rule))->updateRule($ruleData, $countryList);
 
         return response()->json(['message' => 'Geo rule updated.']);
     }
@@ -180,7 +180,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one device before saving this rule.'], 422);
         }
 
-        (new LegacyDeviceRuleHandler($data))->createRule();
+        (new DeviceRuleHandler($data))->createRule();
 
         return response()->json(['message' => 'Device rule created.']);
     }
@@ -201,7 +201,7 @@ class OfferController extends Controller
             return response()->json(['message' => 'Add at least one device before saving this rule.'], 422);
         }
 
-        (new LegacyDeviceRuleHandler((string) $rule))->updateRule($ruleData, $deviceList);
+        (new DeviceRuleHandler((string) $rule))->updateRule($ruleData, $deviceList);
 
         return response()->json(['message' => 'Device rule updated.']);
     }
@@ -230,7 +230,7 @@ class OfferController extends Controller
 
 	public function dupe($id)
 	{
-		if (LegacyOffer::duplicateOffer($id)) {
+		if (OfferSupport::duplicateOffer($id)) {
 			$message = 'Success!';
 		} else {
 			$message = 'Oh noes!';
@@ -241,7 +241,7 @@ class OfferController extends Controller
 
 	public function delete($id)
 	{
-		LegacyOffer::deleteOffer($id);
+		OfferSupport::deleteOffer($id);
 
 		return back();
 	}
@@ -287,7 +287,7 @@ class OfferController extends Controller
 
 		if ($isAffiliate) {
 			$offers = $offers->leftJoin('bonus_offers', 'bonus_offers.offer_id', '=', 'offer.idoffer')->get();
-			$data['requestableOffers'] = Offer::where('is_public', LegacyOffer::VISIBILITY_REQUESTABLE)
+			$data['requestableOffers'] = Offer::where('is_public', OfferSupport::VISIBILITY_REQUESTABLE)
 			                                  ->whereRaw('offer.idoffer NOT IN (SELECT offer_idoffer FROM rep_has_offer WHERE rep_has_offer.rep_idrep = ' . $sessionUserId . ')')->get();
 		} else {
 			$offers = $offers->get();
@@ -382,8 +382,8 @@ class OfferController extends Controller
 	public function showRules($id)
 	{
 		$offer = Offer::query()->where('idoffer', '=', $id)->firstOrFail();
-		$rules = new LegacyOfferRules($offer->idoffer);
-		$offerView = new LegacyOfferView(CurrentUserSession::type());
+		$rules = new OfferRules($offer->idoffer);
+		$offerView = new OfferView(CurrentUserSession::type());
 		$activeCap = false;
 		$capAmount = 0;
 		$geoRules = [];
@@ -498,7 +498,7 @@ class OfferController extends Controller
 		$rulesTableHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
 
 		ob_start();
-		LegacyOfferRuleGeo::printCountriesAsTable();
+		GeoRule::printCountriesAsTable();
 		$countryRowsHtml = str_replace('images/icons/', '/images/icons/', ob_get_clean());
 
 		ob_start();
@@ -513,7 +513,7 @@ class OfferController extends Controller
 			'offer' => $offer,
 			'rulesTableHtml' => $rulesTableHtml,
 			'countryRowsHtml' => $countryRowsHtml,
-			'countryMap' => LegacyOfferRuleGeo::$countries,
+			'countryMap' => GeoRule::$countries,
 			'geoRules' => $geoRules,
 			'deviceRules' => $deviceRules,
 			'geoRedirectOfferSelect' => $geoRedirectOfferSelect,
@@ -549,7 +549,7 @@ class OfferController extends Controller
 
         $payload = $this->validateNoneUniqueRuleRequest($request, (int) $offer->idoffer);
 
-        $rule = new LegacyNoneUniqueRuleHandler();
+        $rule = new NoneUniqueRuleHandler();
         $rule->name = trim($payload['name']);
         $rule->redirect_offer = (int) $payload['redirect_offer'];
         $rule->offer_idoffer = (int) $offer->idoffer;
@@ -569,7 +569,7 @@ class OfferController extends Controller
         return view('offer.none-unique-rule', [
             'mode' => 'edit',
             'offer' => $offer,
-            'rule' => LegacyNoneUniqueRuleHandler::loadFromId((int) $rule),
+            'rule' => NoneUniqueRuleHandler::loadFromId((int) $rule),
             'redirectOffers' => $this->redirectOfferOptionsForRules((int) $offer->idoffer),
             'action' => "/offer/rules/none-unique/{$rule}/edit",
         ]);
@@ -582,7 +582,7 @@ class OfferController extends Controller
         abort_unless($this->userCanManageOfferRules((int) $ruleRecord->offer_idoffer), 403, 'You do not have access to this offer.');
 
         $payload = $this->validateNoneUniqueRuleRequest($request, (int) $ruleRecord->offer_idoffer);
-        $noneUniqueRule = LegacyNoneUniqueRuleHandler::loadFromId((int) $rule);
+        $noneUniqueRule = NoneUniqueRuleHandler::loadFromId((int) $rule);
         $noneUniqueRule->name = trim($payload['name']);
         $noneUniqueRule->redirect_offer = (int) $payload['redirect_offer'];
         $noneUniqueRule->is_active = (int) $payload['is_active'];
@@ -716,7 +716,7 @@ class OfferController extends Controller
 
     private function redirectOfferOptionsForRules(int $excludeOfferId): array
     {
-        $offerView = new LegacyOfferView(CurrentUserSession::type());
+        $offerView = new OfferView(CurrentUserSession::type());
 
         return collect($offerView->getUsersQuery()->fetchAll(\PDO::FETCH_OBJ))
             ->filter(fn ($offer) => (int) $offer->idoffer !== $excludeOfferId)

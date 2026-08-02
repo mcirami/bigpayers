@@ -11,8 +11,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use LaravelIdea\Helper\App\_IH_Click_C;
-use App\Support\LegacyPermissions as Permissions;
-use App\Support\LegacyPayouts as Payouts;
+use App\Support\UserDomain\Permissions;
+use App\Support\OfferDomain\Payouts;
 use App\Http\Traits\ClickTraits;
 use App\Support\CurrentUserSession;
 

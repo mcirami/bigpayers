@@ -11,8 +11,8 @@ namespace App\Support\Tracking\Events;
 use App\User;
 use Illuminate\Http\JsonResponse;
 use App\Support\Conversion;
-use LeadMax\TrackYourStats\Offer\Deduction;
-use App\Support\LegacyDeductionPostBackURL as DeductionPostBackURL;
+use App\Support\OfferDomain\Deduction;
+use App\Support\UserDomain\PostBackURLs\DeductionPostBackURL;
 
 class DeductionRegistrationEvent extends UrlEvent
 {

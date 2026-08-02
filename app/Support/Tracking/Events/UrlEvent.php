@@ -16,8 +16,8 @@ use App\Support\Tracking\URLProcessor;
 use App\Support\Tracking\URLTagReplacers\Base64;
 use App\Support\Tracking\URLTagReplacers\SubVariables;
 use App\Support\Tracking\URLTagReplacers\TYSVariables;
-use App\Support\LegacyOffer as Offer;
-use App\Support\LegacyUser as User;
+use App\Support\OfferDomain\Offer;
+use App\Support\UserDomain\User;
 
 
 abstract class UrlEvent

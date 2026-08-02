@@ -10,7 +10,7 @@ namespace App\Support\DatabaseUpdates\Versions;
 
 
 use App\Support\DatabaseUpdates\Version;
-use App\Support\LegacyReportPermissions as ReportPermissions;
+use App\Support\UserDomain\ReportPermissions;
 
 class V148 extends Version
 {

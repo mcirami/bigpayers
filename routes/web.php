@@ -13,7 +13,7 @@
 
 use App\Http\Controllers\ExportDataController;
 use App\Privilege;
-use App\Support\LegacyPermissions as Permissions;
+use App\Support\UserDomain\Permissions;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AffiliateMassPostbackController;
 use App\Http\Controllers\IndexController;

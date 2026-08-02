@@ -10,8 +10,8 @@ use App\Support\Click;
 use App\Support\Conversion;
 use App\Support\ImagesUploader;
 use App\Support\PendingConversion;
-use App\Support\LegacyPermissions as Permissions;
-use App\Support\LegacySaleLog as SaleLog;
+use App\Support\UserDomain\Permissions;
+use App\Support\OfferDomain\SaleLog;
 use Illuminate\Http\Request;
 
 class ChatLogController extends Controller

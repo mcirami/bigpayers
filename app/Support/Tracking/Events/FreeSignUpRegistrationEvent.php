@@ -11,8 +11,8 @@ namespace App\Support\Tracking\Events;
 
 use App\User;
 use Illuminate\Http\JsonResponse;
-use App\Support\LegacyFreeSignUp as FreeSignUp;
-use App\Support\LegacyFreePostBackURL as FreePostBackURL;
+use App\Support\OfferDomain\FreeSignUp;
+use App\Support\UserDomain\PostBackURLs\FreePostBackURL;
 
 class FreeSignUpRegistrationEvent extends UrlEvent
 {

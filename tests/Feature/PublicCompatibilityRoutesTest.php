@@ -242,8 +242,8 @@ class PublicCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Support/ImagesUploader.php'),
-            base_path('src/Offer/SaleLog.php'),
-            base_path('src/User/User.php'),
+            app_path('Support/OfferDomain/SaleLog.php'),
+            app_path('Support/UserDomain/User.php'),
         ] as $path) {
             $contents = File::get($path);
 

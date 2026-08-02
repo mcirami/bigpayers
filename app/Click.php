@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Carbon;
-use App\Support\LegacyPayouts as Payouts;
+use App\Support\OfferDomain\Payouts;
 use App\Support\CurrentUserSession;
 use App\Support\RequestContext;
 

@@ -411,10 +411,9 @@ Remaining cleanup is mostly archival and hardening:
   `App\Support\NativeRequest`, and report/click flows read query, cookie, and
   server values through Laravel request helpers. The fallback audit blocks new
   direct native superglobal reads in Laravel-owned code
-- legacy source classes under `src/` now read native request/session data
-  through `App\Support\NativeRequest` or `App\Support\NativeSession`; the
-  fallback audit fails if those classes reintroduce direct native superglobal
-  reads
+- promoted support classes read native request/session data through
+  `App\Support\NativeRequest` or `App\Support\NativeSession`; the fallback
+  audit prevents the retired `src` PHP tree from returning
 - dashboard shell, legacy master, home, and branded error views now receive
   current user/session values from Laravel view data instead of reading the
   legacy session class directly in Blade
@@ -425,17 +424,12 @@ Remaining cleanup is mostly archival and hardening:
   middleware, view-composer, app-model, repository, trait, and SMS-service
   batches now read current user id/type, permissions, and user data through
   `App\Support\CurrentUserSession` instead of importing the legacy session class
-  directly, including the older `src/Report`, `src/User`, `src/Offer`,
-  `src/Clicks`, `src/Table`, and notification helper layers
-- modern routes, controllers, and the offer-click repository now read legacy
-  permission constants/static helpers through `App\Support\LegacyPermissions`
-  instead of importing the legacy permission class directly; click formatting
-  and older report/offer/user helper classes now read the current permissions
-  object through `CurrentUserSession`
-- the fallback audit now fails if modern Laravel code imports the legacy
-  permission class directly outside the `App\Support\LegacyPermissions`
-  boundary or if Laravel-reached helper code reloads permissions from the
-  legacy session directly
+  directly, including the promoted report, user, offer, click, table, and
+  notification helper layers
+- routes, controllers, repositories, and promoted domain helpers now read user
+  permission constants and static helpers through
+  `App\Support\UserDomain\Permissions`; the fallback audit blocks the retired
+  namespace and wrapper from returning
 - runtime geo lookup callers now use the Laravel-owned `App\Support\ClickGeo`;
   the legacy `ClickGeo` class and `LegacyClickGeo` wrapper have been removed,
   and the fallback audit prevents either namespace from returning
@@ -482,16 +476,19 @@ Remaining cleanup is mostly archival and hardening:
 - notification view composers and offer-approval notifications now use
   `App\Support\Notifications`; the legacy source class and wrapper have been
   removed, and the fallback audit prevents the retired namespace from returning
-- modern payout SQL/resolution callers now resolve the legacy `Payouts` helper
-  through `App\Support\LegacyPayouts`; the fallback audit fails on new direct
-  Laravel-side payout imports outside the boundary
-- modern adjustment creation and adjustment-report filtering now resolve the
-  legacy `AdjustmentsLog` helper through `App\Support\LegacyAdjustmentsLog`;
-  the fallback audit fails on new direct Laravel-side adjustments log imports
-  outside the boundary
-- modern chat-log sale-log writes now resolve the legacy `SaleLog` helper
-  through `App\Support\LegacySaleLog`; the fallback audit fails on new direct
-  Laravel-side sale log imports outside the boundary
+- offer-rule evaluation and administration now live under
+  `App\Support\OfferDomain`; the five rule wrappers and legacy rule source
+  namespace have been removed
+- all remaining offer-domain classes now live under `App\Support\OfferDomain`;
+  `src/Offer` is empty, its compatibility wrappers are removed, and the audit
+  prevents PHP source from returning to the retired directory
+- all user, login, signup, permission, tree, bonus, salary, and offer-postback
+  behavior now lives under `App\Support\UserDomain`; all thirteen compatibility
+  wrappers are removed, `src/User` is empty, and the audit prevents either
+  legacy namespace from returning
+- payout calculation, adjustment logging, and sale logging now live under
+  `App\Support\OfferDomain`; their legacy source classes and wrappers have been
+  removed
 - report, command, and remaining source date calculations now resolve through
   `App\Support\DateHelper`; the retired `src/Table/Date` class and wrapper have
   been removed, and the fallback audit blocks their reintroduction
@@ -512,9 +509,8 @@ Remaining cleanup is mostly archival and hardening:
 - click uniqueness and transfer-prevention cookie state now resolve through
   `App\Support\Tracking\ClickCookie`; the old `src/Clicks/Cookie` class has
   been removed
-- modern user-controller and observer tree rebuild/read calls now resolve the
-  legacy `Tree` helper through `App\Support\LegacyTree`; the fallback audit
-  fails on new direct Laravel-side tree imports outside the boundary
+- user-controller and observer tree rebuild/read calls now resolve through
+  `App\Support\UserDomain\Tree`; the legacy wrapper has been removed
 - modern dashboard links preserve admin-login state through Laravel request and
   middleware boundaries; the retired legacy admin-login class has been removed
 - modern dashboard layouts render notification state through Laravel views; the

@@ -6,7 +6,7 @@ namespace App\Support\Report\Repositories\Employee;
 use Carbon\Carbon;
 use App\Privilege;
 use Illuminate\Support\Facades\DB;
-use App\Support\LegacyPayouts as Payouts;
+use App\Support\OfferDomain\Payouts;
 use App\Support\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 use App\Support\DateHelper as Date;

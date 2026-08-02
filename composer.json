@@ -36,7 +36,6 @@
             "database"
         ],
         "psr-4": {
-            "LeadMax\\TrackYourStats\\": "src/",
             "App\\": "app/",
             "Tests\\": "tests/",
             "Database\\Factories\\": "database/factories/",

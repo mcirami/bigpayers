@@ -4,10 +4,10 @@ namespace App\Support;
 
 
 use App\Privilege;
-use App\Support\LegacyBonus as Bonus;
-use App\Support\LegacyPayouts as Payouts;
-use App\Support\LegacyReferrals as Referrals;
-use App\Support\LegacyUser as User;
+use App\Support\UserDomain\Bonus;
+use App\Support\OfferDomain\Payouts;
+use App\Support\UserDomain\Referrals;
+use App\Support\UserDomain\User;
 use PDO;
 
 

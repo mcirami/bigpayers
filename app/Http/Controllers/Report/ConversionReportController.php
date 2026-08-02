@@ -13,7 +13,7 @@ use App\Services\ClickGeoCacheService;
 use App\Services\CountryReportBuilderService;
 use App\Http\Traits\ClickTraits;
 use Illuminate\Support\Facades\DB;
-use App\Support\LegacyPayouts as Payouts;
+use App\Support\OfferDomain\Payouts;
 
 class ConversionReportController extends ReportController
 {

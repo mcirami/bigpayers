@@ -11,7 +11,7 @@ namespace App\Support\Tracking\Events;
 
 use App\User;
 use Illuminate\Http\JsonResponse;
-use App\Support\LegacyBonus as Bonus;
+use App\Support\UserDomain\Bonus;
 
 class BonusRegistrationEvent extends UrlEvent
 {

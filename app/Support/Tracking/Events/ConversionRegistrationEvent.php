@@ -7,9 +7,9 @@ use App\Exceptions\RegistrationEventExceptions\ConversionAlreadyPendingException
 use App\Exceptions\RegistrationEventExceptions\InvalidClickException;
 use App\Offer;
 use App\Support\Conversion;
-use App\Support\LegacyOffer as LegacyOffer;
+use App\Support\OfferDomain\Offer as OfferSupport;
 use App\Support\PendingConversion;
-use App\Support\LegacyConversionPostBackURL as ConversionPostBackURL;
+use App\Support\UserDomain\PostBackURLs\ConversionPostBackURL;
 //use Symfony\Component\HttpFoundation\JsonResponse;
 use Illuminate\Http\JsonResponse;
 
@@ -63,7 +63,7 @@ class ConversionRegistrationEvent extends UrlEvent
         }
 
         $offer = Offer::find($conversion->clickData->offer_idoffer);
-        if ($offer->offer_type === LegacyOffer::TYPE_PENDING_CONVERSION) {
+        if ($offer->offer_type === OfferSupport::TYPE_PENDING_CONVERSION) {
             if (PendingConversion::isClickIdAlreadyRegistered($this->clickId)) {
 
                 throw new ConversionAlreadyPendingException();

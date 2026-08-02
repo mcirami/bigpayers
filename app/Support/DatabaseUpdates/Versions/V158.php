@@ -12,12 +12,12 @@ namespace App\Support\DatabaseUpdates\Versions;
 use App\Privilege;
 use App\Support\DatabaseConnection;
 use App\Support\DatabaseUpdates\Version;
-use App\Support\LegacyCampaigns as Campaigns;
-use App\Support\LegacyCreateOffer as CreateOffer;
-use App\Support\LegacyOffer as Offer;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
-use LeadMax\TrackYourStats\User\CreateUser;
-use App\Support\LegacyUser as User;
+use App\Support\OfferDomain\Campaigns;
+use App\Support\OfferDomain\CreateOffer;
+use App\Support\OfferDomain\Offer;
+use App\Support\OfferDomain\RepHasOffer;
+use App\Support\UserDomain\CreateUser;
+use App\Support\UserDomain\User;
 
 class V158 extends Version
 {

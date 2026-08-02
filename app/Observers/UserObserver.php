@@ -3,7 +3,7 @@
 namespace App\Observers;
 
 use App\User;
-use App\Support\LegacyTree as Tree;
+use App\Support\UserDomain\Tree;
 
 class UserObserver
 {

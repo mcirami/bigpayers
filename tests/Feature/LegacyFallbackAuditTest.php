@@ -24,6 +24,14 @@ class LegacyFallbackAuditTest extends TestCase
             'The retired src/Database directory contains no PHP files.',
             $output
         );
+        $this->assertStringContainsString(
+            'The retired src/Offer directory contains no PHP files.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'The retired src/User directory contains no PHP files.',
+            $output
+        );
 
         $this->assertStringContainsString(
             'Laravel middleware initializes the legacy runtime boundary once per request.',
@@ -74,7 +82,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.',
+            'Promoted support classes read native PHP state through audited request and session boundaries.',
             $output
         );
         $this->assertStringContainsString(
@@ -82,19 +90,19 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.',
+            'Runtime Laravel source contains no unaudited direct legacy class references.',
             $output
         );
         $this->assertStringContainsString(
-            'Legacy support wrappers remain simple boundary aliases.',
+            'Legacy support wrapper inventory is empty.',
             $output
         );
         $this->assertStringContainsString(
-            'Legacy support wrappers have specific audit allow-list coverage.',
+            'Legacy support wrapper allow-lists are complete.',
             $output
         );
         $this->assertStringContainsString(
-            'Support files with direct legacy references have specific audit allow-list coverage.',
+            'Direct legacy support reference allow-lists are complete.',
             $output
         );
         $this->assertStringContainsString(
@@ -102,7 +110,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code reads legacy permission metadata through LegacyPermissions.',
+            'Runtime user-domain behavior lives under App\\Support\\UserDomain.',
             $output
         );
         $this->assertStringContainsString(
@@ -166,27 +174,27 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy offer-domain helpers through App\Support boundaries.',
+            'Runtime offer-domain behavior lives under App\\Support\\OfferDomain.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy offer support helpers through App\Support boundaries.',
+            'Runtime offer support helpers live under App\\Support\\OfferDomain.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy offer-rule helpers through App\Support boundaries.',
+            'Runtime offer rules live under App\\Support\\OfferDomain.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy payout helpers through LegacyPayouts.',
+            'Runtime code resolves payouts through App\\Support\\OfferDomain\\Payouts.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.',
+            'Runtime code writes adjustment logs through App\\Support\\OfferDomain\\AdjustmentsLog.',
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code writes sale logs through LegacySaleLog.',
+            'Runtime code writes sale logs through App\\Support\\OfferDomain\\SaleLog.',
             $output
         );
         $this->assertStringContainsString(
@@ -202,27 +210,7 @@ class LegacyFallbackAuditTest extends TestCase
             $output
         );
         $this->assertStringContainsString(
-            'Modern Laravel code rebuilds user trees through LegacyTree.',
-            $output
-        );
-        $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy users through LegacyUser.',
-            $output
-        );
-        $this->assertStringContainsString(
-            'Modern login flows use LegacyLogin for legacy login constants.',
-            $output
-        );
-        $this->assertStringContainsString(
-            'Modern signup flows use LegacyAffiliateSignUp.',
-            $output
-        );
-        $this->assertStringContainsString(
-            'Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.',
-            $output
-        );
-        $this->assertStringContainsString(
-            'Modern offer postback URL flows use App\Support boundaries.',
+            'Runtime user trees, login, signup, and postback URLs use App\\Support\\UserDomain.',
             $output
         );
         $this->assertStringContainsString(
@@ -671,7 +659,7 @@ PHP,
             'app/Support/LegacyMissingSource.php: imported legacy class file src/User/MissingSource.php does not exist.',
             $errors->all()
         );
-        $this->assertCount(4, $errors);
+        $this->assertCount(8, $errors);
     }
 
     public function test_legacy_support_wrapper_inventory_errors_report_unlisted_wrappers(): void
@@ -691,7 +679,7 @@ PHP,
             'app/Support/LegacyMissingBoundary.php: legacy support wrapper is not listed in a specific audit allow-list.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(2, $errors);
     }
 
     public function test_legacy_support_direct_reference_inventory_errors_report_unlisted_support_files(): void
@@ -712,7 +700,7 @@ PHP,
             'app/Support/UnlistedLegacyAdapter.php: support file references legacy classes but is not listed in a specific audit allow-list.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(2, $errors);
     }
 
     public function test_boundary_allowed_path_inventory_errors_report_stale_paths(): void
@@ -1024,7 +1012,7 @@ PHP,
         );
 
         $this->assertContains(
-            'routes/web.php: Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
+            'routes/web.php: The legacy permissions class is retired; use App\\Support\\UserDomain\\Permissions.',
             $errors->all()
         );
         $this->assertContains(
@@ -1035,7 +1023,7 @@ PHP,
             'src/Offer/BadCreate.php: Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
             $errors->all()
         );
-        $this->assertCount(3, $errors);
+        $this->assertCount(5, $errors);
     }
 
     public function test_legacy_click_geo_dependency_errors_report_forbidden_sources(): void
@@ -1393,13 +1381,12 @@ PHP,
             'legacyOfferDomainDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\RepHasOffer;',
-                'app/Support/LegacyRepHasOffer.php' => 'use LeadMax\\TrackYourStats\\Offer\\RepHasOffer;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyRepHasOffer as RepHasOffer;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\OfferDomain\\RepHasOffer;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyRepHasOffer instead of importing the legacy offer-assignment class directly.',
+            'app/Http/Controllers/BadController.php: The legacy offer-assignment class is retired; use App\\Support\\OfferDomain\\RepHasOffer.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1414,13 +1401,12 @@ PHP,
             'legacyOfferSupportDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\Campaigns;',
-                'app/Support/LegacyCampaigns.php' => 'use LeadMax\\TrackYourStats\\Offer\\Campaigns;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyCampaigns as Campaigns;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\OfferDomain\\Campaigns;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyCampaigns instead of importing the legacy campaigns class directly.',
+            'app/Http/Controllers/BadController.php: The legacy campaigns class is retired; use App\\Support\\OfferDomain\\Campaigns.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1435,13 +1421,12 @@ PHP,
             'legacyOfferRulesDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'new \\LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\Geo($data);',
-                'app/Support/LegacyGeoRuleHandler.php' => 'use LeadMax\\TrackYourStats\\Offer\\Rules\\Handlers\\Geo;',
-                'app/Http/Controllers/CleanController.php' => 'new \\App\\Support\\LegacyGeoRuleHandler($data);',
+                'app/Http/Controllers/CleanController.php' => 'new \\App\\Support\\OfferDomain\\Rules\\Handlers\\Geo($data);',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support legacy offer-rule wrappers instead of referencing legacy offer-rule classes directly.',
+            'app/Http/Controllers/BadController.php: The legacy offer-rule namespace is retired; use App\\Support\\OfferDomain.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1456,13 +1441,12 @@ PHP,
             'legacyPayoutsDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\Payouts;',
-                'app/Support/LegacyPayouts.php' => 'use LeadMax\\TrackYourStats\\Offer\\Payouts;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyPayouts as Payouts;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\OfferDomain\\Payouts;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyPayouts instead of importing the legacy payouts class directly.',
+            'app/Http/Controllers/BadController.php: The legacy payouts class is retired; use App\\Support\\OfferDomain\\Payouts.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1477,13 +1461,12 @@ PHP,
             'legacyAdjustmentsLogDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog;',
-                'app/Support/LegacyAdjustmentsLog.php' => 'use LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacyAdjustmentsLog as AdjustmentsLog;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\OfferDomain\\AdjustmentsLog;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAdjustmentsLog instead of importing the legacy adjustments log class directly.',
+            'app/Http/Controllers/BadController.php: The legacy adjustments log class is retired; use App\\Support\\OfferDomain\\AdjustmentsLog.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1498,13 +1481,12 @@ PHP,
             'legacySaleLogDependencyErrorsFor',
             [[
                 'app/Http/Controllers/BadController.php' => 'use LeadMax\\TrackYourStats\\Offer\\SaleLog;',
-                'app/Support/LegacySaleLog.php' => 'use LeadMax\\TrackYourStats\\Offer\\SaleLog;',
-                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\LegacySaleLog as SaleLog;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\OfferDomain\\SaleLog;',
             ]]
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacySaleLog instead of importing the legacy sale log class directly.',
+            'app/Http/Controllers/BadController.php: The legacy sale log class is retired; use App\\Support\\OfferDomain\\SaleLog.',
             $errors->all()
         );
         $this->assertCount(1, $errors);
@@ -1595,10 +1577,10 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyTree instead of importing the legacy tree class directly.',
+            'app/Http/Controllers/BadController.php: The legacy tree class is retired; use App\\Support\\UserDomain\\Tree.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_user_dependency_errors_report_forbidden_sources(): void
@@ -1616,10 +1598,10 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyUser instead of importing the legacy user class directly.',
+            'app/Http/Controllers/BadController.php: The legacy user class is retired; use App\\Support\\UserDomain\\User.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_login_dependency_errors_report_forbidden_sources(): void
@@ -1637,10 +1619,10 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyLogin instead of importing the legacy login class directly.',
+            'app/Http/Controllers/BadController.php: The legacy login class is retired; use App\\Support\\UserDomain\\Login.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_affiliate_signup_dependency_errors_report_forbidden_sources(): void
@@ -1658,10 +1640,10 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyAffiliateSignUp instead of importing the legacy affiliate signup class directly.',
+            'app/Http/Controllers/BadController.php: The legacy affiliate signup class is retired; use App\\Support\\UserDomain\\AffiliateSignUp.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_user_domain_dependency_errors_report_forbidden_sources(): void
@@ -1679,10 +1661,10 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyBonus instead of importing the legacy bonus class directly.',
+            'app/Http/Controllers/BadController.php: The legacy bonus class is retired; use App\\Support\\UserDomain\\Bonus.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_offer_postback_url_dependency_errors_report_forbidden_sources(): void
@@ -1700,10 +1682,10 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: Use App\\Support\\LegacyConversionPostBackURL instead of referencing the legacy conversion postback URL class directly.',
+            'app/Http/Controllers/BadController.php: The legacy conversion postback URL class is retired; use App\\Support\\UserDomain\\PostBackURLs\\ConversionPostBackURL.',
             $errors->all()
         );
-        $this->assertCount(1, $errors);
+        $this->assertCount(3, $errors);
     }
 
     public function test_legacy_admin_login_dependency_errors_report_forbidden_sources(): void

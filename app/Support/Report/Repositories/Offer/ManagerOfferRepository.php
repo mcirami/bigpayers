@@ -4,7 +4,7 @@ namespace App\Support\Report\Repositories\Offer;
 
 
 use App\Privilege;
-use App\Support\LegacyPayouts as Payouts;
+use App\Support\OfferDomain\Payouts;
 use App\Support\Report\Repositories\Repository;
 use App\Support\CurrentUserSession;
 

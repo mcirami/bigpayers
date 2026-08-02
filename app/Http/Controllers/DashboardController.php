@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Company;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyPermissions as Permissions;
+use App\Support\UserDomain\Permissions;
 
 class DashboardController extends Controller
 {

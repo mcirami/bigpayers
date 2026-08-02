@@ -6,7 +6,7 @@ use App\Privilege;
 use App\Salary;
 use App\User;
 use App\Support\CurrentUserSession;
-use App\Support\LegacySalary;
+use App\Support\UserDomain\Salary as LegacySalary;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 

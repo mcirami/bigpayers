@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyBonus;
+use App\Support\UserDomain\Bonus as LegacyBonus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Support\LegacyPermissions as Permissions;
-use App\Support\LegacyUser;
+use App\Support\UserDomain\Permissions;
+use App\Support\UserDomain\User as LegacyUser;
 
 class BonusController extends Controller
 {

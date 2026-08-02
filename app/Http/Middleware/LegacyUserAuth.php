@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Support\LegacyUser as User;
+use App\Support\UserDomain\User;
 use Closure;
 
 class LegacyUserAuth

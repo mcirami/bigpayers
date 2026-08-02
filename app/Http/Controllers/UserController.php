@@ -14,16 +14,16 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\LegacyBonus as Bonus;
+use App\Support\UserDomain\Bonus;
 use App\Support\PaginationHelper as Paginate;
-use App\Support\LegacyRepHasOffer as RepHasOffer;
-use App\Support\LegacyTree as Tree;
+use App\Support\OfferDomain\RepHasOffer;
+use App\Support\UserDomain\Tree;
 use Illuminate\Support\Facades\Cache;
-use App\Support\LegacyPermissions as Permissions;
-use App\Support\LegacyPrivileges as Privileges;
-use App\Support\LegacyReferrals as Referrals;
-use App\Support\LegacyReportPermissions as ReportPermissions;
-use App\Support\LegacyUser;
+use App\Support\UserDomain\Permissions;
+use App\Support\UserDomain\Privileges;
+use App\Support\UserDomain\Referrals;
+use App\Support\UserDomain\ReportPermissions;
+use App\Support\UserDomain\User as LegacyUser;
 
 class UserController extends Controller
 {

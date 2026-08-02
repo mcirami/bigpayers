@@ -217,13 +217,12 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyPermissionsForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\Permissions' => 'Use App\\Support\\LegacyPermissions instead of importing the legacy permissions class directly.',
+        'LeadMax\\TrackYourStats\\User\\Permissions' => 'The legacy permissions class is retired; use App\\Support\\UserDomain\\Permissions.',
+        'App\\Support\\LegacyPermissions' => 'The LegacyPermissions wrapper is retired; use App\\Support\\UserDomain\\Permissions.',
         'Permissions::loadFromSession()' => 'Use App\\Support\\CurrentUserSession::permissions() instead of loading permissions from the legacy session directly.',
     ];
 
-    private array $legacyPermissionsAllowedFiles = [
-        'app/Support/LegacyPermissions.php' => 'The dedicated boundary around the legacy permissions class.',
-    ];
+    private array $legacyPermissionsAllowedFiles = [];
 
     private array $legacyClickGeoForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Clicks\\ClickGeo' => 'The legacy ClickGeo class is retired; use App\\Support\\ClickGeo.',
@@ -308,66 +307,57 @@ class AuditLegacyFallbackCoverage extends Command
     private array $legacyNotificationsAllowedFiles = [];
 
     private array $legacyPayoutsForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Offer\\Payouts' => 'Use App\\Support\\LegacyPayouts instead of importing the legacy payouts class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\Payouts' => 'The legacy payouts class is retired; use App\\Support\\OfferDomain\\Payouts.',
     ];
 
-    private array $legacyPayoutsAllowedFiles = [
-        'app/Support/LegacyPayouts.php' => 'The dedicated boundary around the legacy payouts class.',
-    ];
+    private array $legacyPayoutsAllowedFiles = [];
 
     private array $legacyOfferDomainForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Offer\\Offer' => 'Use App\\Support\\LegacyOffer instead of importing the legacy offer class directly.',
-        'LeadMax\\TrackYourStats\\Offer\\RepHasOffer' => 'Use App\\Support\\LegacyRepHasOffer instead of importing the legacy offer-assignment class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\Offer' => 'The legacy offer class is retired; use App\\Support\\OfferDomain\\Offer.',
+        'LeadMax\\TrackYourStats\\Offer\\RepHasOffer' => 'The legacy offer-assignment class is retired; use App\\Support\\OfferDomain\\RepHasOffer.',
+        'App\\Support\\LegacyOffer' => 'The legacy offer wrapper is retired; use App\\Support\\OfferDomain\\Offer.',
+        'App\\Support\\LegacyRepHasOffer' => 'The legacy offer-assignment wrapper is retired; use App\\Support\\OfferDomain\\RepHasOffer.',
     ];
 
-    private array $legacyOfferDomainAllowedFiles = [
-        'app/Support/LegacyOffer.php' => 'The dedicated boundary around the legacy offer class.',
-        'app/Support/LegacyRepHasOffer.php' => 'The dedicated boundary around the legacy offer-assignment class.',
-    ];
+    private array $legacyOfferDomainAllowedFiles = [];
 
     private array $legacyOfferSupportForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Offer\\Caps' => 'Use App\\Support\\LegacyCaps instead of importing the legacy offer caps class directly.',
-        'LeadMax\\TrackYourStats\\Offer\\Campaigns' => 'Use App\\Support\\LegacyCampaigns instead of importing the legacy campaigns class directly.',
-        'LeadMax\\TrackYourStats\\Offer\\CreateOffer' => 'Use App\\Support\\LegacyCreateOffer instead of importing the legacy create-offer class directly.',
-        'LeadMax\\TrackYourStats\\Offer\\FreeSignUp' => 'Use App\\Support\\LegacyFreeSignUp instead of importing the legacy free-signup class directly.',
-        'LeadMax\\TrackYourStats\\Offer\\View' => 'Use App\\Support\\LegacyOfferView instead of referencing the legacy offer view class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\Caps' => 'The legacy offer caps class is retired; use App\\Support\\OfferDomain\\Caps.',
+        'LeadMax\\TrackYourStats\\Offer\\Campaigns' => 'The legacy campaigns class is retired; use App\\Support\\OfferDomain\\Campaigns.',
+        'LeadMax\\TrackYourStats\\Offer\\CreateOffer' => 'The legacy create-offer class is retired; use App\\Support\\OfferDomain\\CreateOffer.',
+        'LeadMax\\TrackYourStats\\Offer\\FreeSignUp' => 'The legacy free-signup class is retired; use App\\Support\\OfferDomain\\FreeSignUp.',
+        'LeadMax\\TrackYourStats\\Offer\\View' => 'The legacy offer view class is retired; use App\\Support\\OfferDomain\\View.',
+        'App\\Support\\LegacyCaps' => 'The legacy caps wrapper is retired; use App\\Support\\OfferDomain\\Caps.',
+        'App\\Support\\LegacyCampaigns' => 'The legacy campaigns wrapper is retired; use App\\Support\\OfferDomain\\Campaigns.',
+        'App\\Support\\LegacyCreateOffer' => 'The legacy create-offer wrapper is retired; use App\\Support\\OfferDomain\\CreateOffer.',
+        'App\\Support\\LegacyFreeSignUp' => 'The legacy free-signup wrapper is retired; use App\\Support\\OfferDomain\\FreeSignUp.',
+        'App\\Support\\LegacyOfferView' => 'The legacy offer-view wrapper is retired; use App\\Support\\OfferDomain\\View.',
     ];
 
-    private array $legacyOfferSupportAllowedFiles = [
-        'app/Support/LegacyCaps.php' => 'The dedicated boundary around the legacy offer caps class.',
-        'app/Support/LegacyCampaigns.php' => 'The dedicated boundary around the legacy campaigns class.',
-        'app/Support/LegacyCreateOffer.php' => 'The dedicated boundary around the legacy create-offer class.',
-        'app/Support/LegacyFreeSignUp.php' => 'The dedicated boundary around the legacy free-signup class.',
-        'app/Support/LegacyOfferView.php' => 'The dedicated boundary around the legacy offer view class.',
-    ];
+    private array $legacyOfferSupportAllowedFiles = [];
 
     private array $legacyOfferRulesForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Offer\\Rules' => 'Use App\\Support legacy offer-rule wrappers instead of referencing legacy offer-rule classes directly.',
+        'LeadMax\\TrackYourStats\\Offer\\Rules' => 'The legacy offer-rule namespace is retired; use App\\Support\\OfferDomain.',
+        'App\\Support\\LegacyOfferRules' => 'The legacy offer-rule wrapper is retired; use App\\Support\\OfferDomain\\Rules.',
+        'App\\Support\\LegacyOfferRuleGeo' => 'The legacy geo-rule wrapper is retired; use App\\Support\\OfferDomain\\Rules\\Geo.',
+        'App\\Support\\LegacyGeoRuleHandler' => 'The legacy geo-rule handler wrapper is retired; use App\\Support\\OfferDomain\\Rules\\Handlers\\Geo.',
+        'App\\Support\\LegacyDeviceRuleHandler' => 'The legacy device-rule handler wrapper is retired; use App\\Support\\OfferDomain\\Rules\\Handlers\\Device.',
+        'App\\Support\\LegacyNoneUniqueRuleHandler' => 'The legacy none-unique-rule handler wrapper is retired; use App\\Support\\OfferDomain\\Rules\\Handlers\\NoneUnique.',
     ];
 
-    private array $legacyOfferRulesAllowedFiles = [
-        'app/Support/LegacyOfferRules.php' => 'The dedicated boundary around the legacy offer rules collection.',
-        'app/Support/LegacyOfferRuleGeo.php' => 'The dedicated boundary around the legacy offer geo-rule helper.',
-        'app/Support/LegacyGeoRuleHandler.php' => 'The dedicated boundary around the legacy geo-rule handler.',
-        'app/Support/LegacyDeviceRuleHandler.php' => 'The dedicated boundary around the legacy device-rule handler.',
-        'app/Support/LegacyNoneUniqueRuleHandler.php' => 'The dedicated boundary around the legacy none-unique-rule handler.',
-    ];
+    private array $legacyOfferRulesAllowedFiles = [];
 
     private array $legacyAdjustmentsLogForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog' => 'Use App\\Support\\LegacyAdjustmentsLog instead of importing the legacy adjustments log class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\AdjustmentsLog' => 'The legacy adjustments log class is retired; use App\\Support\\OfferDomain\\AdjustmentsLog.',
     ];
 
-    private array $legacyAdjustmentsLogAllowedFiles = [
-        'app/Support/LegacyAdjustmentsLog.php' => 'The dedicated boundary around the legacy adjustments log class.',
-    ];
+    private array $legacyAdjustmentsLogAllowedFiles = [];
 
     private array $legacySaleLogForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\Offer\\SaleLog' => 'Use App\\Support\\LegacySaleLog instead of importing the legacy sale log class directly.',
+        'LeadMax\\TrackYourStats\\Offer\\SaleLog' => 'The legacy sale log class is retired; use App\\Support\\OfferDomain\\SaleLog.',
     ];
 
-    private array $legacySaleLogAllowedFiles = [
-        'app/Support/LegacySaleLog.php' => 'The dedicated boundary around the legacy sale log class.',
-    ];
+    private array $legacySaleLogAllowedFiles = [];
 
     private array $legacyDateForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\Table\\Date' => 'The legacy date class is retired; use App\\Support\\DateHelper.',
@@ -383,65 +373,59 @@ class AuditLegacyFallbackCoverage extends Command
     ];
 
     private array $legacyTreeForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\Tree' => 'Use App\\Support\\LegacyTree instead of importing the legacy tree class directly.',
+        'LeadMax\\TrackYourStats\\User\\Tree' => 'The legacy tree class is retired; use App\\Support\\UserDomain\\Tree.',
+        'App\\Support\\LegacyTree' => 'The LegacyTree wrapper is retired; use App\\Support\\UserDomain\\Tree.',
     ];
 
-    private array $legacyTreeAllowedFiles = [
-        'app/Support/LegacyTree.php' => 'The dedicated boundary around the legacy tree class.',
-    ];
+    private array $legacyTreeAllowedFiles = [];
 
     private array $legacyUserForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\User' => 'Use App\\Support\\LegacyUser instead of importing the legacy user class directly.',
+        'LeadMax\\TrackYourStats\\User\\User' => 'The legacy user class is retired; use App\\Support\\UserDomain\\User.',
+        'App\\Support\\LegacyUser' => 'The LegacyUser wrapper is retired; use App\\Support\\UserDomain\\User.',
     ];
 
-    private array $legacyUserAllowedFiles = [
-        'app/Support/LegacyUser.php' => 'The dedicated boundary around the legacy user class.',
-    ];
+    private array $legacyUserAllowedFiles = [];
 
     private array $legacyLoginForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\Login' => 'Use App\\Support\\LegacyLogin instead of importing the legacy login class directly.',
+        'LeadMax\\TrackYourStats\\User\\Login' => 'The legacy login class is retired; use App\\Support\\UserDomain\\Login.',
+        'App\\Support\\LegacyLogin' => 'The LegacyLogin wrapper is retired; use App\\Support\\UserDomain\\Login.',
     ];
 
-    private array $legacyLoginAllowedFiles = [
-        'app/Support/LegacyLogin.php' => 'The dedicated boundary around the legacy login class.',
-    ];
+    private array $legacyLoginAllowedFiles = [];
 
     private array $legacyAffiliateSignUpForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\AffiliateSignUp' => 'Use App\\Support\\LegacyAffiliateSignUp instead of importing the legacy affiliate signup class directly.',
+        'LeadMax\\TrackYourStats\\User\\AffiliateSignUp' => 'The legacy affiliate signup class is retired; use App\\Support\\UserDomain\\AffiliateSignUp.',
+        'App\\Support\\LegacyAffiliateSignUp' => 'The LegacyAffiliateSignUp wrapper is retired; use App\\Support\\UserDomain\\AffiliateSignUp.',
     ];
 
-    private array $legacyAffiliateSignUpAllowedFiles = [
-        'app/Support/LegacyAffiliateSignUp.php' => 'The dedicated boundary around the legacy affiliate signup class.',
-    ];
+    private array $legacyAffiliateSignUpAllowedFiles = [];
 
     private array $legacyUserDomainForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\Bonus' => 'Use App\\Support\\LegacyBonus instead of importing the legacy bonus class directly.',
-        'LeadMax\\TrackYourStats\\User\\Salary' => 'Use App\\Support\\LegacySalary instead of importing the legacy salary class directly.',
+        'LeadMax\\TrackYourStats\\User\\Bonus' => 'The legacy bonus class is retired; use App\\Support\\UserDomain\\Bonus.',
+        'App\\Support\\LegacyBonus' => 'The LegacyBonus wrapper is retired; use App\\Support\\UserDomain\\Bonus.',
+        'LeadMax\\TrackYourStats\\User\\Salary' => 'The legacy salary class is retired; use App\\Support\\UserDomain\\Salary.',
+        'App\\Support\\LegacySalary' => 'The LegacySalary wrapper is retired; use App\\Support\\UserDomain\\Salary.',
         'LeadMax\\TrackYourStats\\User\\PostBackUrl' => 'The legacy global postback URL class is retired; use the Laravel user_postbacks query instead.',
-        'LeadMax\\TrackYourStats\\User\\Privileges' => 'Use App\\Support\\LegacyPrivileges instead of importing the legacy privileges class directly.',
-        'LeadMax\\TrackYourStats\\User\\Referrals' => 'Use App\\Support\\LegacyReferrals instead of importing the legacy referrals class directly.',
-        'LeadMax\\TrackYourStats\\User\\ReportPermissions' => 'Use App\\Support\\LegacyReportPermissions instead of importing the legacy report permissions class directly.',
+        'LeadMax\\TrackYourStats\\User\\Privileges' => 'The legacy privileges class is retired; use App\\Support\\UserDomain\\Privileges.',
+        'App\\Support\\LegacyPrivileges' => 'The LegacyPrivileges wrapper is retired; use App\\Support\\UserDomain\\Privileges.',
+        'LeadMax\\TrackYourStats\\User\\Referrals' => 'The legacy referrals class is retired; use App\\Support\\UserDomain\\Referrals.',
+        'App\\Support\\LegacyReferrals' => 'The LegacyReferrals wrapper is retired; use App\\Support\\UserDomain\\Referrals.',
+        'LeadMax\\TrackYourStats\\User\\ReportPermissions' => 'The legacy report permissions class is retired; use App\\Support\\UserDomain\\ReportPermissions.',
+        'App\\Support\\LegacyReportPermissions' => 'The LegacyReportPermissions wrapper is retired; use App\\Support\\UserDomain\\ReportPermissions.',
     ];
 
-    private array $legacyUserDomainAllowedFiles = [
-        'app/Support/LegacyBonus.php' => 'The dedicated boundary around the legacy bonus class.',
-        'app/Support/LegacySalary.php' => 'The dedicated boundary around the legacy salary class.',
-        'app/Support/LegacyPrivileges.php' => 'The dedicated boundary around the legacy privileges class.',
-        'app/Support/LegacyReferrals.php' => 'The dedicated boundary around the legacy referrals class.',
-        'app/Support/LegacyReportPermissions.php' => 'The dedicated boundary around the legacy report permissions class.',
-    ];
+    private array $legacyUserDomainAllowedFiles = [];
 
     private array $legacyOfferPostBackUrlForbiddenPatterns = [
-        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL' => 'Use App\\Support\\LegacyConversionPostBackURL instead of referencing the legacy conversion postback URL class directly.',
-        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\FreePostBackURL' => 'Use App\\Support\\LegacyFreePostBackURL instead of referencing the legacy free-signup postback URL class directly.',
-        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\DeductionPostBackURL' => 'Use App\\Support\\LegacyDeductionPostBackURL instead of referencing the legacy deduction postback URL class directly.',
+        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\ConversionPostBackURL' => 'The legacy conversion postback URL class is retired; use App\\Support\\UserDomain\\PostBackURLs\\ConversionPostBackURL.',
+        'App\\Support\\LegacyConversionPostBackURL' => 'The LegacyConversionPostBackURL wrapper is retired; use App\\Support\\UserDomain\\PostBackURLs\\ConversionPostBackURL.',
+        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\FreePostBackURL' => 'The legacy free-signup postback URL class is retired; use App\\Support\\UserDomain\\PostBackURLs\\FreePostBackURL.',
+        'App\\Support\\LegacyFreePostBackURL' => 'The LegacyFreePostBackURL wrapper is retired; use App\\Support\\UserDomain\\PostBackURLs\\FreePostBackURL.',
+        'LeadMax\\TrackYourStats\\User\\PostBackURLs\\DeductionPostBackURL' => 'The legacy deduction postback URL class is retired; use App\\Support\\UserDomain\\PostBackURLs\\DeductionPostBackURL.',
+        'App\\Support\\LegacyDeductionPostBackURL' => 'The LegacyDeductionPostBackURL wrapper is retired; use App\\Support\\UserDomain\\PostBackURLs\\DeductionPostBackURL.',
     ];
 
-    private array $legacyOfferPostBackUrlAllowedFiles = [
-        'app/Support/LegacyConversionPostBackURL.php' => 'The dedicated boundary around the legacy conversion postback URL class.',
-        'app/Support/LegacyFreePostBackURL.php' => 'The dedicated boundary around the legacy free-signup postback URL class.',
-        'app/Support/LegacyDeductionPostBackURL.php' => 'The dedicated boundary around the legacy deduction postback URL class.',
-    ];
+    private array $legacyOfferPostBackUrlAllowedFiles = [];
 
     private array $legacyAdminLoginForbiddenPatterns = [
         'LeadMax\\TrackYourStats\\User\\AdminLogin' => 'The legacy admin-login class is retired; use Laravel request and middleware boundaries.',
@@ -591,6 +575,24 @@ class AuditLegacyFallbackCoverage extends Command
         if ($retiredDatabaseSourceFiles->isNotEmpty()) {
             $this->error('Retired src/Database PHP files have returned:');
             $retiredDatabaseSourceFiles->each(fn ($file) => $this->line(" - {$file}"));
+
+            return self::FAILURE;
+        }
+
+        $retiredOfferSourceFiles = $this->retiredOfferSourceFiles();
+
+        if ($retiredOfferSourceFiles->isNotEmpty()) {
+            $this->error('Retired src/Offer PHP files have returned:');
+            $retiredOfferSourceFiles->each(fn ($file) => $this->line(" - {$file}"));
+
+            return self::FAILURE;
+        }
+
+        $retiredUserSourceFiles = $this->retiredUserSourceFiles();
+
+        if ($retiredUserSourceFiles->isNotEmpty()) {
+            $this->error('Retired src/User PHP files have returned:');
+            $retiredUserSourceFiles->each(fn ($file) => $this->line(" - {$file}"));
 
             return self::FAILURE;
         }
@@ -1174,6 +1176,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('No legacy PHP files exist.');
         $this->info('The retired src/System directory contains no PHP files.');
         $this->info('The retired src/Database directory contains no PHP files.');
+        $this->info('The retired src/Offer directory contains no PHP files.');
+        $this->info('The retired src/User directory contains no PHP files.');
         $this->info(count($this->intentionallyUnrouted) . ' retired legacy PHP URLs are documented.');
         $publicEntrypointCount = count($this->allowedPublicPhp);
         $publicEntrypointSummary = $publicEntrypointCount === 1
@@ -1195,8 +1199,8 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code reads current user/session state through CurrentUserSession.');
         $this->info('Modern Laravel code reads native PHP superglobals through NativeSession, NativeRequest, or request boundaries.');
         $this->info('Runtime source reads environment-backed values through Laravel config.');
-        $this->info('Legacy source classes read native PHP superglobals through NativeSession or NativeRequest boundaries.');
-        $this->info('Modern Laravel code reads legacy permission metadata through LegacyPermissions.');
+        $this->info('Promoted support classes read native PHP state through audited request and session boundaries.');
+        $this->info('Runtime user-domain behavior lives under App\\Support\\UserDomain.');
         $this->info('Runtime code resolves click geography through App\\Support\\ClickGeo.');
         $this->info('Runtime code handles click writes through App\\Support\\Click.');
         $this->info('Runtime code resolves click variables through App\\Support\\ClickVariables.');
@@ -1212,21 +1216,16 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code manages IP blacklist records through App\\Support\\IPBlackList.');
         $this->info('Runtime code uploads sale-log images through App\\Support\\ImagesUploader.');
         $this->info('Runtime code reads and sends notifications through App\\Support\\Notifications.');
-        $this->info('Modern Laravel code resolves legacy offer-domain helpers through App\Support boundaries.');
-        $this->info('Modern Laravel code resolves legacy offer support helpers through App\Support boundaries.');
-        $this->info('Modern Laravel code resolves legacy offer-rule helpers through App\Support boundaries.');
-        $this->info('Modern Laravel code resolves legacy payout helpers through LegacyPayouts.');
-        $this->info('Modern Laravel code writes adjustment logs through LegacyAdjustmentsLog.');
-        $this->info('Modern Laravel code writes sale logs through LegacySaleLog.');
+        $this->info('Runtime offer-domain behavior lives under App\\Support\\OfferDomain.');
+        $this->info('Runtime offer support helpers live under App\\Support\\OfferDomain.');
+        $this->info('Runtime offer rules live under App\\Support\\OfferDomain.');
+        $this->info('Runtime code resolves payouts through App\\Support\\OfferDomain\\Payouts.');
+        $this->info('Runtime code writes adjustment logs through App\\Support\\OfferDomain\\AdjustmentsLog.');
+        $this->info('Runtime code writes sale logs through App\\Support\\OfferDomain\\SaleLog.');
         $this->info('Runtime code resolves date helpers through App\\Support\\DateHelper.');
         $this->info('Runtime code resolves pagination through App\\Support\\PaginationHelper.');
         $this->info('Runtime code resolves query assignments through App\\Support\\QueryAssignments.');
-        $this->info('Modern Laravel code rebuilds user trees through LegacyTree.');
-        $this->info('Modern Laravel code resolves legacy users through LegacyUser.');
-        $this->info('Modern login flows use LegacyLogin for legacy login constants.');
-        $this->info('Modern signup flows use LegacyAffiliateSignUp.');
-        $this->info('Modern Laravel code resolves legacy user-domain helpers through App\Support boundaries.');
-        $this->info('Modern offer postback URL flows use App\Support boundaries.');
+        $this->info('Runtime user trees, login, signup, and postback URLs use App\\Support\\UserDomain.');
         $this->info('Modern layouts preserve admin-login state through Laravel request boundaries.');
         $this->info('Legacy admin-login and notify classes are retired from runtime source.');
         $this->info('Database update screens run through App\\Support\\DatabaseUpdates.');
@@ -1241,10 +1240,10 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime miscellaneous reports use App\\Support\\Report\\Repositories.');
         $this->info('Runtime code sends mail through App\\Support\\Mail.');
         $this->info('Source code has no malformed duplicated legacy namespace references.');
-        $this->info('Modern Laravel source keeps direct legacy class references inside audited App\Support or bootstrap boundaries.');
-        $this->info('Legacy support wrappers remain simple boundary aliases.');
-        $this->info('Legacy support wrappers have specific audit allow-list coverage.');
-        $this->info('Support files with direct legacy references have specific audit allow-list coverage.');
+        $this->info('Runtime Laravel source contains no unaudited direct legacy class references.');
+        $this->info('Legacy support wrapper inventory is empty.');
+        $this->info('Legacy support wrapper allow-lists are complete.');
+        $this->info('Direct legacy support reference allow-lists are complete.');
         $this->info('Legacy boundary allow-list paths exist.');
 
         return self::SUCCESS;
@@ -1288,6 +1287,34 @@ class AuditLegacyFallbackCoverage extends Command
         return collect(File::allFiles($path))
             ->filter(fn ($file) => $file->getExtension() === 'php')
             ->map(fn ($file) => 'src/Database/'.str_replace('\\', '/', $file->getRelativePathname()))
+            ->values();
+    }
+
+    private function retiredOfferSourceFiles()
+    {
+        $path = base_path('src/Offer');
+
+        if (! File::isDirectory($path)) {
+            return collect();
+        }
+
+        return collect(File::allFiles($path))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => 'src/Offer/'.str_replace('\\', '/', $file->getRelativePathname()))
+            ->values();
+    }
+
+    private function retiredUserSourceFiles()
+    {
+        $path = base_path('src/User');
+
+        if (! File::isDirectory($path)) {
+            return collect();
+        }
+
+        return collect(File::allFiles($path))
+            ->filter(fn ($file) => $file->getExtension() === 'php')
+            ->map(fn ($file) => 'src/User/'.str_replace('\\', '/', $file->getRelativePathname()))
             ->values();
     }
 

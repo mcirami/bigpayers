@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Company;
-use App\Support\LegacyAffiliateSignUp as AffiliateSignUp;
-use App\Support\LegacyUser as User;
+use App\Support\UserDomain\AffiliateSignUp;
+use App\Support\UserDomain\User;
 use App\Support\NativeRequest;
 use Illuminate\Http\Request;
 

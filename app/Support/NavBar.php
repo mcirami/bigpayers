@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use App\Services\BrandingLabels;
-use App\Support\LegacyPermissions as Permissions;
+use App\Support\UserDomain\Permissions;
 use App\Support\DateHelper as Date;
 use App\Support\NativeRequest;
 

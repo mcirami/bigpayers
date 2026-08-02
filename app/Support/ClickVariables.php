@@ -8,6 +8,8 @@
 
 namespace App\Support;
 
+use App\Support\OfferDomain\Offer as OfferSupport;
+use App\Support\OfferDomain\RepHasOffer;
 
 use PDO;
 
@@ -44,7 +46,7 @@ class ClickVariables
 
 
             // gets offer url
-            $this->offerURL = LegacyOffer::selectOneQuery(TrackingParameters::get($trackingQuery, "offerid"))->fetch(PDO::FETCH_OBJ)->url;
+            $this->offerURL = OfferSupport::selectOneQuery(TrackingParameters::get($trackingQuery, "offerid"))->fetch(PDO::FETCH_OBJ)->url;
 
         } else {
             // Get click info as PDO::FETCH_OBJ
@@ -59,12 +61,12 @@ class ClickVariables
             $this->subVars = self::selectSubVars($clickID)->fetch(PDO::FETCH_OBJ);
 
             // gets affiliate specific post back url
-            $this->postBackUrl = LegacyRepHasOffer::getPostbackURL($this->clickObj->offer_idoffer, $this->affData->idrep);
+            $this->postBackUrl = RepHasOffer::getPostbackURL($this->clickObj->offer_idoffer, $this->affData->idrep);
 
             $this->usersGlobalPostBackUrl = LegacyUser::getUsersGlobalPostBackURL($this->clickObj->rep_idrep);
 
             // gets offer url
-            $this->offerURL = LegacyOffer::selectOneQuery($this->clickObj->offer_idoffer)->fetch(PDO::FETCH_OBJ)->url;
+            $this->offerURL = OfferSupport::selectOneQuery($this->clickObj->offer_idoffer)->fetch(PDO::FETCH_OBJ)->url;
         }
 
 
