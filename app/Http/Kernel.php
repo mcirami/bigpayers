@@ -3,9 +3,9 @@
 namespace App\Http;
 
 use App\Http\Middleware\AdminLoginMiddleware;
-use App\Http\Middleware\LegacyAccountTypeMiddleware;
-use App\Http\Middleware\LegacyPermissionMiddleware;
-use App\Http\Middleware\LegacyUserAuth;
+use App\Http\Middleware\AccountTypeMiddleware;
+use App\Http\Middleware\PermissionMiddleware;
+use App\Http\Middleware\UserSessionAuth;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -18,7 +18,7 @@ class Kernel extends HttpKernel
      * @var array
      */
     protected $middleware = [
-        \App\Http\Middleware\InitializeLegacyRuntime::class,
+        \App\Http\Middleware\InitializeRuntime::class,
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
@@ -62,8 +62,8 @@ class Kernel extends HttpKernel
         'can'         => \Illuminate\Auth\Middleware\Authorize::class,
         'guest'       => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'throttle'    => \Illuminate\Routing\Middleware\ThrottleRequests::class,
-        'legacy.auth' => LegacyUserAuth::class,
-        'permissions' => LegacyPermissionMiddleware::class,
-        'role'        => LegacyAccountTypeMiddleware::class,
+        'session.auth' => UserSessionAuth::class,
+        'permissions' => PermissionMiddleware::class,
+        'role'        => AccountTypeMiddleware::class,
     ];
 }

@@ -423,15 +423,6 @@ class View
 
         $stmt = $db->prepare($sql);
 
-        $user = new User();
-        $userData = User::SelectOne(CurrentUserSession::id());
-
-
-        /*
-         * TODO: DO I NEED THIS NONSENSE?
-         * $stmt->bindParam(':left', $userData->lft);
-        $stmt->bindParam(':right', $userData->rgt);*/
-
         $stmt->execute();
 
         return $stmt;

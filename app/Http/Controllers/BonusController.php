@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Privilege;
 use App\Support\CurrentUserContext;
 use App\Support\CurrentUserSession;
-use App\Support\UserDomain\Bonus as LegacyBonus;
+use App\Support\UserDomain\Bonus as BonusSupport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Support\UserDomain\Permissions;
-use App\Support\UserDomain\User as LegacyUser;
+use App\Support\UserDomain\User as UserSupport;
 
 class BonusController extends Controller
 {
@@ -18,7 +18,7 @@ class BonusController extends Controller
         $currentUserContext = CurrentUserSession::snapshot();
         abort_unless($this->canManageBonuses($currentUserContext), 403);
 
-        $bonuses = collect((new LegacyBonus($currentUserContext->id, true))->bonuses);
+        $bonuses = collect((new BonusSupport($currentUserContext->id, true))->bonuses);
 
         return view('bonus.index', [
             'bonuses' => $bonuses,
@@ -48,7 +48,7 @@ class BonusController extends Controller
 
         $payload = $this->validateBonus($request);
 
-        $bonusId = LegacyBonus::createBonus(
+        $bonusId = BonusSupport::createBonus(
             $payload['name'],
             $payload['sales_required'],
             $payload['payout'],
@@ -90,7 +90,7 @@ class BonusController extends Controller
         $bonusRecord = $this->findBonusOrFail((int) $bonus);
         $payload = $this->validateBonus($request);
 
-        LegacyBonus::updateBonus(
+        BonusSupport::updateBonus(
             (int) $bonusRecord->id,
             $payload['name'],
             $payload['sales_required'],
@@ -141,10 +141,10 @@ class BonusController extends Controller
     {
         abort_unless(CurrentUserSession::type() === Privilege::ROLE_GOD, 403);
 
-        $affiliates = LegacyUser::selectAllAffiliateIDs()->fetchAll(\PDO::FETCH_OBJ);
+        $affiliates = UserSupport::selectAllAffiliateIDs()->fetchAll(\PDO::FETCH_OBJ);
 
         foreach ($affiliates as $affiliate) {
-            (new LegacyBonus($affiliate->idrep))->processAll();
+            (new BonusSupport($affiliate->idrep))->processAll();
         }
 
         return redirect('/bonuses')->with('message', 'Bonus processing completed.');
@@ -166,7 +166,7 @@ class BonusController extends Controller
 
     private function findBonusOrFail(int $bonusId): \stdClass
     {
-        $bonus = LegacyBonus::querySelectOne($bonusId)->fetch(\PDO::FETCH_OBJ);
+        $bonus = BonusSupport::querySelectOne($bonusId)->fetch(\PDO::FETCH_OBJ);
 
         abort_if(!$bonus, 404);
 
@@ -186,15 +186,15 @@ class BonusController extends Controller
         $groups = [];
 
         if ($currentUserContext->can(Permissions::CREATE_ADMINS)) {
-            $groups[] = $this->userGroup('Admins', LegacyUser::selectAdmins()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
+            $groups[] = $this->userGroup('Admins', UserSupport::selectAdmins()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
         if ($currentUserContext->can(Permissions::CREATE_MANAGERS)) {
-            $groups[] = $this->userGroup('Managers', LegacyUser::selectOwnedManagers()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
+            $groups[] = $this->userGroup('Managers', UserSupport::selectOwnedManagers()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
         if ($currentUserContext->can(Permissions::CREATE_AFFILIATES)) {
-            $groups[] = $this->userGroup('Affiliates', LegacyUser::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
+            $groups[] = $this->userGroup('Affiliates', UserSupport::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC), $assignedUserIds);
         }
 
         return $groups;
@@ -242,11 +242,11 @@ class BonusController extends Controller
         $toRemove = array_values(array_diff($currentlyAssigned, $selectedUserIds));
 
         if (!empty($toAssign)) {
-            LegacyBonus::assignUsersToBonus($bonusId, $toAssign);
+            BonusSupport::assignUsersToBonus($bonusId, $toAssign);
         }
 
         if (!empty($toRemove)) {
-            LegacyBonus::removeUsersFromBonus($bonusId, $toRemove);
+            BonusSupport::removeUsersFromBonus($bonusId, $toRemove);
         }
     }
 

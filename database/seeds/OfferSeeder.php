@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
-use App\Support\LegacyOffer;
+use App\Support\OfferDomain\Offer as OfferSupport;
 
 class OfferSeeder extends Seeder
 {
@@ -17,7 +17,7 @@ class OfferSeeder extends Seeder
             $cpc->created_by = 1;
             $cpc->offer_name = 'Default CPC Offer';
             $cpc->url = '#clickid#';
-            $cpc->is_public = LegacyOffer::VISIBILITY_PRIVATE;
+            $cpc->is_public = OfferSupport::VISIBILITY_PRIVATE;
             $cpc->payout = 1.00;
             $cpc->status = 1;
             $cpc->campaign_id = \App\Campaign::all()->first()->id;

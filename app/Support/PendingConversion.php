@@ -18,7 +18,7 @@ class PendingConversion
             return false;
         }
 
-        $conversion = new LegacyConversion();
+        $conversion = new Conversion();
         $conversion->click_id = $pendingConversion->click_id;
         $conversion->paid = $pendingConversion->payout;
 

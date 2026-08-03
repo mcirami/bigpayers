@@ -34,7 +34,7 @@ class LegacyFallbackAuditTest extends TestCase
         );
 
         $this->assertStringContainsString(
-            'Laravel middleware initializes the legacy runtime boundary once per request.',
+            'Laravel middleware initializes the application runtime boundary once per request.',
             $output
         );
         $this->assertStringContainsString(
@@ -91,6 +91,10 @@ class LegacyFallbackAuditTest extends TestCase
         );
         $this->assertStringContainsString(
             'Runtime Laravel source contains no unaudited direct legacy class references.',
+            $output
+        );
+        $this->assertStringContainsString(
+            'Runtime source contains no references to retired App\\Support Legacy wrappers.',
             $output
         );
         $this->assertStringContainsString(
@@ -973,26 +977,50 @@ PHP,
         );
 
         $this->assertContains(
-            'app/Http/Controllers/BadController.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            'app/Http/Controllers/BadController.php: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
         $this->assertContains(
-            'config/bad.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            'config/bad.php: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
         $this->assertContains(
-            'database/seeds/BadSeeder.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            'database/seeds/BadSeeder.php: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
         $this->assertContains(
-            'public/bad-entrypoint.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            'public/bad-entrypoint.php: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
         $this->assertContains(
-            'bootstrap/legacy_loader.php: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.',
+            'bootstrap/legacy_loader.php: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.',
             $errors->all()
         );
-        $this->assertCount(5, $errors);
+        $this->assertContains(
+            'app/Support/LegacyUser.php: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.',
+            $errors->all()
+        );
+        $this->assertCount(6, $errors);
+    }
+
+    public function test_retired_legacy_support_wrapper_errors_include_database_files(): void
+    {
+        $command = app(AuditLegacyFallbackCoverage::class);
+
+        $errors = $this->invokeAuditMethod(
+            $command,
+            'retiredLegacySupportWrapperErrorsFor',
+            [[
+                'database/seeds/BadSeeder.php' => 'use App\\Support\\LegacyOffer;',
+                'database/migrations/BadMigration.php' => 'use App\\Support\\LegacyPermissions as Permissions;',
+                'app/Http/Controllers/CleanController.php' => 'use App\\Support\\OfferDomain\\Offer;',
+            ]]
+        );
+
+        $this->assertSame([
+            'database/seeds/BadSeeder.php: use a promoted Laravel-owned class instead of a retired App\\Support Legacy wrapper.',
+            'database/migrations/BadMigration.php: use a promoted Laravel-owned class instead of a retired App\\Support Legacy wrapper.',
+        ], $errors->all());
     }
 
     public function test_legacy_permissions_dependency_errors_report_forbidden_sources(): void
@@ -2045,7 +2073,6 @@ PHP,
             'legacyEmployeeReportRepositoriesForbiddenPatterns',
             'legacyMiscReportRepositoriesForbiddenPatterns',
             'legacyMailForbiddenPatterns',
-            'legacyBoundaryAllowedDirectories',
         ] as $propertyName) {
             $patterns = $this->auditProperty($command, $propertyName);
 
@@ -2074,11 +2101,13 @@ PHP,
     public function test_laravel_middleware_owns_runtime_bootstrap(): void
     {
         $kernel = File::get(app_path('Http/Kernel.php'));
-        $middleware = File::get(app_path('Http/Middleware/InitializeLegacyRuntime.php'));
+        $middleware = File::get(app_path('Http/Middleware/InitializeRuntime.php'));
         $runtimeBootstrap = File::get(app_path('Support/RuntimeBootstrap.php'));
 
         $this->assertFileDoesNotExist(base_path('bootstrap/legacy_loader.php'));
-        $this->assertStringContainsString('InitializeLegacyRuntime::class', $kernel);
+        $this->assertFileDoesNotExist(app_path('Http/Middleware/InitializeLegacyRuntime.php'));
+        $this->assertStringContainsString('InitializeRuntime::class', $kernel);
+        $this->assertStringContainsString("'session.auth' => UserSessionAuth::class", $kernel);
         $this->assertStringContainsString('RuntimeBootstrap::boot()', $middleware);
         $this->assertStringContainsString('private static bool $bootstrapped = false;', $runtimeBootstrap);
         $this->assertStringContainsString('session_status() === PHP_SESSION_NONE', $runtimeBootstrap);

@@ -9,7 +9,7 @@ use App\Services\BaseInstallSql;
 use App\Services\BrandingLabels;
 use App\Services\CompanyDatabaseConnectionManager;
 use App\Services\GeoIpDatabase;
-use App\Services\LegacyDatabaseConfig;
+use App\Services\RuntimeDatabaseConfig;
 use App\Services\LoginBranding;
 use App\Services\RuntimeEnvironment;
 use App\Services\SmsApiEndpoint;
@@ -145,12 +145,12 @@ class MigrationCommandsTest extends TestCase
             'password' => 'master-pass',
         ]);
 
-        $this->assertSame('tenant-db-host', LegacyDatabaseConfig::mysql('host'));
-        $this->assertSame('tenant-db-host', LegacyDatabaseConfig::mysqlConnection()['host']);
-        $this->assertSame('tenant_master', LegacyDatabaseConfig::mysql('database'));
-        $this->assertSame('tenant_master', LegacyDatabaseConfig::primaryDatabase());
-        $this->assertSame('master-db-host', LegacyDatabaseConfig::master('host'));
-        $this->assertSame('master_catalog', LegacyDatabaseConfig::master('database'));
+        $this->assertSame('tenant-db-host', RuntimeDatabaseConfig::mysql('host'));
+        $this->assertSame('tenant-db-host', RuntimeDatabaseConfig::mysqlConnection()['host']);
+        $this->assertSame('tenant_master', RuntimeDatabaseConfig::mysql('database'));
+        $this->assertSame('tenant_master', RuntimeDatabaseConfig::primaryDatabase());
+        $this->assertSame('master-db-host', RuntimeDatabaseConfig::master('host'));
+        $this->assertSame('master_catalog', RuntimeDatabaseConfig::master('database'));
     }
 
     public function test_legacy_database_config_can_read_database_config_before_laravel_config_is_bootstrapped(): void
@@ -161,11 +161,11 @@ class MigrationCommandsTest extends TestCase
         try {
             $app->offsetUnset('config');
 
-            $this->assertSame(env('DB_HOST', '127.0.0.1'), LegacyDatabaseConfig::mysql('host'));
-            $this->assertSame(env('DB_DATABASE', 'forge'), LegacyDatabaseConfig::primaryDatabase());
-            $this->assertSame(env('MASTER_DB_HOST', '127.0.0.1'), LegacyDatabaseConfig::master('host'));
-            $this->assertSame(env('MASTER_DB_DATABASE', 'forge'), LegacyDatabaseConfig::master('database'));
-            $this->assertSame(env('DB_USERNAME', 'forge'), LegacyDatabaseConfig::mysqlConnection()['username']);
+            $this->assertSame(env('DB_HOST', '127.0.0.1'), RuntimeDatabaseConfig::mysql('host'));
+            $this->assertSame(env('DB_DATABASE', 'forge'), RuntimeDatabaseConfig::primaryDatabase());
+            $this->assertSame(env('MASTER_DB_HOST', '127.0.0.1'), RuntimeDatabaseConfig::master('host'));
+            $this->assertSame(env('MASTER_DB_DATABASE', 'forge'), RuntimeDatabaseConfig::master('database'));
+            $this->assertSame(env('DB_USERNAME', 'forge'), RuntimeDatabaseConfig::mysqlConnection()['username']);
         } finally {
             $app->instance('config', $config);
         }
@@ -182,8 +182,8 @@ class MigrationCommandsTest extends TestCase
             'SMS_URL' => 'services.sms.base_url',
             'LOGIN_PAGE_TEXT' => 'branding.login.page_text',
             'FORGOT_PASS_PAGE_BUTTON_TEXT' => 'branding.login.forgot_password_button_text',
-            'database.connections.mysql' => 'App\Services\LegacyDatabaseConfig',
-            'database.connections.master' => 'App\Services\LegacyDatabaseConfig',
+            'database.connections.mysql' => 'App\Services\RuntimeDatabaseConfig',
+            'database.connections.master' => 'App\Services\RuntimeDatabaseConfig',
         ] as $environmentName => $configKey) {
             $this->assertStringContainsString($environmentName, $documentation);
             $this->assertStringContainsString($configKey, $documentation);

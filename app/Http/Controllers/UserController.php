@@ -23,7 +23,7 @@ use App\Support\UserDomain\Permissions;
 use App\Support\UserDomain\Privileges;
 use App\Support\UserDomain\Referrals;
 use App\Support\UserDomain\ReportPermissions;
-use App\Support\UserDomain\User as LegacyUser;
+use App\Support\UserDomain\User as UserSupport;
 
 class UserController extends Controller
 {
@@ -376,7 +376,7 @@ class UserController extends Controller
             'is_active' => 'required|in:active,unactive',
         ]);
 
-        abort_unless(LegacyUser::hasAffiliate((int) $validated['affid']), 403);
+        abort_unless(UserSupport::hasAffiliate((int) $validated['affid']), 403);
 
         Referrals::updateReferral($referrer->idrep, (int) $validated['affid'], [
             'start_date' => $validated['start_date'],
@@ -394,7 +394,7 @@ class UserController extends Controller
         $referrer = User::query()->findOrFail($id);
         $this->authorizeReferralEdit($referrer);
 
-        abort_unless(LegacyUser::hasAffiliate((int) $affiliateId), 403);
+        abort_unless(UserSupport::hasAffiliate((int) $affiliateId), 403);
 
         Referrals::deleteReferralStructure($referrer->idrep, (int) $affiliateId);
 
@@ -913,7 +913,7 @@ class UserController extends Controller
             abort(403);
         }
 
-        if ($currentUserContext->type === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !LegacyUser::userOwnsUser($sessionUserId, $targetUserId)) {
+        if ($currentUserContext->type === Privilege::ROLE_MANAGER && $targetUserId !== $sessionUserId && !UserSupport::userOwnsUser($sessionUserId, $targetUserId)) {
             abort(403);
         }
 
@@ -923,7 +923,7 @@ class UserController extends Controller
     private function authorizeReferralEdit(User $user)
     {
         abort_unless(CurrentUserSession::permissions()->can(Permissions::EDIT_REFERRALS), 403);
-        abort_unless(LegacyUser::hasAffiliate($user->idrep), 403);
+        abort_unless(UserSupport::hasAffiliate($user->idrep), 403);
     }
 
     private function buildUserFormViewData(?User $user = null, ?CurrentUserContext $currentUserContext = null)
@@ -1217,7 +1217,7 @@ class UserController extends Controller
     {
         $user = User::query()->findOrFail($id);
 
-        if (!LegacyUser::userOwnsUser(CurrentUserSession::id(), $user->idrep)) {
+        if (!UserSupport::userOwnsUser(CurrentUserSession::id(), $user->idrep)) {
             abort(403);
         }
 

@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Support\CurrentUserSession;
 use Closure;
 
-class LegacyPermissionMiddleware
+class AccountTypeMiddleware
 {
     /**
      * Handle an incoming request.
@@ -14,14 +14,11 @@ class LegacyPermissionMiddleware
      * @param  \Closure $next
      * @return mixed
      */
-    public function handle($request, Closure $next, ...$permissions)
+    public function handle($request, Closure $next, ...$userTypes)
     {
-        foreach ($permissions as $permission) {
-            if (CurrentUserSession::permissions()->can($permission) == false) {
-                return redirect('/dashboard');
-            }
+        if (!in_array(CurrentUserSession::type(), $userTypes)) {
+            abort(403, "Incorrect user type");
         }
-
 
         return $next($request);
     }

@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Support\UserDomain\User;
 use Closure;
 
-class LegacyUserAuth
+class UserSessionAuth
 {
     /**
      * Handle an incoming request.

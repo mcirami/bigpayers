@@ -129,8 +129,6 @@ class User extends Authenticatable
         return User::where('lft', '>', $this->lft)->where('rgt', '<', $this->rgt);
     }
 
-
-    // GOT TO LOVE LEGACY CODE AMIRITE
     public function getRole()
     {
         $type = Privilege::ROLE_UNKNOWN;

@@ -2,7 +2,7 @@
 
 namespace App;
 
-use App\Services\LegacyDatabaseConfig;
+use App\Services\RuntimeDatabaseConfig;
 use App\Support\NativeSession;
 use Throwable;
 use Illuminate\Database\Eloquent\Builder;
@@ -73,7 +73,7 @@ class Company extends Model
 
     public static function currentSubDomain(): string
     {
-        return (string) NativeSession::get('COMPANY_SUBDOMAIN', LegacyDatabaseConfig::primaryDatabase());
+        return (string) NativeSession::get('COMPANY_SUBDOMAIN', RuntimeDatabaseConfig::primaryDatabase());
     }
 
     public function offerUrls()

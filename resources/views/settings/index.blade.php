@@ -101,7 +101,7 @@
                         <div class="bp-form-field">
                             <label class="bp-form-label" for="telegram">Telegram</label>
                             <input id="telegram" name="telegram" class="bp-form-input" type="text" value="{{ $settingsValues['telegram'] }}">
-                            <p class="bp-form-note">Legacy compatibility field. New signup approval messaging uses the messenger settings below.</p>
+                            <p class="bp-form-note">Used by existing email approval templates.</p>
                         </div>
 
                         <div class="bp-form-field">

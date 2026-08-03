@@ -86,7 +86,7 @@ class PublicCompatibilityRoutesTest extends TestCase
     public function test_laravel_company_model_uses_native_session_boundary(): void
     {
         $companyModel = File::get(app_path('Company.php'));
-        $loginController = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
+        $loginController = File::get(app_path('Http/Controllers/SessionLoginController.php'));
 
         $this->assertStringContainsString('App\\Support\\NativeSession', $companyModel);
         $this->assertStringContainsString('App\\Support\\NativeSession', $loginController);
@@ -144,7 +144,7 @@ class PublicCompatibilityRoutesTest extends TestCase
 
     public function test_login_controller_does_not_load_legacy_company_from_session(): void
     {
-        $controller = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
+        $controller = File::get(app_path('Http/Controllers/SessionLoginController.php'));
 
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\System\\Company', $controller);
         $this->assertStringNotContainsString('Company::loadFromSession()', $controller);

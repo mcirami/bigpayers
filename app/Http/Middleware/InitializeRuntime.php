@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Support\RuntimeBootstrap;
 use Closure;
 
-class InitializeLegacyRuntime
+class InitializeRuntime
 {
     public function handle($request, Closure $next)
     {

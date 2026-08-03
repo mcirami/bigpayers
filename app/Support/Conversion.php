@@ -82,7 +82,6 @@ class Conversion
             $this->getClickData();
         }
         if ($this->save()) {
-            //TODO: This could be moved to a ConversionObserver
             $this->checkAndUpdateClickTypeIfBlacklisted();
             $this->checkAndRegisterReferralCommission();
             $this->checkAndRegisterBonuses();

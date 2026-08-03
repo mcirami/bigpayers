@@ -8,7 +8,7 @@ use App\Support\UserDomain\User;
 use App\Support\NativeSession;
 use Illuminate\Http\Request;
 
-class LegacyLoginController extends Controller
+class SessionLoginController extends Controller
 {
 
 	public function showLoginForm(Request $request)

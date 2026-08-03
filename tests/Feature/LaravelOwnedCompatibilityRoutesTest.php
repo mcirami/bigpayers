@@ -20,9 +20,12 @@ use Tests\TestCase;
 
 class LaravelOwnedCompatibilityRoutesTest extends TestCase
 {
-    public function test_public_auth_flows_use_legacy_auth_boundaries(): void
+    public function test_public_auth_flows_use_user_domain_boundaries(): void
     {
-        $loginController = File::get(app_path('Http/Controllers/LegacyLoginController.php'));
+        $loginController = File::get(app_path('Http/Controllers/SessionLoginController.php'));
+
+        $this->assertFileDoesNotExist(app_path('Http/Controllers/LegacyLoginController.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Middleware/LegacyUserAuth.php'));
 
         $this->assertStringContainsString('App\\Support\\UserDomain\\Login', $loginController);
         $this->assertStringContainsString('App\\Support\\UserDomain\\User', $loginController);
@@ -38,13 +41,16 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
 
         foreach ([
             app_path('Http/Controllers/Auth/ForgotPasswordController.php'),
-            app_path('Http/Middleware/LegacyUserAuth.php'),
+            app_path('Http/Middleware/UserSessionAuth.php'),
         ] as $path) {
             $contents = File::get($path);
 
             $this->assertStringContainsString('App\\Support\\UserDomain\\User', $contents);
             $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $contents);
         }
+
+        $this->assertFileDoesNotExist(app_path('Http/Middleware/LegacyAccountTypeMiddleware.php'));
+        $this->assertFileDoesNotExist(app_path('Http/Middleware/LegacyPermissionMiddleware.php'));
 
         $this->assertFileDoesNotExist(app_path('Support/LegacyLogin.php'));
         $login = File::get(app_path('Support/UserDomain/Login.php'));
@@ -88,7 +94,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileDoesNotExist(app_path('Support/LegacyConnection.php'));
     }
 
-    public function test_modern_user_reads_use_legacy_user_boundary(): void
+    public function test_modern_user_reads_use_user_domain_boundary(): void
     {
         foreach ([
             app_path('Http/Controllers/BonusController.php'),
@@ -112,7 +118,10 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         }
 
         $clickVariables = File::get(app_path('Support/ClickVariables.php'));
-        $this->assertStringContainsString('LegacyUser::SelectOne', $clickVariables);
+        $this->assertStringContainsString('UserSupport::SelectOne', $clickVariables);
+        $this->assertStringContainsString('Click::SelectOne', $clickVariables);
+        $this->assertStringNotContainsString('LegacyUser', $clickVariables);
+        $this->assertStringNotContainsString('LegacyClick', $clickVariables);
         $this->assertStringNotContainsString('LeadMax\\TrackYourStats\\User\\User', $clickVariables);
 
         $this->assertFileDoesNotExist(app_path('Support/LegacyUser.php'));
@@ -131,7 +140,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_POST', $legacyUser);
     }
 
-    public function test_modern_user_domain_helpers_use_legacy_boundaries(): void
+    public function test_modern_user_domain_helpers_use_promoted_classes(): void
     {
         $bonusController = File::get(app_path('Http/Controllers/BonusController.php'));
 
@@ -320,7 +329,7 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertStringNotContainsString('$_POST', $offerUpdate);
     }
 
-    public function test_modern_offer_postback_urls_use_legacy_boundaries(): void
+    public function test_modern_offer_postback_urls_use_user_domain_classes(): void
     {
         $offerController = File::get(app_path('Http/Controllers/OfferController.php'));
 
@@ -603,8 +612,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
     {
         foreach ([
             app_path('Click.php'),
-            app_path('Http/Middleware/LegacyAccountTypeMiddleware.php'),
-            app_path('Http/Middleware/LegacyPermissionMiddleware.php'),
+            app_path('Http/Middleware/AccountTypeMiddleware.php'),
+            app_path('Http/Middleware/PermissionMiddleware.php'),
             app_path('Providers/AppServiceProvider.php'),
             app_path('Services/Repositories/Offer/OfferAffiliateClicksRepository.php'),
             app_path('Services/Repositories/Offer/OfferClicksRepository.php'),
@@ -836,6 +845,22 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
         $this->assertFileExists(app_path('Support/PendingConversion.php'));
         $this->assertFileDoesNotExist(app_path('Support/LegacyPendingConversion.php'));
         $this->assertFileDoesNotExist(base_path('src/Clicks/PendingConversion.php'));
+
+        $pendingConversion = File::get(app_path('Support/PendingConversion.php'));
+        $this->assertStringContainsString('new Conversion()', $pendingConversion);
+        $this->assertStringNotContainsString('LegacyConversion', $pendingConversion);
+    }
+
+    public function test_database_bootstrap_files_use_promoted_offer_and_permission_classes(): void
+    {
+        $offerSeeder = File::get(database_path('seeds/OfferSeeder.php'));
+        $permissionMigration = File::get(database_path('migrations/2018_06_14_160804_add_email_pools_permission.php'));
+
+        $this->assertStringContainsString('App\\Support\\OfferDomain\\Offer as OfferSupport', $offerSeeder);
+        $this->assertStringContainsString('OfferSupport::VISIBILITY_PRIVATE', $offerSeeder);
+        $this->assertStringNotContainsString('LegacyOffer', $offerSeeder);
+        $this->assertStringContainsString('App\\Support\\UserDomain\\Permissions', $permissionMigration);
+        $this->assertStringNotContainsString('LegacyPermissions', $permissionMigration);
     }
 
     public function test_modern_click_id_reads_use_legacy_uid_boundary(): void
@@ -1320,7 +1345,8 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertStringNotContainsString('$_SERVER', $contents);
         }
 
-        $legacyDatabaseConfig = File::get(app_path('Services/LegacyDatabaseConfig.php'));
+        $runtimeDatabaseConfig = File::get(app_path('Services/RuntimeDatabaseConfig.php'));
+        $this->assertFileDoesNotExist(app_path('Services/LegacyDatabaseConfig.php'));
         $databaseConnection = File::get(app_path('Support/DatabaseConnection.php'));
         $runtimeCompany = File::get(app_path('Support/RuntimeCompany.php'));
         $connection = File::get(app_path('Support/Connection.php'));
@@ -1329,14 +1355,14 @@ class LaravelOwnedCompatibilityRoutesTest extends TestCase
             $this->assertFileDoesNotExist(base_path('src/System/'.$retiredFile));
         }
 
-        $this->assertStringContainsString('configIsAvailable()', $legacyDatabaseConfig);
-        $this->assertStringContainsString("config(\"database.connections.{\$connection}.{\$key}\")", $legacyDatabaseConfig);
-        $this->assertStringContainsString("self::databaseConfig()['connections'][\$connection]", $legacyDatabaseConfig);
-        $this->assertStringContainsString("require base_path('config/database.php')", $legacyDatabaseConfig);
-        $this->assertStringContainsString('LegacyDatabaseConfig', $databaseConnection);
-        $this->assertStringContainsString('LegacyDatabaseConfig', $runtimeCompany);
-        $this->assertStringContainsString('LegacyDatabaseConfig', $connection);
-        $this->assertStringContainsString('LegacyDatabaseConfig', $indexController);
+        $this->assertStringContainsString('configIsAvailable()', $runtimeDatabaseConfig);
+        $this->assertStringContainsString("config(\"database.connections.{\$connection}.{\$key}\")", $runtimeDatabaseConfig);
+        $this->assertStringContainsString("self::databaseConfig()['connections'][\$connection]", $runtimeDatabaseConfig);
+        $this->assertStringContainsString("require base_path('config/database.php')", $runtimeDatabaseConfig);
+        $this->assertStringContainsString('RuntimeDatabaseConfig', $databaseConnection);
+        $this->assertStringContainsString('RuntimeDatabaseConfig', $runtimeCompany);
+        $this->assertStringContainsString('RuntimeDatabaseConfig', $connection);
+        $this->assertStringContainsString('RuntimeDatabaseConfig', $indexController);
         $this->assertStringNotContainsString("config('database.connections.mysql.database')", $indexController);
         $this->assertStringNotContainsString('DB_DATABASE', $databaseConnection);
         $this->assertStringNotContainsString('DB_DATABASE', $runtimeCompany);

@@ -525,9 +525,7 @@ class AuditLegacyFallbackCoverage extends Command
         'LeadMax\\TrackYourStats\\LeadMax\\TrackYourStats' => 'Remove the duplicated legacy namespace segment.',
     ];
 
-    private array $legacyBoundaryAllowedDirectories = [
-        'app/Support' => 'Dedicated wrappers around legacy classes.',
-    ];
+    private array $legacyBoundaryAllowedDirectories = [];
 
     public function handle(): int
     {
@@ -1128,6 +1126,15 @@ class AuditLegacyFallbackCoverage extends Command
             return self::FAILURE;
         }
 
+        $retiredLegacySupportWrapperErrors = $this->retiredLegacySupportWrapperErrors();
+
+        if ($retiredLegacySupportWrapperErrors->isNotEmpty()) {
+            $this->error('Runtime source still references retired App\\Support Legacy wrappers:');
+            $retiredLegacySupportWrapperErrors->each(fn ($error) => $this->line(" - {$error}"));
+
+            return self::FAILURE;
+        }
+
         $legacySupportWrapperShapeErrors = $this->legacySupportWrapperShapeErrors();
 
         if ($legacySupportWrapperShapeErrors->isNotEmpty()) {
@@ -1186,7 +1193,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info($publicEntrypointSummary);
         $this->info('Public webserver rewrites route direct PHP file requests through Laravel.');
         $this->info('Front controller has no dynamic legacy file fallback.');
-        $this->info('Laravel middleware initializes the legacy runtime boundary once per request.');
+        $this->info('Laravel middleware initializes the application runtime boundary once per request.');
         $this->info('Retired legacy marker URLs are blocked from modern views and assets.');
         $this->info('Retired legacy PHP URLs are not registered as Laravel routes.');
         $this->info('Allowed public PHP entrypoints exist and have documented reasons.');
@@ -1241,6 +1248,7 @@ class AuditLegacyFallbackCoverage extends Command
         $this->info('Runtime code sends mail through App\\Support\\Mail.');
         $this->info('Source code has no malformed duplicated legacy namespace references.');
         $this->info('Runtime Laravel source contains no unaudited direct legacy class references.');
+        $this->info('Runtime source contains no references to retired App\\Support Legacy wrappers.');
         $this->info('Legacy support wrapper inventory is empty.');
         $this->info('Legacy support wrapper allow-lists are complete.');
         $this->info('Direct legacy support reference allow-lists are complete.');
@@ -1720,6 +1728,28 @@ class AuditLegacyFallbackCoverage extends Command
         ]));
     }
 
+    private function retiredLegacySupportWrapperErrors()
+    {
+        return $this->retiredLegacySupportWrapperErrorsFor($this->sourceFilesFromDirectories([
+            'app',
+            'bootstrap',
+            'config',
+            'database',
+            'public',
+            'resources',
+            'routes',
+        ]));
+    }
+
+    private function retiredLegacySupportWrapperErrorsFor($sourceFiles)
+    {
+        return collect($sourceFiles)
+            ->filter(fn (string $contents) => str_contains($contents, 'App\\Support\\Legacy'))
+            ->keys()
+            ->map(fn (string $relativePath) => "{$relativePath}: use a promoted Laravel-owned class instead of a retired App\\Support Legacy wrapper.")
+            ->values();
+    }
+
     private function malformedLegacyNamespaceErrors()
     {
         return $this->malformedLegacyNamespaceErrorsFor($this->sourceFilesFromDirectories([
@@ -1794,7 +1824,7 @@ class AuditLegacyFallbackCoverage extends Command
             })
             ->filter(fn (string $contents) => str_contains($contents, 'LeadMax\\TrackYourStats'))
             ->keys()
-            ->map(fn (string $relativePath) => "{$relativePath}: use an App\\Support wrapper instead of referencing LeadMax\\TrackYourStats directly.")
+            ->map(fn (string $relativePath) => "{$relativePath}: use a promoted Laravel-owned class instead of referencing LeadMax\\TrackYourStats directly.")
             ->values();
     }
 

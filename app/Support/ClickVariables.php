@@ -10,6 +10,7 @@ namespace App\Support;
 
 use App\Support\OfferDomain\Offer as OfferSupport;
 use App\Support\OfferDomain\RepHasOffer;
+use App\Support\UserDomain\User as UserSupport;
 
 use PDO;
 
@@ -41,8 +42,7 @@ class ClickVariables
             $trackingQuery = TrackingParameters::normalize(NativeRequest::queryAll());
 
             //get Affiliate data who's ID is linked to that click, stored as PDO::FETCH_OBJ
-            $affData = new LegacyUser();
-            $this->affData = LegacyUser::SelectOne(TrackingParameters::get($trackingQuery, "repid"));
+            $this->affData = UserSupport::SelectOne(TrackingParameters::get($trackingQuery, "repid"));
 
 
             // gets offer url
@@ -50,11 +50,10 @@ class ClickVariables
 
         } else {
             // Get click info as PDO::FETCH_OBJ
-            $this->clickObj = LegacyClick::SelectOne($clickID);
+            $this->clickObj = Click::SelectOne($clickID);
 
             //get Affiliate data who's ID is linked to that click, stored as PDO::FETCH_OBJ
-            $affData = new LegacyUser();
-            $this->affData = LegacyUser::SelectOne($this->clickObj->rep_idrep);
+            $this->affData = UserSupport::SelectOne($this->clickObj->rep_idrep);
 
 
             // gets sub variables that were stored when click was generated, stored as obj
@@ -63,7 +62,7 @@ class ClickVariables
             // gets affiliate specific post back url
             $this->postBackUrl = RepHasOffer::getPostbackURL($this->clickObj->offer_idoffer, $this->affData->idrep);
 
-            $this->usersGlobalPostBackUrl = LegacyUser::getUsersGlobalPostBackURL($this->clickObj->rep_idrep);
+            $this->usersGlobalPostBackUrl = UserSupport::getUsersGlobalPostBackURL($this->clickObj->rep_idrep);
 
             // gets offer url
             $this->offerURL = OfferSupport::selectOneQuery($this->clickObj->offer_idoffer)->fetch(PDO::FETCH_OBJ)->url;

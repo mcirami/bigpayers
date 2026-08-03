@@ -2,7 +2,7 @@
 
 namespace App\Support;
 
-use App\Services\LegacyDatabaseConfig;
+use App\Services\RuntimeDatabaseConfig;
 use PDO;
 
 class DatabaseConnection
@@ -21,9 +21,9 @@ class DatabaseConnection
     {
         if (!self::$instance) {
             self::$instance = new PDO(
-                "mysql:host=".LegacyDatabaseConfig::mysql('host').";port=".LegacyDatabaseConfig::mysql('port').";dbname=".LegacyDatabaseConfig::mysql('database'),
-                LegacyDatabaseConfig::mysql('username'),
-                LegacyDatabaseConfig::mysql('password')
+                "mysql:host=".RuntimeDatabaseConfig::mysql('host').";port=".RuntimeDatabaseConfig::mysql('port').";dbname=".RuntimeDatabaseConfig::mysql('database'),
+                RuntimeDatabaseConfig::mysql('username'),
+                RuntimeDatabaseConfig::mysql('password')
             );
             self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             self::$instance->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -37,9 +37,9 @@ class DatabaseConnection
     {
         if (!self::$instanceMaster) {
             self::$instanceMaster = new \PDO(
-                "mysql:host=".LegacyDatabaseConfig::master('host').";port=".LegacyDatabaseConfig::master('port').";dbname=".LegacyDatabaseConfig::master('database'),
-                LegacyDatabaseConfig::master('username'),
-                LegacyDatabaseConfig::master('password')
+                "mysql:host=".RuntimeDatabaseConfig::master('host').";port=".RuntimeDatabaseConfig::master('port').";dbname=".RuntimeDatabaseConfig::master('database'),
+                RuntimeDatabaseConfig::master('username'),
+                RuntimeDatabaseConfig::master('password')
             );
             self::$instanceMaster->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             self::$instanceMaster->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);

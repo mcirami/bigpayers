@@ -58,9 +58,7 @@ class Update
     public function printUnAssigned()
     {
         for ($i = 0; $i < count($this->allAffiliates); $i++) {
-
-            //TODO Optimize check privileges
-            /*TODO Query privileges table to return repids where is_god = 1, then parse into one dimential array like above, then in_array() compare with repid ($allReps[$nark][0]); */
+            // The root account is not assignable to offers.
             if ($this->allAffiliates[$i]['idrep'] != 1) {
 
                 if (!in_array($this->allAffiliates[$i]["idrep"], $this->assignedAffiliates)) {

@@ -21,5 +21,5 @@ The legacy fallback audit enforces this for `app/`, `src/`, `routes/`, and
 | `FORGOT_PASS_PAGE_BUTTON_TEXT` | `branding.login.forgot_password_button_text` | Forgot-password submit button text. |
 
 Database settings continue to live under `database.connections.mysql` and
-`database.connections.master`. Legacy database bootstrap code reads those through
-`App\Services\LegacyDatabaseConfig`.
+`database.connections.master`. Runtime database bootstrap code reads those
+through `App\Services\RuntimeDatabaseConfig`.

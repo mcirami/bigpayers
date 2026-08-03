@@ -11,10 +11,10 @@ use App\PredefinedOfferRule;
 use App\Privilege;
 use App\Services\BrandingLabels;
 use App\Support\CurrentUserSession;
-use App\Support\UserDomain\PostBackURLs\ConversionPostBackURL as LegacyConversionPostBackURL;
-use App\Support\UserDomain\PostBackURLs\DeductionPostBackURL as LegacyDeductionPostBackURL;
+use App\Support\UserDomain\PostBackURLs\ConversionPostBackURL;
+use App\Support\UserDomain\PostBackURLs\DeductionPostBackURL;
 use App\Support\OfferDomain\Rules\Handlers\Device as DeviceRuleHandler;
-use App\Support\UserDomain\PostBackURLs\FreePostBackURL as LegacyFreePostBackURL;
+use App\Support\UserDomain\PostBackURLs\FreePostBackURL;
 use App\Support\OfferDomain\Campaigns;
 use App\Support\OfferDomain\Rules\Handlers\Geo as GeoRuleHandler;
 use App\Support\OfferDomain\Rules\Handlers\NoneUnique as NoneUniqueRuleHandler;
@@ -24,7 +24,7 @@ use App\Support\OfferDomain\Rules as OfferRules;
 use App\Support\OfferDomain\Rules\Geo as GeoRule;
 use App\Support\OfferDomain\View as OfferView;
 use App\Support\OfferDomain\RepHasOffer;
-use App\Support\UserDomain\User as LegacyUser;
+use App\Support\UserDomain\User as UserSupport;
 use App\Support\RequestContext;
 use App\User;
 use App\UserOffer;
@@ -50,7 +50,7 @@ class OfferController extends Controller
         $offerId = (int) $id;
         $userId = (int) $user;
 
-        abort_unless(LegacyUser::hasAffiliate($userId), 403, 'You do not have access to this user.');
+        abort_unless(UserSupport::hasAffiliate($userId), 403, 'You do not have access to this user.');
 
         $offer = Offer::query()->findOrFail($offerId);
 
@@ -79,9 +79,9 @@ class OfferController extends Controller
 
         return view('offer.postback', [
             'offer' => $offer,
-            'conversionPostback' => old('postback_url', (string) (new LegacyConversionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
-            'freeSignUpPostback' => old('free_sign_up_url', (string) (new LegacyFreePostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
-            'deductionPostback' => old('deduction_url', (string) (new LegacyDeductionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'conversionPostback' => old('postback_url', (string) (new ConversionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'freeSignUpPostback' => old('free_sign_up_url', (string) (new FreePostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
+            'deductionPostback' => old('deduction_url', (string) (new DeductionPostBackURL($userId, $offer->idoffer))->getOfferSpecificURL()),
         ]);
     }
 
@@ -96,13 +96,13 @@ class OfferController extends Controller
             'deduction_url' => 'nullable|string|max:255',
         ]);
 
-        (new LegacyConversionPostBackURL($userId, $offer->idoffer))
+        (new ConversionPostBackURL($userId, $offer->idoffer))
             ->updateOfferURL(trim((string) ($validated['postback_url'] ?? '')));
 
-        (new LegacyFreePostBackURL($userId, $offer->idoffer))
+        (new FreePostBackURL($userId, $offer->idoffer))
             ->updateOfferURL(trim((string) ($validated['free_sign_up_url'] ?? '')));
 
-        (new LegacyDeductionPostBackURL($userId, $offer->idoffer))
+        (new DeductionPostBackURL($userId, $offer->idoffer))
             ->updateOfferURL(trim((string) ($validated['deduction_url'] ?? '')));
 
         return redirect("/offer/{$offer->idoffer}/postback")->with('message', 'Offer postbacks updated successfully.');
@@ -1021,7 +1021,7 @@ class OfferController extends Controller
             ->map(fn ($userId) => (int) $userId)
             ->all();
 
-        return collect(LegacyUser::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC))
+        return collect(UserSupport::selectAllOwnedAffiliates()->fetchAll(\PDO::FETCH_ASSOC))
             ->map(function (array $user) use ($assignedAffiliateIds) {
                 $user['idrep'] = (int) $user['idrep'];
                 $user['has_offer'] = in_array($user['idrep'], $assignedAffiliateIds, true);

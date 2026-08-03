@@ -366,14 +366,11 @@ Remaining cleanup is mostly archival and hardening:
 - login, forgot-password, signup, and signup-success rendering now use Laravel
   company model presentation helpers instead of loading the legacy company object
   from session
-- modern login/signup/auth compatibility flows resolve legacy login, affiliate
-  signup, and user classes through `App\Support` wrappers; the fallback audit now
-  blocks new direct Laravel-side `User`, `Login`, and `AffiliateSignUp` imports
-  outside those boundaries
-- modern bonus, salary, global-postback, referral, privilege, and report
-  permission flows now resolve legacy user-domain helpers through `App\Support`
-  wrappers; the fallback audit blocks new direct Laravel-side imports outside
-  those boundaries
+- login, signup, and authentication flows use `App\Support\UserDomain` through
+  `SessionLoginController` and `UserSessionAuth`; the retired wrappers and their
+  misleading runtime class names have been removed
+- bonus, salary, global-postback, referral, privilege, and report-permission
+  flows now resolve directly through `App\Support\UserDomain`
 - dashboard/master/error/contact/PDF branding surfaces and chat-log sale-log
   paths now read company presentation/subdomain data through the Laravel company
   model instead of loading the legacy company object from session

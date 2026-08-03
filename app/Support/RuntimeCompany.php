@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use App\Support\DatabaseConnection;
-use App\Services\LegacyDatabaseConfig;
+use App\Services\RuntimeDatabaseConfig;
 use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
@@ -102,11 +102,11 @@ class RuntimeCompany
     //gets sub domain of current host
     static function getSub()
     {
-	    return LegacyDatabaseConfig::primaryDatabase();
+	    return RuntimeDatabaseConfig::primaryDatabase();
        /* $sub = explode(".", NativeRequest::host());
 
 		if ($sub[0] === "www" || is_numeric($sub[0]) ) {
-			return LegacyDatabaseConfig::primaryDatabase();
+			return RuntimeDatabaseConfig::primaryDatabase();
 		}
         return $sub[0];*/
     }

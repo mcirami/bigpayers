@@ -8,7 +8,7 @@ class TenantDatabasePdoFactory
 {
     public function make(?string $database = null): PDO
     {
-        $config = LegacyDatabaseConfig::mysqlConnection();
+        $config = RuntimeDatabaseConfig::mysqlConnection();
 
         return new PDO(
             $this->dsn($database),
@@ -20,7 +20,7 @@ class TenantDatabasePdoFactory
 
     public function dsn(?string $database = null): string
     {
-        $config = LegacyDatabaseConfig::mysqlConnection();
+        $config = RuntimeDatabaseConfig::mysqlConnection();
         $dsn = 'mysql:host=' . $config['host'] . ';port=' . $config['port'];
 
         if ($database !== null) {

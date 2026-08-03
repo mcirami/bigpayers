@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-class LegacyDatabaseConfig
+class RuntimeDatabaseConfig
 {
     private static $databaseConfig;
 

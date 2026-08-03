@@ -21,7 +21,7 @@ use App\Http\Controllers\IPBlacklistController;
 use App\Http\Controllers\LanderController;
 use App\Http\Controllers\ClickIdToolController;
 use App\Http\Controllers\CompanySetupController;
-use App\Http\Controllers\LegacyLoginController;
+use App\Http\Controllers\SessionLoginController;
 use App\Http\Controllers\RelevanceReactorController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DatabaseUpdateController;
@@ -58,17 +58,17 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 
 Route::get('/', [IndexController::class, 'index']);
 Route::post('/', [IndexController::class, 'index']);
-Route::get('/login', [LegacyLoginController::class, 'showLoginForm']);
-Route::post('/login', [LegacyLoginController::class, 'login']);
+Route::get('/login', [SessionLoginController::class, 'showLoginForm']);
+Route::post('/login', [SessionLoginController::class, 'login']);
 Route::match(['get', 'post'], '/forgot-password', [ForgotPasswordController::class, 'show']);
 Route::get('/signup', [SignupController::class, 'show']);
 Route::post('/signup', [SignupController::class, 'submit']);
 Route::get('/signup-success', [SignupController::class, 'success']);
 Route::any('/resources/landers/{subDomain}/{asset}', [LanderController::class, 'getAsset'])->where('asset', '.*');
-Route::get('/logout', [LegacyLoginController::class, 'logout']);
+Route::get('/logout', [SessionLoginController::class, 'logout']);
 Route::post('email/incoming', [RelevanceReactorController::class, 'incomingEmail']);
 Route::post('email/incoming/distribute', [RelevanceReactorController::class, 'distributeEmail']);
-Route::group(['middleware' => 'legacy.auth'], function () {
+Route::group(['middleware' => 'session.auth'], function () {
     Route::get('dashboard', [DashboardController::class, 'home']);
     Route::get('click-search', [ClickSearchController::class, 'show'])->middleware('role:' . Privilege::ROLE_GOD);
     Route::get('ip-blacklist', [IPBlacklistController::class, 'index'])->middleware('role:' . Privilege::ROLE_GOD);
@@ -311,5 +311,5 @@ Route::group(['middleware' => 'legacy.auth'], function () {
         Route::post('view/{saleLogId}/delete', [ChatLogController::class, 'deleteSaleLogImage']);
         Route::get('view/{saleLogId}/{fileName}', [ChatLogController::class, 'getSaleLogImage']);
     });
-    Route::get("login/{userId}", [LegacyLoginController::class, 'adminLogin']);
+    Route::get("login/{userId}", [SessionLoginController::class, 'adminLogin']);
 });

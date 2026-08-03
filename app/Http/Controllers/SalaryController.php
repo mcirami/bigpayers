@@ -6,7 +6,7 @@ use App\Privilege;
 use App\Salary;
 use App\User;
 use App\Support\CurrentUserSession;
-use App\Support\UserDomain\Salary as LegacySalary;
+use App\Support\UserDomain\Salary as SalarySupport;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -14,15 +14,15 @@ class SalaryController extends Controller
 {
     public function index(Request $request)
     {
-        $legacySalaries = new LegacySalary();
+        $salaries = new SalarySupport();
 
         if ($request->filled('id') && $request->filled('payout')) {
-            $legacySalaries->payAffiliate((int) $request->query('id'), $request->query('payout'), (string) $request->query('reason', ''));
+            $salaries->payAffiliate((int) $request->query('id'), $request->query('payout'), (string) $request->query('reason', ''));
 
             return redirect('/salaries')->with('message', 'Salary payout recorded.');
         }
 
-        $affiliates = collect($legacySalaries->weekReport()->fetchAll(\PDO::FETCH_ASSOC))
+        $affiliates = collect($salaries->weekReport()->fetchAll(\PDO::FETCH_ASSOC))
             ->filter(fn ($affiliate) => (int) ($affiliate['status'] ?? 0) === 1)
             ->values();
         $paidCount = $affiliates->filter(fn ($affiliate) => $affiliate['payout'] !== null)->count();
@@ -38,7 +38,7 @@ class SalaryController extends Controller
 
     public function pay(Request $request)
     {
-        $legacySalaries = new LegacySalary();
+        $salaries = new SalarySupport();
         $rows = collect($request->input('salaries', []));
 
         if ($request->filled('pay_user')) {
@@ -46,7 +46,7 @@ class SalaryController extends Controller
             $row = $rows->get($userId, []);
 
             if (!empty($row['payout'])) {
-                $legacySalaries->payAffiliate($userId, $row['payout'], (string) ($row['reason'] ?? ''));
+                $salaries->payAffiliate($userId, $row['payout'], (string) ($row['reason'] ?? ''));
             }
 
             return redirect('/salaries')->with('message', 'Salary payout recorded.');
@@ -62,7 +62,7 @@ class SalaryController extends Controller
             ->all();
 
         if (!empty($payRows)) {
-            $legacySalaries->payAllAffiliates($payRows);
+            $salaries->payAllAffiliates($payRows);
         }
 
         return redirect('/salaries')->with('message', 'Salary payouts recorded.');
@@ -70,11 +70,11 @@ class SalaryController extends Controller
 
     public function manage()
     {
-        $legacySalaries = new LegacySalary();
-        $legacySalaries->fetchAffiliateSalaries();
+        $salaries = new SalarySupport();
+        $salaries->fetchAffiliateSalaries();
 
         return view('salary.manage', [
-            'affiliates' => collect($legacySalaries->affiliateList),
+            'affiliates' => collect($salaries->affiliateList),
         ]);
     }
 

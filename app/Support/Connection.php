@@ -3,7 +3,7 @@
 namespace App\Support;
 
 use App\Support\DatabaseConnection;
-use App\Services\LegacyDatabaseConfig;
+use App\Services\RuntimeDatabaseConfig;
 use App\Support\NativeRequest;
 use App\Support\NativeSession;
 use PDO;
@@ -59,10 +59,10 @@ class Connection
 
     private function loadEnv()
     {
-        self::$host = LegacyDatabaseConfig::mysql('host');
-        self::$user = LegacyDatabaseConfig::mysql('username');
-        self::$password = LegacyDatabaseConfig::mysql('password');
-        self::$port = LegacyDatabaseConfig::mysql('port');
+        self::$host = RuntimeDatabaseConfig::mysql('host');
+        self::$user = RuntimeDatabaseConfig::mysql('username');
+        self::$password = RuntimeDatabaseConfig::mysql('password');
+        self::$port = RuntimeDatabaseConfig::mysql('port');
     }
 
     private function alreadyLoaded()
@@ -91,7 +91,7 @@ class Connection
     public function isLoginPage()
     {
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE login_url IN (:url, :wwwUrl)";
+        $sql = "SELECT subDomain FROM ". RuntimeDatabaseConfig::primaryDatabase() . ".company WHERE login_url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
         $loginURL = $this->normalizeHost(NativeRequest::host());
         $wwwLoginURL = 'www.' . $loginURL;
@@ -114,7 +114,7 @@ class Connection
     {
 
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT * FROM ". LegacyDatabaseConfig::primaryDatabase() . ".offer_urls WHERE url IN (:url, :wwwUrl)";
+        $sql = "SELECT * FROM ". RuntimeDatabaseConfig::primaryDatabase() . ".offer_urls WHERE url IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
         $host = $this->normalizeHost(NativeRequest::host());
         $wwwHost = 'www.' . $host;
@@ -129,7 +129,7 @@ class Connection
 
             $offerUrlEntry = $prep->fetch(PDO::FETCH_ASSOC);
 
-            $sqlC = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE id = :id";
+            $sqlC = "SELECT subDomain FROM ". RuntimeDatabaseConfig::primaryDatabase() . ".company WHERE id = :id";
 
             $prep = $db->prepare($sqlC);
             $prep->bindParam(":id", $offerUrlEntry["company_id"]);
@@ -157,7 +157,7 @@ class Connection
 
         define('LOCALHOST', self::$host);
         //define("DB_NAME", $this->subDomain);
-	    define("DB_NAME", LegacyDatabaseConfig::primaryDatabase());
+	    define("DB_NAME", RuntimeDatabaseConfig::primaryDatabase());
 
         define("DB_USERNAME", self::$user);
         define("DB_PASSWORD", self::$password);
@@ -218,7 +218,7 @@ class Connection
     private function isLanderPage()
     {
         $db = DatabaseConnection::getMasterInstance();
-        $sql = "SELECT subDomain FROM ". LegacyDatabaseConfig::primaryDatabase() . ".company WHERE landing_page IN (:url, :wwwUrl)";
+        $sql = "SELECT subDomain FROM ". RuntimeDatabaseConfig::primaryDatabase() . ".company WHERE landing_page IN (:url, :wwwUrl)";
         $prep = $db->prepare($sql);
         $loginURL = $this->normalizeHost(NativeRequest::host());
         $wwwLoginURL = 'www.' . $loginURL;
